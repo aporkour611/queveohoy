@@ -12,12 +12,29 @@ export default function Home() {
   }, []);
 
   async function loadEvents() {
+    const today = new Date().toISOString().split("T")[0];
+
+    // 🔥 1. cargar eventos
     const { data } = await supabase
       .from("events")
       .select("*")
       .order("time", { ascending: true });
 
     setEvents(data || []);
+
+    // 🔥 2. si no hay eventos hoy → generar automáticamente
+    const todayEvents = (data || []).filter((e) => e.date === today);
+
+    if (todayEvents.length === 0) {
+      await fetch("/api/generate");
+
+      const { data: newData } = await supabase
+        .from("events")
+        .select("*")
+        .order("time", { ascending: true });
+
+      setEvents(newData || []);
+    }
   }
 
   const today = new Date().toISOString().split("T")[0];
@@ -43,7 +60,10 @@ export default function Home() {
         background: event.featured ? "#fff8dc" : "#fff",
       }}
     >
-      <h3>{event.featured && "⭐ "}{event.title}</h3>
+      <h3>
+        {event.featured && "⭐ "}
+        {event.title}
+      </h3>
       <p>🕒 {event.time}</p>
       <p>🏷 {event.category}</p>
       <p>📺 {event.platform}</p>
