@@ -29,7 +29,7 @@ async function upsertEvents(events: any[]) {
 }
 
 async function fetchFootball() {
-  const competiciones = ["PD", "CL", "PL", "BL1", "SA"];
+    const competiciones = ["PD", "CL", "PL", "BL1", "SA", "WC", "FL1"];
   const dates = getWeekDates();
   const dateFrom = dates[0];
   const dateTo = dates[6];
@@ -76,7 +76,7 @@ async function fetchFootball() {
 
 async function fetchF1() {
   try {
-    const res = await fetch("https://api.jolpi.ca/ergast/f1/2025/races.json");
+    const res = await fetch("https://api.jolpi.ca/ergast/f1/2026/races.json");
     const data = await res.json();
     console.log("F1 response:", JSON.stringify(data).slice(0, 200));
     const races = data?.MRData?.RaceTable?.Races || [];
