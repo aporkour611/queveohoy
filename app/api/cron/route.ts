@@ -1,10 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -22,7 +24,7 @@ function getWeekDates() {
 
 async function upsertEvents(events: any[]) {
   if (!events.length) return;
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from("events")
     .upsert(events, { onConflict: "external_id", ignoreDuplicates: false });
   if (error) console.error("Upsert error:", error);
@@ -31,7 +33,7 @@ async function upsertEvents(events: any[]) {
 // ─── Football Data ────────────────────────────────────────────────────────────
 
 async function fetchFootball() {
-  const competiciones = ["PD", "CL", "PL", "BL1", "SA"]; // LaLiga, Champions, Premier, Bundesliga, Serie A
+  const competiciones = ["PD", "CL", "PL", "BL1", "SA"];
   const dates = getWeekDates();
   const dateFrom = dates[0];
   const dateTo = dates[6];
@@ -101,7 +103,6 @@ async function fetchF1() {
         source: "jolpica",
       });
 
-      // Qualy (día anterior)
       if (race.Qualifying) {
         events.push({
           external_id: `f1_${race.season}_${race.round}_qualy`,
@@ -146,7 +147,7 @@ async function fetchNBA() {
           home_team: game.home_team.full_name,
           away_team: game.visitor_team.full_name,
           date: game.date.split("T")[0],
-          time: "02:00", // NBA suele ser madrugada en España
+          time: "02:00",
           sport: "basket",
           category: "deportes",
           competition: "NBA",
