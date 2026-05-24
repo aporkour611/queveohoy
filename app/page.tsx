@@ -8,20 +8,12 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    autoUpdateThenLoad();
+    loadEvents();
   }, []);
 
-  async function autoUpdateThenLoad() {
+  async function loadEvents() {
     setLoading(true);
 
-    // 🔥 actualiza datos al entrar (sin cron)
-    try {
-      await fetch("/api/generate");
-    } catch (e) {
-      console.log("update skipped");
-    }
-
-    // cargar datos
     const { data } = await supabase
       .from("events")
       .select("*")
@@ -34,33 +26,21 @@ export default function Home() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const tomorrowDate = new Date();
-  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-  const tomorrow = tomorrowDate.toISOString().split("T")[0];
-
   const todayEvents = events.filter((e) => e.date === today);
-  const tomorrowEvents = events.filter((e) => e.date === tomorrow);
-
-  const Card = ({ e }: any) => (
-    <div className="card">
-      <div className="title">
-        {e.featured ? "🔥 " : ""}
-        {e.title}
-      </div>
-      <div className="meta">
-        🕒 {e.time} · 📺 {e.platform}
-      </div>
-    </div>
-  );
+  const tomorrowEvents = events.filter((e) => {
+    const t = new Date();
+    t.setDate(t.getDate() + 1);
+    return e.date === t.toISOString().split("T")[0];
+  });
 
   return (
     <main className="container">
       <header className="header">
-        <h1>🔥 Qué ver hoy</h1>
-        <p>Actualizado automáticamente</p>
+        <h1>Qué ver hoy</h1>
+        <p>Eventos deportivos del día</p>
       </header>
 
-      {loading && <p className="loading">Cargando eventos...</p>}
+      {loading && <p className="loading">Cargando...</p>}
 
       {/* HOY */}
       <section className="section">
@@ -72,7 +52,12 @@ export default function Home() {
 
         <div className="list">
           {todayEvents.map((e) => (
-            <Card key={e.id} e={e} />
+            <div key={e.id} className="card">
+              <div className="title">{e.title}</div>
+              <div className="meta">
+                🕒 {e.time} · 📺 {e.platform}
+              </div>
+            </div>
           ))}
         </div>
       </section>
@@ -87,16 +72,21 @@ export default function Home() {
 
         <div className="list">
           {tomorrowEvents.map((e) => (
-            <Card key={e.id} e={e} />
+            <div key={e.id} className="card">
+              <div className="title">{e.title}</div>
+              <div className="meta">
+                🕒 {e.time} · 📺 {e.platform}
+              </div>
+            </div>
           ))}
         </div>
       </section>
 
       <style jsx>{`
         .container {
-          max-width: 750px;
+          max-width: 720px;
           margin: 0 auto;
-          padding: 24px;
+          padding: 20px;
           font-family: system-ui;
           background: #0b0b0f;
           color: white;
@@ -110,20 +100,20 @@ export default function Home() {
         }
 
         .header p {
-          margin-top: 6px;
           opacity: 0.6;
+          margin-top: 6px;
         }
 
         .section {
-          margin-top: 28px;
+          margin-top: 26px;
         }
 
         h2 {
           font-size: 14px;
-          text-transform: uppercase;
           letter-spacing: 1px;
+          text-transform: uppercase;
           color: #888;
-          margin-bottom: 12px;
+          margin-bottom: 10px;
         }
 
         .list {
@@ -137,12 +127,6 @@ export default function Home() {
           border-radius: 12px;
           background: #15151b;
           border: 1px solid #2a2a2a;
-          transition: 0.2s;
-        }
-
-        .card:hover {
-          transform: translateY(-2px);
-          border-color: #444;
         }
 
         .title {
