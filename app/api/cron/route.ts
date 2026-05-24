@@ -8,8 +8,6 @@ function getSupabase() {
   );
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 function formatDate(d: Date) {
   return d.toISOString().split("T")[0];
 }
@@ -29,8 +27,6 @@ async function upsertEvents(events: any[]) {
     .upsert(events, { onConflict: "external_id", ignoreDuplicates: false });
   if (error) console.error("Upsert error:", error);
 }
-
-// ─── Football Data ────────────────────────────────────────────────────────────
 
 async function fetchFootball() {
   const competiciones = ["PD", "CL", "PL", "BL1", "SA"];
@@ -78,8 +74,6 @@ async function fetchFootball() {
   console.log(`Football: ${events.length} eventos`);
 }
 
-// ─── F1 (sin key) ────────────────────────────────────────────────────────────
-
 async function fetchF1() {
   try {
     const res = await fetch("https://api.jolpi.ca/ergast/f1/2025/races.json");
@@ -126,48 +120,6 @@ async function fetchF1() {
     console.error("Error fetching F1:", e);
   }
 }
-
-// ─── NBA ─────────────────────────────────────────────────────────────────────
-
-async function fetchNBA() {
-  try {
-    const dates = getWeekDates();
-    const events: any[] = [];
-
-    for (const date of dates) {
-      const res = await fetch(
-        `https://api.balldontlie.io/v1/games?dates[]=${date}&per_page=20`,
-        { headers: { Authorization: process.env.BALLDONTLIE_API_KEY! } }
-      );
-      const data = await res.json();
-      console.log(`NBA ${date}:`, JSON.stringify(data).slice(0, 200));
-      if (!data.data) continue;
-
-      for (const game of data.data) {
-        events.push({
-          external_id: `nba_${game.id}`,
-          title: `${game.home_team.full_name} vs ${game.visitor_team.full_name}`,
-          home_team: game.home_team.full_name,
-          away_team: game.visitor_team.full_name,
-          date: game.date.split("T")[0],
-          time: "02:00",
-          sport: "basket",
-          category: "deportes",
-          competition: "NBA",
-          platform: "NBA League Pass",
-          source: "balldontlie",
-        });
-      }
-    }
-
-    await upsertEvents(events);
-    console.log(`NBA: ${events.length} eventos`);
-  } catch (e) {
-    console.error("Error fetching NBA:", e);
-  }
-}
-
-// ─── E-Sports (Pandascore) ────────────────────────────────────────────────────
 
 async function fetchEsports() {
   const games = [
@@ -225,8 +177,6 @@ async function fetchEsports() {
   console.log(`E-Sports: ${events.length} eventos`);
 }
 
-// ─── Handler principal ────────────────────────────────────────────────────────
-
 export async function GET(request: Request) {
   console.log("=== CRON INICIADO ===");
 
@@ -242,13 +192,6 @@ export async function GET(request: Request) {
     console.log("✓ F1 done");
   } catch (e) {
     console.error("✗ F1 error:", e);
-  }
-
-  try {
-    await fetchNBA();
-    console.log("✓ NBA done");
-  } catch (e) {
-    console.error("✗ NBA error:", e);
   }
 
   try {
