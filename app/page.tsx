@@ -18,22 +18,26 @@ export default function Home() {
 
       const today = new Date().toISOString().split("T")[0];
 
+      // 1. cargar eventos
       const { data } = await supabase
         .from("events")
         .select("*")
+        .order("date", { ascending: true })
         .order("time", { ascending: true });
 
       let eventsData = data || [];
 
-      // auto-generate SOLO si no hay eventos hoy
+      // 2. comprobar si hay eventos hoy
       const todayEvents = eventsData.filter((e) => e.date === today);
 
+      // 3. auto-generate SOLO si no hay eventos hoy
       if (todayEvents.length === 0) {
         await fetch("/api/generate");
 
         const { data: newData } = await supabase
           .from("events")
           .select("*")
+          .order("date", { ascending: true })
           .order("time", { ascending: true });
 
         eventsData = newData || [];
@@ -41,7 +45,7 @@ export default function Home() {
 
       setEvents(eventsData);
     } catch (err) {
-      console.error(err);
+      console.error("Error loading events:", err);
     } finally {
       setLoading(false);
     }
@@ -59,10 +63,13 @@ export default function Home() {
     other: filtered.filter((e) => e.date !== today),
   };
 
+  const categories = ["Todos", "Fútbol", "UFC", "Motos"];
+
   const Card = ({ event }: any) => (
     <div className="card">
       <div className="title">
-        {event.featured ? "⭐ " : ""}{event.title}
+        {event.featured ? "⭐ " : ""}
+        {event.title}
       </div>
 
       <div className="meta">
@@ -73,13 +80,13 @@ export default function Home() {
     </div>
   );
 
-  const categories = ["Todos", "Fútbol", "UFC", "Motos"];
-
   return (
     <main className="container">
       <header className="header">
         <h1>🔥 Qué ver hoy</h1>
-        <p className="sub">Eventos deportivos y directos del día</p>
+        <p className="sub">
+          Eventos deportivos y directos actualizados automáticamente
+        </p>
       </header>
 
       <div className="filters">
@@ -98,10 +105,12 @@ export default function Home() {
 
       <section>
         <h2>🔥 Hoy</h2>
+
         <div className="grid">
           {grouped.today.length === 0 && !loading && (
             <p className="empty">No hay eventos hoy</p>
           )}
+
           {grouped.today.map((e, i) => (
             <Card key={i} event={e} />
           ))}
@@ -110,10 +119,12 @@ export default function Home() {
 
       <section className="section">
         <h2>📅 Otros días</h2>
+
         <div className="grid">
           {grouped.other.length === 0 && !loading && (
             <p className="empty">No hay eventos futuros</p>
           )}
+
           {grouped.other.map((e, i) => (
             <Card key={i} event={e} />
           ))}
