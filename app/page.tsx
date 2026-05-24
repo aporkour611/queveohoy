@@ -12,7 +12,11 @@ export default function Home() {
   }, []);
 
   async function loadEvents() {
-    const { data } = await supabase.from("events").select("*");
+    const { data } = await supabase
+      .from("events")
+      .select("*")
+      .order("time", { ascending: true });
+
     setEvents(data || []);
   }
 
@@ -27,6 +31,27 @@ export default function Home() {
     today: filteredEvents.filter((e) => e.date === today),
     other: filteredEvents.filter((e) => e.date !== today),
   };
+
+  const renderEvent = (event: any, i: number) => (
+    <div
+      key={i}
+      style={{
+        marginBottom: 10,
+        padding: 10,
+        border: event.featured ? "2px solid gold" : "1px solid #ddd",
+        borderRadius: 8,
+        background: event.featured ? "#fffbea" : "white",
+      }}
+    >
+      <h3>
+        {event.featured && "⭐ "}
+        {event.title}
+      </h3>
+      <p>🕒 {event.time}</p>
+      <p>🏷 {event.category}</p>
+      <p>📺 {event.platform}</p>
+    </div>
+  );
 
   return (
     <main style={{ padding: 20 }}>
@@ -45,6 +70,7 @@ export default function Home() {
               color: filter === f ? "#fff" : "#000",
               border: "none",
               cursor: "pointer",
+              borderRadius: 6,
             }}
           >
             {f}
@@ -55,29 +81,12 @@ export default function Home() {
       {/* 🔥 HOY */}
       <h2>🔥 Hoy</h2>
       {grouped.today.length === 0 && <p>No hay eventos hoy</p>}
-
-      {grouped.today.map((event, i) => (
-        <div key={i} style={{ marginBottom: 10 }}>
-          <h3>{event.title}</h3>
-          <p>{event.time}</p>
-          <p>{event.category}</p>
-          <p>{event.platform}</p>
-        </div>
-      ))}
+      {grouped.today.map(renderEvent)}
 
       {/* 🔥 OTROS */}
       <h2 style={{ marginTop: 30 }}>📅 Otros días</h2>
-
       {grouped.other.length === 0 && <p>No hay otros eventos</p>}
-
-      {grouped.other.map((event, i) => (
-        <div key={i} style={{ marginBottom: 10 }}>
-          <h3>{event.title}</h3>
-          <p>{event.time}</p>
-          <p>{event.category}</p>
-          <p>{event.platform}</p>
-        </div>
-      ))}
+      {grouped.other.map(renderEvent)}
     </main>
   );
 }
