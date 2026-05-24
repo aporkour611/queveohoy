@@ -4,39 +4,44 @@ export async function GET() {
   const today = new Date().toISOString().split("T")[0];
 
   try {
-    // evitar duplicados
+    // evitar duplicados grandes
     const { data: existing } = await supabase
       .from("events")
       .select("*")
       .eq("date", today);
 
-    if (existing && existing.length > 0) {
+    if (existing && existing.length >= 5) {
       return Response.json({
         ok: true,
-        message: "Ya hay eventos hoy",
+        message: "Dataset ya completo",
         count: existing.length,
       });
     }
 
-    // 🔥 API REAL (TheSportsDB - gratis y sin auth compleja)
+    // API real
     const res = await fetch(
       "https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=" +
         today +
         "&s=Soccer"
     );
 
-    const data = await res.json();
+    const json = await res.json();
 
-    const events = (data?.events || []).slice(0, 6).map((e: any) => ({
+    const rawEvents = json?.events || [];
+
+    const events = rawEvents.slice(0, 8).map((e: any, index: number) => ({
       title: e.strEvent,
       time: e.strTime || "Sin hora",
       category: "Fútbol",
       platform: e.strLeague || "TV",
       date: today,
-      featured: false,
+
+      // base de trending futuro
+      popularity: Math.max(1, 10 - index),
+      featured: index < 2,
     }));
 
-    // si no hay datos reales → fallback
+    // fallback
     if (events.length === 0) {
       events.push({
         title: "Evento destacado del día",
@@ -44,11 +49,15 @@ export async function GET() {
         category: "General",
         platform: "TV",
         date: today,
+        popularity: 5,
         featured: true,
       });
     }
 
-    const { error } = await supabase.from("events").insert(events);
+    // insert seguro
+    const { error } = await supabase
+      .from("events")
+      .upsert(events, { onConflict: "title,date" });
 
     if (error) {
       return Response.json({
@@ -59,7 +68,7 @@ export async function GET() {
 
     return Response.json({
       ok: true,
-      message: "Eventos reales generados",
+      message: "Engine v2 OK",
       count: events.length,
     });
   } catch (err: any) {
