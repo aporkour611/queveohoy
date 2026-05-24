@@ -4,7 +4,7 @@ export async function GET() {
   const today = new Date().toISOString().split("T")[0];
 
   try {
-    // 1. comprobar si ya existen eventos hoy
+    // evitar duplicados
     const { data: existing } = await supabase
       .from("events")
       .select("*")
@@ -13,52 +13,42 @@ export async function GET() {
     if (existing && existing.length > 0) {
       return Response.json({
         ok: true,
-        message: "Eventos ya existentes para hoy",
+        message: "Ya hay eventos hoy",
         count: existing.length,
       });
     }
 
-    // 2. “motor de eventos realista”
-    // (simula comportamiento tipo plataforma real)
-    const baseEvents = [
-      {
-        title: "Champions League - Partido destacado",
-        time: "21:00",
-        category: "Fútbol",
-        platform: "Movistar+",
-        date: today,
-        featured: true,
-      },
-      {
-        title: "LaLiga EA Sports",
-        time: "19:30",
-        category: "Fútbol",
-        platform: "DAZN",
-        date: today,
-        featured: false,
-      },
-      {
-        title: "UFC Fight Night Main Card",
-        time: "22:00",
-        category: "UFC",
-        platform: "DAZN",
-        date: today,
-        featured: true,
-      },
-      {
-        title: "MotoGP Clasificación",
-        time: "17:00",
-        category: "Motos",
-        platform: "DAZN",
-        date: today,
-        featured: false,
-      },
-    ];
+    // 🔥 API REAL (TheSportsDB - gratis y sin auth compleja)
+    const res = await fetch(
+      "https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=" +
+        today +
+        "&s=Soccer"
+    );
 
-    // 3. insertar solo si no existen duplicados
-    const { error } = await supabase
-      .from("events")
-      .insert(baseEvents);
+    const data = await res.json();
+
+    const events = (data?.events || []).slice(0, 6).map((e: any) => ({
+      title: e.strEvent,
+      time: e.strTime || "Sin hora",
+      category: "Fútbol",
+      platform: e.strLeague || "TV",
+      date: today,
+      featured: false,
+    }));
+
+    // si no hay datos reales → fallback
+    if (events.length === 0) {
+      events.push({
+        title: "Evento destacado del día",
+        time: "20:00",
+        category: "General",
+        platform: "TV",
+        date: today,
+        featured: true,
+      });
+    }
+
+    const { error } = await supabase.from("events").insert(events);
 
     if (error) {
       return Response.json({
@@ -69,7 +59,8 @@ export async function GET() {
 
     return Response.json({
       ok: true,
-      message: "Eventos generados con sistema inteligente",
+      message: "Eventos reales generados",
+      count: events.length,
     });
   } catch (err: any) {
     return Response.json({
