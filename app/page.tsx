@@ -13,80 +13,43 @@ export default function Home() {
   }, []);
 
   async function loadEvents() {
-    try {
-      setLoading(true);
+    setLoading(true);
 
-      const today = new Date().toISOString().split("T")[0];
+    const { data } = await supabase.from("events").select("*");
 
-      // 1. cargar eventos
-      const { data } = await supabase
-        .from("events")
-        .select("*")
-        .order("date", { ascending: true })
-        .order("time", { ascending: true });
+    // 🔥 orden real tipo “producto”
+    const sorted = (data || []).sort((a, b) => {
+      const scoreA = (b.clicks || 0) + (b.featured ? 5 : 0);
+      const scoreB = (a.clicks || 0) + (a.featured ? 5 : 0);
+      return scoreA - scoreB;
+    });
 
-      let eventsData = data || [];
-
-      // 2. comprobar si hay eventos hoy
-      const todayEvents = eventsData.filter((e) => e.date === today);
-
-      // 3. auto-generate SOLO si no hay eventos hoy
-      if (todayEvents.length === 0) {
-        await fetch("/api/generate");
-
-        const { data: newData } = await supabase
-          .from("events")
-          .select("*")
-          .order("date", { ascending: true })
-          .order("time", { ascending: true });
-
-        eventsData = newData || [];
-      }
-
-      setEvents(eventsData);
-    } catch (err) {
-      console.error("Error loading events:", err);
-    } finally {
-      setLoading(false);
-    }
+    setEvents(sorted);
+    setLoading(false);
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  async function handleClick(event: any) {
+    // subir clicks
+    await supabase
+      .from("events")
+      .update({ clicks: (event.clicks || 0) + 1 })
+      .eq("id", event.id);
+
+    loadEvents();
+  }
+
+  const categories = ["Todos", "Fútbol", "UFC", "Motos"];
 
   const filtered =
     filter === "Todos"
       ? events
       : events.filter((e) => e.category === filter);
 
-  const grouped = {
-    today: filtered.filter((e) => e.date === today),
-    other: filtered.filter((e) => e.date !== today),
-  };
-
-  const categories = ["Todos", "Fútbol", "UFC", "Motos"];
-
-  const Card = ({ event }: any) => (
-    <div className="card">
-      <div className="title">
-        {event.featured ? "⭐ " : ""}
-        {event.title}
-      </div>
-
-      <div className="meta">
-        🕒 {event.time} · 📺 {event.platform}
-      </div>
-
-      <div className="tag">{event.category}</div>
-    </div>
-  );
-
   return (
     <main className="container">
       <header className="header">
         <h1>🔥 Qué ver hoy</h1>
-        <p className="sub">
-          Eventos deportivos y directos actualizados automáticamente
-        </p>
+        <p>Eventos reales ordenados por popularidad</p>
       </header>
 
       <div className="filters">
@@ -94,42 +57,36 @@ export default function Home() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={filter === f ? "btn active" : "btn"}
+            className={filter === f ? "active" : ""}
           >
             {f}
           </button>
         ))}
       </div>
 
-      {loading && <p className="loading">Cargando eventos...</p>}
+      {loading && <p>Cargando eventos...</p>}
 
-      <section>
-        <h2>🔥 Hoy</h2>
+      <div className="grid">
+        {filtered.map((e) => (
+          <div
+            key={e.id}
+            className="card"
+            onClick={() => handleClick(e)}
+          >
+            <h3>
+              {e.featured ? "⭐ " : ""}
+              {e.title}
+            </h3>
 
-        <div className="grid">
-          {grouped.today.length === 0 && !loading && (
-            <p className="empty">No hay eventos hoy</p>
-          )}
+            <p>🕒 {e.time}</p>
+            <p>📺 {e.platform}</p>
 
-          {grouped.today.map((e, i) => (
-            <Card key={i} event={e} />
-          ))}
-        </div>
-      </section>
-
-      <section className="section">
-        <h2>📅 Otros días</h2>
-
-        <div className="grid">
-          {grouped.other.length === 0 && !loading && (
-            <p className="empty">No hay eventos futuros</p>
-          )}
-
-          {grouped.other.map((e, i) => (
-            <Card key={i} event={e} />
-          ))}
-        </div>
-      </section>
+            <div className="footer">
+              🔥 Popularidad: {e.clicks || 0}
+            </div>
+          </div>
+        ))}
+      </div>
 
       <style jsx>{`
         .container {
@@ -147,9 +104,8 @@ export default function Home() {
           margin: 0;
         }
 
-        .sub {
+        .header p {
           opacity: 0.6;
-          margin-top: 6px;
         }
 
         .filters {
@@ -159,18 +115,13 @@ export default function Home() {
           flex-wrap: wrap;
         }
 
-        .btn {
+        button {
           padding: 8px 14px;
           border-radius: 999px;
-          border: 1px solid #2a2a2a;
-          background: #15151b;
-          color: white;
+          border: none;
           cursor: pointer;
-          transition: 0.2s;
-        }
-
-        .btn:hover {
-          transform: scale(1.05);
+          background: #1a1a1a;
+          color: white;
         }
 
         .active {
@@ -185,44 +136,21 @@ export default function Home() {
 
         .card {
           padding: 16px;
-          border-radius: 16px;
-          background: #15151b;
+          border-radius: 14px;
+          background: #1a1a1a;
           border: 1px solid #2a2a2a;
+          cursor: pointer;
           transition: 0.2s;
         }
 
         .card:hover {
           transform: translateY(-2px);
-          border-color: #444;
         }
 
-        .title {
-          font-size: 18px;
-          font-weight: 600;
-        }
-
-        .meta {
-          opacity: 0.7;
-          margin-top: 6px;
-          font-size: 13px;
-        }
-
-        .tag {
+        .footer {
           margin-top: 8px;
           font-size: 12px;
-          opacity: 0.5;
-        }
-
-        .section {
-          margin-top: 30px;
-        }
-
-        .loading {
           opacity: 0.7;
-        }
-
-        .empty {
-          opacity: 0.5;
         }
       `}</style>
     </main>
