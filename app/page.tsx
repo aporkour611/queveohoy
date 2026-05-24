@@ -36,11 +36,13 @@ export default function Home() {
     <div
       key={i}
       style={{
-        marginBottom: 10,
-        padding: 10,
+        marginBottom: 12,
+        padding: 12,
+        borderRadius: 10,
         border: event.featured ? "2px solid gold" : "1px solid #ddd",
-        borderRadius: 8,
-        background: event.featured ? "#fffbea" : "white",
+        background: event.featured ? "#fff8dc" : "#fff",
+        transform: event.featured ? "scale(1.02)" : "scale(1)",
+        transition: "all 0.2s ease",
       }}
     >
       <h3>
@@ -65,12 +67,12 @@ export default function Home() {
             onClick={() => setFilter(f)}
             style={{
               marginRight: 10,
-              padding: 8,
+              padding: "8px 12px",
               background: filter === f ? "#000" : "#eee",
               color: filter === f ? "#fff" : "#000",
               border: "none",
-              cursor: "pointer",
               borderRadius: 6,
+              cursor: "pointer",
             }}
           >
             {f}
