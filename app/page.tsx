@@ -5,7 +5,6 @@ import { supabase } from "./lib/supabase";
 
 export default function Home() {
   const [events, setEvents] = useState<any[]>([]);
-  const [filter, setFilter] = useState("Todos");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,84 +14,68 @@ export default function Home() {
   async function loadEvents() {
     setLoading(true);
 
-    const { data } = await supabase.from("events").select("*");
+    const { data } = await supabase
+      .from("events")
+      .select("*")
+      .order("date", { ascending: true })
+      .order("time", { ascending: true });
 
-    // 🔥 orden real tipo “producto”
-    const sorted = (data || []).sort((a, b) => {
-      const scoreA = (b.clicks || 0) + (b.featured ? 5 : 0);
-      const scoreB = (a.clicks || 0) + (a.featured ? 5 : 0);
-      return scoreA - scoreB;
-    });
-
-    setEvents(sorted);
+    setEvents(data || []);
     setLoading(false);
   }
 
-  async function handleClick(event: any) {
-    // subir clicks
-    await supabase
-      .from("events")
-      .update({ clicks: (event.clicks || 0) + 1 })
-      .eq("id", event.id);
+  const today = new Date().toISOString().split("T")[0];
 
-    loadEvents();
-  }
+  const todayEvents = events.filter((e) => e.date === today);
+  const otherEvents = events.filter((e) => e.date !== today);
 
-  const categories = ["Todos", "Fútbol", "UFC", "Motos"];
-
-  const filtered =
-    filter === "Todos"
-      ? events
-      : events.filter((e) => e.category === filter);
+  const Card = ({ e }: any) => (
+    <div className="card">
+      <div className="title">
+        {e.featured ? "🔥 " : ""}
+        {e.title}
+      </div>
+      <div className="meta">
+        🕒 {e.time} · 📺 {e.platform}
+      </div>
+    </div>
+  );
 
   return (
     <main className="container">
       <header className="header">
         <h1>🔥 Qué ver hoy</h1>
-        <p>Eventos reales ordenados por popularidad</p>
+        <p>Eventos deportivos del día</p>
       </header>
 
-      <div className="filters">
-        {categories.map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={filter === f ? "active" : ""}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
+      {loading && <p>Cargando...</p>}
 
-      {loading && <p>Cargando eventos...</p>}
+      <section>
+        <h2>Hoy</h2>
+        {todayEvents.length === 0 && <p>No hay eventos hoy</p>}
 
-      <div className="grid">
-        {filtered.map((e) => (
-          <div
-            key={e.id}
-            className="card"
-            onClick={() => handleClick(e)}
-          >
-            <h3>
-              {e.featured ? "⭐ " : ""}
-              {e.title}
-            </h3>
+        <div className="list">
+          {todayEvents.map((e) => (
+            <Card key={e.id} e={e} />
+          ))}
+        </div>
+      </section>
 
-            <p>🕒 {e.time}</p>
-            <p>📺 {e.platform}</p>
+      <section>
+        <h2>Próximos días</h2>
 
-            <div className="footer">
-              🔥 Popularidad: {e.clicks || 0}
-            </div>
-          </div>
-        ))}
-      </div>
+        <div className="list">
+          {otherEvents.map((e) => (
+            <Card key={e.id} e={e} />
+          ))}
+        </div>
+      </section>
 
       <style jsx>{`
         .container {
-          max-width: 900px;
+          max-width: 700px;
           margin: 0 auto;
-          padding: 24px;
+          padding: 20px;
           font-family: system-ui;
           background: #0b0b0f;
           color: white;
@@ -100,56 +83,42 @@ export default function Home() {
         }
 
         .header h1 {
-          font-size: 34px;
+          font-size: 30px;
           margin: 0;
         }
 
         .header p {
           opacity: 0.6;
+          margin-top: 5px;
         }
 
-        .filters {
+        h2 {
+          margin-top: 25px;
+          font-size: 18px;
+          opacity: 0.9;
+        }
+
+        .list {
           display: flex;
+          flex-direction: column;
           gap: 10px;
-          margin: 20px 0;
-          flex-wrap: wrap;
-        }
-
-        button {
-          padding: 8px 14px;
-          border-radius: 999px;
-          border: none;
-          cursor: pointer;
-          background: #1a1a1a;
-          color: white;
-        }
-
-        .active {
-          background: white;
-          color: black;
-        }
-
-        .grid {
-          display: grid;
-          gap: 12px;
         }
 
         .card {
-          padding: 16px;
-          border-radius: 14px;
+          padding: 14px;
+          border-radius: 12px;
           background: #1a1a1a;
           border: 1px solid #2a2a2a;
-          cursor: pointer;
-          transition: 0.2s;
         }
 
-        .card:hover {
-          transform: translateY(-2px);
+        .title {
+          font-size: 16px;
+          font-weight: 600;
         }
 
-        .footer {
-          margin-top: 8px;
-          font-size: 12px;
+        .meta {
+          margin-top: 4px;
+          font-size: 13px;
           opacity: 0.7;
         }
       `}</style>
