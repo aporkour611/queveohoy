@@ -224,20 +224,37 @@ async function fetchEsports() {
 // ─── Handler principal ────────────────────────────────────────────────────────
 
 export async function GET(request: Request) {
-    // Auth desactivada temporalmente para pruebas
-    // const authHeader = request.headers.get("authorization");
-    // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    // }
-
-  console.log("Cron iniciado:", new Date().toISOString());
-
-  await Promise.allSettled([
-    fetchFootball(),
-    fetchF1(),
-    fetchNBA(),
-    fetchEsports(),
-  ]);
-
-  return NextResponse.json({ ok: true, timestamp: new Date().toISOString() });
-}
+    console.log("=== CRON INICIADO ===");
+  
+    try {
+      await fetchFootball();
+      console.log("✓ Football done");
+    } catch (e) {
+      console.error("✗ Football error:", e);
+    }
+  
+    try {
+      await fetchF1();
+      console.log("✓ F1 done");
+    } catch (e) {
+      console.error("✗ F1 error:", e);
+    }
+  
+    try {
+      await fetchNBA();
+      console.log("✓ NBA done");
+    } catch (e) {
+      console.error("✗ NBA error:", e);
+    }
+  
+    try {
+      await fetchEsports();
+      console.log("✓ Esports done");
+    } catch (e) {
+      console.error("✗ Esports error:", e);
+    }
+  
+    console.log("=== CRON TERMINADO ===");
+  
+    return NextResponse.json({ ok: true, timestamp: new Date().toISOString() });
+  }
