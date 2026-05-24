@@ -3,11 +3,15 @@ import { supabase } from "@/app/lib/supabase";
 export async function GET() {
   const today = new Date().toISOString().split("T")[0];
 
-  // 1. comprobar si ya hay eventos hoy
-  const { data: existing } = await supabase
+  // 🔥 comprobar si ya existen eventos hoy
+  const { data: existing, error: checkError } = await supabase
     .from("events")
     .select("*")
-    .gte("created_at", today);
+    .eq("date", today);
+
+  if (checkError) {
+    return Response.json({ ok: false, error: checkError });
+  }
 
   if (existing && existing.length > 0) {
     return Response.json({
@@ -17,14 +21,35 @@ export async function GET() {
     });
   }
 
-  // 2. generar eventos nuevos
+  // 🔥 eventos base
   const baseEvents = [
-    { title: "Real Madrid vs Barcelona", time: "20:00", category: "Fútbol", platform: "Movistar+" },
-    { title: "UFC Fight Night", time: "22:00", category: "UFC", platform: "DAZN" },
-    { title: "MotoGP Qualifying", time: "18:00", category: "Motos", platform: "DAZN" },
+    {
+      title: "Real Madrid vs Barcelona",
+      time: "20:00",
+      category: "Fútbol",
+      platform: "Movistar+",
+    },
+    {
+      title: "UFC Fight Night",
+      time: "22:00",
+      category: "UFC",
+      platform: "DAZN",
+    },
+    {
+      title: "MotoGP Qualifying",
+      time: "18:00",
+      category: "Motos",
+      platform: "DAZN",
+    },
   ];
 
-  const { error } = await supabase.from("events").insert(baseEvents);
+  // 🔥 añadir fecha a cada evento
+  const eventsWithDate = baseEvents.map((event) => ({
+    ...event,
+    date: today,
+  }));
+
+  const { error } = await supabase.from("events").insert(eventsWithDate);
 
   if (error) {
     return Response.json({ ok: false, error });
@@ -33,5 +58,6 @@ export async function GET() {
   return Response.json({
     ok: true,
     message: "Eventos generados correctamente",
+    inserted: eventsWithDate,
   });
 }
