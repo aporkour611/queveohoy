@@ -27,130 +27,106 @@ export default function Home() {
   const today = new Date().toISOString().split("T")[0];
 
   const todayEvents = events.filter((e) => e.date === today);
+  const tomorrowEvents = events.filter((e) => {
+    const t = new Date();
+    t.setDate(t.getDate() + 1);
+    return e.date === t.toISOString().split("T")[0];
+  });
 
-  const featured = todayEvents[0];
-  const rest = todayEvents.slice(1);
+  const Card = ({ e }: any) => (
+    <div className="card">
+      <div className="title">{e.title}</div>
+      <div className="meta">
+        🕒 {e.time} · 📺 {e.platform}
+      </div>
+    </div>
+  );
 
   return (
     <main className="container">
       <header className="header">
-        <h1>🔥 Qué ver hoy</h1>
-        <p>Partidos y eventos en directo</p>
+        <h1>Qué ver</h1>
+        <p>Hoy y mañana</p>
       </header>
 
       {loading && <p>Cargando...</p>}
 
-      {/* 🔥 DESTACADO PRINCIPAL */}
-      {featured && (
-        <div className="hero">
-          <div className="hero-title">⭐ {featured.title}</div>
-          <div className="hero-meta">
-            🕒 {featured.time} · 📺 {featured.platform}
-          </div>
-        </div>
-      )}
-
-      {/* 🔥 LISTA PRINCIPAL */}
+      {/* HOY */}
       <section>
         <h2>Hoy</h2>
 
         {todayEvents.length === 0 && !loading && (
-          <p>No hay eventos hoy</p>
+          <p className="empty">No hay eventos hoy</p>
         )}
 
         <div className="list">
-          {rest.map((e) => (
-            <div key={e.id} className="card">
-              <div className="title">{e.title}</div>
-              <div className="meta">
-                🕒 {e.time} · 📺 {e.platform}
-              </div>
-            </div>
+          {todayEvents.map((e) => (
+            <Card key={e.id} e={e} />
           ))}
         </div>
       </section>
 
-      {/* 🔥 OTROS DÍAS */}
+      {/* MAÑANA */}
       <section>
-        <h2>Próximamente</h2>
+        <h2>Mañana</h2>
+
+        {tomorrowEvents.length === 0 && !loading && (
+          <p className="empty">No hay eventos mañana</p>
+        )}
 
         <div className="list">
-          {events
-            .filter((e) => e.date !== today)
-            .slice(0, 10)
-            .map((e) => (
-              <div key={e.id} className="card small">
-                <div className="title">{e.title}</div>
-                <div className="meta">
-                  📅 {e.date} · 🕒 {e.time}
-                </div>
-              </div>
-            ))}
+          {tomorrowEvents.map((e) => (
+            <Card key={e.id} e={e} />
+          ))}
         </div>
       </section>
 
       <style jsx>{`
         .container {
-          max-width: 750px;
+          max-width: 720px;
           margin: 0 auto;
-          padding: 20px;
+          padding: 24px;
           font-family: system-ui;
-          background: #0b0b0f;
-          color: white;
+          background: white;
+          color: black;
           min-height: 100vh;
         }
 
+        .header {
+          margin-bottom: 20px;
+        }
+
         .header h1 {
-          font-size: 34px;
+          font-size: 32px;
           margin: 0;
-        }
-
-        .header p {
-          opacity: 0.6;
-          margin-top: 5px;
-        }
-
-        .hero {
-          margin-top: 20px;
-          padding: 18px;
-          border-radius: 14px;
-          background: #1a1a1a;
-          border: 1px solid #333;
-        }
-
-        .hero-title {
-          font-size: 18px;
           font-weight: 700;
         }
 
-        .hero-meta {
-          margin-top: 6px;
-          opacity: 0.7;
+        .header p {
+          margin-top: 4px;
+          color: #666;
         }
 
         h2 {
-          margin-top: 25px;
+          margin-top: 26px;
           font-size: 16px;
-          opacity: 0.8;
+          font-weight: 600;
+          border-bottom: 1px solid #eee;
+          padding-bottom: 6px;
         }
 
         .list {
           display: flex;
           flex-direction: column;
           gap: 10px;
-          margin-top: 10px;
+          margin-top: 12px;
         }
 
         .card {
           padding: 14px;
-          border-radius: 12px;
-          background: #15151b;
-          border: 1px solid #2a2a2a;
-        }
-
-        .card.small {
-          opacity: 0.85;
-          padding: 12px;
+          border-radius: 10px;
+          border: 1px solid #eee;
+          background: #fafafa;
         }
 
         .title {
@@ -161,7 +137,12 @@ export default function Home() {
         .meta {
           margin-top: 4px;
           font-size: 13px;
-          opacity: 0.7;
+          color: #666;
+        }
+
+        .empty {
+          color: #888;
+          font-size: 14px;
         }
       `}</style>
     </main>
