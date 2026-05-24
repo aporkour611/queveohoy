@@ -178,30 +178,26 @@ async function fetchEsports() {
 }
 
 export async function GET(request: Request) {
-  console.log("=== CRON INICIADO ===");
-
-  try {
-    await fetchFootball();
-    console.log("✓ Football done");
-  } catch (e) {
-    console.error("✗ Football error:", e);
+    console.log("=== CRON INICIADO ===");
+    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "OK" : "MISSING");
+    console.log("Football key:", process.env.FOOTBALL_DATA_API_KEY ? "OK" : "MISSING");
+    console.log("Pandascore key:", process.env.PANDASCORE_API_KEY ? "OK" : "MISSING");
+  
+    try {
+      await fetchFootball();
+      console.log("✓ Football done");
+    } catch (e) {
+      console.error("✗ Football error:", e);
+    }
+  
+    try {
+      await fetchEsports();
+      console.log("✓ Esports done");
+    } catch (e) {
+      console.error("✗ Esports error:", e);
+    }
+  
+    console.log("=== CRON TERMINADO ===");
+  
+    return NextResponse.json({ ok: true, timestamp: new Date().toISOString() });
   }
-
-  try {
-    await fetchF1();
-    console.log("✓ F1 done");
-  } catch (e) {
-    console.error("✗ F1 error:", e);
-  }
-
-  try {
-    await fetchEsports();
-    console.log("✓ Esports done");
-  } catch (e) {
-    console.error("✗ Esports error:", e);
-  }
-
-  console.log("=== CRON TERMINADO ===");
-
-  return NextResponse.json({ ok: true, timestamp: new Date().toISOString() });
-}
