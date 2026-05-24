@@ -36,19 +36,14 @@ export default function Home() {
     <div
       key={i}
       style={{
-        marginBottom: 12,
+        marginBottom: 10,
         padding: 12,
         borderRadius: 10,
         border: event.featured ? "2px solid gold" : "1px solid #ddd",
         background: event.featured ? "#fff8dc" : "#fff",
-        transform: event.featured ? "scale(1.02)" : "scale(1)",
-        transition: "all 0.2s ease",
       }}
     >
-      <h3>
-        {event.featured && "⭐ "}
-        {event.title}
-      </h3>
+      <h3>{event.featured && "⭐ "}{event.title}</h3>
       <p>🕒 {event.time}</p>
       <p>🏷 {event.category}</p>
       <p>📺 {event.platform}</p>
@@ -59,7 +54,7 @@ export default function Home() {
     <main style={{ padding: 20 }}>
       <h1>Eventos</h1>
 
-      {/* 🔥 filtros */}
+      {/* filtros */}
       <div style={{ marginBottom: 20 }}>
         {["Todos", "Fútbol", "UFC", "Motos"].map((f) => (
           <button
@@ -67,12 +62,11 @@ export default function Home() {
             onClick={() => setFilter(f)}
             style={{
               marginRight: 10,
-              padding: "8px 12px",
+              padding: 8,
               background: filter === f ? "#000" : "#eee",
               color: filter === f ? "#fff" : "#000",
               border: "none",
               borderRadius: 6,
-              cursor: "pointer",
             }}
           >
             {f}
@@ -80,14 +74,10 @@ export default function Home() {
         ))}
       </div>
 
-      {/* 🔥 HOY */}
       <h2>🔥 Hoy</h2>
-      {grouped.today.length === 0 && <p>No hay eventos hoy</p>}
       {grouped.today.map(renderEvent)}
 
-      {/* 🔥 OTROS */}
       <h2 style={{ marginTop: 30 }}>📅 Otros días</h2>
-      {grouped.other.length === 0 && <p>No hay otros eventos</p>}
       {grouped.other.map(renderEvent)}
     </main>
   );
