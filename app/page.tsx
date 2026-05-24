@@ -26,48 +26,54 @@ export default function Home() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const todayEvents = events.filter((e) => e.date === today);
-  const tomorrowEvents = events.filter((e) => {
-    const t = new Date();
-    t.setDate(t.getDate() + 1);
-    return e.date === t.toISOString().split("T")[0];
-  });
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrow = tomorrowDate.toISOString().split("T")[0];
 
-  const Card = ({ e }: any) => (
-    <div className="card">
-      <div className="title">{e.title}</div>
-      <div className="meta">
-        🕒 {e.time} · 📺 {e.platform}
-      </div>
-    </div>
-  );
+  const todayEvents = events.filter((e) => e.date === today);
+  const tomorrowEvents = events.filter((e) => e.date === tomorrow);
+
+  const mainToday = todayEvents[0];
 
   return (
     <main className="container">
       <header className="header">
-        <h1>Qué ver</h1>
-        <p>Hoy y mañana</p>
+        <h1>Qué ver hoy</h1>
+        <p>Resumen rápido diario</p>
       </header>
 
       {loading && <p>Cargando...</p>}
 
-      {/* HOY */}
-      <section>
+      {/* 🔥 BLOQUE PRINCIPAL (HOY) */}
+      <section className="block">
         <h2>Hoy</h2>
 
-        {todayEvents.length === 0 && !loading && (
+        {!mainToday && !loading && (
           <p className="empty">No hay eventos hoy</p>
         )}
 
-        <div className="list">
-          {todayEvents.map((e) => (
-            <Card key={e.id} e={e} />
-          ))}
-        </div>
+        {mainToday && (
+          <div className="hero">
+            <div className="title">{mainToday.title}</div>
+            <div className="meta">
+              🕒 {mainToday.time} · 📺 {mainToday.platform}
+            </div>
+          </div>
+        )}
+
+        {todayEvents.length > 1 && (
+          <div className="list">
+            {todayEvents.slice(1).map((e) => (
+              <div key={e.id} className="item">
+                {e.title} · {e.time}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* MAÑANA */}
-      <section>
+      {/* 🔥 MAÑANA */}
+      <section className="block">
         <h2>Mañana</h2>
 
         {tomorrowEvents.length === 0 && !loading && (
@@ -76,14 +82,16 @@ export default function Home() {
 
         <div className="list">
           {tomorrowEvents.map((e) => (
-            <Card key={e.id} e={e} />
+            <div key={e.id} className="item">
+              {e.title} · {e.time}
+            </div>
           ))}
         </div>
       </section>
 
       <style jsx>{`
         .container {
-          max-width: 720px;
+          max-width: 650px;
           margin: 0 auto;
           padding: 24px;
           font-family: system-ui;
@@ -93,55 +101,66 @@ export default function Home() {
         }
 
         .header {
-          margin-bottom: 20px;
+          margin-bottom: 24px;
         }
 
-        .header h1 {
-          font-size: 32px;
+        h1 {
+          font-size: 34px;
           margin: 0;
-          font-weight: 700;
+          font-weight: 800;
         }
 
         .header p {
-          margin-top: 4px;
           color: #666;
+          margin-top: 4px;
         }
 
         h2 {
-          margin-top: 26px;
-          font-size: 16px;
-          font-weight: 600;
-          border-bottom: 1px solid #eee;
-          padding-bottom: 6px;
+          font-size: 14px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          color: #888;
+          margin-bottom: 10px;
         }
 
-        .list {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin-top: 12px;
+        .block {
+          margin-bottom: 28px;
         }
 
-        .card {
-          padding: 14px;
-          border-radius: 10px;
+        .hero {
+          padding: 16px;
           border: 1px solid #eee;
+          border-radius: 12px;
           background: #fafafa;
         }
 
         .title {
-          font-size: 15px;
+          font-size: 16px;
           font-weight: 600;
         }
 
         .meta {
-          margin-top: 4px;
-          font-size: 13px;
+          margin-top: 6px;
           color: #666;
+          font-size: 13px;
+        }
+
+        .list {
+          margin-top: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .item {
+          font-size: 14px;
+          color: #333;
+          padding: 6px 0;
+          border-bottom: 1px solid #f2f2f2;
         }
 
         .empty {
-          color: #888;
+          color: #999;
           font-size: 14px;
         }
       `}</style>
