@@ -46,6 +46,7 @@ async function fetchFootball() {
         { headers: { "X-Auth-Token": process.env.FOOTBALL_DATA_API_KEY! } }
       );
       const data = await res.json();
+      console.log(`${comp} response:`, JSON.stringify(data).slice(0, 200));
       if (!data.matches) continue;
 
       for (const match of data.matches) {
@@ -83,6 +84,7 @@ async function fetchF1() {
   try {
     const res = await fetch("https://api.jolpi.ca/ergast/f1/2025/races.json");
     const data = await res.json();
+    console.log("F1 response:", JSON.stringify(data).slice(0, 200));
     const races = data?.MRData?.RaceTable?.Races || [];
     const dates = getWeekDates();
     const events: any[] = [];
@@ -138,6 +140,7 @@ async function fetchNBA() {
         { headers: { Authorization: process.env.BALLDONTLIE_API_KEY! } }
       );
       const data = await res.json();
+      console.log(`NBA ${date}:`, JSON.stringify(data).slice(0, 200));
       if (!data.data) continue;
 
       for (const game of data.data) {
@@ -186,6 +189,7 @@ async function fetchEsports() {
         { headers: { Authorization: `Bearer ${process.env.PANDASCORE_API_KEY}` } }
       );
       const data = await res.json();
+      console.log(`Esports ${game.slug}:`, JSON.stringify(data).slice(0, 200));
       if (!Array.isArray(data)) continue;
 
       for (const match of data) {
@@ -224,37 +228,37 @@ async function fetchEsports() {
 // ─── Handler principal ────────────────────────────────────────────────────────
 
 export async function GET(request: Request) {
-    console.log("=== CRON INICIADO ===");
-  
-    try {
-      await fetchFootball();
-      console.log("✓ Football done");
-    } catch (e) {
-      console.error("✗ Football error:", e);
-    }
-  
-    try {
-      await fetchF1();
-      console.log("✓ F1 done");
-    } catch (e) {
-      console.error("✗ F1 error:", e);
-    }
-  
-    try {
-      await fetchNBA();
-      console.log("✓ NBA done");
-    } catch (e) {
-      console.error("✗ NBA error:", e);
-    }
-  
-    try {
-      await fetchEsports();
-      console.log("✓ Esports done");
-    } catch (e) {
-      console.error("✗ Esports error:", e);
-    }
-  
-    console.log("=== CRON TERMINADO ===");
-  
-    return NextResponse.json({ ok: true, timestamp: new Date().toISOString() });
+  console.log("=== CRON INICIADO ===");
+
+  try {
+    await fetchFootball();
+    console.log("✓ Football done");
+  } catch (e) {
+    console.error("✗ Football error:", e);
   }
+
+  try {
+    await fetchF1();
+    console.log("✓ F1 done");
+  } catch (e) {
+    console.error("✗ F1 error:", e);
+  }
+
+  try {
+    await fetchNBA();
+    console.log("✓ NBA done");
+  } catch (e) {
+    console.error("✗ NBA error:", e);
+  }
+
+  try {
+    await fetchEsports();
+    console.log("✓ Esports done");
+  } catch (e) {
+    console.error("✗ Esports error:", e);
+  }
+
+  console.log("=== CRON TERMINADO ===");
+
+  return NextResponse.json({ ok: true, timestamp: new Date().toISOString() });
+}
