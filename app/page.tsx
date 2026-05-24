@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 
 export default function Home() {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<any[]>([]);
   const [filter, setFilter] = useState("Todos");
 
   useEffect(() => {
