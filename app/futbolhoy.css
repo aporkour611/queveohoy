@@ -131,34 +131,19 @@
   max-width: 960px;
   margin: 0 auto;
   padding: 12px 15px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-rows: auto;
+  display: flex;
   align-items: center;
-  gap: 8px 16px;
-}
-
-.fh-navbar-inner > .qvh-logo-link {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: center;
-}
-
-.fh-navbar-inner > .qvh-hero-title {
-  grid-column: 2;
-  grid-row: 1;
-  align-self: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .fh-nav-links {
-  grid-column: 3;
-  grid-row: 1;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
   gap: 0.45rem;
   flex-shrink: 0;
-  align-self: center;
+  margin-left: auto;
 }
 
 .fh-nav-links a {
@@ -273,25 +258,10 @@
 @media (max-width: 640px) {
   .fh-navbar-inner {
     padding: 10px 12px;
-    gap: 6px 10px;
-  }
-
-  .fh-navbar-inner > .qvh-logo-link {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .fh-navbar-inner > .qvh-hero-title {
-    grid-column: 2;
-    grid-row: 1;
-    font-size: clamp(0.82rem, 3.6vw, 1rem);
-    text-align: left;
-    line-height: 1.15;
+    gap: 8px;
   }
 
   .fh-nav-links {
-    grid-column: 3;
-    grid-row: 1;
     gap: 0.25rem;
   }
 
