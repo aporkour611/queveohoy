@@ -117,106 +117,84 @@
   padding-top: 4px;
 }
 
-/* ── Days carousel (tema oscuro) ── */
-.qvh-days-wrap {
+/* ── Day tabs (estilo Twitch) ── */
+.qvh-day-tabs {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.qvh-days-label {
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--qvh-text-muted);
-  flex-shrink: 0;
-  writing-mode: horizontal-tb;
-}
-
-#fh-days-carousel {
-  height: 54px;
-  flex: 1;
-  min-width: 0;
+  gap: 6px;
   overflow-x: auto;
-  overflow-y: hidden;
-  margin-bottom: 0;
-  white-space: nowrap;
+  padding: 4px 0 16px;
+  margin-bottom: 4px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  border-bottom: 1px solid var(--qvh-border);
 }
 
-#fh-days-carousel .fh-day {
-  font-size: 0.4em;
-  display: inline-block;
-  width: 7em !important;
-  height: 7em;
-  background-color: var(--qvh-bg-panel);
-  border-radius: 0.6em;
-  box-shadow: 0 1px 0 var(--qvh-border);
-  border: 1px solid var(--qvh-border);
-  margin: 0 3px;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  vertical-align: top;
-  padding: 0;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-#fh-days-carousel .fh-day span.fh-day-num {
-  font-size: 2.5em;
-  letter-spacing: -0.05em;
-  padding-top: 0.9em;
-  color: var(--qvh-text);
-}
-
-#fh-days-carousel::-webkit-scrollbar {
+.qvh-day-tabs::-webkit-scrollbar {
   display: none;
 }
 
-#fh-days-carousel .fh-day * {
-  display: block;
-  width: 100%;
-  font-size: 1.5em;
-  font-weight: 700;
-  font-style: normal;
-  text-align: center;
-  font-family: "Barlow Condensed", sans-serif;
+.qvh-day-tab {
+  flex-shrink: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-width: 72px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--qvh-text-muted);
+  transition: background 0.12s ease, color 0.12s ease;
+  font-family: "Barlow Condensed", "Inter", sans-serif;
+  position: relative;
 }
 
-#fh-days-carousel .fh-day strong {
-  position: absolute;
-  top: 0;
-  padding: 0.1em 0;
+.qvh-day-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--qvh-text);
+}
+
+.qvh-day-tab.active {
+  background: var(--qvh-purple);
   color: #fff;
-  background-color: var(--qvh-purple);
 }
 
-#fh-days-carousel .fh-day em {
-  position: absolute;
-  bottom: -0.1em;
-  color: var(--qvh-purple);
-  font-size: 1.2em;
+.qvh-day-tab.active::after {
+  content: none;
 }
 
-#fh-days-carousel .fh-day:hover {
-  background-color: rgba(93, 95, 239, 0.15);
+.qvh-day-tab-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
 }
 
-#fh-days-carousel .fh-day.selected {
-  background-color: rgba(93, 95, 239, 0.22) !important;
-  box-shadow: 0 0 0 2px var(--qvh-purple);
+.qvh-day-tab-date {
+  font-size: 0.72rem;
+  font-weight: 500;
+  opacity: 0.7;
+  line-height: 1.2;
 }
 
-.fh-cal-sep {
-  border-left: 2px solid var(--qvh-purple);
-  height: 45px !important;
-  display: inline-block;
-  margin: 0 5px;
-  vertical-align: top;
+.qvh-day-tab.active .qvh-day-tab-date {
+  opacity: 0.92;
+}
+
+@media (min-width: 640px) {
+  .qvh-day-tab {
+    min-width: 80px;
+    padding: 9px 18px;
+    border-radius: 8px;
+  }
+
+  .qvh-day-tab-label {
+    font-size: 0.88rem;
+  }
 }
 
 /* ── Matchday sections ── */

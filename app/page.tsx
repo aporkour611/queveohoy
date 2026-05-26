@@ -5,6 +5,7 @@ import { supabase } from "./lib/supabase";
 import { dedupeEvents } from "./lib/dedupe-events";
 import { pickFeaturedEvents } from "./lib/featured";
 import { STORAGE_KEY, sportLabel } from "./lib/filter-config";
+import { DayTabs } from "./components/DayTabs";
 import { EventFilters } from "./components/EventFilters";
 import { LoadingState } from "./components/LoadingState";
 import { Logo } from "./components/Logo";
@@ -23,11 +24,11 @@ const DAYS = getMadridWeekDates(10).map((date, i) => {
   const weekday = formatMadridWeekday(date, "short");
   const month = formatMadridMonthShort(date);
   return {
-    label: i === 0 ? "HOY" : weekday.charAt(0).toUpperCase() + weekday.slice(1, 3),
+    label:
+      i === 0 ? "Hoy" : i === 1 ? "Mañana" : weekday.charAt(0).toUpperCase() + weekday.slice(1, 3),
     date,
     num: madridDayNumber(date),
     month: month.charAt(0).toUpperCase() + month.slice(1),
-    showSep: i === 7,
   };
 });
 
@@ -154,23 +155,11 @@ export default function Home() {
             isFeaturedMode={isFeaturedMode}
           />
 
-          <div id="fh-days-carousel" className="qvh-days-wrap">
-            <span className="qvh-days-label">Día</span>
-            {DAYS.map((day, i) => (
-              <span key={day.date} style={{ display: "inline" }}>
-                {day.showSep && <span className="fh-cal-sep" />}
-                <button
-                  type="button"
-                  className={`fh-day ${activeDay === i ? "selected" : ""}`}
-                  onClick={() => setActiveDay(i)}
-                >
-                  <em>{day.month}</em>
-                  <strong>{day.label}</strong>
-                  <span className="fh-day-num">{day.num}</span>
-                </button>
-              </span>
-            ))}
-          </div>
+          <DayTabs
+            days={DAYS}
+            activeIndex={activeDay}
+            onChange={setActiveDay}
+          />
 
           <div className="fh-matchday">
             <h2 className="fh-matchday-header">
