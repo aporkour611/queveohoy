@@ -1,5 +1,5 @@
 import type { EventRow } from "../components/types";
-import { sportFilterGroupId } from "./filter-config";
+import { isImportantEvent } from "./featured";
 import { parseEsportsTeamLogos, isEsportsSport } from "./esports";
 import { parseFootballTeamIds } from "./football";
 
@@ -40,7 +40,19 @@ export function eventHasTeamCrests(e: EventRow): boolean {
   return true;
 }
 
-/** Oculta partidos de equipo sin escudos/logos en toda la app */
+/** Visible en la app: con escudos completos o evento importante (placeholder alineado) */
+export function eventCanDisplay(e: EventRow): boolean {
+  if (!isTeamCrestSport(e.sport ?? "")) return true;
+  if (eventHasTeamCrests(e)) return true;
+  return isImportantEvent(e);
+}
+
+/** Oculta partidos de equipo sin escudos, salvo eventos importantes */
+export function filterEventsForDisplay<T extends EventRow>(events: T[]): T[] {
+  return events.filter(eventCanDisplay);
+}
+
+/** @deprecated Use filterEventsForDisplay */
 export function filterEventsWithCrests<T extends EventRow>(events: T[]): T[] {
-  return events.filter(eventHasTeamCrests);
+  return filterEventsForDisplay(events);
 }

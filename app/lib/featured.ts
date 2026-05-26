@@ -1,6 +1,6 @@
 import type { EventRow } from "../components/types";
 import { sportFilterGroupId } from "./filter-config";
-import { eventHasTeamCrests, filterEventsWithCrests } from "./event-crests";
+import { eventCanDisplay, filterEventsForDisplay } from "./event-crests";
 
 const COMPETITION_PRIORITY: { match: RegExp; score: number }[] = [
   { match: /champions|mundial|world cup/i, score: 100 },
@@ -89,9 +89,7 @@ function pickTopPerCategory(
   pool: EventRow[],
   requireCrests: boolean
 ): EventRow[] {
-  const eligible = requireCrests
-    ? pool.filter(eventHasTeamCrests)
-    : pool;
+  const eligible = requireCrests ? pool.filter(eventCanDisplay) : pool;
   const byCategory = groupByCategory(eligible);
   const picked: EventRow[] = [];
 
@@ -120,7 +118,7 @@ export function pickFeaturedEvents(dayEvents: EventRow[]): EventRow[] {
 
 /** Al filtrar: solo eventos con escudo en deportes de equipo */
 export function pickFilteredEvents(events: EventRow[]): EventRow[] {
-  return filterEventsWithCrests(events).sort(
+  return filterEventsForDisplay(events).sort(
     (a, b) =>
       eventPriority(b) - eventPriority(a) ||
       (a.time ?? "").localeCompare(b.time ?? "")

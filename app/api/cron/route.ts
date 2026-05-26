@@ -229,7 +229,8 @@ async function enrichImportantEventsMissingCrests(): Promise<{
     if (!needsCrestEnrichment(row)) continue;
 
     const updated = await enrichEventCrests(row, 3);
-    if (!updated || !eventHasTeamCrests(updated)) continue;
+    if (!updated) continue;
+    if (!eventHasTeamCrests(updated) && updated.source === row.source) continue;
 
     const { error: upError } = await getSupabase()
       .from("events")

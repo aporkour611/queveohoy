@@ -1,5 +1,5 @@
 import type { EventRow } from "../components/types";
-import { filterEventsWithCrests } from "./event-crests";
+import { filterEventsForDisplay } from "./event-crests";
 import {
   pickFeaturedEvents,
   pickFilteredEvents,
@@ -21,8 +21,8 @@ export function resolveVisibleEvents(
   selectedSports: string[],
   isFeaturedMode: boolean
 ): UpcomingResult {
-  const crestedAll = filterEventsWithCrests(allEvents);
-  const crestedDay = filterEventsWithCrests(dayEvents);
+  const crestedAll = filterEventsForDisplay(allEvents);
+  const crestedDay = filterEventsForDisplay(dayEvents);
 
   if (isFeaturedMode) {
     const featuredToday = pickFeaturedEvents(crestedDay);
@@ -88,7 +88,7 @@ export function resolveDayEventsForFeed(
   selectedSports: string[],
   isFeaturedMode: boolean
 ): EventRow[] {
-  const dayEvents = filterEventsWithCrests(allEvents).filter((e) => e.date === date);
+  const dayEvents = filterEventsForDisplay(allEvents).filter((e) => e.date === date);
 
   if (isFeaturedMode) {
     return pickFeaturedEvents(dayEvents);

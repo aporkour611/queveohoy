@@ -51,10 +51,13 @@ export async function prepareEventsForImport<T extends CronEventInput>(
     const enriched = await enrichEventCrests(e, ENRICH_RETRIES);
     if (enriched && eventHasTeamCrests(enriched)) {
       out.push({ ...raw, ...enriched } as T);
-    } else {
-      console.log(
-        `Import omitido (importante sin escudos, reintento en cron): ${e.title}`
-      );
+    } else if (isImportantEvent(e)) {
+      out.push(enriched ? ({ ...raw, ...enriched } as T) : raw);
+      if (!enriched || !eventHasTeamCrests(enriched)) {
+        console.log(
+          `Import importante sin escudos completos (reintento en cron): ${e.title}`
+        );
+      }
     }
   }
 

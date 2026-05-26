@@ -1,7 +1,7 @@
 "use client";
 
 import { TeamCrest } from "./TeamCrest";
-import { parseEsportsTeamLogos } from "../lib/esports";
+import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
 import { competitionMatchClass } from "../lib/competition-style";
@@ -30,6 +30,17 @@ export function MatchCard({ event }: Props) {
   const awayCrest =
     esportsLogos?.awayUrl ??
     (footballIds ? teamCrestUrl(footballIds.awayId) : null);
+
+  const homeCrestUrls = esportsLogos?.homeUrl
+    ? esportsLogoFallbackUrls(esportsLogos.homeUrl)
+    : homeCrest
+      ? [homeCrest]
+      : [];
+  const awayCrestUrls = esportsLogos?.awayUrl
+    ? esportsLogoFallbackUrls(esportsLogos.awayUrl)
+    : awayCrest
+      ? [awayCrest]
+      : [];
 
   const home = shortTeamName(event.home_team || event.title?.split(" vs ")[0]);
   const away = shortTeamName(
@@ -60,9 +71,19 @@ export function MatchCard({ event }: Props) {
         </div>
 
         <div className="fh-m-logos">
-          <TeamCrest src={homeCrest} name={home} size={50} className="fh-crest-fallback" />
+          <TeamCrest
+            srcList={homeCrestUrls}
+            name={home}
+            size={50}
+            className="fh-crest-fallback"
+          />
           <span className="fh-m-time">{time}</span>
-          <TeamCrest src={awayCrest} name={away} size={50} className="fh-crest-fallback" />
+          <TeamCrest
+            srcList={awayCrestUrls}
+            name={away}
+            size={50}
+            className="fh-crest-fallback"
+          />
         </div>
 
         {channels.length > 0 && (

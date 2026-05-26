@@ -1,6 +1,11 @@
 import type { EventRow } from "../components/types";
-import { encodeEsportsSource, pandascoreTeamLogo } from "./esports";
+import {
+  encodeEsportsSource,
+  pandascoreTeamLogo,
+  pandascoreTeamLogoCandidates,
+} from "./esports";
 import { eventHasTeamCrests } from "./event-crests";
+import { isImportantEvent } from "./featured";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -36,14 +41,19 @@ async function enrichEsportsEvent(e: EventRow): Promise<EventRow | null> {
   if (!res.ok) return null;
 
   const match = await res.json();
-  const homeLogo = pandascoreTeamLogo(match.opponents?.[0]?.opponent);
-  const awayLogo = pandascoreTeamLogo(match.opponents?.[1]?.opponent);
-  if (!homeLogo || !awayLogo) return null;
+  const homeOp = match.opponents?.[0]?.opponent;
+  const awayOp = match.opponents?.[1]?.opponent;
+  const homeCandidates = pandascoreTeamLogoCandidates(homeOp);
+  const awayCandidates = pandascoreTeamLogoCandidates(awayOp);
+  const homeLogo = homeCandidates[0] ?? pandascoreTeamLogo(homeOp);
+  const awayLogo = awayCandidates[0] ?? pandascoreTeamLogo(awayOp);
+
+  if (!homeLogo && !awayLogo) return null;
 
   return {
     ...e,
-    home_team: match.opponents?.[0]?.opponent?.name ?? e.home_team,
-    away_team: match.opponents?.[1]?.opponent?.name ?? e.away_team,
+    home_team: homeOp?.name ?? e.home_team,
+    away_team: awayOp?.name ?? e.away_team,
     source: encodeEsportsSource(homeLogo, awayLogo),
   };
 }
@@ -64,7 +74,9 @@ export async function enrichEventCrests(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     if (attempt > 0) await sleep(500 * attempt);
     const enriched = await enrichOnce(e);
-    if (enriched && eventHasTeamCrests(enriched)) return enriched;
+    if (!enriched) continue;
+    if (eventHasTeamCrests(enriched)) return enriched;
+    if (isImportantEvent(e) && enriched.source !== e.source) return enriched;
   }
   return null;
 }

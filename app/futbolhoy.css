@@ -533,15 +533,41 @@
 }
 
 .fh-match .fh-m-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   margin-bottom: 5px;
-  text-align: center;
-  line-height: 50px;
+  min-height: 50px;
 }
 
-.fh-match .fh-m-logos img,
-.fh-match .fh-m-logos .fh-crest-fallback {
-  vertical-align: middle;
-  display: inline-block;
+.fh-match .fh-m-logos .fh-team-crest {
+  flex-shrink: 0;
+}
+
+.fh-team-crest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fh-team-crest img,
+.fh-team-crest-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.fh-team-crest-placeholder {
+  border-radius: 4px;
+  color: #fff;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .fh-match .fh-m-time {
@@ -549,11 +575,10 @@
   color: var(--qvh-purple-dim);
   font-weight: 800;
   font-size: 1.85em;
-  margin: 0 10px;
-  vertical-align: -4px;
-  display: inline-block;
-  height: 50px;
-  line-height: 50px;
+  flex-shrink: 0;
+  line-height: 1;
+  min-width: 3.2em;
+  text-align: center;
 }
 
 .fh-match .fh-m-chan {
@@ -1048,8 +1073,5 @@
 }
 
 .fh-crest-fallback {
-  width: 50px;
-  height: 50px;
   border-radius: 4px;
-  object-fit: contain;
 }
