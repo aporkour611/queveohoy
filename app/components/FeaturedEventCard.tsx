@@ -1,8 +1,9 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
+import { openWatchUrl, resolveWatchUrl } from "../lib/watch-links";
 import { useTimezone } from "../lib/timezone-context";
 import { FavoriteHeartButton } from "./FavoriteHeartButton";
 
@@ -17,10 +18,43 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
 }: Props) {
   const { timeZone } = useTimezone();
   const card = getSpotlightCardModel(event, timeZone);
-  const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
+  const watchLink = useMemo(() => resolveWatchUrl(event), [event]);
+  const rootClass = [
+    "qvh-spotlight-card",
+    watchLink ? "qvh-spotlight-card-watchable" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <article className={rootClass}>
+    <article
+      className={rootClass}
+      role={watchLink ? "link" : undefined}
+      tabIndex={watchLink ? 0 : undefined}
+      aria-label={
+        watchLink
+          ? `Ver en ${watchLink.label}: ${card.headline}`
+          : undefined
+      }
+      onClick={
+        watchLink
+          ? () => {
+              openWatchUrl(watchLink);
+            }
+          : undefined
+      }
+      onKeyDown={
+        watchLink
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openWatchUrl(watchLink);
+              }
+            }
+          : undefined
+      }
+    >
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}`}
         style={
