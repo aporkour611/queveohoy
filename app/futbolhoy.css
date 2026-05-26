@@ -175,6 +175,18 @@
   color: var(--qvh-purple);
 }
 
+.fh-nav-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fh-nav-user-icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
 /* ── Sports selector ── */
 .fh-sports-selector {
   display: flex;
