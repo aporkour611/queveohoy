@@ -19,7 +19,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
   },
   {
     id: "motor",
-    label: "Coches y motos",
+    label: "Coches & motos",
     options: [
       { id: "formula1", label: "F1" },
       { id: "motos", label: "Motos" },
@@ -38,7 +38,10 @@ export const FILTER_GROUPS: FilterGroup[] = [
   {
     id: "cine",
     label: "Cine & series",
-    options: [{ id: "cine", label: "Cine & series" }],
+    options: [
+      { id: "cine", label: "Cine" },
+      { id: "series", label: "Series" },
+    ],
   },
   {
     id: "tv",
