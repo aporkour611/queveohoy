@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import type { EventRow } from "./types";
-import { useFavorites } from "../lib/favorites-context";
+import { useFavorites } from "../lib/auth-context";
 
 type Props = {
   eventId: number;

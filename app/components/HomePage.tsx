@@ -1,9 +1,11 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { dedupeEvents } from "../lib/dedupe-events";
-import { filterEventsForDisplay } from "../lib/event-crests";
+import {
+  FEED_DAY_COUNT,
+  normalizeFeedEvents,
+} from "../lib/events-feed";
 import { STORAGE_KEY, sportLabel, ALL_SPORT_IDS } from "../lib/filter-config";
 import { DayTabs } from "./DayTabs";
 import { EventFilters } from "./EventFilters";
@@ -19,7 +21,7 @@ import { SiteFooter } from "./SiteFooter";
 import type { EventRow } from "./types";
 import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
 import { TimezoneProvider, useTimezone } from "../lib/timezone-context";
-import { FavoritesProvider } from "../lib/favorites-context";
+import { FavoritesProvider } from "../lib/auth-context";
 import {
   buildDisplayDays,
   filterEventsInWeek,
@@ -28,7 +30,10 @@ import {
 } from "../lib/timezone";
 import { resolveDayEventsForFeed } from "../lib/upcoming-events";
 
-const FEED_DAY_COUNT = 7;
+type Props = {
+  initialEvents: EventRow[];
+  initialError: string | null;
+};
 
 function groupForDisplay(events: EventRow[]) {
   const football: Record<string, EventRow[]> = {};
@@ -37,7 +42,7 @@ function groupForDisplay(events: EventRow[]) {
 
   for (const e of events) {
     if (e.sport === "futbol") {
-      const key = (e.competition || "F├║tbol").split(" ┬À ")[0];
+      const key = (e.competition || "Fútbol").split(" · ")[0];
       if (!football[key]) football[key] = [];
       football[key].push(e);
     } else {
@@ -92,28 +97,30 @@ function renderEventSections(events: EventRow[]) {
   );
 }
 
-export function HomePage() {
+export function HomePage({ initialEvents, initialError }: Props) {
   return (
     <TimezoneProvider>
       <FavoritesProvider>
-        <HomePageContent />
+        <HomePageContent
+          initialEvents={initialEvents}
+          initialError={initialError}
+        />
       </FavoritesProvider>
     </TimezoneProvider>
   );
 }
 
-function HomePageContent() {
+function HomePageContent({ initialEvents, initialError }: Props) {
   const { timeZone } = useTimezone();
-  const [events, setEvents] = useState<EventRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState(initialEvents);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(initialError);
   const [activeDay, setActiveDay] = useState(0);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
-  const scrollLockRef = useRef(false);
-  const scrollLockTimerRef = useRef<number | null>(null);
 
   const isFeaturedMode = selectedSports.length === 0;
+  const hasInitialData = initialEvents.length > 0;
 
   const loadEvents = useCallback(async (options?: { silent?: boolean }) => {
     const silent = options?.silent ?? false;
@@ -137,11 +144,7 @@ function HomePageContent() {
       setLoadError(error.message);
       if (!silent) setEvents([]);
     } else {
-      setEvents(
-        filterEventsForDisplay(dedupeEvents(data || []) as EventRow[]).filter(
-          (e) => e.sport !== "dota2"
-        )
-      );
+      setEvents(normalizeFeedEvents(data as EventRow[]));
     }
 
     if (silent) {
@@ -166,8 +169,11 @@ function HomePageContent() {
         }
       }
     } catch {}
-    void loadEvents();
-  }, [loadEvents]);
+
+    if (!hasInitialData && !initialError) {
+      void loadEvents();
+    }
+  }, [hasInitialData, initialError, loadEvents]);
 
   useEffect(() => {
     try {
@@ -206,6 +212,8 @@ function HomePageContent() {
     [displayDays, displayEvents, selectedSports, isFeaturedMode]
   );
 
+  const activeSection = visibleDays[activeDay] ?? null;
+
   useEffect(() => {
     setActiveDay(0);
   }, [timeZone, selectedSports.join(",")]);
@@ -217,86 +225,21 @@ function HomePageContent() {
     });
   }, [visibleDays.length]);
 
-  const lockScrollSpy = useCallback((ms = 900) => {
-    scrollLockRef.current = true;
-    if (scrollLockTimerRef.current !== null) {
-      window.clearTimeout(scrollLockTimerRef.current);
-    }
-    scrollLockTimerRef.current = window.setTimeout(() => {
-      scrollLockRef.current = false;
-      scrollLockTimerRef.current = null;
-    }, ms);
+  const goToDay = useCallback((index: number) => {
+    setActiveDay(index);
+    document.getElementById("day-feed")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }, []);
 
-  const goToDay = useCallback(
-    (index: number) => {
-      const day = visibleDays[index];
-      if (!day) return;
-
-      lockScrollSpy();
-      setActiveDay(index);
-      document
-        .getElementById(`day-${day.date}`)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    },
-    [lockScrollSpy, visibleDays]
-  );
-
   const resetHome = useCallback(() => {
-    lockScrollSpy();
     setActiveDay(0);
     window.scrollTo({ top: 0, behavior: "smooth" });
     void loadEvents({ silent: true });
-  }, [loadEvents, lockScrollSpy]);
+  }, [loadEvents]);
 
-  useEffect(() => {
-    if (loading || visibleDays.length === 0) return;
-
-    const sections = visibleDays
-      .map((d) => document.getElementById(`day-${d.date}`))
-      .filter(Boolean) as HTMLElement[];
-
-    if (!sections.length) return;
-
-    const anchor =
-      parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--qvh-navbar-h"
-        )
-      ) + 8;
-
-    let frame = 0;
-
-    function syncActiveDay() {
-      if (scrollLockRef.current) return;
-
-      let next = 0;
-      for (let i = 0; i < sections.length; i++) {
-        if (sections[i].getBoundingClientRect().top <= anchor) {
-          next = i;
-        }
-      }
-      setActiveDay((prev) => (prev === next ? prev : next));
-    }
-
-    function onScroll() {
-      if (frame) return;
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        syncActiveDay();
-      });
-    }
-
-    syncActiveDay();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, [loading, visibleDays]);
+  const showInitialLoading = loading && events.length === 0;
 
   return (
     <div className="fh-body">
@@ -313,9 +256,7 @@ function HomePageContent() {
 
       <main className="fh-content">
         <div className="fh-container fh-main">
-          <h1 className="fh-page-title">
-            Qué ver hoy en TV y streaming
-          </h1>
+          <h1 className="fh-page-title">Qué ver hoy en TV y streaming</h1>
           <p className="fh-page-lead">
             Partidos, Champions, LaLiga, F1, UFC, baloncesto, series y más con
             horario y canal en España.
@@ -335,15 +276,15 @@ function HomePageContent() {
             onChange={goToDay}
           />
 
-          {refreshing && !loading && (
+          {refreshing && !showInitialLoading && (
             <p className="fh-feed-refresh" aria-live="polite">
-              Actualizando eventosÔÇª
+              Actualizando eventos…
             </p>
           )}
 
-          {loading && events.length === 0 ? (
+          {showInitialLoading ? (
             <LoadingState />
-          ) : loadError ? (
+          ) : loadError && events.length === 0 ? (
             <div className="fh-empty">
               <p>No se pudieron cargar los eventos.</p>
               <p style={{ fontSize: "0.85em" }}>{loadError}</p>
@@ -363,35 +304,35 @@ function HomePageContent() {
             <div className="fh-empty">
               <p>
                 {isFeaturedMode
-                  ? "No hay eventos en los pr├│ximos 7 d├¡as."
-                  : "No hay eventos para los filtros seleccionados en los pr├│ximos 7 d├¡as."}
+                  ? "No hay eventos en los próximos 7 días."
+                  : "No hay eventos para los filtros seleccionados en los próximos 7 días."}
               </p>
             </div>
-          ) : (
-            <div className="fh-day-feed">
-              {visibleDays.map((section, i) => (
-                <section
-                  key={section.date}
-                  id={`day-${section.date}`}
-                  className="fh-day-section fh-matchday"
-                  aria-labelledby={`day-title-${section.date}`}
+          ) : activeSection ? (
+            <div className="fh-day-feed" id="day-feed">
+              <section
+                key={activeSection.date}
+                id={`day-${activeSection.date}`}
+                className="fh-day-section fh-matchday"
+                aria-labelledby={`day-title-${activeSection.date}`}
+              >
+                <h2
+                  id={`day-title-${activeSection.date}`}
+                  className="fh-matchday-header"
                 >
-                  <h2
-                    id={`day-title-${section.date}`}
-                    className="fh-matchday-header"
-                  >
-                    {section.title}{" "}
-                    <span className="fh-md-count">({section.events.length})</span>
-                    {isFeaturedMode && i === activeDay && (
-                      <span className="fh-featured-badge">Destacados</span>
-                    )}
-                  </h2>
+                  {activeSection.title}{" "}
+                  <span className="fh-md-count">
+                    ({activeSection.events.length})
+                  </span>
+                  {isFeaturedMode && (
+                    <span className="fh-featured-badge">Destacados</span>
+                  )}
+                </h2>
 
-                  {renderEventSections(section.events)}
-                </section>
-              ))}
+                {renderEventSections(activeSection.events)}
+              </section>
             </div>
-          )}
+          ) : null}
 
           <SiteFooter />
         </div>

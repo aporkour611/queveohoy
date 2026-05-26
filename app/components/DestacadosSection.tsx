@@ -6,7 +6,7 @@ import {
   mergeDestacadosWithFavorites,
   pickCuratedDestacados,
 } from "../lib/destacados-config";
-import { useFavorites } from "../lib/favorites-context";
+import { useFavorites } from "../lib/auth-context";
 import { FeaturedEventCard } from "./FeaturedEventCard";
 
 type Props = {

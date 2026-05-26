@@ -36,13 +36,25 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
           <div className="qvh-spotlight-duel" aria-hidden>
             <div className="qvh-spotlight-duel-team">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={card.homeCrest} alt="" className="qvh-spotlight-crest" />
+              <img
+                src={card.homeCrest}
+                alt=""
+                className="qvh-spotlight-crest"
+                loading="lazy"
+                decoding="async"
+              />
               <span className="qvh-spotlight-duel-name">{card.homeName}</span>
             </div>
             <span className="qvh-spotlight-duel-vs">vs</span>
             <div className="qvh-spotlight-duel-team">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={card.awayCrest} alt="" className="qvh-spotlight-crest" />
+              <img
+                src={card.awayCrest}
+                alt=""
+                className="qvh-spotlight-crest"
+                loading="lazy"
+                decoding="async"
+              />
               <span className="qvh-spotlight-duel-name">{card.awayName}</span>
             </div>
           </div>

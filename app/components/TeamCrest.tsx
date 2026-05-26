@@ -77,6 +77,8 @@ export function TeamCrest({
           key={`${urlIndex}-${retry}`}
           src={crestSrc(currentUrl, retry)}
           alt=""
+          loading="lazy"
+          decoding="async"
           onError={handleError}
         />
       )}
