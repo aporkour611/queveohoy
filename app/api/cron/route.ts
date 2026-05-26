@@ -146,7 +146,6 @@ async function fetchEsports() {
     { slug: "cs-go", sport: "csgo" },
     { slug: "valorant", sport: "valorant" },
     { slug: "league-of-legends", sport: "lol" },
-    { slug: "dota-2", sport: "dota2" },
   ];
 
   const { dates, from: dateFrom, to: dateTo } = madridWeekUtcRange(7);
@@ -250,6 +249,33 @@ async function enrichImportantEventsMissingCrests(): Promise<{
   return { enriched };
 }
 
+async function purgeDota2Events(): Promise<{ purged: number; error?: string }> {
+  const { data, error } = await getSupabase()
+    .from("events")
+    .select("id")
+    .eq("sport", "dota2");
+
+  if (error) {
+    return { purged: 0, error: error.message };
+  }
+
+  const ids = (data ?? []).map((e) => e.id);
+  if (!ids.length) return { purged: 0 };
+
+  const { error: delError } = await getSupabase()
+    .from("events")
+    .delete()
+    .in("id", ids);
+
+  if (delError) {
+    console.error("Dota2 purge error:", delError);
+    return { purged: 0, error: delError.message };
+  }
+
+  console.log(`Eventos Dota 2 eliminados: ${ids.length}`);
+  return { purged: ids.length };
+}
+
 async function purgeEventsWithoutCrests(): Promise<{
   purged: number;
   error?: string;
@@ -307,6 +333,14 @@ export async function GET() {
     console.error("✗ Crest enrich error:", e);
   }
 
+  let dotaPurge: { purged: number; error?: string } = { purged: 0 };
+  try {
+    dotaPurge = await purgeDota2Events();
+    console.log("✓ Dota 2 purge done");
+  } catch (e) {
+    console.error("✗ Dota 2 purge error:", e);
+  }
+
   let purge: { purged: number; error?: string } = { purged: 0 };
   try {
     purge = await purgeEventsWithoutCrests();
@@ -333,6 +367,8 @@ export async function GET() {
     crestEnrichError: enrich.error,
     crestsPurged: purge.purged,
     crestPurgeError: purge.error,
+    dota2Purged: dotaPurge.purged,
+    dota2PurgeError: dotaPurge.error,
     duplicatesRemoved: dedupe.removed,
     dedupeError: dedupe.error,
     hint:

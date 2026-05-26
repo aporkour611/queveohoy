@@ -60,7 +60,7 @@ async function enrichEsportsEvent(e: EventRow): Promise<EventRow | null> {
 
 async function enrichOnce(e: EventRow): Promise<EventRow | null> {
   if (e.sport === "futbol") return enrichFootballEvent(e);
-  if (["csgo", "valorant", "lol", "dota2"].includes(e.sport ?? "")) {
+  if (["csgo", "valorant", "lol"].includes(e.sport ?? "")) {
     return enrichEsportsEvent(e);
   }
   return null;

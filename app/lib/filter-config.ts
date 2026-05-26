@@ -32,7 +32,6 @@ export const FILTER_GROUPS: FilterGroup[] = [
       { id: "csgo", label: "CS2" },
       { id: "valorant", label: "Valorant" },
       { id: "lol", label: "LoL" },
-      { id: "dota2", label: "Dota 2" },
     ],
   },
   {

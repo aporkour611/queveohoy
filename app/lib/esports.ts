@@ -1,4 +1,4 @@
-const ESPORTS_SPORTS = new Set(["csgo", "valorant", "lol", "dota2"]);
+const ESPORTS_SPORTS = new Set(["csgo", "valorant", "lol"]);
 
 const LOGO_PREFIX = "pandascore-logos:";
 

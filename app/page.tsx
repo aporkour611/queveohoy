@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { dedupeEvents } from "./lib/dedupe-events";
-import { filterEventsWithCrests } from "./lib/event-crests";
+import { filterEventsForDisplay } from "./lib/event-crests";
 import { LEGEND_ITEMS, STORAGE_KEY, sportLabel } from "./lib/filter-config";
 import { DayTabs } from "./components/DayTabs";
 import { EventFilters } from "./components/EventFilters";
@@ -131,7 +131,11 @@ export default function Home() {
       setLoadError(error.message);
       if (!silent) setEvents([]);
     } else {
-      setEvents(filterEventsWithCrests(dedupeEvents(data || []) as EventRow[]));
+      setEvents(
+        filterEventsForDisplay(dedupeEvents(data || []) as EventRow[]).filter(
+          (e) => e.sport !== "dota2"
+        )
+      );
     }
 
     if (silent) {

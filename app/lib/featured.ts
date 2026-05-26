@@ -29,7 +29,6 @@ const SPORT_BASE: Record<string, number> = {
   csgo: 55,
   valorant: 54,
   lol: 53,
-  dota2: 52,
 };
 
 /** Orden de bloques en la leyenda / filtros */

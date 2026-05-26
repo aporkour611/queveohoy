@@ -13,7 +13,6 @@ export function sportAccentClass(sportId?: string | null): string {
     case "csgo":
     case "valorant":
     case "lol":
-    case "dota2":
       return "fh-comp-green";
     case "basket":
     case "ciclismo":

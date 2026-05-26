@@ -191,8 +191,7 @@
 
 .fh-filter-chip[data-sport="csgo"].active,
 .fh-filter-chip[data-sport="valorant"].active,
-.fh-filter-chip[data-sport="lol"].active,
-.fh-filter-chip[data-sport="dota2"].active {
+.fh-filter-chip[data-sport="lol"].active {
   background: var(--qvh-green);
   border-color: var(--qvh-green);
 }
@@ -365,7 +364,6 @@
 
 .fh-active-pill[data-sport="csgo"],
 .fh-active-pill[data-sport="valorant"],
-.fh-active-pill[data-sport="lol"],
-.fh-active-pill[data-sport="dota2"] {
+.fh-active-pill[data-sport="lol"] {
   background: var(--qvh-green);
 }
