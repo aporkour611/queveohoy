@@ -8,6 +8,7 @@ import { LEGEND_ITEMS, STORAGE_KEY, sportLabel } from "./lib/filter-config";
 import { DayTabs } from "./components/DayTabs";
 import { EventFilters } from "./components/EventFilters";
 import { LoadingState } from "./components/LoadingState";
+import { AdminNavLink } from "./components/AdminNavLink";
 import { Logo } from "./components/Logo";
 import { MatchCard } from "./components/MatchCard";
 import type { EventRow } from "./components/types";
@@ -195,7 +196,7 @@ export default function Home() {
           <Logo />
           <div className="fh-nav-links">
             <a href="/">Partidos</a>
-            <a href="/admin">Admin</a>
+            <AdminNavLink />
           </div>
         </div>
       </nav>
