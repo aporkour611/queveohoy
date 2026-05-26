@@ -763,6 +763,13 @@
   width: 100%;
 }
 
+.fh-filters-clear-inline {
+  width: auto;
+  margin-top: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .fh-filters-clear:hover {
   background: rgba(93, 95, 239, 0.15);
 }
@@ -775,7 +782,20 @@
 }
 
 .fh-active-filters {
-  padding: 0 14px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 14px 12px;
+}
+
+.fh-active-filters-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
 }
 
 .fh-filter-group {

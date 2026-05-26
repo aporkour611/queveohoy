@@ -264,7 +264,7 @@ export default function Home() {
                     className="fh-btn"
                     onClick={() => setSelectedSports([])}
                   >
-                    Ver destacados
+                    Eliminar filtros
                   </button>
                 )}
               </div>

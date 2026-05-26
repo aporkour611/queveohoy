@@ -76,18 +76,27 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
 
       {!isFeaturedMode && selected.length > 0 && (
         <div className="fh-active-filters">
-          {selected.map((id) => (
-            <button
-              key={id}
-              type="button"
-              className="fh-active-pill"
-              data-sport={id}
-              onClick={() => toggle(id)}
-              title="Quitar filtro"
-            >
-              {sportLabel(id)} ×
-            </button>
-          ))}
+          <div className="fh-active-filters-pills">
+            {selected.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className="fh-active-pill"
+                data-sport={id}
+                onClick={() => toggle(id)}
+                title="Quitar filtro"
+              >
+                {sportLabel(id)} ×
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="fh-filters-clear fh-filters-clear-inline"
+            onClick={clearAll}
+          >
+            Eliminar filtros
+          </button>
         </div>
       )}
 
@@ -130,7 +139,7 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
 
         {selected.length > 0 && (
           <button type="button" className="fh-filters-clear" onClick={clearAll}>
-            Ver destacados
+            Eliminar filtros
           </button>
         )}
       </div>
