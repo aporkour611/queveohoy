@@ -13,6 +13,9 @@
   --qvh-orange: #a04a2b;
   --qvh-green: #1f6e43;
   --qvh-blue: #2563eb;
+  --qvh-motor: #0d9488;
+  --qvh-motor-dim: #0f766e;
+  --qvh-motor-hover: #14b8a6;
   --qvh-gold: #c9a227;
   --qvh-pink: #d946ef;
   --qvh-text: #ffffff;
@@ -136,8 +139,8 @@
 
 .fh-filter-chip[data-sport="formula1"].active,
 .fh-filter-chip[data-sport="motos"].active {
-  background: var(--qvh-blue);
-  border-color: var(--qvh-blue);
+  background: var(--qvh-motor);
+  border-color: var(--qvh-motor);
 }
 
 .fh-filter-chip[data-sport="cine"].active,
@@ -157,7 +160,7 @@
   display: inline-block;
   width: 8px;
   height: 8px;
-  background: var(--qvh-blue);
+  background: var(--qvh-motor);
   border-radius: 2px;
   margin-right: 6px;
   vertical-align: middle;
@@ -281,6 +284,10 @@
   background: var(--qvh-blue);
 }
 
+.qvh-dot-motor {
+  background: var(--qvh-motor);
+}
+
 .qvh-dot-gold {
   background: var(--qvh-gold);
 }
@@ -341,7 +348,7 @@
 
 .fh-active-pill[data-sport="formula1"],
 .fh-active-pill[data-sport="motos"] {
-  background: var(--qvh-blue);
+  background: var(--qvh-motor);
 }
 
 .fh-active-pill[data-sport="cine"],

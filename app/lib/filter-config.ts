@@ -74,7 +74,7 @@ export const STORAGE_KEY = "qvh_sport_filters";
 export const LEGEND_ITEMS = [
   { label: "Deportes", dot: "qvh-dot-purple" },
   { label: "E-Sports", dot: "qvh-dot-green" },
-  { label: "Coches & motos", dot: "qvh-dot-blue" },
+  { label: "Coches & motos", dot: "qvh-dot-motor" },
   { label: "Cine & series", dot: "qvh-dot-gold" },
   { label: "TV", dot: "qvh-dot-pink" },
 ] as const;
