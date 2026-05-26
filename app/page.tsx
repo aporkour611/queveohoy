@@ -11,35 +11,22 @@ import { LoadingState } from "./components/LoadingState";
 import { AdminNavLink } from "./components/AdminNavLink";
 import { AuthNavLink } from "./components/AuthNavLink";
 import { Logo } from "./components/Logo";
+import { RegionTimezoneBar } from "./components/RegionTimezoneBar";
 import { DestacadosSection } from "./components/DestacadosSection";
 import { MatchCard } from "./components/MatchCard";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { SiteFooter } from "./components/SiteFooter";
 import type { EventRow } from "./components/types";
 import { competitionAccentClass, sportAccentClass } from "./lib/sport-accent";
+import { TimezoneProvider, useTimezone } from "./lib/timezone-context";
 import {
-  formatMadridMonthShort,
-  formatMadridWeekday,
-  getMadridWeekDates,
-  madridDayNumber,
-  madridDayTitle,
-} from "./lib/madrid-time";
+  buildDisplayDays,
+  filterEventsInWeek,
+  mapEventsToTimezone,
+} from "./lib/timezone";
 import { resolveDayEventsForFeed } from "./lib/upcoming-events";
 
 const FEED_DAY_COUNT = 7;
-
-const ALL_DAYS = getMadridWeekDates(FEED_DAY_COUNT).map((date, i) => {
-  const weekday = formatMadridWeekday(date, "short");
-  const month = formatMadridMonthShort(date);
-  return {
-    label:
-      i === 0 ? "Hoy" : i === 1 ? "Mañana" : weekday.charAt(0).toUpperCase() + weekday.slice(1, 3),
-    date,
-    num: madridDayNumber(date),
-    month: month.charAt(0).toUpperCase() + month.slice(1),
-    dayOffset: i,
-  };
-});
 
 function groupForDisplay(events: EventRow[]) {
   const football: Record<string, EventRow[]> = {};
@@ -104,6 +91,15 @@ function renderEventSections(events: EventRow[]) {
 }
 
 export default function Home() {
+  return (
+    <TimezoneProvider>
+      <HomePage />
+    </TimezoneProvider>
+  );
+}
+
+function HomePage() {
+  const { timeZone } = useTimezone();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -172,27 +168,47 @@ export default function Home() {
     } catch {}
   }, [selectedSports]);
 
+  const displayEvents = useMemo(
+    () =>
+      filterEventsInWeek(
+        mapEventsToTimezone(events, timeZone),
+        timeZone,
+        FEED_DAY_COUNT
+      ),
+    [events, timeZone]
+  );
+
+  const displayDays = useMemo(
+    () => buildDisplayDays(timeZone, FEED_DAY_COUNT),
+    [timeZone]
+  );
+
   const visibleDays = useMemo(
     () =>
-      ALL_DAYS.map((day) => ({
-        ...day,
-        title: madridDayTitle(day.date, day.dayOffset),
-        events: resolveDayEventsForFeed(
-          events,
-          day.date,
-          selectedSports,
-          isFeaturedMode
-        ),
-      })).filter((day) => day.events.length > 0),
-    [events, selectedSports, isFeaturedMode]
+      displayDays
+        .map((day) => ({
+          ...day,
+          events: resolveDayEventsForFeed(
+            displayEvents,
+            day.date,
+            selectedSports,
+            isFeaturedMode
+          ),
+        }))
+        .filter((day) => day.events.length > 0),
+    [displayDays, displayEvents, selectedSports, isFeaturedMode]
   );
+
+  useEffect(() => {
+    setActiveDay(0);
+  }, [timeZone, selectedSports.join(",")]);
 
   useEffect(() => {
     setActiveDay((prev) => {
       if (visibleDays.length === 0) return 0;
       return Math.min(prev, visibleDays.length - 1);
     });
-  }, [visibleDays.length, selectedSports.join(",")]);
+  }, [visibleDays.length]);
 
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
@@ -238,7 +254,7 @@ export default function Home() {
     const anchor =
       parseFloat(
         getComputedStyle(document.documentElement).getPropertyValue(
-          "--qvh-navbar-h"
+          "--qvh-header-h"
         )
       ) + 8;
 
@@ -277,6 +293,7 @@ export default function Home() {
 
   return (
     <div className="fh-body">
+      <RegionTimezoneBar />
       <nav className="fh-navbar">
         <div className="fh-navbar-inner">
           <Logo onHomeClick={resetHome} />
@@ -298,7 +315,7 @@ export default function Home() {
             isFeaturedMode={isFeaturedMode}
           />
 
-          {isFeaturedMode && <DestacadosSection events={events} />}
+          {isFeaturedMode && <DestacadosSection events={displayEvents} />}
 
           <DayTabs
             days={visibleDays}

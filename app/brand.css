@@ -24,13 +24,28 @@
   --qvh-text-on-light: #14141c;
   --qvh-border: #2a2a38;
   --qvh-border-light: #e0e0e8;
+  --qvh-tz-bar-h: 40px;
   --qvh-navbar-h: 60px;
+  --qvh-header-h: calc(var(--qvh-tz-bar-h) + var(--qvh-navbar-h));
 }
 
 @media (max-width: 640px) {
   :root {
+    --qvh-tz-bar-h: 44px;
     --qvh-navbar-h: 64px;
   }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ── Logo ── */

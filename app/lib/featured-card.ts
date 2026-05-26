@@ -1,6 +1,7 @@
 import { sportLabel } from "./filter-config";
 import { parseChannels } from "./channels";
-import { displayTime } from "./madrid-time";
+import { displayTime, MADRID_TZ } from "./madrid-time";
+import { formatDisplayDateLabel } from "./timezone";
 import {
   parseFootballTeamIds,
   shortTeamName,
@@ -9,7 +10,6 @@ import {
 } from "./football";
 import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb";
 import {
-  formatEventDateLabel,
   parseUfcHeadline,
   parseUfcImage,
   parseUfcKindFromSource,
@@ -53,10 +53,13 @@ function teamTitle(event: EventRow): string | null {
   return null;
 }
 
-export function getSpotlightCardModel(event: EventRow): SpotlightCardModel {
+export function getSpotlightCardModel(
+  event: EventRow,
+  timeZone: string = MADRID_TZ
+): SpotlightCardModel {
   const sport = event.sport ?? "";
   const date = event.date ?? "";
-  const dateLabel = date ? formatEventDateLabel(date) : "";
+  const dateLabel = date ? formatDisplayDateLabel(date, timeZone) : "";
   const time = displayTime(event.time);
   const channels = parseChannels(event.platform).join(" · ");
 

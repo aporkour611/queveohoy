@@ -1,5 +1,8 @@
+"use client";
+
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
+import { useTimezone } from "../lib/timezone-context";
 
 type Props = {
   event: EventRow;
@@ -7,7 +10,8 @@ type Props = {
 };
 
 export function FeaturedEventCard({ event, className }: Props) {
-  const card = getSpotlightCardModel(event);
+  const { timeZone } = useTimezone();
+  const card = getSpotlightCardModel(event, timeZone);
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (
