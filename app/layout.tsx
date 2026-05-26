@@ -7,6 +7,7 @@ import "./destacados.css";
 import "./media.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { rootMetadata } from "./lib/seo";
+import { Analytics } from "@vercel/analytics/next";
 
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
@@ -37,6 +38,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
         <CookieConsentRoot>{children}</CookieConsentRoot>
+        <Analytics />
       </body>
     </html>
   );
