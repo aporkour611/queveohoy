@@ -79,6 +79,44 @@
   background-position: center top;
 }
 
+.qvh-fav-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.48);
+  color: #c8c8c8;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.qvh-fav-btn:hover {
+  transform: scale(1.06);
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+}
+
+.qvh-fav-btn-active {
+  color: #ef4444;
+}
+
+.qvh-fav-btn-active:hover {
+  color: #f87171;
+}
+
+.qvh-fav-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
 .qvh-spotlight-visual-ufc {
   background: linear-gradient(135deg, #1a0505 0%, #3d0a0a 45%, #120606 100%);
 }

@@ -1478,3 +1478,239 @@
 .fh-btn-ghost:hover {
   background: #f3f3f3;
 }
+
+/* ── Cuenta: layout con menú ── */
+.fh-account-page {
+  max-width: 920px;
+}
+
+.fh-account-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.fh-account-sidebar {
+  position: sticky;
+  top: calc(var(--qvh-navbar-h) + 16px);
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--qvh-border);
+  background: var(--qvh-bg-panel);
+  color: var(--qvh-text);
+}
+
+.fh-account-sidebar-head {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--qvh-border);
+}
+
+.fh-account-sidebar-kicker {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--qvh-text-muted);
+}
+
+.fh-account-sidebar-name {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.fh-account-sidebar-email {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--qvh-text-muted);
+  word-break: break-word;
+}
+
+.fh-account-menu {
+  display: grid;
+  gap: 6px;
+}
+
+.fh-account-menu-item {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.fh-account-menu-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--qvh-border);
+}
+
+.fh-account-menu-item.active {
+  background: rgba(93, 95, 239, 0.16);
+  border-color: rgba(93, 95, 239, 0.45);
+}
+
+.fh-account-menu-label {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.fh-account-menu-desc {
+  font-size: 0.78rem;
+  color: var(--qvh-text-muted);
+}
+
+.fh-account-sidebar-foot {
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--qvh-border);
+}
+
+.fh-account-menu-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.95rem;
+  color: var(--qvh-purple-hover);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.fh-account-menu-link:hover {
+  text-decoration: underline;
+}
+
+.fh-account-logout {
+  color: #bbb;
+}
+
+.fh-account-main {
+  max-width: none;
+  margin: 0;
+}
+
+.fh-account-main h1 {
+  margin: 0 0 10px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.fh-account-empty {
+  display: grid;
+  gap: 10px;
+  padding: 8px 0 4px;
+}
+
+.fh-account-empty-hint {
+  margin: 0;
+  color: #666;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.fh-fav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.fh-fav-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--qvh-border-light);
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.fh-fav-list-main {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fh-fav-list-main strong {
+  color: #212529;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.05rem;
+}
+
+.fh-fav-list-main span {
+  color: #666;
+  font-size: 0.86rem;
+}
+
+.fh-fav-list-heart {
+  color: #ef4444;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.fh-settings-block {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--qvh-border-light);
+  background: #fafafa;
+  margin-bottom: 12px;
+}
+
+.fh-settings-block h2 {
+  margin: 0 0 6px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.1rem;
+  color: #212529;
+}
+
+.fh-settings-block p {
+  margin: 0;
+  color: #555;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.fh-settings-muted {
+  color: #888 !important;
+}
+
+@media (max-width: 760px) {
+  .fh-account-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fh-account-sidebar {
+    position: static;
+  }
+
+  .fh-account-menu {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .fh-account-menu-item {
+    padding: 8px;
+  }
+
+  .fh-account-menu-desc {
+    display: none;
+  }
+}

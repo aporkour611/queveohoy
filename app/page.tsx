@@ -19,6 +19,7 @@ import { SiteFooter } from "./components/SiteFooter";
 import type { EventRow } from "./components/types";
 import { competitionAccentClass, sportAccentClass } from "./lib/sport-accent";
 import { TimezoneProvider, useTimezone } from "./lib/timezone-context";
+import { FavoritesProvider } from "./lib/favorites-context";
 import {
   buildDisplayDays,
   filterEventsInWeek,
@@ -93,7 +94,9 @@ function renderEventSections(events: EventRow[]) {
 export default function Home() {
   return (
     <TimezoneProvider>
-      <HomePage />
+      <FavoritesProvider>
+        <HomePage />
+      </FavoritesProvider>
     </TimezoneProvider>
   );
 }
