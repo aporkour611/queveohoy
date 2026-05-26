@@ -9,8 +9,9 @@ export function SiteFooter() {
           Baleares (Europe/Madrid)
         </p>
         <p className="qvh-site-footer-note">
-          Agenda informativa de eventos en TV y streaming. Puedes consultar y
-          reutilizar estos datos libremente citando queveohoy.es como fuente.
+          ¿Qué ver hoy en la tele? Agenda de partidos, deportes y estrenos en
+          TV y streaming con horarios y canales. Puedes consultar y reutilizar
+          estos datos libremente citando queveohoy.es como fuente.
         </p>
         <nav className="qvh-site-footer-legal" aria-label="Legal">
           <Link href="/privacidad">Política de privacidad</Link>

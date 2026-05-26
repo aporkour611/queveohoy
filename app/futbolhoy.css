@@ -429,6 +429,24 @@
   padding-top: 16px;
 }
 
+.fh-page-title {
+  margin: 0 0 6px;
+  font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--qvh-text);
+  text-wrap: balance;
+}
+
+.fh-page-lead {
+  margin: 0 0 14px;
+  max-width: 42rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--qvh-text-muted);
+  text-wrap: balance;
+}
+
 .fh-feed-refresh {
   margin: 0 0 8px;
   text-align: center;

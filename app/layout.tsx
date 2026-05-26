@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./brand.css";
 import "./futbolhoy.css";
 import "./destacados.css";
 import { AppProviders } from "./components/AppProviders";
+import { rootMetadata } from "./lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,11 +17,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "queveohoy.es — Qué ver hoy en TV",
-  description:
-    "Partidos hoy en la tele: fútbol, e-sports, F1 y más. Escudos, horarios y canales.",
+export const metadata: Metadata = rootMetadata;
+
+export const viewport: Viewport = {
   themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

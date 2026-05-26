@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import { AuthPageShell } from "../components/AuthPageShell";
 import { SignInForm } from "../components/SignInForm";
 
-export const metadata = {
-  title: "Entrar — queveohoy.es",
+export const metadata: Metadata = {
+  title: "Entrar",
   description: "Inicia sesión en tu cuenta de queveohoy.es",
+  robots: { index: false, follow: false },
 };
 
 type Props = {
