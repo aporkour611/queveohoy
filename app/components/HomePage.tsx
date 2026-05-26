@@ -36,7 +36,7 @@ type Props = {
   initialError: string | null;
   pageTitle?: string;
   pageLead?: string;
-  seoOutline?: ReactNode;
+  children?: ReactNode;
 };
 
 function groupForDisplay(events: EventRow[]) {
@@ -106,7 +106,7 @@ export function HomePage({
   initialError,
   pageTitle,
   pageLead,
-  seoOutline,
+  children,
 }: Props) {
   return (
     <TimezoneProvider>
@@ -116,8 +116,9 @@ export function HomePage({
           initialError={initialError}
           pageTitle={pageTitle}
           pageLead={pageLead}
-          seoOutline={seoOutline}
-        />
+        >
+          {children}
+        </HomePageContent>
       </FavoritesProvider>
     </TimezoneProvider>
   );
@@ -128,7 +129,7 @@ function HomePageContent({
   initialError,
   pageTitle = "Qué ver hoy en TV y streaming",
   pageLead = "Partidos, Champions, LaLiga, F1, UFC, baloncesto, series y más con horario y canal en España.",
-  seoOutline,
+  children,
 }: Props) {
   const { timeZone } = useTimezone();
   const [events, setEvents] = useState(initialEvents);
@@ -350,7 +351,7 @@ function HomePageContent({
             </div>
           ) : null}
 
-          {seoOutline}
+          {children}
 
           <SiteFooter />
         </div>

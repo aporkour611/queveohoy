@@ -1,17 +1,9 @@
 import Link from "next/link";
-import { SEO_HUBS } from "../lib/seo-hubs";
+import { SEO_FOOTER_HUB_SLUGS, SEO_HUB_NAV_LINKS } from "../lib/seo-hub-nav";
 
 export function SiteFooter() {
-  const featuredHubs = SEO_HUBS.filter((hub) =>
-    [
-      "partidos-hoy",
-      "futbol",
-      "champions",
-      "laliga",
-      "formula-1",
-      "ufc",
-      "series",
-    ].includes(hub.slug)
+  const featuredHubs = SEO_HUB_NAV_LINKS.filter((hub) =>
+    (SEO_FOOTER_HUB_SLUGS as readonly string[]).includes(hub.slug)
   );
 
   return (

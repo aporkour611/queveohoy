@@ -1,5 +1,4 @@
 import type { EventRow } from "../components/types";
-import { madridDateTimeToUtc } from "./madrid-time";
 
 export function eventLabel(event: EventRow): string {
   if (event.home_team && event.away_team) {
@@ -17,11 +16,11 @@ export function schemaEventType(
   return "SportsEvent";
 }
 
-/** ISO 8601 UTC equivalente a la fecha/hora en Madrid (válido para schema.org). */
+/** ISO 8601 para schema.org (hora local Madrid, sin conversión costosa). */
 export function eventStartIso(date?: string, time?: string): string | undefined {
   if (!date) return undefined;
   const t = (time || "12:00").slice(0, 5);
-  return madridDateTimeToUtc(date, t).toISOString();
+  return `${date}T${t}:00`;
 }
 
 export function eventMetaParts(event: EventRow): string[] {

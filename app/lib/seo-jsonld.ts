@@ -1,7 +1,6 @@
 import type { EventRow } from "../components/types";
 import { displayTime } from "./madrid-time";
 import {
-  buildDisplayDays,
   filterEventsInWeek,
   mapEventsToTimezone,
   MADRID_TZ,
@@ -122,7 +121,7 @@ export function buildHomeJsonLd(events: EventRow[]) {
     mapEventsToTimezone(events, MADRID_TZ),
     MADRID_TZ,
     FEED_DAY_COUNT
-  ).slice(0, 24);
+  ).slice(0, 12);
 
   const itemList = buildItemList(
     madridEvents,

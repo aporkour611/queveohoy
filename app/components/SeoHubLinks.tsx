@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SEO_HUB_NAV_LINKS } from "../lib/seo-hub-nav";
 import type { SeoHubConfig } from "../lib/seo-hubs";
 import { SEO_HUBS } from "../lib/seo-hubs";
 
@@ -11,7 +12,7 @@ export function SeoHubLinks({ current }: Props) {
     <nav className="fh-seo-hub-links" aria-label="Agendas por deporte y competición">
       <h2 className="fh-seo-hub-links-title">Agenda por deporte y competición</h2>
       <ul className="fh-seo-hub-links-list">
-        {SEO_HUBS.map((hub) => (
+        {SEO_HUB_NAV_LINKS.map((hub) => (
           <li key={hub.slug}>
             {hub.slug === current ? (
               <span aria-current="page">{hub.title}</span>

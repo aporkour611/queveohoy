@@ -49,8 +49,9 @@ export default async function Page() {
         initialError={error}
         pageTitle={pageTitle}
         pageLead={pageLead}
-        seoOutline={<HomeEventOutline events={events} />}
-      />
+      >
+        <HomeEventOutline events={events} />
+      </HomePage>
     </>
   );
 }

@@ -8,22 +8,28 @@ async function loadFeedEvents(): Promise<{
   events: EventRow[];
   error: string | null;
 }> {
-  const { from, to } = getEventsQueryDateRange(FEED_DAY_COUNT);
-  const supabase = await createClient();
+  try {
+    const { from, to } = getEventsQueryDateRange(FEED_DAY_COUNT);
+    const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .gte("date", from)
-    .lte("date", to)
-    .order("date", { ascending: true })
-    .order("time", { ascending: true });
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .gte("date", from)
+      .lte("date", to)
+      .order("date", { ascending: true })
+      .order("time", { ascending: true });
 
-  if (error) {
-    return { events: [], error: error.message };
+    if (error) {
+      return { events: [], error: error.message };
+    }
+
+    return { events: normalizeFeedEvents(data as EventRow[]), error: null };
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "No se pudieron cargar los eventos";
+    return { events: [], error: message };
   }
-
-  return { events: normalizeFeedEvents(data as EventRow[]), error: null };
 }
 
 export const fetchFeedEvents = cache(loadFeedEvents);
