@@ -11,6 +11,7 @@ import { LoadingState } from "./components/LoadingState";
 import { AdminNavLink } from "./components/AdminNavLink";
 import { Logo } from "./components/Logo";
 import { MatchCard } from "./components/MatchCard";
+import { UfcUpcoming } from "./components/UfcUpcoming";
 import { SiteFooter } from "./components/SiteFooter";
 import type { EventRow } from "./components/types";
 import { competitionAccentClass, sportAccentClass } from "./lib/sport-accent";
@@ -300,6 +301,8 @@ export default function Home() {
             onChange={setSelectedSports}
             isFeaturedMode={isFeaturedMode}
           />
+
+          <UfcUpcoming />
 
           <DayTabs
             days={visibleDays}
