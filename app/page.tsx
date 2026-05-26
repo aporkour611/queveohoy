@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { dedupeEvents } from "./lib/dedupe-events";
 import { pickFeaturedEvents } from "./lib/featured";
-import { STORAGE_KEY, sportLabel } from "./lib/filter-config";
+import { LEGEND_ITEMS, STORAGE_KEY, sportLabel } from "./lib/filter-config";
 import { DayTabs } from "./components/DayTabs";
 import { EventFilters } from "./components/EventFilters";
 import { LoadingState } from "./components/LoadingState";
@@ -140,10 +140,12 @@ export default function Home() {
               Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
             </h1>
             <ul className="qvh-legend" aria-label="Categorías">
-              <li><span className="qvh-dot qvh-dot-purple" /> Fútbol mundial</li>
-              <li><span className="qvh-dot qvh-dot-orange" /> Deportes</li>
-              <li><span className="qvh-dot qvh-dot-green" /> E-sports</li>
-              <li><span className="qvh-dot qvh-dot-blue" /> F1 & más</li>
+              {LEGEND_ITEMS.map((item) => (
+                <li key={item.label}>
+                  <span className={`qvh-dot ${item.dot}`} />
+                  {item.label}
+                </li>
+              ))}
             </ul>
           </div>
         </section>

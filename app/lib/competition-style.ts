@@ -2,7 +2,9 @@ export function competitionMatchClass(
   competition?: string | null,
   sport?: string | null
 ): string {
-  if (sport === "formula1") return "fh-match_f1";
+  if (sport === "formula1" || sport === "motos") return "fh-match_motor";
+  if (sport === "cine" || sport === "series") return "fh-match_cine";
+  if (sport === "tv") return "fh-match_tv";
   if (sport && sport !== "futbol") return "fh-match_esports";
 
   const c = (competition ?? "").toLowerCase();

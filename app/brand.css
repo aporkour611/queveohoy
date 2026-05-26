@@ -14,6 +14,7 @@
   --qvh-green: #1f6e43;
   --qvh-blue: #2563eb;
   --qvh-gold: #c9a227;
+  --qvh-pink: #d946ef;
   --qvh-text: #ffffff;
   --qvh-text-muted: #9a9ab0;
   --qvh-text-on-light: #14141c;
@@ -132,9 +133,55 @@
   border-color: var(--qvh-orange);
 }
 
-.fh-filter-chip[data-sport="formula1"].active {
+.fh-filter-chip[data-sport="formula1"].active,
+.fh-filter-chip[data-sport="motos"].active {
   background: var(--qvh-blue);
   border-color: var(--qvh-blue);
+}
+
+.fh-filter-chip[data-sport="cine"].active,
+.fh-filter-chip[data-sport="series"].active {
+  background: var(--qvh-gold);
+  border-color: var(--qvh-gold);
+  color: #1a1a1a;
+}
+
+.fh-filter-chip[data-sport="tv"].active {
+  background: var(--qvh-pink);
+  border-color: var(--qvh-pink);
+}
+
+.fh-filter-group-label[data-group="motor"]::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--qvh-blue);
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.fh-filter-group-label[data-group="cine"]::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--qvh-gold);
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.fh-filter-group-label[data-group="tv"]::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--qvh-pink);
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
 }
 
 .fh-filter-chip[data-sport="csgo"].active,
@@ -253,6 +300,14 @@
   background: var(--qvh-blue);
 }
 
+.qvh-dot-gold {
+  background: var(--qvh-gold);
+}
+
+.qvh-dot-pink {
+  background: var(--qvh-pink);
+}
+
 /* Spinner */
 .qvh-spinner {
   width: 32px;
@@ -308,8 +363,19 @@
   background: var(--qvh-orange);
 }
 
-.fh-active-pill[data-sport="formula1"] {
+.fh-active-pill[data-sport="formula1"],
+.fh-active-pill[data-sport="motos"] {
   background: var(--qvh-blue);
+}
+
+.fh-active-pill[data-sport="cine"],
+.fh-active-pill[data-sport="series"] {
+  background: var(--qvh-gold);
+  color: #1a1a1a;
+}
+
+.fh-active-pill[data-sport="tv"] {
+  background: var(--qvh-pink);
 }
 
 .fh-active-pill[data-sport="csgo"],

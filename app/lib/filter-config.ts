@@ -14,8 +14,15 @@ export const FILTER_GROUPS: FilterGroup[] = [
       { id: "futbol", label: "Fútbol" },
       { id: "tenis", label: "Tenis" },
       { id: "basket", label: "Basket" },
-      { id: "formula1", label: "F1" },
       { id: "ciclismo", label: "Ciclismo" },
+    ],
+  },
+  {
+    id: "motor",
+    label: "Coches y motos",
+    options: [
+      { id: "formula1", label: "F1" },
+      { id: "motos", label: "Motos" },
     ],
   },
   {
@@ -27,6 +34,16 @@ export const FILTER_GROUPS: FilterGroup[] = [
       { id: "lol", label: "LoL" },
       { id: "dota2", label: "Dota 2" },
     ],
+  },
+  {
+    id: "cine",
+    label: "Cine & series",
+    options: [{ id: "cine", label: "Cine & series" }],
+  },
+  {
+    id: "tv",
+    label: "TV",
+    options: [{ id: "tv", label: "Reality y estrenos" }],
   },
 ];
 
@@ -43,3 +60,12 @@ export function sportLabel(sportId: string): string {
 }
 
 export const STORAGE_KEY = "qvh_sport_filters";
+
+/** Leyenda del hero (nombre + clase de punto de color) */
+export const LEGEND_ITEMS = [
+  { label: "Deportes", dot: "qvh-dot-purple" },
+  { label: "E-Sports", dot: "qvh-dot-green" },
+  { label: "Coches y motos", dot: "qvh-dot-blue" },
+  { label: "Cine & series", dot: "qvh-dot-gold" },
+  { label: "TV", dot: "qvh-dot-pink" },
+] as const;

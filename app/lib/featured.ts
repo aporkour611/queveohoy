@@ -16,6 +16,10 @@ const COMPETITION_PRIORITY: { match: RegExp; score: number }[] = [
 const SPORT_BASE: Record<string, number> = {
   futbol: 70,
   formula1: 65,
+  motos: 64,
+  cine: 62,
+  series: 61,
+  tv: 68,
   tenis: 60,
   basket: 58,
   csgo: 55,
