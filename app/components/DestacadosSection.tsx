@@ -2,11 +2,7 @@
 
 import { useMemo } from "react";
 import type { EventRow } from "./types";
-import {
-  mergeDestacadosWithFavorites,
-  pickCuratedDestacados,
-} from "../lib/destacados-config";
-import { useFavorites } from "../lib/auth-context";
+import { pickCuratedDestacados } from "../lib/destacados-config";
 import { FeaturedEventCard } from "./FeaturedEventCard";
 
 type Props = {
@@ -14,20 +10,9 @@ type Props = {
 };
 
 export function DestacadosSection({ events }: Props) {
-  const { isLoggedIn, favoriteEvents } = useFavorites();
-
-  const featured = useMemo(() => {
-    const curated = pickCuratedDestacados(events);
-    if (!isLoggedIn || favoriteEvents.length === 0) return curated;
-    return mergeDestacadosWithFavorites(curated, favoriteEvents);
-  }, [events, favoriteEvents, isLoggedIn]);
+  const featured = useMemo(() => pickCuratedDestacados(events), [events]);
 
   if (featured.length === 0) return null;
-
-  const subtitle =
-    isLoggedIn && favoriteEvents.length > 0
-      ? "Tus favoritos y lo más visto"
-      : "Lo más visto";
 
   return (
     <section className="qvh-destacados" aria-label="Destacados">
@@ -36,7 +21,7 @@ export function DestacadosSection({ events }: Props) {
           <span className="qvh-destacados-dot" aria-hidden />
           <div>
             <h2 className="qvh-destacados-title">Destacados</h2>
-            <p className="qvh-destacados-sub">{subtitle}</p>
+            <p className="qvh-destacados-sub">Lo más visto</p>
           </div>
         </div>
       </div>

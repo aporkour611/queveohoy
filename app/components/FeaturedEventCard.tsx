@@ -5,7 +5,6 @@ import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { openWatchUrl, resolveWatchUrl } from "../lib/watch-links";
 import { useTimezone } from "../lib/timezone-context";
-import { FavoriteHeartButton } from "./FavoriteHeartButton";
 
 type Props = {
   event: EventRow;
@@ -63,7 +62,6 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
             : undefined
         }
       >
-        <FavoriteHeartButton eventId={event.id} event={event} />
         <div className="qvh-spotlight-overlay" />
 
         {card.showTeamDuel && card.homeCrest && card.awayCrest ? (

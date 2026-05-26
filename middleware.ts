@@ -5,7 +5,6 @@ import {
   getAdminSecret,
   isAdminCookieValid,
 } from "@/app/lib/admin-auth";
-import { updateSession } from "@/app/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
   const secret = getAdminSecret();
@@ -32,29 +31,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return updateSession(request);
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/admin/:path*",
-    "/cuenta/:path*",
-    "/entrar",
-    "/registro",
-    "/auth/:path*",
-    "/agenda/:path*",
-    "/api/:path*",
-    "/partidos-hoy",
-    "/futbol",
-    "/champions",
-    "/laliga",
-    "/premier-league",
-    "/formula-1",
-    "/motogp",
-    "/ufc",
-    "/baloncesto",
-    "/series",
-    "/cookies",
-    "/privacidad",
-  ],
+  matcher: ["/admin/:path*"],
 };

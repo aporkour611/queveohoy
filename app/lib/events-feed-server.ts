@@ -10,7 +10,7 @@ async function loadFeedEvents(): Promise<{
 }> {
   try {
     const { from, to } = getEventsQueryDateRange(FEED_DAY_COUNT);
-    const supabase = await createClient();
+    const supabase = createClient();
 
     const { data, error } = await supabase
       .from("events")

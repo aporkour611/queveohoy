@@ -1,29 +1,9 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import {
   getSupabasePublishableKey,
   getSupabaseUrl,
 } from "../supabase-admin";
 
-export async function createClient() {
-  const cookieStore = await cookies();
-  const url = getSupabaseUrl();
-  const key = getSupabasePublishableKey();
-
-  return createServerClient(url, key, {
-    cookies: {
-      getAll() {
-        return cookieStore.getAll();
-      },
-      setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        } catch {
-          // Server Components cannot set cookies; middleware refreshes the session.
-        }
-      },
-    },
-  });
+export function createClient() {
+  return createSupabaseClient(getSupabaseUrl(), getSupabasePublishableKey());
 }

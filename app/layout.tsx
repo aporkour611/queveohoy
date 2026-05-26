@@ -4,7 +4,6 @@ import "./globals.css";
 import "./brand.css";
 import "./futbolhoy.css";
 import "./destacados.css";
-import { AppProviders } from "./components/AppProviders";
 import { rootMetadata } from "./lib/seo";
 
 const geistSans = Geist({
@@ -36,7 +35,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
-        <AppProviders>{children}</AppProviders>
+        {children}
       </body>
     </html>
   );

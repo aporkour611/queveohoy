@@ -12,7 +12,6 @@ import { DayTabs } from "./DayTabs";
 import { EventFilters } from "./EventFilters";
 import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
-import { AuthNavLink } from "./AuthNavLink";
 import { Logo } from "./Logo";
 import { RegionTimezoneBar } from "./RegionTimezoneBar";
 import { DestacadosSection } from "./DestacadosSection";
@@ -22,7 +21,6 @@ import { SiteFooter } from "./SiteFooter";
 import type { EventRow } from "./types";
 import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
 import { TimezoneProvider, useTimezone } from "../lib/timezone-context";
-import { FavoritesProvider } from "../lib/auth-context";
 import {
   buildDisplayDays,
   filterEventsInWeek,
@@ -155,14 +153,12 @@ export function HomePage({
     <>
       <HomeJsonLdInline />
       <TimezoneProvider>
-        <FavoritesProvider>
-          <HomePageContent
-            initialEvents={initialEvents}
-            initialError={initialError}
-          >
-            {children}
-          </HomePageContent>
-        </FavoritesProvider>
+        <HomePageContent
+          initialEvents={initialEvents}
+          initialError={initialError}
+        >
+          {children}
+        </HomePageContent>
       </TimezoneProvider>
     </>
   );
@@ -377,7 +373,6 @@ function HomePageContent({
           <Logo onHomeClick={resetHome} />
           <div className="fh-nav-links">
             <RegionTimezoneBar />
-            <AuthNavLink />
             <AdminNavLink />
           </div>
         </div>
