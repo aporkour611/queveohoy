@@ -1,18 +1,18 @@
-/* Inspirado en futbolhoy.es — paleta y componentes principales */
+/* Layout de partidos — paleta queveohoy.es */
 
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&display=swap");
 
 .fh-body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
-  background: #252a33;
-  color: #212529;
+  background: var(--qvh-bg);
+  color: var(--qvh-text);
   margin: 0;
   min-height: 100vh;
 }
 
 .fh-content {
-  background-color: #f3f4f7;
+  background-color: var(--qvh-bg-elevated);
   padding-bottom: 40px;
   min-height: calc(100vh - 70px);
 }
@@ -25,9 +25,10 @@
 
 /* ── Navbar ── */
 .fh-navbar {
-  background-color: #252a33 !important;
+  background-color: var(--qvh-bg) !important;
   padding: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 0 var(--qvh-border);
+  border-bottom: 1px solid var(--qvh-border);
 }
 
 .fh-navbar-inner {
@@ -37,19 +38,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.fh-logo {
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #fff;
-  text-decoration: none;
-  letter-spacing: -0.5px;
-}
-
-.fh-logo span {
-  color: #bf0404;
 }
 
 .fh-nav-links {
@@ -69,6 +57,7 @@
 
 .fh-nav-links a:hover {
   opacity: 1;
+  color: var(--qvh-purple);
 }
 
 /* ── Sports selector ── */
@@ -95,22 +84,23 @@
 }
 
 .fh-sports-selector .fh-sport-col:hover {
-  background-color: #bf0404;
+  background-color: var(--qvh-purple);
   color: #fff;
-  border-color: #bf0404;
+  border-color: var(--qvh-purple);
 }
 
 .fh-sports-selector .fh-sport-col.selected {
-  background-color: #bf0404;
+  background-color: var(--qvh-purple);
   color: #fff;
-  border-color: #bf0404;
+  border-color: var(--qvh-purple);
 }
 
 /* ── Title bar ── */
 .fh-title-bar {
-  background-color: #fff;
-  box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.3);
-  padding: 10px 0;
+  background-color: var(--qvh-bg-panel);
+  box-shadow: none;
+  border-bottom: 1px solid var(--qvh-border);
+  padding: 12px 0;
   margin-bottom: 15px;
 }
 
@@ -120,7 +110,7 @@
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.5em;
   font-weight: 600;
-  color: #212529;
+  color: var(--qvh-text);
 }
 
 /* ── Days carousel ── */
@@ -170,13 +160,13 @@
   top: 0;
   padding: 0.1em 0;
   color: #fff;
-  background-color: #bf0404;
+  background-color: var(--qvh-purple);
 }
 
 #fh-days-carousel .fh-day em {
   position: absolute;
   bottom: -0.1em;
-  color: #bf0404;
+  color: var(--qvh-purple);
   font-size: 1.2em;
 }
 
@@ -188,15 +178,16 @@
 }
 
 #fh-days-carousel .fh-day:hover {
-  background-color: #f6d8d9;
+  background-color: rgba(93, 95, 239, 0.15);
 }
 
 #fh-days-carousel .fh-day.selected {
-  background-color: #f6d8d9 !important;
+  background-color: rgba(93, 95, 239, 0.22) !important;
+  box-shadow: 0 0 0 2px var(--qvh-purple);
 }
 
 .fh-cal-sep {
-  border-left: 2px solid #bf0404;
+  border-left: 2px solid var(--qvh-purple);
   height: 45px !important;
   display: inline-block;
   margin: 0 5px;
@@ -217,7 +208,7 @@
   color: #fff;
   font-family: "Barlow Condensed", sans-serif;
   text-align: center;
-  background-color: #252a33;
+  background-color: var(--qvh-muted);
   font-size: 1.3em;
   font-weight: 600;
 }
@@ -238,7 +229,7 @@
   color: #fff;
   font-family: "Barlow Condensed", sans-serif;
   text-align: center;
-  background-color: #8d8e90;
+  background-color: var(--qvh-purple-dim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -337,7 +328,7 @@
 
 .fh-match .fh-m-time {
   font-family: "Barlow Condensed", sans-serif;
-  color: #bf0404;
+  color: var(--qvh-purple);
   font-weight: 700;
   font-size: 1.8em;
   margin: 0 10px;
@@ -415,10 +406,17 @@
 }
 
 .fh-match_esports {
-  background-color: #f5f0ff;
+  background-color: #e8f5ec;
 }
 .fh-match_esports .fh-m-comp {
-  border-color: #6b21a8;
+  border-color: var(--qvh-green);
+}
+
+.fh-match_f1 {
+  background-color: #e8eefc;
+}
+.fh-match_f1 .fh-m-comp {
+  border-color: var(--qvh-blue);
 }
 
 .fh-match_default {
@@ -432,7 +430,7 @@
 .fh-empty {
   text-align: center;
   padding: 40px 20px;
-  color: #666;
+  color: var(--qvh-text-muted);
   font-family: "Barlow Condensed", sans-serif;
 }
 
@@ -452,19 +450,19 @@
 }
 
 .fh-btn-primary {
-  background-color: #bf0404;
+  background-color: var(--qvh-purple);
   color: #fff;
-  border-color: #bf0404;
+  border-color: var(--qvh-purple);
 }
 
 .fh-btn-primary:hover {
-  background-color: #a00303;
+  background-color: var(--qvh-purple-hover);
 }
 
 /* ── Filtros de contenido ── */
 .fh-filters-panel {
-  background: #fff;
-  border: 1px solid #bfbfbf;
+  background: var(--qvh-bg-panel);
+  border: 1px solid var(--qvh-border);
   padding: 12px 14px;
   margin-bottom: 14px;
 }
@@ -481,28 +479,28 @@
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.15em;
   font-weight: 700;
-  color: #252a33;
+  color: var(--qvh-text);
 }
 
 .fh-filters-clear {
   font-family: "Barlow Condensed", sans-serif;
   font-size: 0.9em;
   padding: 4px 12px;
-  border: 1px solid #bf0404;
-  background: #fff;
-  color: #bf0404;
+  border: 1px solid var(--qvh-purple);
+  background: transparent;
+  color: var(--qvh-purple);
   border-radius: 3px;
   cursor: pointer;
   font-weight: 600;
 }
 
 .fh-filters-clear:hover {
-  background: #f6d8d9;
+  background: rgba(93, 95, 239, 0.15);
 }
 
 .fh-filters-hint {
   font-size: 0.85em;
-  color: #666;
+  color: var(--qvh-text-muted);
   margin: 0 0 12px;
   line-height: 1.4;
 }
@@ -522,7 +520,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #8d8e90;
+  color: var(--qvh-text-muted);
   margin-bottom: 6px;
 }
 
@@ -536,23 +534,21 @@
   font-family: "Barlow Condensed", sans-serif;
   font-size: 0.95em;
   padding: 6px 14px;
-  border: 1.5px solid #bfbfbf;
-  background: #f9f9f9;
+  border: 1.5px solid var(--qvh-border);
+  background: var(--qvh-bg);
   border-radius: 3px;
   cursor: pointer;
-  color: #525252;
+  color: #c8c8d4;
   font-weight: 500;
   transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
 
 .fh-filter-chip:hover {
-  border-color: #bf0404;
-  color: #bf0404;
+  border-color: var(--qvh-purple);
+  color: var(--qvh-purple-hover);
 }
 
 .fh-filter-chip.active {
-  background: #bf0404;
-  border-color: #bf0404;
   color: #fff;
   font-weight: 700;
 }
@@ -563,8 +559,8 @@
   font-size: 0.75em;
   font-weight: 700;
   text-transform: uppercase;
-  background: khaki;
-  color: #333;
+  background: var(--qvh-purple);
+  color: #fff;
   padding: 2px 8px;
   border-radius: 3px;
   margin-left: 8px;
@@ -573,7 +569,7 @@
 
 .fh-footer {
   text-align: center;
-  color: #999;
+  color: var(--qvh-text-muted);
   font-size: 0.85em;
   padding: 20px;
   font-family: "Barlow Condensed", sans-serif;

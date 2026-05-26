@@ -6,6 +6,7 @@ import { dedupeEvents } from "./lib/dedupe-events";
 import { pickFeaturedEvents } from "./lib/featured";
 import { STORAGE_KEY, sportLabel } from "./lib/filter-config";
 import { EventFilters } from "./components/EventFilters";
+import { Logo } from "./components/Logo";
 import { MatchCard } from "./components/MatchCard";
 import type { EventRow } from "./components/types";
 
@@ -123,9 +124,7 @@ export default function Home() {
     <div className="fh-body">
       <nav className="fh-navbar">
         <div className="fh-navbar-inner">
-          <a href="/" className="fh-logo">
-            Qué<span>ver</span>hoy
-          </a>
+          <Logo />
           <div className="fh-nav-links">
             <a href="/">Partidos</a>
             <a href="/admin">Admin</a>

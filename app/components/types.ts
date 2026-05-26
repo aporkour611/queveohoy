@@ -1,6 +1,7 @@
 export type EventRow = {
   id: number;
   title?: string;
+  date?: string;
   time?: string;
   home_team?: string | null;
   away_team?: string | null;

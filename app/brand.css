@@ -1,0 +1,180 @@
+/* Identidad visual queveohoy.es */
+
+:root {
+  --qvh-bg: #000000;
+  --qvh-bg-elevated: #0d0d12;
+  --qvh-bg-panel: #14141c;
+  --qvh-bg-card: #ffffff;
+  --qvh-purple: #5d5fef;
+  --qvh-purple-hover: #7476ff;
+  --qvh-purple-dim: #4547c4;
+  --qvh-muted: #2d2d3a;
+  --qvh-muted-text: #6b6b80;
+  --qvh-orange: #a04a2b;
+  --qvh-green: #1f6e43;
+  --qvh-blue: #2563eb;
+  --qvh-gold: #c9a227;
+  --qvh-text: #ffffff;
+  --qvh-text-on-light: #14141c;
+  --qvh-border: #2a2a38;
+  --qvh-border-light: #e0e0e8;
+}
+
+/* ── Logo ── */
+.qvh-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.qvh-logo-link--full {
+  display: block;
+  margin: 0 auto 8px;
+  max-width: 100%;
+}
+
+.qvh-logo-img-full {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+}
+
+.qvh-logo-tiles {
+  display: flex;
+  gap: 4px;
+}
+
+.qvh-tile {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Barlow Condensed", "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: #fff;
+  line-height: 1;
+}
+
+.qvh-tile-q {
+  background: var(--qvh-purple);
+}
+
+.qvh-tile-v {
+  background: var(--qvh-orange);
+}
+
+.qvh-tile-h {
+  background: var(--qvh-green);
+}
+
+.qvh-logo-divider {
+  width: 1px;
+  height: 40px;
+  background: #3a3a4a;
+  flex-shrink: 0;
+}
+
+.qvh-logo-wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.95;
+  font-family: "Barlow Condensed", "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+.qvh-wm {
+  display: block;
+}
+
+.qvh-wm-muted {
+  color: var(--qvh-muted-text);
+}
+
+.qvh-wm-accent {
+  color: var(--qvh-purple);
+}
+
+.qvh-wm-es {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  background: var(--qvh-purple);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+  letter-spacing: 0;
+}
+
+@media (min-width: 480px) {
+  .qvh-tile {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+
+  .qvh-logo-wordmark {
+    font-size: 1.5rem;
+  }
+}
+
+/* Chips de filtro por color de categoría */
+.fh-filter-chip.active {
+  background: var(--qvh-purple);
+  border-color: var(--qvh-purple);
+}
+
+.fh-filter-chip[data-sport="futbol"].active,
+.fh-filter-chip[data-sport="basket"].active,
+.fh-filter-chip[data-sport="ciclismo"].active {
+  background: var(--qvh-purple);
+  border-color: var(--qvh-purple);
+}
+
+.fh-filter-chip[data-sport="tenis"].active {
+  background: var(--qvh-orange);
+  border-color: var(--qvh-orange);
+}
+
+.fh-filter-chip[data-sport="formula1"].active {
+  background: var(--qvh-blue);
+  border-color: var(--qvh-blue);
+}
+
+.fh-filter-chip[data-sport="csgo"].active,
+.fh-filter-chip[data-sport="valorant"].active,
+.fh-filter-chip[data-sport="lol"].active,
+.fh-filter-chip[data-sport="dota2"].active {
+  background: var(--qvh-green);
+  border-color: var(--qvh-green);
+}
+
+.fh-filter-group-label[data-group="deportes"]::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--qvh-purple);
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.fh-filter-group-label[data-group="esports"]::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--qvh-green);
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
