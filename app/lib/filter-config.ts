@@ -13,7 +13,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
     options: [
       { id: "futbol", label: "Fútbol" },
       { id: "tenis", label: "Tenis" },
-      { id: "basket", label: "Basket" },
+      { id: "basket", label: "Baloncesto" },
       { id: "ciclismo", label: "Ciclismo" },
       { id: "ufc", label: "UFC" },
     ],
