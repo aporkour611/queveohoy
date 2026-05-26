@@ -42,8 +42,23 @@ export function hubLinkForEvent(
   if (event.sport === "futbol" && /premier/i.test(comp)) {
     return SEO_HUBS.find((h) => h.slug === "premier-league") ?? null;
   }
+  if (event.sport === "futbol" && /copa del rey/i.test(comp)) {
+    return SEO_HUBS.find((h) => h.slug === "copa-del-rey") ?? null;
+  }
   if (event.sport === "futbol") {
     return SEO_HUBS.find((h) => h.slug === "futbol") ?? null;
+  }
+  if (event.sport === "basket" && /nba/i.test(comp)) {
+    return SEO_HUBS.find((h) => h.slug === "nba") ?? null;
+  }
+  if (event.sport === "basket") {
+    return SEO_HUBS.find((h) => h.slug === "baloncesto") ?? null;
+  }
+  if (event.sport === "tenis") {
+    return SEO_HUBS.find((h) => h.slug === "tenis") ?? null;
+  }
+  if (event.sport === "ciclismo") {
+    return SEO_HUBS.find((h) => h.slug === "ciclismo") ?? null;
   }
   if (event.sport === "formula1") {
     return SEO_HUBS.find((h) => h.slug === "formula-1") ?? null;
@@ -53,9 +68,6 @@ export function hubLinkForEvent(
   }
   if (event.sport === "ufc") {
     return SEO_HUBS.find((h) => h.slug === "ufc") ?? null;
-  }
-  if (event.sport === "basket") {
-    return SEO_HUBS.find((h) => h.slug === "baloncesto") ?? null;
   }
   if (event.sport === "series" || event.sport === "cine") {
     return SEO_HUBS.find((h) => h.slug === "series") ?? null;

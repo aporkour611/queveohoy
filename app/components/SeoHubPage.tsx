@@ -5,24 +5,15 @@ import {
   MADRID_TZ,
 } from "../lib/timezone";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
-import { displayTime } from "../lib/madrid-time";
-import { eventLabel } from "../lib/seo-events";
 import type { SeoHubConfig } from "../lib/seo-hubs";
 import { filterEventsForHub } from "../lib/seo-hubs";
-import { hubLinkForEvent } from "./SeoHubLinks";
+import { HubFaq } from "./HubFaq";
 import { HubJsonLd } from "./HubJsonLd";
 import { Logo } from "./Logo";
+import { SeoDateNav } from "./SeoDateNav";
 import { SeoHubLinks } from "./SeoHubLinks";
 import { SiteFooter } from "./SiteFooter";
-
-function eventMeta(event: EventRow): string {
-  const parts = [
-    event.competition?.split(" · ")[0],
-    event.time ? displayTime(event.time) : null,
-    event.platform?.split(",")[0]?.trim(),
-  ].filter(Boolean);
-  return parts.join(" · ");
-}
+import { SeoHubEventFeed } from "./SeoHubEventFeed";
 
 type Props = {
   hub: SeoHubConfig;
@@ -39,6 +30,8 @@ export function SeoHubPage({ hub, events }: Props) {
       events: filtered.filter((event) => event.date === day.date),
     }))
     .filter((day) => day.events.length > 0);
+
+  const totalEvents = filtered.length;
 
   return (
     <>
@@ -66,6 +59,17 @@ export function SeoHubPage({ hub, events }: Props) {
             <h1 className="fh-page-title">{hub.h1}</h1>
             <p className="fh-page-lead">{hub.lead}</p>
 
+            {totalEvents > 0 ? (
+              <div className="qvh-calendar-hero-stats qvh-calendar-hero-stats-hub">
+                <span className="qvh-calendar-stat qvh-calendar-stat-count">
+                  {totalEvents === 1
+                    ? "1 evento"
+                    : `${totalEvents} eventos`}
+                  {hub.dayScope === "today" ? " hoy" : " esta semana"}
+                </span>
+              </div>
+            ) : null}
+
             <p className="fh-seo-hub-cta">
               <Link href="/">Ver agenda interactiva con filtros →</Link>
             </p>
@@ -81,46 +85,12 @@ export function SeoHubPage({ hub, events }: Props) {
                 </p>
               </div>
             ) : (
-              <section
-                className="fh-seo-outline fh-seo-hub-outline"
-                aria-label={`Agenda de ${hub.title}`}
-              >
-                <h2 className="fh-seo-outline-title">
-                  {hub.dayScope === "today"
-                    ? "Horarios de hoy"
-                    : "Horarios de esta semana"}
-                </h2>
-                {days.map((day) => (
-                  <div key={day.date} className="fh-seo-outline-day">
-                    <h3 id={`hub-day-${day.date}`}>{day.title}</h3>
-                    <ul>
-                      {day.events.map((event) => {
-                        const relatedHub = hubLinkForEvent(event);
-                        const showLink =
-                          relatedHub && relatedHub.slug !== hub.slug;
-
-                        return (
-                          <li key={event.id}>
-                            <strong>{eventLabel(event)}</strong>
-                            {eventMeta(event) ? ` — ${eventMeta(event)}` : ""}
-                            {showLink ? (
-                              <>
-                                {" "}
-                                ·{" "}
-                                <Link href={`/${relatedHub.slug}`}>
-                                  {relatedHub.title}
-                                </Link>
-                              </>
-                            ) : null}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
-              </section>
+              <SeoHubEventFeed days={days} hubTitle={hub.title} />
             )}
 
+            {hub.slug === "partidos-hoy" ? <SeoDateNav /> : null}
+
+            <HubFaq slug={hub.slug} />
             <SeoHubLinks current={hub.slug} />
             <SiteFooter />
           </div>

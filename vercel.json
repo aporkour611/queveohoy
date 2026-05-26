@@ -20,6 +20,22 @@
     {
       "path": "/api/cron",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/indexnow/ping",
+      "schedule": "30 6,12,18 * * *"
     }
   ]
 }

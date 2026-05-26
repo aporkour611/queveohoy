@@ -8,6 +8,12 @@ import {
 import { FEED_DAY_COUNT } from "./events-feed";
 import type { SeoHubConfig } from "./seo-hubs";
 import {
+  buildDateMetadataDescription,
+  filterEventsForDate,
+  formatDateForMetadata,
+  partidosHoyDatePath,
+} from "./seo-date";
+import {
   eventLabel,
   eventStartIso,
   schemaEventType,
@@ -75,45 +81,95 @@ function buildItemList(events: EventRow[], listId: string, listName: string) {
   };
 }
 
-function buildFaqPage() {
+export const HOME_FAQ_ITEMS = [
+  {
+    question: "¿Qué ver hoy en la tele?",
+    answer:
+      "En queveohoy.es puedes consultar partidos de fútbol, Champions, LaLiga, F1, MotoGP, UFC, baloncesto, tenis, series y estrenos con horario y canal en España.",
+  },
+  {
+    question: "¿Dónde ver el fútbol hoy?",
+    answer:
+      "La agenda indica el canal o plataforma de cada partido: DAZN, Movistar, La 1, LaLiga TV, Gol Play, Teledeporte y más.",
+  },
+  {
+    question: "¿A qué hora son los partidos de hoy?",
+    answer:
+      "Los horarios están en península y Baleares (Europe/Madrid). Puedes cambiar la zona horaria para LATAM desde la barra superior.",
+  },
+  {
+    question: "¿Dónde ver la Champions League hoy?",
+      answer:
+        "Consulta queveohoy.es/champions y la guía queveohoy.es/guia/champions-espana para horarios y canales de cada partido.",
+  },
+] as const;
+
+function buildFaqSchema(
+  id: string,
+  items: readonly { question: string; answer: string }[]
+) {
   return {
     "@type": "FAQPage",
-    "@id": `${siteUrl}/#faq`,
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "¿Qué ver hoy en la tele?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "En queveohoy.es puedes consultar partidos de fútbol, Champions, LaLiga, F1, MotoGP, UFC, baloncesto, tenis, series y estrenos con horario y canal en España.",
-        },
+    "@id": id,
+    mainEntity: items.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: answer,
       },
-      {
-        "@type": "Question",
-        name: "¿Dónde ver el fútbol hoy?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "La agenda de queveohoy.es indica el canal o plataforma de cada partido: DAZN, Movistar, LaLiga TV, Gol Play, Telecinco, Antena 3 y más.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "¿A qué hora son los partidos de hoy?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Todos los horarios están en península y Baleares (Europe/Madrid). También puedes cambiar la zona horaria para LATAM desde la home.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "¿Dónde ver la Champions League hoy?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Consulta la página de Champions League en queveohoy.es/champions para ver horarios y canales de cada partido en España.",
-        },
-      },
-    ],
+    })),
   };
+}
+
+function buildHomeFaqPage() {
+  return buildFaqSchema(`${siteUrl}/#faq`, HOME_FAQ_ITEMS);
+}
+
+export const HUB_FAQ_BY_SLUG: Record<
+  string,
+  readonly { question: string; answer: string }[]
+> = {
+  champions: [
+    {
+      question: "¿Dónde ver la Champions League en España?",
+      answer:
+        "La Champions se emite en La 1, Movistar Liga de Campeones, DAZN y a veces en abierto según el partido. En queveohoy.es/champions ves el canal de cada encuentro.",
+    },
+    {
+      question: "¿A qué hora son los partidos de Champions hoy?",
+      answer:
+        "Los horarios de la Champions están en península y Baleares (Europe/Madrid). Consulta la agenda de hoy en queveohoy.es/champions.",
+    },
+    {
+      question: "¿La Champions es gratis en TV?",
+      answer:
+        "Algunos partidos se emiten en La 1 u otros canales en abierto; el resto suele estar en Movistar o DAZN. La agenda indica el canal de cada partido.",
+    },
+  ],
+  laliga: [
+    {
+      question: "¿Dónde ver LaLiga en TV?",
+      answer:
+        "LaLiga se ve en Movistar LaLiga, DAZN LaLiga y Gol Play. Guía: queveohoy.es/guia/laliga-espana · agenda: queveohoy.es/laliga.",
+    },
+    {
+      question: "¿Qué partidos de LaLiga hay hoy?",
+      answer:
+        "La agenda de LaLiga en queveohoy.es/laliga lista los partidos de Primera con horario y plataforma para hoy y la semana.",
+    },
+    {
+      question: "¿DAZN o Movistar para ver LaLiga?",
+      answer:
+        "Depende del partido y los derechos de la jornada. En la agenda verás si toca DAZN LaLiga, Movistar u otro emisor.",
+    },
+  ],
+};
+
+export function getHubFaqItems(
+  slug: string
+): readonly { question: string; answer: string }[] {
+  return HUB_FAQ_BY_SLUG[slug] ?? [];
 }
 
 export function buildHomeJsonLd(events: EventRow[]) {
@@ -153,14 +209,6 @@ export function buildHomeJsonLd(events: EventRow[]) {
         description: defaultDescription,
         inLanguage: "es-ES",
         publisher: { "@id": `${siteUrl}/#organization` },
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `${siteUrl}/partidos-hoy`,
-          },
-          "query-input": "required name=search_term_string",
-        },
       },
       {
         "@type": "WebPage",
@@ -175,7 +223,71 @@ export function buildHomeJsonLd(events: EventRow[]) {
         },
         inLanguage: "es-ES",
       },
-      buildFaqPage(),
+      buildHomeFaqPage(),
+      ...(itemList ? [itemList] : []),
+    ],
+  };
+}
+
+export function buildDateJsonLd(dateKey: string, events: EventRow[]) {
+  const pageUrl = `${siteUrl}${partidosHoyDatePath(dateKey)}`;
+  const dayEvents = filterEventsForDate(events, dateKey);
+  const pageName = `Partidos ${formatDateForMetadata(dateKey)} en TV`;
+  const itemList = buildItemList(
+    dayEvents.slice(0, 24),
+    `${pageUrl}/#events`,
+    pageName
+  );
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteUrl}/#organization`,
+        name: siteBrand,
+        url: siteUrl,
+        logo: `${siteUrl}/logo-queveohoy.png`,
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${siteUrl}/#website`,
+        name: siteName,
+        url: siteUrl,
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${pageUrl}/#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Inicio",
+            item: siteUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Partidos hoy en TV",
+            item: `${siteUrl}/partidos-hoy`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: formatDateForMetadata(dateKey),
+            item: pageUrl,
+          },
+        ],
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}/#webpage`,
+        url: pageUrl,
+        name: pageName,
+        description: buildDateMetadataDescription(dateKey, events),
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        inLanguage: "es-ES",
+      },
       ...(itemList ? [itemList] : []),
     ],
   };
@@ -188,6 +300,7 @@ export function buildHubJsonLd(hub: SeoHubConfig, events: EventRow[]) {
     `${pageUrl}/#events`,
     hub.h1
   );
+  const hubFaq = getHubFaqItems(hub.slug);
 
   return {
     "@context": "https://schema.org",
@@ -232,6 +345,9 @@ export function buildHubJsonLd(hub: SeoHubConfig, events: EventRow[]) {
         isPartOf: { "@id": `${siteUrl}/#website` },
         inLanguage: "es-ES",
       },
+      ...(hubFaq.length
+        ? [buildFaqSchema(`${pageUrl}/#faq`, hubFaq)]
+        : []),
       ...(itemList ? [itemList] : []),
     ],
   };

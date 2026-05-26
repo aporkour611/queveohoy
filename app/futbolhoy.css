@@ -625,8 +625,6 @@
 
 .fh-day-section {
   scroll-margin-top: calc(var(--qvh-navbar-h) + 8px);
-  content-visibility: auto;
-  contain-intrinsic-size: auto 480px;
 }
 
 .fh-day-empty {
@@ -955,12 +953,25 @@
 
 .fh-match .fh-m-chan span {
   font-family: var(--qvh-font-display);
-  margin: 0 2px 2px;
+  margin: 0 3px 4px;
   display: inline-block;
   padding: 2px 6px;
   font-size: 0.8em;
   border-radius: 3px;
   white-space: nowrap;
+}
+
+.fh-match .fh-m-chan-prominent span {
+  padding: 4px 10px;
+  font-size: 0.88em;
+  font-weight: 600;
+  border-radius: 4px;
+  margin: 0 4px 6px;
+}
+
+.fh-match .fh-m-chan-prominent {
+  margin-top: 4px;
+  padding-top: 2px;
 }
 
 .fh-match .fh-ch-free {
@@ -2133,4 +2144,238 @@
 .qvh-site-footer-seo span[aria-hidden] {
   color: var(--qvh-text-muted);
   opacity: 0.6;
+}
+
+/* FAQ indexable (home + hubs Champions / LaLiga) */
+.qvh-faq {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 16px 28px;
+  border-top: 1px solid var(--fh-border, rgba(255, 255, 255, 0.08));
+}
+
+.qvh-faq-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--fh-muted, rgba(255, 255, 255, 0.55));
+  margin: 0 0 12px;
+}
+
+.qvh-faq-list {
+  margin: 0;
+  padding: 0;
+}
+
+.qvh-faq-item {
+  margin-bottom: 14px;
+}
+
+.qvh-faq-item:last-child {
+  margin-bottom: 0;
+}
+
+.qvh-faq-item dt {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fh-text, #fff);
+  margin: 0 0 4px;
+}
+
+.qvh-faq-item dd {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--fh-muted, rgba(255, 255, 255, 0.5));
+}
+
+.qvh-hub-faq {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.fh-seo-date-nav {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 16px 8px;
+}
+
+.fh-seo-date-nav-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fh-muted, rgba(255, 255, 255, 0.55));
+  margin: 0 0 8px;
+}
+
+.fh-seo-date-nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fh-seo-date-nav-list li {
+  font-size: 0.75rem;
+}
+
+.fh-seo-date-nav-list a {
+  color: var(--qvh-purple-hover, #a78bfa);
+  text-decoration: none;
+}
+
+.fh-seo-date-nav-list a:hover {
+  text-decoration: underline;
+}
+
+.fh-seo-date-nav-list span[aria-current="page"] {
+  color: var(--fh-text, #fff);
+  font-weight: 600;
+}
+
+/* Tráfico: accesos rápidos y compartir */
+.qvh-traffic-hubs {
+  margin: 0 0 20px;
+  padding: 0 0 8px;
+}
+
+.qvh-traffic-hubs-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--fh-muted, rgba(255, 255, 255, 0.55));
+  margin: 0 0 10px;
+}
+
+.qvh-traffic-hubs-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.qvh-traffic-hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--fh-border, rgba(255, 255, 255, 0.1));
+  background: rgba(255, 255, 255, 0.03);
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.qvh-traffic-hub-card:hover {
+  border-color: var(--qvh-purple-hover, #a78bfa);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.qvh-traffic-hub-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fh-text, #fff);
+}
+
+.qvh-traffic-hub-count {
+  font-size: 0.6875rem;
+  color: var(--qvh-purple-hover, #a78bfa);
+}
+
+.qvh-traffic-hub-count-muted {
+  color: var(--fh-muted, rgba(255, 255, 255, 0.45));
+}
+
+.qvh-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-top: 12px;
+}
+
+.qvh-hero-cta-primary,
+.qvh-hero-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.qvh-hero-cta-primary {
+  background: var(--qvh-purple, #7c3aed);
+  color: #fff;
+}
+
+.qvh-hero-cta-primary:hover {
+  background: var(--qvh-purple-hover, #8b5cf6);
+}
+
+.qvh-hero-cta-secondary {
+  border: 1px solid var(--fh-border, rgba(255, 255, 255, 0.15));
+  color: var(--fh-text-secondary, rgba(255, 255, 255, 0.85));
+}
+
+.qvh-hero-cta-secondary:hover {
+  border-color: var(--qvh-purple-hover, #a78bfa);
+}
+
+.qvh-share-today {
+  display: inline-flex;
+  margin: 0 0 20px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px dashed var(--fh-border, rgba(255, 255, 255, 0.2));
+  background: transparent;
+  color: var(--qvh-purple-hover, #a78bfa);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.qvh-share-today:hover {
+  border-color: var(--qvh-purple-hover, #a78bfa);
+  background: rgba(139, 92, 246, 0.06);
+}
+
+.fh-seo-guide {
+  padding-bottom: 24px;
+}
+
+.fh-seo-guide-block {
+  max-width: 720px;
+  margin-bottom: 20px;
+}
+
+.fh-seo-guide-block h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fh-text, #fff);
+  margin: 0 0 8px;
+}
+
+.fh-seo-guide-block p,
+.fh-seo-guide-list {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--fh-muted, rgba(255, 255, 255, 0.65));
+}
+
+.fh-seo-guide-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.fh-seo-guide-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.fh-seo-guide-ctas a {
+  color: var(--qvh-purple-hover, #a78bfa);
 }

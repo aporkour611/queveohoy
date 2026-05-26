@@ -125,16 +125,65 @@ export const SEO_HUBS: SeoHubConfig[] = [
     match: (e) => e.sport === "ufc",
   },
   {
+    slug: "nba",
+    title: "NBA hoy en TV",
+    h1: "NBA hoy en la tele",
+    lead: "Partidos de la NBA con horario y canal en España.",
+    description:
+      "NBA hoy: horarios y canales para ver los partidos de la NBA en TV y streaming en España.",
+    keywords: ["nba hoy", "nba hoy tv", "nba horario", "partidos nba hoy"],
+    priority: 0.82,
+    dayScope: "week",
+    match: (e) => e.sport === "basket" && compMatches(e, /nba/i),
+  },
+  {
     slug: "baloncesto",
     title: "Baloncesto hoy en TV",
     h1: "Baloncesto hoy en la tele",
-    lead: "Partidos de baloncesto y NBA con horario y canal.",
+    lead: "Partidos de baloncesto (ACB, Euroliga y más) con horario y canal.",
     description:
-      "Baloncesto hoy: horarios y canales de partidos de baloncesto y NBA en TV y streaming.",
-    keywords: ["baloncesto hoy tv", "nba hoy horario", "partidos baloncesto hoy"],
+      "Baloncesto hoy: horarios y canales de partidos de baloncesto en TV y streaming en España.",
+    keywords: ["baloncesto hoy tv", "acb hoy", "partidos baloncesto hoy", "euroliga hoy tv"],
     priority: 0.8,
     dayScope: "week",
-    match: (e) => e.sport === "basket",
+    match: (e) => e.sport === "basket" && !compMatches(e, /nba/i),
+  },
+  {
+    slug: "tenis",
+    title: "Tenis hoy en TV",
+    h1: "Tenis hoy en la tele",
+    lead: "Partidos de tenis ATP y WTA con horario y canal.",
+    description:
+      "Tenis hoy: horarios y canales para ver tenis en TV y streaming en España.",
+    keywords: ["tenis hoy tv", "tenis hoy horario", "partidos tenis hoy", "atp hoy tv"],
+    priority: 0.78,
+    dayScope: "week",
+    match: (e) => e.sport === "tenis",
+  },
+  {
+    slug: "ciclismo",
+    title: "Ciclismo hoy en TV",
+    h1: "Ciclismo hoy en la tele",
+    lead: "Etapas y carreras de ciclismo con horario y canal.",
+    description:
+      "Ciclismo hoy: horarios y canales para ver ciclismo en TV y streaming en España.",
+    keywords: ["ciclismo hoy tv", "vuelta ciclista hoy", "tour de france hoy tv"],
+    priority: 0.75,
+    dayScope: "week",
+    match: (e) => e.sport === "ciclismo",
+  },
+  {
+    slug: "copa-del-rey",
+    title: "Copa del Rey hoy",
+    h1: "Copa del Rey hoy en TV",
+    lead: "Partidos de la Copa del Rey con horario y canal en España.",
+    description:
+      "Copa del Rey hoy: horarios y canales de los partidos de copa en TV y streaming.",
+    keywords: ["copa del rey hoy", "copa del rey tv", "copa del rey horario"],
+    priority: 0.82,
+    dayScope: "week",
+    match: (e) =>
+      e.sport === "futbol" && compMatches(e, /copa del rey/i),
   },
   {
     slug: "series",
@@ -149,6 +198,9 @@ export const SEO_HUBS: SeoHubConfig[] = [
     match: (e) => e.sport === "series" || e.sport === "cine",
   },
 ];
+
+/** Slugs para rewrites, sitemap y generateStaticParams (fuente única). */
+export const SEO_HUB_SLUGS = SEO_HUBS.map((h) => h.slug);
 
 export function getSeoHub(slug: string): SeoHubConfig | undefined {
   return SEO_HUBS.find((h) => h.slug === slug);

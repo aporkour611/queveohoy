@@ -1,12 +1,13 @@
 import type { EventRow } from "./types";
-import { buildHomeJsonLd } from "../lib/seo-jsonld";
+import { buildDateJsonLd } from "../lib/seo-jsonld";
 
 type Props = {
+  dateKey: string;
   events: EventRow[];
 };
 
-export function HomeJsonLd({ events }: Props) {
-  const jsonLd = buildHomeJsonLd(events);
+export function DateJsonLd({ dateKey, events }: Props) {
+  const jsonLd = buildDateJsonLd(dateKey, events);
 
   return (
     <script

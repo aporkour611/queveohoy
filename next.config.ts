@@ -1,17 +1,23 @@
 import type { NextConfig } from "next";
+import { SEO_HUB_SLUGS } from "./app/lib/seo-hubs";
 
-const hubSlugs = [
-  "partidos-hoy",
-  "futbol",
-  "champions",
-  "laliga",
-  "premier-league",
-  "formula-1",
-  "motogp",
-  "ufc",
-  "baloncesto",
-  "series",
-];
+function buildBeforeFileRewrites() {
+  const rewrites: { source: string; destination: string }[] = [
+    {
+      source: "/partidos-hoy/:fecha",
+      destination: "/agenda/partidos-hoy/:fecha",
+    },
+  ];
+
+  for (const slug of SEO_HUB_SLUGS) {
+    rewrites.push({
+      source: `/${slug}`,
+      destination: `/agenda/${slug}`,
+    });
+  }
+
+  return rewrites;
+}
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -35,10 +41,7 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return {
-      beforeFiles: hubSlugs.map((slug) => ({
-        source: `/${slug}`,
-        destination: `/agenda/${slug}`,
-      })),
+      beforeFiles: buildBeforeFileRewrites(),
     };
   },
 };

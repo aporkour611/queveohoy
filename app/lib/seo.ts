@@ -44,6 +44,9 @@ export const seoKeywords = [
   "f1 hoy tv",
   "ufc hoy",
   "motogp hoy",
+  "nba hoy tv",
+  "tenis hoy tv",
+  "copa del rey hoy",
   "series hoy tv",
   "queveohoy",
 ];

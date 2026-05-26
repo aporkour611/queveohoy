@@ -96,18 +96,21 @@ function SpotlightCardContent({
       <div className="fh-media-spotlight-body">
         <h4 className="fh-media-spotlight-title">{title}</h4>
         {subtitle ? <p className="fh-media-spotlight-meta">{subtitle}</p> : null}
-        {channels.length > 0 ? (
-          <div className="fh-m-chan">
+        {channels.length > 0 && (
+          <div className="fh-m-chan fh-m-chan-prominent">
             {channels.map((ch) => (
               <span
                 key={ch}
-                className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
+                className={
+                  isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"
+                }
+                title={isFreeTvChannel(ch) ? "En abierto" : "De pago"}
               >
                 {ch}
               </span>
             ))}
           </div>
-        ) : null}
+        )}
       </div>
     </>
   );
@@ -133,6 +136,8 @@ function EventDetailsPanel({ event }: { event: EventRow }) {
 export const MatchCard = memo(function MatchCard({ event }: Props) {
   const [expanded, setExpanded] = useState(false);
   const { timeZone } = useTimezone();
+  const details = useMemo(() => buildEventDetails(event), [event]);
+  const hasExtraDetails = details.length > 0;
   const isCine = event.sport === "cine";
   const isSeries = event.sport === "series";
   const isTv = event.sport === "tv";
@@ -196,30 +201,35 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const matchClass = competitionMatchClass(compDisplay, event.sport);
 
   function toggleExpanded() {
+    if (!hasExtraDetails) return;
     setExpanded((open) => !open);
   }
 
   const cardShell = (children: ReactNode, extraClass = "") => (
     <div className={`fh-cardcol${expanded ? " fh-cardcol-expanded" : ""}`}>
       <div
-        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}`}
-        role="button"
-        tabIndex={0}
-        aria-expanded={expanded}
-        onClick={toggleExpanded}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            toggleExpanded();
-          }
-        }}
+        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${hasExtraDetails ? " fh-match-expandable" : ""}`}
+        role={hasExtraDetails ? "button" : undefined}
+        tabIndex={hasExtraDetails ? 0 : undefined}
+        aria-expanded={hasExtraDetails ? expanded : undefined}
+        onClick={hasExtraDetails ? toggleExpanded : undefined}
+        onKeyDown={
+          hasExtraDetails
+            ? (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggleExpanded();
+                }
+              }
+            : undefined
+        }
       >
         {children}
-        {expanded ? (
+        {expanded && hasExtraDetails ? (
           <EventDetailsPanel event={event} />
-        ) : (
+        ) : hasExtraDetails ? (
           <p className="fh-m-expand-hint">Toca para más info</p>
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -315,11 +325,12 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         </div>
 
       {channels.length > 0 && (
-        <div className="fh-m-chan">
+        <div className="fh-m-chan fh-m-chan-prominent">
           {channels.map((ch) => (
             <span
               key={ch}
               className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
+              title={isFreeTvChannel(ch) ? "En abierto" : "De pago"}
             >
               {ch}
             </span>

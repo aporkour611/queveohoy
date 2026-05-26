@@ -4,12 +4,16 @@ export const SEO_HUB_NAV_LINKS = [
   { slug: "futbol", title: "Fútbol hoy en TV" },
   { slug: "champions", title: "Champions League hoy" },
   { slug: "laliga", title: "LaLiga hoy en TV" },
+  { slug: "nba", title: "NBA hoy en TV" },
   { slug: "formula-1", title: "Fórmula 1 hoy" },
   { slug: "ufc", title: "UFC hoy" },
+  { slug: "tenis", title: "Tenis hoy en TV" },
   { slug: "series", title: "Series y estrenos hoy" },
   { slug: "premier-league", title: "Premier League hoy" },
   { slug: "motogp", title: "MotoGP hoy" },
   { slug: "baloncesto", title: "Baloncesto hoy en TV" },
+  { slug: "ciclismo", title: "Ciclismo hoy en TV" },
+  { slug: "copa-del-rey", title: "Copa del Rey hoy" },
 ] as const;
 
 export const SEO_FOOTER_HUB_SLUGS = [
@@ -17,6 +21,8 @@ export const SEO_FOOTER_HUB_SLUGS = [
   "futbol",
   "champions",
   "laliga",
+  "nba",
+  "tenis",
   "formula-1",
   "ufc",
   "series",

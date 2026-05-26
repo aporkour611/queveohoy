@@ -17,6 +17,7 @@ import { fetchBasketballCronEvents } from "@/app/lib/balldontlie";
 import { fetchMotogpCronEvents } from "@/app/lib/motogp";
 import { fetchTheSportsDbLeagueEvents } from "@/app/lib/thesportsdb-leagues";
 import { fetchUfcCronEvents } from "@/app/lib/thesportsdb-ufc";
+import { pingIndexNow } from "@/app/lib/indexnow";
 import {
   ergastToMadrid,
   getMadridWeekDates,
@@ -573,9 +574,25 @@ export async function GET(request: Request) {
 
   console.log("=== CRON TERMINADO ===");
 
+  let indexNow: Awaited<ReturnType<typeof pingIndexNow>> = {
+    ok: false,
+    skipped: true,
+  };
+  try {
+    indexNow = await pingIndexNow();
+    if (indexNow.ok) {
+      console.log("✓ IndexNow ping OK");
+    } else if (!indexNow.skipped) {
+      console.warn("IndexNow ping:", indexNow.error ?? indexNow.status);
+    }
+  } catch (e) {
+    console.warn("IndexNow error:", e);
+  }
+
   return NextResponse.json({
     ok: true,
     timestamp: new Date().toISOString(),
+    indexNow,
     football,
     f1: f1.count,
     f1Error: f1.error,

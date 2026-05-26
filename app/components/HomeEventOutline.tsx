@@ -9,6 +9,7 @@ import {
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { displayTime } from "../lib/madrid-time";
 import { eventLabel } from "../lib/seo-events";
+import { partidosHoyDatePath } from "../lib/seo-date";
 import { hubLinkForEvent } from "./SeoHubLinks";
 
 function eventMeta(event: EventRow): string {
@@ -46,7 +47,9 @@ export function HomeEventOutline({ events }: Props) {
       <h2 className="fh-seo-outline-title">Agenda TV y streaming esta semana</h2>
       {days.map((day) => (
         <div key={day.date} className="fh-seo-outline-day">
-          <h3 id={`seo-day-${day.date}`}>{day.title}</h3>
+          <h3 id={`seo-day-${day.date}`}>
+            <Link href={partidosHoyDatePath(day.date)}>{day.title}</Link>
+          </h3>
           <ul>
             {day.events.map((event) => {
               const hub = hubLinkForEvent(event);

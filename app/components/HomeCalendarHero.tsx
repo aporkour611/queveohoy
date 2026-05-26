@@ -1,12 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { partidosHoyDatePath } from "../lib/seo-date";
 import { useTimezone } from "../lib/timezone-context";
 import { buildDisplayDays } from "../lib/timezone";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
+import type { TodayStats } from "../lib/home-stats";
 
 type Props = {
   fetchedAt?: string | null;
+  stats: TodayStats;
 };
 
 function formatUpdatedLabel(iso: string): string {
@@ -24,7 +28,7 @@ function formatUpdatedLabel(iso: string): string {
   })}`;
 }
 
-export function HomeCalendarHero({ fetchedAt }: Props) {
+export function HomeCalendarHero({ fetchedAt, stats }: Props) {
   const { timeZone } = useTimezone();
   const [updatedLabel, setUpdatedLabel] = useState<string | null>(null);
 
@@ -39,22 +43,67 @@ export function HomeCalendarHero({ fetchedAt }: Props) {
     return () => window.clearInterval(timer);
   }, [fetchedAt]);
 
+  const eventLabel =
+    stats.total === 0
+      ? "Sin eventos hoy"
+      : stats.total === 1
+        ? "1 evento hoy"
+        : `${stats.total} eventos hoy`;
+
   return (
     <header className="qvh-calendar-hero">
       <p className="qvh-calendar-hero-kicker">
         Calendario semanal · TV, deportes y estrenos
       </p>
-      <h1 className="qvh-calendar-hero-title">Qué ver hoy</h1>
-      <p className="qvh-calendar-hero-lead">
+      <h1 className="qvh-calendar-hero-title">Qué ver hoy en TV</h1>
+
+      <div className="qvh-calendar-hero-stats" aria-live="polite">
         {today ? (
+          <span className="qvh-calendar-stat qvh-calendar-stat-day">
+            {today.title}
+          </span>
+        ) : null}
+        <span className="qvh-calendar-stat qvh-calendar-stat-count">
+          {eventLabel}
+        </span>
+        {stats.freeCount > 0 ? (
+          <span className="qvh-calendar-stat qvh-calendar-stat-free">
+            {stats.freeCount === 1
+              ? "1 en abierto"
+              : `${stats.freeCount} en abierto`}
+          </span>
+        ) : null}
+      </div>
+
+      <p className="qvh-calendar-hero-lead">
+        {stats.total > 0 ? (
           <>
-            Hoy es <strong>{today.title}</strong> — los eventos más importantes
-            y dónde verlos, en un vistazo.
+            Partidos, deportes y estrenos de <strong>{stats.dayTitle}</strong>{" "}
+            con horario y canal en un vistazo.
           </>
         ) : (
-          <>Los eventos más importantes de la semana y dónde verlos.</>
+          <>
+            Hoy es <strong>{stats.dayTitle}</strong> — consulta otros días en
+            las pestañas o la semana completa.
+          </>
         )}
       </p>
+
+      <div className="qvh-hero-ctas">
+        <Link
+          href={today ? partidosHoyDatePath(today.date) : "/partidos-hoy"}
+          className="qvh-hero-cta-primary"
+        >
+          Partidos hoy en TV →
+        </Link>
+        <Link href="/champions" className="qvh-hero-cta-secondary">
+          Champions
+        </Link>
+        <Link href="/laliga" className="qvh-hero-cta-secondary">
+          LaLiga
+        </Link>
+      </div>
+
       {updatedLabel ? (
         <p className="qvh-calendar-hero-updated" aria-live="polite">
           {updatedLabel}

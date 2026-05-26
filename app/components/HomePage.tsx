@@ -3,12 +3,14 @@
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
-import { STORAGE_KEY, sportLabel, ALL_SPORT_IDS } from "../lib/filter-config";
+import { STORAGE_KEY, ALL_SPORT_IDS } from "../lib/filter-config";
 import {
   COOKIE_CONSENT_EVENT,
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
+import { countTodayStats } from "../lib/home-stats";
 import { DayTabs } from "./DayTabs";
+import { EventDaySections } from "./EventDaySections";
 import { EventFilters } from "./EventFilters";
 import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
@@ -16,12 +18,9 @@ import { Logo } from "./Logo";
 import { RegionTimezoneBar } from "./RegionTimezoneBar";
 import { HomeCalendarHero } from "./HomeCalendarHero";
 import { DestacadosSection } from "./DestacadosSection";
-import { MatchCard } from "./MatchCard";
-import { MediaEntertainmentSection } from "./MediaEntertainmentSection";
 import { ScrollToTop } from "./ScrollToTop";
 import { SiteFooter } from "./SiteFooter";
 import type { EventRow } from "./types";
-import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
 import { TimezoneProvider, useTimezone } from "../lib/timezone-context";
 import {
   buildDisplayDays,
@@ -29,6 +28,7 @@ import {
   mapEventsToTimezone,
 } from "../lib/timezone";
 import { resolveDayEventsForFeed } from "../lib/upcoming-events";
+
 type Props = {
   initialEvents?: EventRow[];
   initialError?: string | null;
@@ -52,83 +52,6 @@ function scrollToDaySection(date: string) {
   window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
 }
 
-function groupForDisplay(events: EventRow[]) {
-  const football: Record<string, EventRow[]> = {};
-  const bySport: Record<string, { label: string; sportId: string; events: EventRow[] }> =
-    {};
-  const cine: EventRow[] = [];
-  const series: EventRow[] = [];
-  const tv: EventRow[] = [];
-
-  for (const e of events) {
-    if (e.sport === "futbol") {
-      const key = (e.competition || "Fútbol").split(" · ")[0];
-      if (!football[key]) football[key] = [];
-      football[key].push(e);
-    } else if (e.sport === "cine") {
-      cine.push(e);
-    } else if (e.sport === "series") {
-      series.push(e);
-    } else if (e.sport === "tv") {
-      tv.push(e);
-    } else {
-      const sportId = e.sport ?? "otros";
-      if (!bySport[sportId]) {
-        bySport[sportId] = {
-          label: sportLabel(sportId),
-          sportId,
-          events: [],
-        };
-      }
-      bySport[sportId].events.push(e);
-    }
-  }
-
-  return { football, bySport, cine, series, tv };
-}
-
-function renderMediaBlock(cine: EventRow[], series: EventRow[], tv: EventRow[]) {
-  return <MediaEntertainmentSection cine={cine} series={series} tv={tv} />;
-}
-
-function renderEventSections(events: EventRow[]) {
-  const sections = groupForDisplay(events);
-
-  return (
-    <>
-      {Object.entries(sections.football).map(([comp, evs]) => (
-        <div key={comp} className="fh-section-block">
-          <div className={`fh-comp-header ${competitionAccentClass(comp)}`}>
-            <h3>{comp}</h3>
-            <span className="fh-comp-count">{evs.length}</span>
-          </div>
-          <div className="fh-match-grid">
-            {evs.map((e) => (
-              <MatchCard key={e.id} event={e} />
-            ))}
-          </div>
-        </div>
-      ))}
-
-      {Object.values(sections.bySport).map(({ label, sportId, events: evs }) => (
-        <div key={sportId} className="fh-section-block">
-          <div className={`fh-comp-header ${sportAccentClass(sportId)}`}>
-            <h3>{label}</h3>
-            <span className="fh-comp-count">{evs.length}</span>
-          </div>
-          <div className="fh-match-grid">
-            {evs.map((e) => (
-              <MatchCard key={e.id} event={e} />
-            ))}
-          </div>
-        </div>
-      ))}
-
-      {renderMediaBlock(sections.cine, sections.series, sections.tv)}
-    </>
-  );
-}
-
 export function HomePage({
   initialEvents = [],
   initialError = null,
@@ -136,17 +59,15 @@ export function HomePage({
   children,
 }: Props = {}) {
   return (
-    <>
-      <TimezoneProvider>
-        <HomePageContent
-          initialEvents={initialEvents}
-          initialError={initialError}
-          initialFetchedAt={initialFetchedAt}
-        >
-          {children}
-        </HomePageContent>
-      </TimezoneProvider>
-    </>
+    <TimezoneProvider>
+      <HomePageContent
+        initialEvents={initialEvents}
+        initialError={initialError}
+        initialFetchedAt={initialFetchedAt}
+      >
+        {children}
+      </HomePageContent>
+    </TimezoneProvider>
   );
 }
 
@@ -162,6 +83,7 @@ function HomePageContent({
   const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(initialError);
   const [activeDay, setActiveDay] = useState(0);
+  const [weekView, setWeekView] = useState(true);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
@@ -275,6 +197,13 @@ function HomePageContent({
     [displayDays, displayEvents, selectedSports, isFeaturedMode]
   );
 
+  const todayStats = useMemo(
+    () => countTodayStats(events, timeZone),
+    [events, timeZone]
+  );
+
+  const activeSection = daySections[activeDay];
+
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
     if (scrollLockTimerRef.current !== null) {
@@ -301,22 +230,35 @@ function HomePageContent({
       const day = daySections[index];
       if (!day) return;
 
-      lockScrollSpy();
       setActiveDay(index);
-      requestAnimationFrame(() => scrollToDaySection(day.date));
+
+      if (weekView) {
+        lockScrollSpy();
+        requestAnimationFrame(() => scrollToDaySection(day.date));
+      } else {
+        const feed = document.getElementById("day-feed");
+        if (feed) {
+          const top =
+            feed.getBoundingClientRect().top +
+            window.scrollY -
+            getScrollAnchorOffset();
+          window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        }
+      }
     },
-    [lockScrollSpy, daySections]
+    [lockScrollSpy, daySections, weekView]
   );
 
   const resetHome = useCallback(() => {
     lockScrollSpy();
     setActiveDay(0);
+    setWeekView(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
     void loadEvents({ silent: true });
   }, [loadEvents, lockScrollSpy]);
 
   useEffect(() => {
-    if (showInitialLoading || daySections.length === 0) return;
+    if (!weekView || showInitialLoading || daySections.length === 0) return;
 
     const sections = daySections
       .map((d) => document.getElementById(`day-${d.date}`))
@@ -325,7 +267,6 @@ function HomePageContent({
     if (!sections.length) return;
 
     const anchor = getScrollAnchorOffset();
-
     let frame = 0;
 
     function syncActiveDay() {
@@ -357,7 +298,7 @@ function HomePageContent({
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [showInitialLoading, daySections]);
+  }, [showInitialLoading, daySections, weekView]);
 
   return (
     <div className="fh-body">
@@ -373,7 +314,9 @@ function HomePageContent({
 
       <main className="fh-content">
         <div className="fh-container fh-main">
-          <HomeCalendarHero fetchedAt={initialFetchedAt} />
+          <HomeCalendarHero fetchedAt={initialFetchedAt} stats={todayStats} />
+
+          {children}
 
           <EventFilters
             selected={selectedSports}
@@ -388,6 +331,31 @@ function HomePageContent({
             activeIndex={activeDay}
             onChange={goToDay}
           />
+
+          <div className="qvh-view-toggle">
+            <button
+              type="button"
+              className={`qvh-view-toggle-btn${!weekView ? " qvh-view-toggle-btn-active" : ""}`}
+              onClick={() => setWeekView(false)}
+              aria-pressed={!weekView}
+            >
+              Hoy
+            </button>
+            <button
+              type="button"
+              className={`qvh-view-toggle-btn${weekView ? " qvh-view-toggle-btn-active" : ""}`}
+              onClick={() => {
+                setWeekView(true);
+                requestAnimationFrame(() => {
+                  const day = daySections[activeDay];
+                  if (day) scrollToDaySection(day.date);
+                });
+              }}
+              aria-pressed={weekView}
+            >
+              Semana completa
+            </button>
+          </div>
 
           {refreshing && !showInitialLoading && (
             <p className="fh-feed-refresh" aria-live="polite">
@@ -413,7 +381,7 @@ function HomePageContent({
             <div className="fh-empty">
               <p>No hay eventos en los próximos 7 días.</p>
             </div>
-          ) : (
+          ) : weekView ? (
             <div className="fh-day-feed" id="day-feed">
               {daySections.map((section, i) => (
                 <section
@@ -432,23 +400,47 @@ function HomePageContent({
                     )}
                   </h2>
 
-                  {section.events.length > 0 ? (
-                    renderEventSections(section.events)
-                  ) : (
-                    <div className="fh-day-empty">
-                      <p>
-                        {isFeaturedMode
-                          ? "Sin eventos este día."
-                          : "Sin eventos para estos filtros."}
-                      </p>
-                    </div>
-                  )}
+                  <EventDaySections
+                    events={section.events}
+                    emptyMessage={
+                      isFeaturedMode
+                        ? "Sin eventos este día."
+                        : "Sin eventos para estos filtros."
+                    }
+                  />
                 </section>
               ))}
             </div>
-          )}
+          ) : (
+            <div className="fh-day-feed" id="day-feed">
+              {activeSection ? (
+                <section
+                  id={`day-${activeSection.date}`}
+                  className="fh-day-section fh-matchday"
+                  aria-labelledby={`day-title-${activeSection.date}`}
+                >
+                  <h2
+                    id={`day-title-${activeSection.date}`}
+                    className="fh-matchday-header"
+                  >
+                    {activeSection.title}
+                    {isFeaturedMode && activeDay === 0 && (
+                      <span className="fh-featured-badge">Destacados</span>
+                    )}
+                  </h2>
 
-          {children}
+                  <EventDaySections
+                    events={activeSection.events}
+                    emptyMessage={
+                      isFeaturedMode
+                        ? "Sin eventos este día."
+                        : "Sin eventos para estos filtros."
+                    }
+                  />
+                </section>
+              ) : null}
+            </div>
+          )}
 
           <SiteFooter />
         </div>

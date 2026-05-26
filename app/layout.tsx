@@ -6,7 +6,7 @@ import "./futbolhoy.css";
 import "./destacados.css";
 import "./media.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
-import { rootMetadata } from "./lib/seo";
+import { rootMetadata, siteUrl } from "./lib/seo";
 
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
@@ -34,6 +34,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://crests.football-data.org" />
         <link rel="preconnect" href="https://image.tmdb.org" />
         <link rel="preconnect" href="https://r2.thesportsdb.com" />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Qué veo hoy — agenda TV"
+          href={`${siteUrl}/feed.xml`}
+        />
       </head>
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
         <CookieConsentRoot>{children}</CookieConsentRoot>
