@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { defaultChannelsForCompetition } from "@/app/lib/channels";
 import { dedupeEvents, findDuplicateIdsToRemove } from "@/app/lib/dedupe-events";
+import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
 import {
   ergastToMadrid,
   getMadridWeekDates,
@@ -161,6 +162,8 @@ async function fetchEsports() {
         const { date, time } = splitToMadrid(parseUtcIso(match.begin_at));
         const team1 = match.opponents?.[0]?.opponent?.name || "TBD";
         const team2 = match.opponents?.[1]?.opponent?.name || "TBD";
+        const homeLogo = pandascoreTeamLogo(match.opponents?.[0]?.opponent);
+        const awayLogo = pandascoreTeamLogo(match.opponents?.[1]?.opponent);
 
         events.push({
           external_id: `esports_${match.id}`,
@@ -173,7 +176,7 @@ async function fetchEsports() {
           category: "esports",
           competition: match.league?.name || match.serie?.full_name || "",
           platform: "Twitch",
-          source: "pandascore",
+          source: encodeEsportsSource(homeLogo, awayLogo),
         });
       }
     } catch (e) {

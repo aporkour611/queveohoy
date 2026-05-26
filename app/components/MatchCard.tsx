@@ -1,6 +1,7 @@
 "use client";
 
 import { TeamCrest } from "./TeamCrest";
+import { parseEsportsTeamLogos } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
 import { competitionMatchClass } from "../lib/competition-style";
@@ -13,14 +14,23 @@ type Props = {
 };
 
 export function MatchCard({ event, upcomingBadge }: Props) {
-  const ids = parseFootballTeamIds(
-    event.external_id,
-    event.source,
-    event.home_team,
-    event.away_team
-  );
-  const homeCrest = ids ? teamCrestUrl(ids.homeId) : null;
-  const awayCrest = ids ? teamCrestUrl(ids.awayId) : null;
+  const esportsLogos = parseEsportsTeamLogos(event.source);
+  const footballIds =
+    event.sport === "futbol"
+      ? parseFootballTeamIds(
+          event.external_id,
+          event.source,
+          event.home_team,
+          event.away_team
+        )
+      : null;
+
+  const homeCrest =
+    esportsLogos?.homeUrl ??
+    (footballIds ? teamCrestUrl(footballIds.homeId) : null);
+  const awayCrest =
+    esportsLogos?.awayUrl ??
+    (footballIds ? teamCrestUrl(footballIds.awayId) : null);
 
   const home = shortTeamName(event.home_team || event.title?.split(" vs ")[0]);
   const away = shortTeamName(
