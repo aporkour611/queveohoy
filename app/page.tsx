@@ -11,6 +11,7 @@ import { LoadingState } from "./components/LoadingState";
 import { AdminNavLink } from "./components/AdminNavLink";
 import { Logo } from "./components/Logo";
 import { MatchCard } from "./components/MatchCard";
+import { SiteFooter } from "./components/SiteFooter";
 import type { EventRow } from "./components/types";
 import { competitionAccentClass, sportAccentClass } from "./lib/sport-accent";
 import {
@@ -290,9 +291,7 @@ export default function Home() {
             )}
           </div>
 
-          <p className="fh-footer">
-            Horario península y Baleares (Europe/Madrid) · queveohoy.es
-          </p>
+          <SiteFooter />
         </div>
       </div>
     </div>
