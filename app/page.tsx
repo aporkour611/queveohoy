@@ -1,57 +1,39 @@
 import type { Metadata } from "next";
-import { HomeEventOutline } from "./components/HomeEventOutline";
 import { HomeJsonLd } from "./components/HomeJsonLd";
-import { HomePage } from "./components/HomePage";
-import { fetchFeedEvents } from "./lib/events-feed-server";
-import {
-  buildHomeMetadataDescription,
-  buildHomeMetadataTitle,
-  buildHomePageLead,
-} from "./lib/seo-jsonld";
-import { defaultOpenGraph, siteUrl } from "./lib/seo";
-
-export const revalidate = 300;
+import { HomePageClient } from "./components/HomePageClient";
+import { buildHomeMetadataTitle } from "./lib/seo-jsonld";
+import { defaultDescription, defaultOpenGraph, siteUrl } from "./lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { events } = await fetchFeedEvents();
   const title = buildHomeMetadataTitle();
-  const description = buildHomeMetadataDescription(events);
 
   return {
     title,
-    description,
+    description: defaultDescription,
     alternates: { canonical: siteUrl },
     openGraph: {
       ...defaultOpenGraph,
       title,
-      description,
+      description: defaultDescription,
       url: siteUrl,
     },
     twitter: {
       card: "summary_large_image",
       title,
-      description,
+      description: defaultDescription,
       images: ["/logo-queveohoy.png"],
     },
   };
 }
 
-export default async function Page() {
-  const { events, error } = await fetchFeedEvents();
+export default function Page() {
   const pageTitle = buildHomeMetadataTitle();
-  const pageLead = buildHomePageLead(events);
+  const pageLead = defaultDescription;
 
   return (
     <>
-      <HomeJsonLd events={events} />
-      <HomePage
-        initialEvents={[]}
-        initialError={error}
-        pageTitle={pageTitle}
-        pageLead={pageLead}
-      >
-        <HomeEventOutline events={events} />
-      </HomePage>
+      <HomeJsonLd events={[]} />
+      <HomePageClient pageTitle={pageTitle} pageLead={pageLead} />
     </>
   );
 }
