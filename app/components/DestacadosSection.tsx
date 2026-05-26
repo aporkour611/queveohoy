@@ -15,13 +15,12 @@ export function DestacadosSection({ events }: Props) {
   if (featured.length === 0) return null;
 
   return (
-    <section className="qvh-destacados" aria-label="Destacados">
+    <section className="qvh-destacados" aria-label="Lo más visto">
       <div className="qvh-destacados-head">
         <div className="qvh-destacados-brand">
           <span className="qvh-destacados-dot" aria-hidden />
           <div>
-            <h2 className="qvh-destacados-title">Destacados</h2>
-            <p className="qvh-destacados-sub">Lo más visto</p>
+            <h2 className="qvh-destacados-title">Lo más visto</h2>
           </div>
         </div>
       </div>
