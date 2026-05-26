@@ -3,12 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signOutAction } from "../lib/auth-actions";
-
-type AuthUser = {
-  id: string;
-  email: string | null;
-  displayName: string;
-};
+import { useAuth, type AuthUser } from "../lib/auth-context";
 
 const ACCOUNT_LINKS = [
   { href: "/cuenta/favoritos", label: "Favoritos" },
@@ -114,18 +109,9 @@ function AccountUserMenu({ user }: { user: AuthUser }) {
 }
 
 export function AuthNavLink() {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loaded, setLoaded] = useState(false);
+  const { user, loaded } = useAuth();
   const [guestOpen, setGuestOpen] = useState(false);
   const guestMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((data) => setUser(data.user ?? null))
-      .catch(() => setUser(null))
-      .finally(() => setLoaded(true));
-  }, []);
 
   useEffect(() => {
     if (!guestOpen) return;

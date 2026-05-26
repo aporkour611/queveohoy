@@ -10,7 +10,8 @@ export default function RegistroPage() {
   return (
     <AuthPageShell title="Crear cuenta">
       <p className="fh-auth-lead">
-        Regístrate gratis. Más adelante podrás marcar eventos como favoritos.
+        Regístrate gratis para guardar eventos en favoritos y verlos siempre en
+        Destacados.
       </p>
       <SignUpForm />
     </AuthPageShell>

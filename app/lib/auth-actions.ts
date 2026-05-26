@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { notifyAdminNewSignup } from "./admin-notify";
 import { createClient } from "./supabase/server";
 
 export type AuthActionState = {
@@ -85,6 +86,13 @@ export async function signUpAction(
   if (error) {
     return { error: authErrorMessage(error.message) };
   }
+
+  const display = displayName || email.split("@")[0];
+  void notifyAdminNewSignup({
+    email,
+    displayName: display,
+    confirmedImmediately: Boolean(data.session),
+  });
 
   if (data.session) {
     redirect("/cuenta");

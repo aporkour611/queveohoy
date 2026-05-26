@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { useTimezone } from "../lib/timezone-context";
@@ -10,7 +11,10 @@ type Props = {
   className?: string;
 };
 
-export function FeaturedEventCard({ event, className }: Props) {
+export const FeaturedEventCard = memo(function FeaturedEventCard({
+  event,
+  className,
+}: Props) {
   const { timeZone } = useTimezone();
   const card = getSpotlightCardModel(event, timeZone);
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
@@ -74,4 +78,4 @@ export function FeaturedEventCard({ event, className }: Props) {
       </div>
     </article>
   );
-}
+});

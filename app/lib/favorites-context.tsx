@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import type { EventRow } from "../components/types";
+import { useAuth } from "./auth-context";
 
 type FavoritesContextValue = {
   loaded: boolean;
@@ -55,11 +56,13 @@ function normalizeEvents(raw: unknown): EventRow[] {
 }
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
+  const { user, loaded: authLoaded } = useAuth();
   const [loaded, setLoaded] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
   const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
   const [favoriteEvents, setFavoriteEvents] = useState<EventRow[]>([]);
+
+  const userId = user?.id ?? null;
+  const isLoggedIn = Boolean(userId);
 
   const applyFavorites = useCallback(
     (ids: number[], events: EventRow[], uid: string | null) => {
@@ -70,58 +73,57 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const refreshFavorites = useCallback(async () => {
-    const [meRes, favRes] = await Promise.all([
-      fetch("/api/auth/me"),
-      fetch("/api/favorites"),
-    ]);
-
-    const me = await meRes.json();
-    const uid = me.user?.id ?? null;
-    setIsLoggedIn(Boolean(uid));
-    setUserId(uid);
-
-    if (!uid) {
+  const syncFavoritesFromApi = useCallback(async () => {
+    if (!userId) {
       applyFavorites([], [], null);
       return;
     }
 
+    const favRes = await fetch("/api/favorites");
     if (favRes.ok) {
       const fav = await favRes.json();
       applyFavorites(
         (fav.eventIds ?? []) as number[],
         normalizeEvents(fav.events),
-        uid
+        userId
       );
       return;
     }
 
-    applyFavorites(readCachedIds(uid), [], uid);
-  }, [applyFavorites]);
+    applyFavorites(readCachedIds(userId), [], userId);
+  }, [applyFavorites, userId]);
 
   useEffect(() => {
-    let cancelled = false;
+    if (!authLoaded) return;
 
-    async function load() {
-      try {
-        await refreshFavorites();
-      } catch {
-        if (!cancelled) {
-          setIsLoggedIn(false);
-          setUserId(null);
-          setFavoriteIds(new Set());
-          setFavoriteEvents([]);
-        }
-      } finally {
-        if (!cancelled) setLoaded(true);
-      }
+    if (!userId) {
+      applyFavorites([], [], null);
+      setLoaded(true);
+      return;
     }
 
-    void load();
+    const cached = readCachedIds(userId);
+    if (cached.length) {
+      setFavoriteIds(new Set(cached));
+    }
+    setLoaded(true);
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        await syncFavoritesFromApi();
+      } catch {
+        if (!cancelled) {
+          applyFavorites(readCachedIds(userId), [], userId);
+        }
+      }
+    })();
+
     return () => {
       cancelled = true;
     };
-  }, [refreshFavorites]);
+  }, [authLoaded, userId, applyFavorites, syncFavoritesFromApi]);
 
   const isFavorite = useCallback(
     (eventId: number) => favoriteIds.has(eventId),
@@ -130,6 +132,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   const toggleFavorite = useCallback(
     async (eventId: number, event?: EventRow) => {
+      if (!userId) return false;
+
       let wasFavorite = false;
 
       setFavoriteIds((prev) => {
@@ -137,7 +141,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         const next = new Set(prev);
         if (wasFavorite) next.delete(eventId);
         else next.add(eventId);
-        if (userId) writeCachedIds(userId, [...next]);
+        writeCachedIds(userId, [...next]);
         return next;
       });
 
@@ -156,15 +160,16 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
         if (!res.ok) throw new Error("toggle failed");
 
-        await refreshFavorites();
         const data = await res.json();
         return Boolean(data.favorited);
       } catch {
-        await refreshFavorites();
+        try {
+          await syncFavoritesFromApi();
+        } catch {}
         return wasFavorite;
       }
     },
-    [refreshFavorites, userId]
+    [syncFavoritesFromApi, userId]
   );
 
   const value = useMemo(

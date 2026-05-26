@@ -23,6 +23,7 @@ import { FavoritesProvider } from "./lib/favorites-context";
 import {
   buildDisplayDays,
   filterEventsInWeek,
+  getEventsQueryDateRange,
   mapEventsToTimezone,
 } from "./lib/timezone";
 import { resolveDayEventsForFeed } from "./lib/upcoming-events";
@@ -123,9 +124,12 @@ function HomePage() {
     }
     setLoadError(null);
 
+    const { from, to } = getEventsQueryDateRange(FEED_DAY_COUNT);
     const { data, error } = await supabase
       .from("events")
       .select("*")
+      .gte("date", from)
+      .lte("date", to)
       .order("date", { ascending: true })
       .order("time", { ascending: true });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { memo, useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
@@ -33,7 +33,7 @@ function EventDetailsPanel({ event }: { event: EventRow }) {
   );
 }
 
-export function MatchCard({ event }: Props) {
+export const MatchCard = memo(function MatchCard({ event }: Props) {
   const [expanded, setExpanded] = useState(false);
   const isMedia = event.sport === "cine" || event.sport === "series";
   const isUfc = event.sport === "ufc";
@@ -193,4 +193,4 @@ export function MatchCard({ event }: Props) {
       )}
     </>
   );
-}
+});

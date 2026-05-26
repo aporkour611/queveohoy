@@ -78,6 +78,12 @@ export function SignUpForm() {
       </button>
 
       <p className="fh-auth-switch">
+        Al crear la cuenta aceptas la{" "}
+        <Link href="/privacidad">política de privacidad</Link> y la{" "}
+        <Link href="/cookies">política de cookies</Link>.
+      </p>
+
+      <p className="fh-auth-switch">
         ¿Ya tienes cuenta? <Link href="/entrar">Entra aquí</Link>
       </p>
     </form>

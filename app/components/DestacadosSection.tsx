@@ -14,15 +14,15 @@ type Props = {
 };
 
 export function DestacadosSection({ events }: Props) {
-  const { isLoggedIn, favoriteEvents, loaded } = useFavorites();
+  const { isLoggedIn, favoriteEvents } = useFavorites();
 
   const featured = useMemo(() => {
     const curated = pickCuratedDestacados(events);
-    if (!isLoggedIn) return curated;
+    if (!isLoggedIn || favoriteEvents.length === 0) return curated;
     return mergeDestacadosWithFavorites(curated, favoriteEvents);
   }, [events, favoriteEvents, isLoggedIn]);
 
-  if (!loaded || featured.length === 0) return null;
+  if (featured.length === 0) return null;
 
   const hasUserFavorites = isLoggedIn && favoriteEvents.length > 0;
 
