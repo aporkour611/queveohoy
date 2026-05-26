@@ -11,6 +11,10 @@ import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
 import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
+import { fetchRealityCronEvents } from "@/app/lib/tmdb-reality";
+import { fetchBasketballCronEvents } from "@/app/lib/balldontlie";
+import { fetchMotogpCronEvents } from "@/app/lib/motogp";
+import { fetchTheSportsDbLeagueEvents } from "@/app/lib/thesportsdb-leagues";
 import { fetchUfcCronEvents } from "@/app/lib/thesportsdb-ufc";
 import {
   ergastToMadrid,
@@ -27,6 +31,8 @@ function getSupabase() {
 function getWeekDates() {
   return getMadridWeekDates(7);
 }
+
+type CountResult = { count: number; error?: string };
 
 async function upsertEvents(events: any[]) {
   if (!events.length) return null;
@@ -95,7 +101,7 @@ async function fetchFootball() {
   return { count: prepared.length, dateFrom, dateTo, errors };
 }
 
-async function fetchF1() {
+async function fetchF1(): Promise<CountResult> {
   try {
     const res = await fetch("https://api.jolpi.ca/ergast/f1/2026/races.json");
     const data = await res.json();
@@ -138,8 +144,70 @@ async function fetchF1() {
 
     await upsertEvents(events);
     console.log(`F1: ${events.length} eventos`);
+    return { count: events.length, error: undefined };
   } catch (e) {
     console.error("Error fetching F1:", e);
+    return { count: 0, error: String(e) };
+  }
+}
+
+async function fetchMotos(): Promise<CountResult> {
+  try {
+    const events = await fetchMotogpCronEvents(7);
+    const upsertError = await upsertEvents(events);
+    if (upsertError) return { count: events.length, error: upsertError };
+    console.log(`MotoGP: ${events.length} eventos`);
+    return { count: events.length, error: undefined };
+  } catch (e) {
+    console.error("Error fetching MotoGP:", e);
+    return { count: 0, error: String(e) };
+  }
+}
+
+async function fetchLeagueSports(): Promise<CountResult> {
+  try {
+    const events = await fetchTheSportsDbLeagueEvents(7);
+    const upsertError = await upsertEvents(events);
+    if (upsertError) return { count: events.length, error: upsertError };
+    console.log(`TheSportsDB ligas: ${events.length} eventos`);
+    return { count: events.length, error: undefined };
+  } catch (e) {
+    console.error("Error fetching TheSportsDB leagues:", e);
+    return { count: 0, error: String(e) };
+  }
+}
+
+async function fetchBasketball(): Promise<CountResult> {
+  try {
+    const { events, error } = await fetchBasketballCronEvents(7);
+    if (error) {
+      console.error("Balldontlie:", error);
+      return { count: 0, error };
+    }
+    const upsertError = await upsertEvents(events);
+    if (upsertError) return { count: events.length, error: upsertError };
+    console.log(`Baloncesto: ${events.length} eventos`);
+    return { count: events.length, error: undefined };
+  } catch (e) {
+    console.error("Error fetching basketball:", e);
+    return { count: 0, error: String(e) };
+  }
+}
+
+async function fetchRealityTv(): Promise<CountResult> {
+  try {
+    const { events, error } = await fetchRealityCronEvents(7);
+    if (error) {
+      console.error("TMDB reality:", error);
+      return { count: 0, error };
+    }
+    const upsertError = await upsertEvents(events);
+    if (upsertError) return { count: events.length, error: upsertError };
+    console.log(`Reality TV: ${events.length} eventos`);
+    return { count: events.length, error: undefined };
+  } catch (e) {
+    console.error("Error fetching reality TV:", e);
+    return { count: 0, error: String(e) };
   }
 }
 
@@ -387,6 +455,7 @@ export async function GET() {
   console.log("Football key:", process.env.FOOTBALL_DATA_API_KEY ? "OK" : "MISSING");
   console.log("Pandascore key:", process.env.PANDASCORE_API_KEY ? "OK" : "MISSING");
   console.log("TMDB key:", process.env.TMDB_API_KEY ? "OK" : "MISSING");
+  console.log("Balldontlie key:", process.env.BALLDONTLIE_API_KEY ? "OK" : "MISSING");
 
   let football = { count: 0, dateFrom: "", dateTo: "", errors: [] as string[] };
 
@@ -405,6 +474,38 @@ export async function GET() {
     console.error("✗ Esports error:", e);
   }
 
+  let f1: CountResult = { count: 0 };
+  try {
+    f1 = await fetchF1();
+    console.log("✓ F1 done");
+  } catch (e) {
+    console.error("✗ F1 error:", e);
+  }
+
+  let motos: CountResult = { count: 0 };
+  try {
+    motos = await fetchMotos();
+    console.log("✓ MotoGP done");
+  } catch (e) {
+    console.error("✗ MotoGP error:", e);
+  }
+
+  let leagues: CountResult = { count: 0 };
+  try {
+    leagues = await fetchLeagueSports();
+    console.log("✓ Tenis/Ciclismo done");
+  } catch (e) {
+    console.error("✗ Tenis/Ciclismo error:", e);
+  }
+
+  let basket: CountResult = { count: 0 };
+  try {
+    basket = await fetchBasketball();
+    console.log("✓ Baloncesto done");
+  } catch (e) {
+    console.error("✗ Baloncesto error:", e);
+  }
+
   let tmdb: { movies: number; series: number; purged: number; error?: string } = {
     movies: 0,
     series: 0,
@@ -415,6 +516,14 @@ export async function GET() {
     console.log("✓ TMDB done");
   } catch (e) {
     console.error("✗ TMDB error:", e);
+  }
+
+  let reality: CountResult = { count: 0 };
+  try {
+    reality = await fetchRealityTv();
+    console.log("✓ Reality TV done");
+  } catch (e) {
+    console.error("✗ Reality TV error:", e);
   }
 
   let ufc: { count: number; error?: string } = { count: 0 };
@@ -463,10 +572,20 @@ export async function GET() {
     ok: true,
     timestamp: new Date().toISOString(),
     football,
+    f1: f1.count,
+    f1Error: f1.error,
+    motos: motos.count,
+    motosError: motos.error,
+    tenisCiclismo: leagues.count,
+    tenisCiclismoError: leagues.error,
+    basket: basket.count,
+    basketError: basket.error,
     tmdbMovies: tmdb.movies,
     tmdbSeries: tmdb.series,
     tmdbPurged: tmdb.purged,
     tmdbError: tmdb.error,
+    reality: reality.count,
+    realityError: reality.error,
     ufc: ufc.count,
     ufcError: ufc.error,
     crestsEnriched: enrich.enriched,

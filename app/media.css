@@ -1,0 +1,295 @@
+/* Cine y series — bloque visual distinto del deporte */
+
+@keyframes fh-media-banner-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(124, 58, 237, 0.25),
+      0 8px 28px rgba(124, 58, 237, 0.12);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(217, 119, 6, 0.35),
+      0 10px 32px rgba(217, 119, 6, 0.18);
+  }
+}
+
+@keyframes fh-media-bar-shine {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes fh-media-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fh-media-badge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+.fh-media-day-block {
+  margin-top: 1.75rem;
+  padding: 14px 12px 10px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(237, 233, 254, 0.95) 0%, rgba(254, 243, 199, 0.92) 100%);
+  border: 1px solid rgba(124, 58, 237, 0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+.fh-media-day-block::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 12px,
+    rgba(124, 58, 237, 0.03) 12px,
+    rgba(124, 58, 237, 0.03) 24px
+  );
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fh-media-day-block {
+    animation: fh-media-banner-glow 4s ease-in-out infinite;
+  }
+}
+
+.fh-media-day-banner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 0 4px;
+}
+
+.fh-media-day-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(124, 58, 237, 0.25));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fh-media-day-icon {
+    animation: fh-media-badge-pulse 2.4s ease-in-out infinite;
+  }
+}
+
+.fh-media-day-kicker {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7c3aed;
+  font-weight: 700;
+}
+
+.fh-media-day-title {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #4c1d95;
+  line-height: 1.1;
+}
+
+.fh-media-subsection {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 10px;
+}
+
+.fh-media-subsection:last-child {
+  margin-bottom: 0;
+}
+
+.fh-comp-header.fh-comp-cine {
+  background: linear-gradient(90deg, #92400e 0%, #d97706 55%, #fbbf24 100%);
+  color: #fff;
+}
+
+.fh-comp-header.fh-comp-cine .fh-comp-count {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.fh-comp-header.fh-comp-series {
+  background: linear-gradient(90deg, #4c1d95 0%, #7c3aed 55%, #a855f7 100%);
+  color: #fff;
+}
+
+.fh-comp-header.fh-comp-series .fh-comp-count {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.fh-match-grid-media {
+  gap: 12px;
+}
+
+.fh-match-media {
+  position: relative;
+  overflow: hidden;
+  border-width: 2px;
+  border-style: solid;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fh-match-media {
+    animation: fh-media-card-in 0.45s ease both;
+  }
+
+  .fh-match-grid-media .fh-match-media:nth-child(1) {
+    animation-delay: 0.04s;
+  }
+
+  .fh-match-grid-media .fh-match-media:nth-child(2) {
+    animation-delay: 0.08s;
+  }
+
+  .fh-match-grid-media .fh-match-media:nth-child(3) {
+    animation-delay: 0.12s;
+  }
+
+  .fh-match-grid-media .fh-match-media:nth-child(n + 4) {
+    animation-delay: 0.16s;
+  }
+}
+
+.fh-match-media .fh-m-comp {
+  height: 5px;
+  margin: -12px -12px 10px;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  background-size: 200% 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fh-match-media .fh-m-comp {
+    animation: fh-media-bar-shine 3.5s linear infinite;
+  }
+}
+
+.fh-match_cine.fh-match-media {
+  background: linear-gradient(160deg, #fffbeb 0%, #fef3c7 45%, #fff7ed 100%);
+  border-color: #f59e0b;
+  box-shadow: 0 8px 22px rgba(245, 158, 11, 0.16);
+}
+
+.fh-match_cine.fh-match-media .fh-m-comp {
+  background-image: linear-gradient(
+    90deg,
+    #b45309 0%,
+    #fbbf24 25%,
+    #fde68a 50%,
+    #fbbf24 75%,
+    #b45309 100%
+  );
+}
+
+.fh-match_series.fh-match-media {
+  background: linear-gradient(160deg, #faf5ff 0%, #ede9fe 45%, #f5f3ff 100%);
+  border-color: #8b5cf6;
+  box-shadow: 0 8px 22px rgba(139, 92, 246, 0.16);
+}
+
+.fh-match_series.fh-match-media .fh-m-comp {
+  background-image: linear-gradient(
+    90deg,
+    #5b21b6 0%,
+    #a855f7 25%,
+    #ddd6fe 50%,
+    #a855f7 75%,
+    #5b21b6 100%
+  );
+}
+
+.fh-match-media:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(76, 29, 149, 0.18);
+}
+
+.fh-match_cine.fh-match-media:hover {
+  box-shadow: 0 12px 28px rgba(245, 158, 11, 0.22);
+}
+
+.fh-media-type-badge {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fh-media-type-badge-cine {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+.fh-media-type-badge-series {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.35);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fh-media-type-badge {
+    animation: fh-media-badge-pulse 2.8s ease-in-out infinite;
+  }
+}
+
+.fh-media-subtitle {
+  margin: -2px 0 8px;
+  text-align: center;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #6b21a8;
+}
+
+.fh-match_cine .fh-media-subtitle {
+  color: #b45309;
+}
+
+.fh-match_series .fh-m-title-media .fh-dest-team,
+.fh-match_cine .fh-m-title-media .fh-dest-team {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.15;
+}
+
+.fh-match_series .fh-m-chan span,
+.fh-match_cine .fh-m-chan span {
+  font-weight: 700;
+}

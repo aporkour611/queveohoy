@@ -20,6 +20,27 @@
   min-width: 0;
 }
 
+.qvh-destacados:has(.qvh-spotlight-visual-cine),
+.qvh-destacados:has(.qvh-spotlight-visual-series),
+.qvh-destacados:has(.qvh-spotlight-visual-premiere) {
+  padding: 14px 12px 16px;
+  border-radius: 14px;
+  border-bottom: none;
+  background: linear-gradient(
+    135deg,
+    rgba(237, 233, 254, 0.35) 0%,
+    rgba(254, 243, 199, 0.28) 100%
+  );
+  border: 1px solid rgba(124, 58, 237, 0.18);
+}
+
+.qvh-destacados:has(.qvh-spotlight-visual-cine) .qvh-destacados-dot,
+.qvh-destacados:has(.qvh-spotlight-visual-series) .qvh-destacados-dot,
+.qvh-destacados:has(.qvh-spotlight-visual-premiere) .qvh-destacados-dot {
+  background: linear-gradient(135deg, #7c3aed, #d97706);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+}
+
 .qvh-destacados-dot {
   width: 10px;
   height: 10px;
@@ -188,12 +209,51 @@
   background: linear-gradient(135deg, #0f3320 0%, #1f6e43 55%, #081a10 100%);
 }
 
+.qvh-spotlight-visual-cine {
+  background: linear-gradient(135deg, #451a03 0%, #d97706 48%, #78350f 100%);
+}
+
+.qvh-spotlight-visual-series {
+  background: linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #4c1d95 100%);
+}
+
 .qvh-spotlight-visual-media {
   background: linear-gradient(135deg, #3a2e08 0%, #c9a227 55%, #1a1505 100%);
 }
 
 .qvh-spotlight-visual-premiere {
   background: linear-gradient(135deg, #1a0a2e 0%, #6b21a8 42%, #3b0764 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .qvh-spotlight-visual-cine,
+  .qvh-spotlight-visual-series,
+  .qvh-spotlight-visual-premiere {
+    background-size: 200% 200%;
+    animation: qvh-media-spotlight-shift 6s ease-in-out infinite;
+  }
+}
+
+@keyframes qvh-media-spotlight-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.qvh-spotlight-card:has(.qvh-spotlight-visual-cine),
+.qvh-spotlight-card:has(.qvh-spotlight-visual-series),
+.qvh-spotlight-card:has(.qvh-spotlight-visual-premiere) {
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow: 0 6px 24px rgba(124, 58, 237, 0.22);
+}
+
+.qvh-spotlight-card:has(.qvh-spotlight-visual-cine) {
+  border-color: rgba(245, 158, 11, 0.45);
+  box-shadow: 0 6px 24px rgba(217, 119, 6, 0.22);
 }
 
 .qvh-spotlight-visual-default {

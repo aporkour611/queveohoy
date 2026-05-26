@@ -2,10 +2,11 @@
 
 import { memo, useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
+import { JustWatchWhereToWatch } from "./JustWatchWhereToWatch";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
-import { parseTmdbPoster } from "../lib/tmdb";
+import { parseTmdbPoster, parseTmdbEpisodeMeta } from "../lib/tmdb";
 import { parseUfcImage } from "../lib/thesportsdb-ufc";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
 import { competitionMatchClass } from "../lib/competition-style";
@@ -18,6 +19,21 @@ type Props = {
 
 function EventDetailsPanel({ event }: { event: EventRow }) {
   const details = useMemo(() => buildEventDetails(event), [event]);
+  const isMedia = event.sport === "cine" || event.sport === "series";
+
+  if (isMedia) {
+    return (
+      <div className="fh-m-details" onClick={(e) => e.stopPropagation()}>
+        {details.map(({ label, value }) => (
+          <div key={label} className="fh-m-detail-row">
+            <span className="fh-m-detail-label">{label}</span>
+            <span className="fh-m-detail-value">{value}</span>
+          </div>
+        ))}
+        <JustWatchWhereToWatch sport={event.sport} externalId={event.external_id} />
+      </div>
+    );
+  }
 
   if (!details.length) return null;
 
@@ -35,9 +51,16 @@ function EventDetailsPanel({ event }: { event: EventRow }) {
 
 export const MatchCard = memo(function MatchCard({ event }: Props) {
   const [expanded, setExpanded] = useState(false);
-  const isMedia = event.sport === "cine" || event.sport === "series";
+  const isCine = event.sport === "cine";
+  const isSeries = event.sport === "series";
+  const isTv = event.sport === "tv";
+  const isMedia = isCine || isSeries || isTv;
   const isUfc = event.sport === "ufc";
   const mediaTitle = event.title?.trim() || "Sin título";
+  const episodeMeta = isSeries ? parseTmdbEpisodeMeta(event.external_id) : null;
+  const mediaSubtitle =
+    event.competition?.trim() ||
+    (episodeMeta ? `T${episodeMeta.season} · E${episodeMeta.episode}` : null);
   const posterUrl = isUfc
     ? parseUfcImage(event.source)
     : parseTmdbPoster(event.source);
@@ -116,9 +139,27 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
       <>
           <div className="fh-m-comp" />
 
+          {isMedia ? (
+            <span
+              className={`fh-media-type-badge ${
+                isSeries
+                  ? "fh-media-type-badge-series"
+                  : isTv
+                    ? "fh-media-type-badge-series"
+                    : "fh-media-type-badge-cine"
+              }`}
+            >
+              {isSeries ? "Serie" : isTv ? "Reality" : "Cine"}
+            </span>
+          ) : null}
+
           <div className="fh-m-title fh-m-title-media">
             <span className="fh-dest-team">{mediaTitle}</span>
           </div>
+
+          {isMedia && mediaSubtitle ? (
+            <p className="fh-media-subtitle">{mediaSubtitle}</p>
+          ) : null}
 
           <div className="fh-m-logos fh-m-logos-media">
             <TeamCrest

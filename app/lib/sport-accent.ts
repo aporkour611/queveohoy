@@ -10,8 +10,9 @@ export function sportAccentClass(sportId?: string | null): string {
     case "motos":
       return "fh-comp-motor";
     case "cine":
+      return "fh-comp-cine";
     case "series":
-      return "fh-comp-gold";
+      return "fh-comp-series";
     case "tv":
       return "fh-comp-pink";
     case "csgo":

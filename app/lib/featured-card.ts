@@ -95,7 +95,23 @@ export function getSpotlightCardModel(
       poster: parseTmdbPoster(event.source) ?? undefined,
       visualClass: premiere
         ? "qvh-spotlight-visual-premiere"
-        : "qvh-spotlight-visual-media",
+        : sport === "cine"
+          ? "qvh-spotlight-visual-cine"
+          : "qvh-spotlight-visual-series",
+    };
+  }
+
+  if (sport === "tv") {
+    return {
+      headline: event.title?.trim() || "Reality",
+      badge: "Reality",
+      badgeVariant: "premiere",
+      dateLabel,
+      time,
+      meta: event.competition?.trim() || "Reality · Nuevo episodio",
+      platform: event.platform?.trim() || channels || "TV y streaming",
+      poster: parseTmdbPoster(event.source) ?? undefined,
+      visualClass: "qvh-spotlight-visual-premiere",
     };
   }
 

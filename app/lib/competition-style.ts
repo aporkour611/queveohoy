@@ -4,8 +4,12 @@ export function competitionMatchClass(
 ): string {
   if (sport === "formula1" || sport === "motos") return "fh-match_motor";
   if (sport === "ufc") return "fh-match_ufc";
-  if (sport === "cine" || sport === "series") return "fh-match_cine";
+  if (sport === "cine") return "fh-match_cine fh-match-media";
+  if (sport === "series") return "fh-match_series fh-match-media";
   if (sport === "tv") return "fh-match_tv";
+  if (["tenis", "basket", "ciclismo"].includes(sport ?? "")) {
+    return "fh-match_default";
+  }
   if (sport && sport !== "futbol") return "fh-match_esports";
 
   const c = (competition ?? "").toLowerCase();

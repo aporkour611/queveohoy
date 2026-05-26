@@ -110,7 +110,14 @@ export function buildEventDetails(event: EventRow): EventDetail[] {
       }
     }
     pushDetail(rows, "Interés", tmdbInterestLabel(event.source));
-    pushDetail(rows, "Dónde ver", channels || event.platform);
+    return rows;
+  }
+
+  if (sport === "tv") {
+    pushDetail(rows, "Programa", event.title);
+    pushDetail(rows, "Formato", event.competition);
+    pushDetail(rows, "Interés", tmdbInterestLabel(event.source));
+    pushDetail(rows, "Emisión", channels || event.platform);
     return rows;
   }
 
