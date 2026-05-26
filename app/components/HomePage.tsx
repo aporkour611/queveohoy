@@ -175,7 +175,7 @@ function HomePageContent({
 }: Props = {}) {
   const { timeZone } = useTimezone();
   const [events, setEvents] = useState(initialEvents);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(initialEvents.length === 0);
   const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(initialError);
   const [activeDay, setActiveDay] = useState(0);
@@ -354,7 +354,7 @@ function HomePageContent({
             </div>
           ) : events.length === 0 ? (
             <div className="fh-empty">
-              <p>No hay eventos. Abre /api/cron para importar.</p>
+              <p>No hay eventos en los próximos 7 días.</p>
             </div>
           ) : visibleDays.length === 0 ? (
             <div className="fh-empty">
