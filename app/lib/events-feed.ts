@@ -9,7 +9,5 @@ export const FEED_EVENT_SELECT =
   "id,title,date,time,home_team,away_team,competition,platform,sport,external_id,source";
 
 export function normalizeFeedEvents(raw: EventRow[] | null | undefined): EventRow[] {
-  return filterEventsForDisplay(dedupeEvents(raw || []) as EventRow[]).filter(
-    (event) => event.sport !== "dota2"
-  );
+  return filterEventsForDisplay(dedupeEvents(raw || []) as EventRow[]);
 }

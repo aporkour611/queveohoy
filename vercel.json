@@ -2,7 +2,7 @@
   "regions": ["cdg1"],
   "functions": {
     "app/api/cron/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 120
     }
   },
   "crons": [

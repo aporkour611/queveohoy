@@ -176,13 +176,17 @@ export const SEO_HUBS: SeoHubConfig[] = [
     slug: "esports",
     title: "E-Sports hoy en TV",
     h1: "E-Sports hoy en streaming",
-    lead: "Partidos de CS2, Valorant y LoL con horario y plataforma.",
+    lead: "Partidos de CS2, Valorant, LoL y Dota 2 con horario y plataforma.",
     description:
-      "E-Sports hoy: horarios y dónde ver CS2, Valorant, LoL y más en streaming.",
-    keywords: ["esports hoy", "cs2 hoy", "valorant hoy", "lol hoy streaming"],
+      "E-Sports hoy: horarios y dónde ver CS2, Valorant, LoL, Dota 2 y más en streaming.",
+    keywords: ["esports hoy", "cs2 hoy", "valorant hoy", "lol hoy streaming", "dota 2 hoy"],
     priority: 0.72,
     dayScope: "week",
-    match: (e) => e.sport === "csgo" || e.sport === "valorant" || e.sport === "lol",
+    match: (e) =>
+      e.sport === "csgo" ||
+      e.sport === "valorant" ||
+      e.sport === "lol" ||
+      e.sport === "dota2",
   },
   {
     slug: "copa-del-rey",

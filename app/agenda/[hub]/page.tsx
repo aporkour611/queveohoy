@@ -6,15 +6,11 @@ import {
   buildHubMetadataDescription,
   buildHubMetadataTitle,
   getSeoHub,
-  SEO_HUBS,
 } from "../../lib/seo-hubs";
 import { pageMetadata } from "../../lib/seo";
 
 export const revalidate = 600;
-
-export function generateStaticParams() {
-  return SEO_HUBS.map((hub) => ({ hub: hub.slug }));
-}
+export const dynamicParams = true;
 
 type PageProps = {
   params: Promise<{ hub: string }>;

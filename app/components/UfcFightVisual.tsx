@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { safeRemoteImageUrl } from "../lib/remote-image";
 
 type Props = {
@@ -9,6 +12,37 @@ type Props = {
   className?: string;
   size?: "card" | "spotlight";
 };
+
+function FighterImage({
+  url,
+  name,
+  imgClass,
+}: {
+  url?: string | null;
+  name?: string | null;
+  imgClass: string;
+}) {
+  const safeUrl = safeRemoteImageUrl(url);
+  const [failed, setFailed] = useState(false);
+
+  if (!safeUrl || failed) {
+    return <span className="fh-ufc-fighter-fallback">{initials(name)}</span>;
+  }
+
+  return (
+    <Image
+      src={safeUrl}
+      alt=""
+      width={120}
+      height={120}
+      className={imgClass}
+      loading="lazy"
+      sizes="120px"
+      quality={60}
+      onError={() => setFailed(true)}
+    />
+  );
+}
 
 export function UfcFightVisual({
   f1Url,
@@ -26,45 +60,23 @@ export function UfcFightVisual({
     .join(" ");
   const imgClass = size === "spotlight" ? "qvh-ufc-fighter-img" : "fh-ufc-fighter-img";
 
-  const f1Safe = safeRemoteImageUrl(f1Url);
-  const f2Safe = safeRemoteImageUrl(f2Url);
-
-  if (!f1Safe && !f2Safe && !f1Name?.trim() && !f2Name?.trim()) return null;
+  if (
+    !safeRemoteImageUrl(f1Url) &&
+    !safeRemoteImageUrl(f2Url) &&
+    !f1Name?.trim() &&
+    !f2Name?.trim()
+  ) {
+    return null;
+  }
 
   return (
     <div className={rootClass} aria-hidden>
       <div className={size === "spotlight" ? "qvh-ufc-fighter" : "fh-ufc-fighter"}>
-        {f1Safe ? (
-          <Image
-            src={f1Safe}
-            alt=""
-            width={120}
-            height={120}
-            className={imgClass}
-            loading="lazy"
-            sizes="120px"
-            quality={60}
-          />
-        ) : (
-          <span className="fh-ufc-fighter-fallback">{initials(f1Name)}</span>
-        )}
+        <FighterImage url={f1Url} name={f1Name} imgClass={imgClass} />
       </div>
       <span className={size === "spotlight" ? "qvh-ufc-vs" : "fh-ufc-vs"}>vs</span>
       <div className={size === "spotlight" ? "qvh-ufc-fighter" : "fh-ufc-fighter"}>
-        {f2Safe ? (
-          <Image
-            src={f2Safe}
-            alt=""
-            width={120}
-            height={120}
-            className={imgClass}
-            loading="lazy"
-            sizes="120px"
-            quality={60}
-          />
-        ) : (
-          <span className="fh-ufc-fighter-fallback">{initials(f2Name)}</span>
-        )}
+        <FighterImage url={f2Url} name={f2Name} imgClass={imgClass} />
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import { dedupeEvents, findDuplicateIdsToRemove } from "@/app/lib/dedupe-events"
 import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
+import { fetchJsonWithTimeout } from "@/app/lib/fetch-json";
 import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
 import { fetchRealityCronEvents } from "@/app/lib/tmdb-reality";
 import { fetchBasketballCronEvents } from "@/app/lib/balldontlie";
@@ -34,7 +35,12 @@ function getWeekDates() {
   return getMadridWeekDates(7);
 }
 
-type CountResult = { count: number; error?: string };
+type CountResult = { count: number; error?: string; dateFrom?: string; dateTo?: string; errors?: string[] };
+
+const FOOTBALL_COMPETITIONS = ["PD", "CL", "PL", "BL1", "SA", "WC", "FL1", "EL", "ECL", "CDR"];
+const CRON_ROW_SELECT =
+  "id, title, date, time, sport, home_team, away_team, external_id, source, platform, competition";
+const MAX_CREST_ENRICH = 20;
 
 async function upsertEvents(events: any[]) {
   if (!events.length) return null;
@@ -49,28 +55,31 @@ async function upsertEvents(events: any[]) {
 }
 
 async function fetchFootball() {
-  const competiciones = ["PD", "CL", "PL", "BL1", "SA", "WC", "FL1"];
   const dates = getWeekDates();
   const dateFrom = dates[0];
   const dateTo = dates[6];
   const events: any[] = [];
   const errors: string[] = [];
+  const token = process.env.FOOTBALL_DATA_API_KEY?.trim();
 
-  for (const comp of competiciones) {
-    try {
-      const res = await fetch(
+  if (!token) {
+    return { count: 0, dateFrom, dateTo, errors: ["FOOTBALL_DATA_API_KEY missing"] };
+  }
+
+  const results = await Promise.allSettled(
+    FOOTBALL_COMPETITIONS.map(async (comp) => {
+      const result = await fetchJsonWithTimeout<{ matches?: any[]; message?: string }>(
         `https://api.football-data.org/v4/competitions/${comp}/matches?dateFrom=${dateFrom}&dateTo=${dateTo}`,
-        { headers: { "X-Auth-Token": process.env.FOOTBALL_DATA_API_KEY! } }
+        { headers: { "X-Auth-Token": token } },
+        18_000
       );
-      const data = await res.json();
-      console.log(`${comp} response:`, JSON.stringify(data).slice(0, 200));
-      if (!res.ok) {
-        errors.push(`${comp}: HTTP ${res.status} — ${data.message || "error"}`);
-        continue;
-      }
-      if (!data.matches) continue;
 
-      for (const match of data.matches) {
+      if (!result.ok || !result.data?.matches) {
+        errors.push(`${comp}: ${result.error ?? "sin datos"}`);
+        return;
+      }
+
+      for (const match of result.data.matches) {
         const utcDate = parseUtcIso(match.utcDate);
         const { date, time } = splitToMadrid(utcDate);
         events.push({
@@ -90,8 +99,12 @@ async function fetchFootball() {
           source: `football-data:${match.homeTeam.id}:${match.awayTeam.id}`,
         });
       }
-    } catch (e) {
-      console.error(`Error fetching ${comp}:`, e);
+    })
+  );
+
+  for (const result of results) {
+    if (result.status === "rejected") {
+      errors.push(String(result.reason));
     }
   }
 
@@ -105,10 +118,16 @@ async function fetchFootball() {
 
 async function fetchF1(): Promise<CountResult> {
   try {
-    const res = await fetch("https://api.jolpi.ca/ergast/f1/2026/races.json");
-    const data = await res.json();
-    console.log("F1 response:", JSON.stringify(data).slice(0, 200));
-    const races = data?.MRData?.RaceTable?.Races || [];
+    const result = await fetchJsonWithTimeout<{ MRData?: { RaceTable?: { Races?: any[] } } }>(
+      "https://api.jolpi.ca/ergast/f1/2026/races.json",
+      undefined,
+      15_000
+    );
+    if (!result.ok || !result.data) {
+      return { count: 0, error: result.error ?? "F1 sin datos" };
+    }
+
+    const races = result.data.MRData?.RaceTable?.Races || [];
     const dates = getWeekDates();
     const events: any[] = [];
 
@@ -213,29 +232,41 @@ async function fetchRealityTv(): Promise<CountResult> {
   }
 }
 
-async function fetchEsports() {
+async function fetchEsports(): Promise<CountResult> {
   const games = [
     { slug: "cs-go", sport: "csgo" },
     { slug: "valorant", sport: "valorant" },
     { slug: "league-of-legends", sport: "lol" },
+    { slug: "dota-2", sport: "dota2" },
   ];
 
   const { dates, from: dateFrom, to: dateTo } = madridWeekUtcRange(7);
   const events: any[] = [];
+  const errors: string[] = [];
+  const token = process.env.PANDASCORE_API_KEY?.trim();
 
-  for (const game of games) {
-    try {
-      const res = await fetch(
+  if (!token) {
+    return { count: 0, error: "PANDASCORE_API_KEY missing" };
+  }
+
+  const results = await Promise.allSettled(
+    games.map(async (game) => {
+      const result = await fetchJsonWithTimeout<any[]>(
         `https://api.pandascore.co/matches?filter[videogame]=${game.slug}&range[begin_at]=${dateFrom},${dateTo}&per_page=50`,
-        { headers: { Authorization: `Bearer ${process.env.PANDASCORE_API_KEY}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
+        18_000
       );
-      const data = await res.json();
-      console.log(`Esports ${game.slug}:`, JSON.stringify(data).slice(0, 200));
-      if (!Array.isArray(data)) continue;
 
-      for (const match of data) {
+      if (!result.ok || !Array.isArray(result.data)) {
+        errors.push(`${game.slug}: ${result.error ?? "sin datos"}`);
+        return;
+      }
+
+      for (const match of result.data) {
         if (!match.begin_at) continue;
         const { date, time } = splitToMadrid(parseUtcIso(match.begin_at));
+        if (!dates.includes(date)) continue;
+
         const team1 = match.opponents?.[0]?.opponent?.name || "TBD";
         const team2 = match.opponents?.[1]?.opponent?.name || "TBD";
         const homeLogo = pandascoreTeamLogo(match.opponents?.[0]?.opponent);
@@ -251,19 +282,28 @@ async function fetchEsports() {
           sport: game.sport,
           category: "esports",
           competition: match.league?.name || match.serie?.full_name || "",
-          platform: "Twitch",
+          platform: "Twitch, YouTube",
           source: encodeEsportsSource(homeLogo, awayLogo),
         });
       }
-    } catch (e) {
-      console.error(`Error fetching esports ${game.slug}:`, e);
+    })
+  );
+
+  for (const result of results) {
+    if (result.status === "rejected") {
+      errors.push(String(result.reason));
     }
   }
 
   const unique = dedupeEvents(events);
   const prepared = await prepareEventsForImport(unique);
-  await upsertEvents(prepared);
+  const upsertError = await upsertEvents(prepared);
+  if (upsertError) errors.push(`upsert: ${upsertError}`);
   console.log(`E-Sports: ${prepared.length}/${unique.length} eventos`);
+  return {
+    count: prepared.length,
+    error: errors.length ? errors.join("; ") : undefined,
+  };
 }
 
 async function fetchUfc(): Promise<{ count: number; error?: string }> {
@@ -344,7 +384,7 @@ async function fetchTmdb(): Promise<{
 }
 
 async function removeDuplicateRows() {
-  const { data, error } = await getSupabase().from("events").select("*");
+  const { data, error } = await getSupabase().from("events").select(CRON_ROW_SELECT);
   if (error || !data?.length) {
     console.error("Dedupe fetch error:", error);
     return { removed: 0, error: error?.message };
@@ -367,16 +407,20 @@ async function enrichImportantEventsMissingCrests(): Promise<{
   enriched: number;
   error?: string;
 }> {
-  const { data, error } = await getSupabase().from("events").select("*");
+  const { data, error } = await getSupabase().from("events").select(CRON_ROW_SELECT);
   if (error || !data?.length) {
     return { enriched: 0, error: error?.message };
   }
 
   let enriched = 0;
+  let processed = 0;
+
   for (const row of data) {
     if (!needsCrestEnrichment(row)) continue;
+    if (processed >= MAX_CREST_ENRICH) break;
+    processed++;
 
-    const updated = await enrichEventCrests(row, 3);
+    const updated = await enrichEventCrests(row, 2);
     if (!updated) continue;
     if (!eventHasTeamCrests(updated) && updated.source === row.source) continue;
 
@@ -398,38 +442,11 @@ async function enrichImportantEventsMissingCrests(): Promise<{
   return { enriched };
 }
 
-async function purgeDota2Events(): Promise<{ purged: number; error?: string }> {
-  const { data, error } = await getSupabase()
-    .from("events")
-    .select("id")
-    .eq("sport", "dota2");
-
-  if (error) {
-    return { purged: 0, error: error.message };
-  }
-
-  const ids = (data ?? []).map((e) => e.id);
-  if (!ids.length) return { purged: 0 };
-
-  const { error: delError } = await getSupabase()
-    .from("events")
-    .delete()
-    .in("id", ids);
-
-  if (delError) {
-    console.error("Dota2 purge error:", delError);
-    return { purged: 0, error: delError.message };
-  }
-
-  console.log(`Eventos Dota 2 eliminados: ${ids.length}`);
-  return { purged: ids.length };
-}
-
 async function purgeEventsWithoutCrests(): Promise<{
   purged: number;
   error?: string;
 }> {
-  const { data, error } = await getSupabase().from("events").select("*");
+  const { data, error } = await getSupabase().from("events").select(CRON_ROW_SELECT);
   if (error || !data?.length) {
     return { purged: 0, error: error?.message };
   }
@@ -464,81 +481,44 @@ export async function GET(request: Request) {
   console.log("Balldontlie key:", process.env.BALLDONTLIE_API_KEY ? "OK" : "MISSING");
 
   let football = { count: 0, dateFrom: "", dateTo: "", errors: [] as string[] };
-
-  try {
-    football = await fetchFootball();
-    console.log("✓ Football done");
-  } catch (e) {
-    console.error("✗ Football error:", e);
-    football.errors.push(String(e));
-  }
-
-  try {
-    await fetchEsports();
-    console.log("✓ Esports done");
-  } catch (e) {
-    console.error("✗ Esports error:", e);
-  }
-
+  let esports: CountResult = { count: 0 };
   let f1: CountResult = { count: 0 };
-  try {
-    f1 = await fetchF1();
-    console.log("✓ F1 done");
-  } catch (e) {
-    console.error("✗ F1 error:", e);
-  }
-
   let motos: CountResult = { count: 0 };
-  try {
-    motos = await fetchMotos();
-    console.log("✓ MotoGP done");
-  } catch (e) {
-    console.error("✗ MotoGP error:", e);
-  }
-
   let leagues: CountResult = { count: 0 };
-  try {
-    leagues = await fetchLeagueSports();
-    console.log("✓ Tenis/Ciclismo done");
-  } catch (e) {
-    console.error("✗ Tenis/Ciclismo error:", e);
-  }
-
   let basket: CountResult = { count: 0 };
-  try {
-    basket = await fetchBasketball();
-    console.log("✓ Baloncesto done");
-  } catch (e) {
-    console.error("✗ Baloncesto error:", e);
-  }
-
   let tmdb: { movies: number; series: number; purged: number; error?: string } = {
     movies: 0,
     series: 0,
     purged: 0,
   };
-  try {
-    tmdb = await fetchTmdb();
-    console.log("✓ TMDB done");
-  } catch (e) {
-    console.error("✗ TMDB error:", e);
-  }
-
   let reality: CountResult = { count: 0 };
-  try {
-    reality = await fetchRealityTv();
-    console.log("✓ Reality TV done");
-  } catch (e) {
-    console.error("✗ Reality TV error:", e);
-  }
+  let ufc: CountResult = { count: 0 };
 
-  let ufc: { count: number; error?: string } = { count: 0 };
-  try {
-    ufc = await fetchUfc();
-    console.log("✓ UFC done");
-  } catch (e) {
-    console.error("✗ UFC error:", e);
-  }
+  const ingest = await Promise.allSettled([
+    fetchFootball(),
+    fetchEsports(),
+    fetchF1(),
+    fetchMotos(),
+    fetchLeagueSports(),
+    fetchBasketball(),
+    fetchTmdb(),
+    fetchRealityTv(),
+    fetchUfc(),
+  ]);
+
+  if (ingest[0].status === "fulfilled") football = ingest[0].value;
+  else football.errors.push(String(ingest[0].reason));
+
+  if (ingest[1].status === "fulfilled") esports = ingest[1].value;
+  if (ingest[2].status === "fulfilled") f1 = ingest[2].value;
+  if (ingest[3].status === "fulfilled") motos = ingest[3].value;
+  if (ingest[4].status === "fulfilled") leagues = ingest[4].value;
+  if (ingest[5].status === "fulfilled") basket = ingest[5].value;
+  if (ingest[6].status === "fulfilled") tmdb = ingest[6].value;
+  if (ingest[7].status === "fulfilled") reality = ingest[7].value;
+  if (ingest[8].status === "fulfilled") ufc = ingest[8].value;
+
+  console.log("✓ Ingesta paralela completada");
 
   let enrich: { enriched: number; error?: string } = { enriched: 0 };
   try {
@@ -546,14 +526,6 @@ export async function GET(request: Request) {
     console.log("✓ Crest enrich done");
   } catch (e) {
     console.error("✗ Crest enrich error:", e);
-  }
-
-  let dotaPurge: { purged: number; error?: string } = { purged: 0 };
-  try {
-    dotaPurge = await purgeDota2Events();
-    console.log("✓ Dota 2 purge done");
-  } catch (e) {
-    console.error("✗ Dota 2 purge error:", e);
   }
 
   let purge: { purged: number; error?: string } = { purged: 0 };
@@ -594,6 +566,8 @@ export async function GET(request: Request) {
     timestamp: new Date().toISOString(),
     indexNow,
     football,
+    esports: esports.count,
+    esportsError: esports.error,
     f1: f1.count,
     f1Error: f1.error,
     motos: motos.count,
@@ -614,8 +588,6 @@ export async function GET(request: Request) {
     crestEnrichError: enrich.error,
     crestsPurged: purge.purged,
     crestPurgeError: purge.error,
-    dota2Purged: dotaPurge.purged,
-    dota2PurgeError: dotaPurge.error,
     duplicatesRemoved: dedupe.removed,
     dedupeError: dedupe.error,
     hint:

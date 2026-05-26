@@ -1,12 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
-import { safeRemoteImageUrl } from "../lib/remote-image";
 import { useTimezone } from "../lib/timezone-context";
 import { RemotePoster } from "./RemotePoster";
+import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
 
 type Props = {
@@ -22,8 +21,6 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
 }: Props) {
   const { timeZone } = useTimezone();
   const card = getSpotlightCardModel(event, timeZone);
-  const homeCrest = safeRemoteImageUrl(card.homeCrest);
-  const awayCrest = safeRemoteImageUrl(card.awayCrest);
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (
@@ -46,30 +43,24 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
             f2Name={card.awayName}
             size="spotlight"
           />
-        ) : card.showTeamDuel && homeCrest && awayCrest ? (
+        ) : card.showTeamDuel ? (
           <div className="qvh-spotlight-duel" aria-hidden>
             <div className="qvh-spotlight-duel-team">
-              <Image
-                src={homeCrest}
-                alt=""
-                width={48}
-                height={48}
+              <TeamCrest
+                src={card.homeCrest}
+                name={card.homeName}
+                size={48}
                 className="qvh-spotlight-crest"
-                loading={priority ? "eager" : "lazy"}
-                priority={priority}
               />
               <span className="qvh-spotlight-duel-name">{card.homeName}</span>
             </div>
             <span className="qvh-spotlight-duel-vs">vs</span>
             <div className="qvh-spotlight-duel-team">
-              <Image
-                src={awayCrest}
-                alt=""
-                width={48}
-                height={48}
+              <TeamCrest
+                src={card.awayCrest}
+                name={card.awayName}
+                size={48}
                 className="qvh-spotlight-crest"
-                loading={priority ? "eager" : "lazy"}
-                priority={priority}
               />
               <span className="qvh-spotlight-duel-name">{card.awayName}</span>
             </div>

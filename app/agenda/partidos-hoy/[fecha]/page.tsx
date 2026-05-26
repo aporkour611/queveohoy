@@ -5,7 +5,6 @@ import { fetchFeedEvents } from "../../../lib/events-feed-server";
 import {
   buildDateMetadataDescription,
   buildDateMetadataTitle,
-  getRollingSeoDateKeys,
   isBeyondRollingWindow,
   isIsoDateParam,
   isPastSeoDate,
@@ -14,10 +13,7 @@ import {
 import { pageMetadata } from "../../../lib/seo";
 
 export const revalidate = 600;
-
-export function generateStaticParams() {
-  return getRollingSeoDateKeys().map((fecha) => ({ fecha }));
-}
+export const dynamicParams = true;
 
 type PageProps = {
   params: Promise<{ fecha: string }>;

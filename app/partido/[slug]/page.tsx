@@ -3,26 +3,18 @@ import { notFound } from "next/navigation";
 import { PartidoJsonLd } from "../../components/PartidoJsonLd";
 import { PartidoPage } from "../../components/PartidoPage";
 import { fetchFeedEvents } from "../../lib/events-feed-server";
-import {
-  eventSlug,
-  findEventBySlug,
-  partidoSlugsForSitemap,
-} from "../../lib/event-slug";
+import { findEventBySlug } from "../../lib/event-slug";
 import { eventLabel } from "../../lib/seo-events";
 import { displayTime } from "../../lib/madrid-time";
 import { pageMetadata } from "../../lib/seo";
 import { resolveChannelsForEvent } from "../../lib/channels";
 
 export const revalidate = 600;
+export const dynamicParams = true;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
-
-export async function generateStaticParams() {
-  const { events } = await fetchFeedEvents();
-  return partidoSlugsForSitemap(events).map((slug) => ({ slug }));
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
