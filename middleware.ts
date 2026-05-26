@@ -32,16 +32,29 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Home es 100% cliente: no refrescar sesion aqui (evita timeouts en Vercel)
-  if (request.nextUrl.pathname === "/") {
-    return NextResponse.next();
-  }
-
   return updateSession(request);
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/admin/:path*",
+    "/cuenta/:path*",
+    "/entrar",
+    "/registro",
+    "/auth/:path*",
+    "/agenda/:path*",
+    "/api/:path*",
+    "/partidos-hoy",
+    "/futbol",
+    "/champions",
+    "/laliga",
+    "/premier-league",
+    "/formula-1",
+    "/motogp",
+    "/ufc",
+    "/baloncesto",
+    "/series",
+    "/cookies",
+    "/privacidad",
   ],
 };
