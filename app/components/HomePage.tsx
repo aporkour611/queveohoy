@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import {
   FEED_DAY_COUNT,
@@ -180,6 +180,8 @@ function HomePageContent({
   const [loadError, setLoadError] = useState<string | null>(initialError);
   const [activeDay, setActiveDay] = useState(0);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
+  const scrollLockRef = useRef(false);
+  const scrollLockTimerRef = useRef<number | null>(null);
 
   const isFeaturedMode = selectedSports.length === 0;
   const hasInitialData = initialEvents.length > 0;
@@ -274,7 +276,16 @@ function HomePageContent({
     [displayDays, displayEvents, selectedSports, isFeaturedMode]
   );
 
-  const activeSection = visibleDays[activeDay] ?? null;
+  const lockScrollSpy = useCallback((ms = 900) => {
+    scrollLockRef.current = true;
+    if (scrollLockTimerRef.current !== null) {
+      window.clearTimeout(scrollLockTimerRef.current);
+    }
+    scrollLockTimerRef.current = window.setTimeout(() => {
+      scrollLockRef.current = false;
+      scrollLockTimerRef.current = null;
+    }, ms);
+  }, []);
 
   useEffect(() => {
     setActiveDay(0);
@@ -287,21 +298,77 @@ function HomePageContent({
     });
   }, [visibleDays.length]);
 
-  const goToDay = useCallback((index: number) => {
-    setActiveDay(index);
-    document.getElementById("day-feed")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, []);
+  const showInitialLoading = loading && events.length === 0;
+
+  const goToDay = useCallback(
+    (index: number) => {
+      const day = visibleDays[index];
+      if (!day) return;
+
+      lockScrollSpy();
+      setActiveDay(index);
+      document
+        .getElementById(`day-${day.date}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [lockScrollSpy, visibleDays]
+  );
 
   const resetHome = useCallback(() => {
+    lockScrollSpy();
     setActiveDay(0);
     window.scrollTo({ top: 0, behavior: "smooth" });
     void loadEvents({ silent: true });
-  }, [loadEvents]);
+  }, [loadEvents, lockScrollSpy]);
 
-  const showInitialLoading = loading && events.length === 0;
+  useEffect(() => {
+    if (showInitialLoading || visibleDays.length === 0) return;
+
+    const sections = visibleDays
+      .map((d) => document.getElementById(`day-${d.date}`))
+      .filter(Boolean) as HTMLElement[];
+
+    if (!sections.length) return;
+
+    const anchor =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--qvh-navbar-h"
+        )
+      ) + 8;
+
+    let frame = 0;
+
+    function syncActiveDay() {
+      if (scrollLockRef.current) return;
+
+      let next = 0;
+      for (let i = 0; i < sections.length; i++) {
+        if (sections[i].getBoundingClientRect().top <= anchor) {
+          next = i;
+        }
+      }
+      setActiveDay((prev) => (prev === next ? prev : next));
+    }
+
+    function onScroll() {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        syncActiveDay();
+      });
+    }
+
+    syncActiveDay();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [showInitialLoading, visibleDays]);
 
   return (
     <div className="fh-body">
@@ -364,31 +431,33 @@ function HomePageContent({
                   : "No hay eventos para los filtros seleccionados en los próximos 7 días."}
               </p>
             </div>
-          ) : activeSection ? (
+          ) : (
             <div className="fh-day-feed" id="day-feed">
-              <section
-                key={activeSection.date}
-                id={`day-${activeSection.date}`}
-                className="fh-day-section fh-matchday"
-                aria-labelledby={`day-title-${activeSection.date}`}
-              >
-                <h2
-                  id={`day-title-${activeSection.date}`}
-                  className="fh-matchday-header"
+              {visibleDays.map((section, i) => (
+                <section
+                  key={section.date}
+                  id={`day-${section.date}`}
+                  className="fh-day-section fh-matchday"
+                  aria-labelledby={`day-title-${section.date}`}
                 >
-                  {activeSection.title}{" "}
-                  <span className="fh-md-count">
-                    ({activeSection.events.length})
-                  </span>
-                  {isFeaturedMode && (
-                    <span className="fh-featured-badge">Destacados</span>
-                  )}
-                </h2>
+                  <h2
+                    id={`day-title-${section.date}`}
+                    className="fh-matchday-header"
+                  >
+                    {section.title}{" "}
+                    <span className="fh-md-count">
+                      ({section.events.length})
+                    </span>
+                    {isFeaturedMode && i === activeDay && (
+                      <span className="fh-featured-badge">Destacados</span>
+                    )}
+                  </h2>
 
-                {renderEventSections(activeSection.events)}
-              </section>
+                  {renderEventSections(section.events)}
+                </section>
+              ))}
             </div>
-          ) : null}
+          )}
 
           {children}
 
