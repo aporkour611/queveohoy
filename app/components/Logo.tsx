@@ -26,7 +26,6 @@ export function Logo({ variant = "header" }: Props) {
         <span className="qvh-tile qvh-tile-v">V</span>
         <span className="qvh-tile qvh-tile-h">H</span>
       </span>
-      <span className="qvh-logo-divider" aria-hidden />
       <span className="qvh-logo-wordmark">
         <span className="qvh-wm qvh-wm-q">que</span>
         <span className="qvh-wm qvh-wm-v">veo</span>

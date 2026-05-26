@@ -74,13 +74,6 @@
   background: var(--qvh-green);
 }
 
-.qvh-logo-divider {
-  width: 1px;
-  height: 40px;
-  background: #3a3a4a;
-  flex-shrink: 0;
-}
-
 .qvh-logo-wordmark {
   display: flex;
   flex-direction: column;
