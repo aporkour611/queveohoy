@@ -1,8 +1,10 @@
 "use client";
 
+import { useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
+import { buildEventDetails } from "../lib/event-details";
 import { parseTmdbPoster } from "../lib/tmdb";
 import { parseUfcImage } from "../lib/thesportsdb-ufc";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
@@ -14,7 +16,25 @@ type Props = {
   event: EventRow;
 };
 
+function EventDetailsPanel({ event }: { event: EventRow }) {
+  const details = useMemo(() => buildEventDetails(event), [event]);
+
+  if (!details.length) return null;
+
+  return (
+    <div className="fh-m-details" onClick={(e) => e.stopPropagation()}>
+      {details.map(({ label, value }) => (
+        <div key={label} className="fh-m-detail-row">
+          <span className="fh-m-detail-label">{label}</span>
+          <span className="fh-m-detail-value">{value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function MatchCard({ event }: Props) {
+  const [expanded, setExpanded] = useState(false);
   const isMedia = event.sport === "cine" || event.sport === "series";
   const isUfc = event.sport === "ufc";
   const mediaTitle = event.title?.trim() || "Sin título";
@@ -62,10 +82,38 @@ export function MatchCard({ event }: Props) {
   const compDisplay = compFull.split(" · ")[0] || compFull;
   const matchClass = competitionMatchClass(compDisplay, event.sport);
 
+  function toggleExpanded() {
+    setExpanded((open) => !open);
+  }
+
+  const cardShell = (children: ReactNode) => (
+    <div className={`fh-cardcol${expanded ? " fh-cardcol-expanded" : ""}`}>
+      <div
+        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}`}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        onClick={toggleExpanded}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleExpanded();
+          }
+        }}
+      >
+        {children}
+        {expanded ? (
+          <EventDetailsPanel event={event} />
+        ) : (
+          <p className="fh-m-expand-hint">Toca para más info</p>
+        )}
+      </div>
+    </div>
+  );
+
   if (isMedia || isUfc) {
-    return (
-      <div className="fh-cardcol">
-        <div className={`fh-match ${matchClass}`}>
+    return cardShell(
+      <>
           <div className="fh-m-comp" />
 
           <div className="fh-m-title fh-m-title-media">
@@ -83,26 +131,24 @@ export function MatchCard({ event }: Props) {
             <div className="fh-media-spacer" aria-hidden />
           </div>
 
-          {channels.length > 0 && (
-            <div className="fh-m-chan">
-              {channels.map((ch) => (
-                <span
-                  key={ch}
-                  className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
-                >
-                  {ch}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+        {channels.length > 0 && (
+          <div className="fh-m-chan">
+            {channels.map((ch) => (
+              <span
+                key={ch}
+                className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
+              >
+                {ch}
+              </span>
+            ))}
+          </div>
+        )}
+      </>
     );
   }
 
-  return (
-    <div className="fh-cardcol">
-      <div className={`fh-match ${matchClass}`}>
+  return cardShell(
+    <>
         <div className="fh-m-comp" />
 
         {isFinal && (
@@ -133,19 +179,18 @@ export function MatchCard({ event }: Props) {
           />
         </div>
 
-        {channels.length > 0 && (
-          <div className="fh-m-chan">
-            {channels.map((ch) => (
-              <span
-                key={ch}
-                className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
-              >
-                {ch}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+      {channels.length > 0 && (
+        <div className="fh-m-chan">
+          {channels.map((ch) => (
+            <span
+              key={ch}
+              className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
+            >
+              {ch}
+            </span>
+          ))}
+        </div>
+      )}
+    </>
   );
 }

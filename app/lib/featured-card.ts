@@ -5,6 +5,7 @@ import {
   parseFootballTeamIds,
   shortTeamName,
   teamCrestUrl,
+  footballSpotlightMeta,
 } from "./football";
 import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb";
 import {
@@ -139,8 +140,8 @@ export function getSpotlightCardModel(event: EventRow): SpotlightCardModel {
       badgeVariant: isChampions ? "champions" : "futbol",
       dateLabel,
       time,
-      meta: channels || competition,
-      platform: event.platform?.trim() || channels || "TV",
+      meta: footballSpotlightMeta(event.competition),
+      platform: channels || "TV y streaming",
       visualClass: isChampions
         ? "qvh-spotlight-visual-champions"
         : "qvh-spotlight-visual-futbol",

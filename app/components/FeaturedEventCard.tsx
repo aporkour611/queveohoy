@@ -52,7 +52,7 @@ export function FeaturedEventCard({ event, className }: Props) {
       <div className="qvh-spotlight-body">
         <h3 className="qvh-spotlight-headline">{card.headline}</h3>
         {card.meta ? <p className="qvh-spotlight-meta">{card.meta}</p> : null}
-        {card.platform ? (
+        {card.platform && card.platform !== card.meta ? (
           <p
             className={`qvh-spotlight-platform ${
               card.badgeVariant === "champions"

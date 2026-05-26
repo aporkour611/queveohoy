@@ -51,3 +51,30 @@ export function shortTeamName(name?: string | null) {
     .replace(/\s+Fem\.?$/i, "")
     .trim();
 }
+
+/** Texto editorial para tarjetas Destacados (no repetir canales) */
+export function footballSpotlightMeta(competition?: string | null): string {
+  const raw = competition?.trim() || "Partido de fútbol";
+  const [base, ...rest] = raw.split(" · ").map((s) => s.trim()).filter(Boolean);
+  const stage = rest.join(" · ");
+  const blob = `${base} ${stage}`.toLowerCase();
+
+  if (/champions/i.test(base)) {
+    if (/final/i.test(blob)) return "Final de la UEFA Champions League";
+    if (/semi/i.test(blob)) return "Semifinal de la UEFA Champions League";
+    if (/quarter|cuartos|octavos|last.?16|round of 16/i.test(blob)) {
+      return "Eliminatoria de la UEFA Champions League";
+    }
+    return stage ? `${stage} · UEFA Champions League` : "UEFA Champions League";
+  }
+
+  if (/europa/i.test(base) && /final/i.test(blob)) return "Final de la Europa League";
+  if (/conference/i.test(base) && /final/i.test(blob)) {
+    return "Final de la Conference League";
+  }
+  if (/mundial|world cup/i.test(blob)) {
+    return /final/i.test(blob) ? "Final del Mundial" : raw;
+  }
+
+  return stage ? `${stage} · ${base}` : base;
+}
