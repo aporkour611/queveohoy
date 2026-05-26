@@ -5,6 +5,7 @@ import "./brand.css";
 import "./futbolhoy.css";
 import "./destacados.css";
 import "./media.css";
+import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { rootMetadata } from "./lib/seo";
 
 const geistSans = Geist({
@@ -36,7 +37,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
-        {children}
+        <CookieConsentRoot>{children}</CookieConsentRoot>
       </body>
     </html>
   );

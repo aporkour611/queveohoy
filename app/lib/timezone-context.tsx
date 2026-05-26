@@ -10,6 +10,10 @@ import {
   type ReactNode,
 } from "react";
 import {
+  COOKIE_CONSENT_EVENT,
+  hasPreferenceConsent,
+} from "./cookie-consent";
+import {
   DEFAULT_TIMEZONE_PREFS,
   LATAM_COUNTRIES,
   parseTimezonePrefs,
@@ -39,19 +43,38 @@ export function TimezoneProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(TIMEZONE_STORAGE_KEY);
-      if (saved) setPrefs(parseTimezonePrefs(JSON.parse(saved)));
-    } catch {}
+    if (hasPreferenceConsent()) {
+      try {
+        const saved = localStorage.getItem(TIMEZONE_STORAGE_KEY);
+        if (saved) setPrefs(parseTimezonePrefs(JSON.parse(saved)));
+      } catch {}
+    }
     setReady(true);
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !hasPreferenceConsent()) return;
     try {
       localStorage.setItem(TIMEZONE_STORAGE_KEY, JSON.stringify(prefs));
     } catch {}
   }, [prefs, ready]);
+
+  useEffect(() => {
+    function onConsentChange() {
+      if (!hasPreferenceConsent()) {
+        setPrefs(DEFAULT_TIMEZONE_PREFS);
+        return;
+      }
+
+      try {
+        const saved = localStorage.getItem(TIMEZONE_STORAGE_KEY);
+        if (saved) setPrefs(parseTimezonePrefs(JSON.parse(saved)));
+      } catch {}
+    }
+
+    window.addEventListener(COOKIE_CONSENT_EVENT, onConsentChange);
+    return () => window.removeEventListener(COOKIE_CONSENT_EVENT, onConsentChange);
+  }, []);
 
   const setRegion = useCallback((region: RegionId) => {
     setPrefs((prev) => ({ ...prev, region }));

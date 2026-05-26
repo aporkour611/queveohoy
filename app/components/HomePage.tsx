@@ -8,6 +8,10 @@ import {
   normalizeFeedEvents,
 } from "../lib/events-feed";
 import { STORAGE_KEY, sportLabel, ALL_SPORT_IDS } from "../lib/filter-config";
+import {
+  COOKIE_CONSENT_EVENT,
+  hasPreferenceConsent,
+} from "../lib/cookie-consent";
 import { DayTabs } from "./DayTabs";
 import { EventFilters } from "./EventFilters";
 import { LoadingState } from "./LoadingState";
@@ -244,20 +248,22 @@ function HomePageContent({
   }, []);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setSelectedSports(
-            parsed.filter(
-              (id): id is string =>
-                typeof id === "string" && ALL_SPORT_IDS.includes(id)
-            )
-          );
+    if (hasPreferenceConsent()) {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setSelectedSports(
+              parsed.filter(
+                (id): id is string =>
+                  typeof id === "string" && ALL_SPORT_IDS.includes(id)
+              )
+            );
+          }
         }
-      }
-    } catch {}
+      } catch {}
+    }
 
     if (!hasInitialData) {
       void loadEvents();
@@ -265,10 +271,22 @@ function HomePageContent({
   }, [hasInitialData, loadEvents]);
 
   useEffect(() => {
+    if (!hasPreferenceConsent()) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedSports));
     } catch {}
   }, [selectedSports]);
+
+  useEffect(() => {
+    function onConsentChange() {
+      if (!hasPreferenceConsent()) {
+        setSelectedSports([]);
+      }
+    }
+
+    window.addEventListener(COOKIE_CONSENT_EVENT, onConsentChange);
+    return () => window.removeEventListener(COOKIE_CONSENT_EVENT, onConsentChange);
+  }, []);
 
   const displayEvents = useMemo(
     () =>

@@ -61,9 +61,12 @@ export default function CookiesPage() {
           <section>
             <h2>Cómo gestionarlas</h2>
             <p>
-              Puedes eliminar o bloquear cookies desde la configuración de tu
-              navegador. Si desactivas el almacenamiento local, los filtros y la
-              zona horaria volverán a su estado predeterminado en cada visita.
+              Al entrar por primera vez te pedimos consentimiento con un aviso
+              en la parte inferior de la pantalla. Puedes aceptar o rechazar el
+              uso de preferencias y medición. También puedes eliminar o bloquear
+              cookies desde la configuración de tu navegador. Si desactivas el
+              almacenamiento local, los filtros y la zona horaria volverán a su
+              estado predeterminado en cada visita.
             </p>
           </section>
 
