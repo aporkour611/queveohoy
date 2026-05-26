@@ -1,7 +1,6 @@
 "use client";
 
 import { memo, useMemo, useState } from "react";
-import { JustWatchWhereToWatch } from "./JustWatchWhereToWatch";
 import { buildEventDetails } from "../lib/event-details";
 import { parseChannels } from "../lib/channels";
 import { displayTime } from "../lib/madrid-time";
@@ -34,7 +33,6 @@ function MediaDetailsPanel({ event }: { event: EventRow }) {
           <span className="qvh-media-detail-value">{value}</span>
         </div>
       ))}
-      <JustWatchWhereToWatch sport={event.sport} externalId={event.external_id} />
     </div>
   );
 }

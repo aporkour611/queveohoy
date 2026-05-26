@@ -1,7 +1,6 @@
 "use client";
 
 import type { EventRow } from "./types";
-import { JustWatchBrandedLink } from "./JustWatchBrandedLink";
 import { MediaPosterCard } from "./MediaPosterCard";
 
 type Props = {
@@ -49,10 +48,6 @@ export function MediaEntertainmentSection({ cine, series }: Props) {
 
       <MediaRail kicker="Estrenos" title="En cines" events={cine} />
       <MediaRail kicker="Televisión" title="Capítulos y series" events={series} />
-
-      <div className="qvh-media-section-foot">
-        <JustWatchBrandedLink href="https://www.justwatch.com/es" variant="gold" />
-      </div>
     </section>
   );
 }

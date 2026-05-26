@@ -354,23 +354,6 @@
   line-height: 1.35;
 }
 
-.qvh-media-section-foot {
-  margin-top: 6px;
-  padding: 0 2px;
-}
-
-.qvh-media-section .jw-branded-link-gold {
-  opacity: 0.92;
-}
-
-.qvh-media-section .jw-watch {
-  margin-top: 4px;
-}
-
-.qvh-media-section .jw-watch-label {
-  color: #8a8a96;
-}
-
 @media (min-width: 640px) {
   .qvh-media-card-col {
     width: 230px;

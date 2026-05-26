@@ -2,7 +2,6 @@
 
 import { memo, useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
-import { JustWatchWhereToWatch } from "./JustWatchWhereToWatch";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
@@ -82,22 +81,6 @@ function SpotlightCardContent({
 
 function EventDetailsPanel({ event }: { event: EventRow }) {
   const details = useMemo(() => buildEventDetails(event), [event]);
-  const isMedia =
-    event.sport === "cine" || event.sport === "series" || event.sport === "tv";
-
-  if (isMedia) {
-    return (
-      <div className="fh-m-details" onClick={(e) => e.stopPropagation()}>
-        {details.map(({ label, value }) => (
-          <div key={label} className="fh-m-detail-row">
-            <span className="fh-m-detail-label">{label}</span>
-            <span className="fh-m-detail-value">{value}</span>
-          </div>
-        ))}
-        <JustWatchWhereToWatch sport={event.sport} externalId={event.external_id} />
-      </div>
-    );
-  }
 
   if (!details.length) return null;
 

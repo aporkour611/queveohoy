@@ -4,7 +4,6 @@ import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { useTimezone } from "../lib/timezone-context";
-import { JustWatchWhereToWatch } from "./JustWatchWhereToWatch";
 
 type Props = {
   event: EventRow;
@@ -17,8 +16,6 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
 }: Props) {
   const { timeZone } = useTimezone();
   const card = getSpotlightCardModel(event, timeZone);
-  const isMedia =
-    event.sport === "cine" || event.sport === "series" || event.sport === "tv";
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (
@@ -87,13 +84,6 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
           >
             {card.platform}
           </p>
-        ) : null}
-        {isMedia ? (
-          <JustWatchWhereToWatch
-            sport={event.sport}
-            externalId={event.external_id}
-            compact
-          />
         ) : null}
       </div>
     </article>

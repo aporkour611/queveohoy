@@ -5,7 +5,6 @@ import "./brand.css";
 import "./futbolhoy.css";
 import "./destacados.css";
 import "./media.css";
-import "./justwatch.css";
 import { rootMetadata } from "./lib/seo";
 
 const geistSans = Geist({
