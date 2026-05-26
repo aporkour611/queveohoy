@@ -1,7 +1,18 @@
 import type { Metadata } from "next";
 
-export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://queveohoy.es";
+function resolveSiteUrl(): string {
+  const fallback = "https://queveohoy.es";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (!raw) return fallback;
+  try {
+    const normalized = raw.includes("://") ? raw : `https://${raw}`;
+    return new URL(normalized).origin;
+  } catch {
+    return fallback;
+  }
+}
+
+export const siteUrl = resolveSiteUrl();
 
 export const siteName = "Qué veo hoy";
 export const siteBrand = "queveohoy.es";

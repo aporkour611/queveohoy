@@ -5,6 +5,9 @@ import { homeMetadata } from "./lib/seo";
 
 export const metadata: Metadata = homeMetadata;
 
+/** Render dinamico ligero (evita fallos de generacion estatica en Vercel). */
+export const dynamic = "force-dynamic";
+
 export default function Page() {
   return (
     <>
