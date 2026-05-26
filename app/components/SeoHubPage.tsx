@@ -67,7 +67,7 @@ export function SeoHubPage({ hub, events }: Props) {
             <p className="fh-page-lead">{hub.lead}</p>
 
             <p className="fh-seo-hub-cta">
-              <Link href="/">Ver agenda interactiva con filtros y favoritos →</Link>
+              <Link href="/">Ver agenda interactiva con filtros →</Link>
             </p>
 
             {days.length === 0 ? (

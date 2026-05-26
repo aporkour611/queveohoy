@@ -8,7 +8,6 @@ import { buildEventDetails } from "../lib/event-details";
 import { parseTmdbPoster } from "../lib/tmdb";
 import { parseUfcImage } from "../lib/thesportsdb-ufc";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
-import { openWatchUrl, resolveWatchUrl } from "../lib/watch-links";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
 import type { EventRow } from "./types";
@@ -36,8 +35,6 @@ function EventDetailsPanel({ event }: { event: EventRow }) {
 
 export const MatchCard = memo(function MatchCard({ event }: Props) {
   const [expanded, setExpanded] = useState(false);
-  const watchLink = useMemo(() => resolveWatchUrl(event), [event]);
-  const hasDetails = useMemo(() => buildEventDetails(event).length > 0, [event]);
   const isMedia = event.sport === "cine" || event.sport === "series";
   const isUfc = event.sport === "ufc";
   const mediaTitle = event.title?.trim() || "Sin título";
@@ -89,56 +86,27 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     setExpanded((open) => !open);
   }
 
-  function handleCardClick() {
-    if (watchLink) {
-      openWatchUrl(watchLink);
-      return;
-    }
-    toggleExpanded();
-  }
-
   const cardShell = (children: ReactNode) => (
     <div className={`fh-cardcol${expanded ? " fh-cardcol-expanded" : ""}`}>
       <div
-        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${watchLink ? " fh-match-watchable" : ""}`}
+        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}`}
         role="button"
         tabIndex={0}
         aria-expanded={expanded}
-        aria-label={
-          watchLink
-            ? `Ver en ${watchLink.label}: ${event.title ?? "evento"}`
-            : undefined
-        }
-        onClick={handleCardClick}
+        onClick={toggleExpanded}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            handleCardClick();
+            toggleExpanded();
           }
         }}
       >
         {children}
-        {watchLink && hasDetails ? (
-          <button
-            type="button"
-            className="fh-m-details-btn"
-            aria-expanded={expanded}
-            aria-label="Ver detalles del evento"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleExpanded();
-            }}
-          >
-            Detalles
-          </button>
-        ) : null}
         {expanded ? (
           <EventDetailsPanel event={event} />
-        ) : watchLink ? (
-          <p className="fh-m-expand-hint">Toca para ver en {watchLink.label}</p>
-        ) : hasDetails ? (
+        ) : (
           <p className="fh-m-expand-hint">Toca para más info</p>
-        ) : null}
+        )}
       </div>
     </div>
   );
