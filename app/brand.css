@@ -227,6 +227,8 @@
   line-height: 1.1;
   color: var(--qvh-text);
   letter-spacing: -0.01em;
+  width: 100%;
+  text-align: center;
 }
 
 .qvh-hero-accent {
