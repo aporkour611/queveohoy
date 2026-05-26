@@ -83,6 +83,22 @@ type Props = {
   children?: ReactNode;
 };
 
+function getScrollAnchorOffset(): number {
+  const navH = parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue("--qvh-navbar-h")
+  );
+  return (Number.isFinite(navH) ? navH : 64) + 12;
+}
+
+function scrollToDaySection(date: string) {
+  const el = document.getElementById(`day-${date}`);
+  if (!el) return;
+
+  const top =
+    el.getBoundingClientRect().top + window.scrollY - getScrollAnchorOffset();
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+}
+
 function groupForDisplay(events: EventRow[]) {
   const football: Record<string, EventRow[]> = {};
   const bySport: Record<string, { label: string; sportId: string; events: EventRow[] }> =
@@ -315,19 +331,17 @@ function HomePageContent({
     [timeZone]
   );
 
-  const visibleDays = useMemo(
+  const daySections = useMemo(
     () =>
-      displayDays
-        .map((day) => ({
-          ...day,
-          events: resolveDayEventsForFeed(
-            displayEvents,
-            day.date,
-            selectedSports,
-            isFeaturedMode
-          ),
-        }))
-        .filter((day) => day.events.length > 0),
+      displayDays.map((day) => ({
+        ...day,
+        events: resolveDayEventsForFeed(
+          displayEvents,
+          day.date,
+          selectedSports,
+          isFeaturedMode
+        ),
+      })),
     [displayDays, displayEvents, selectedSports, isFeaturedMode]
   );
 
@@ -347,26 +361,21 @@ function HomePageContent({
   }, [timeZone, selectedSports.join(",")]);
 
   useEffect(() => {
-    setActiveDay((prev) => {
-      if (visibleDays.length === 0) return 0;
-      return Math.min(prev, visibleDays.length - 1);
-    });
-  }, [visibleDays.length]);
+    setActiveDay((prev) => Math.min(prev, Math.max(daySections.length - 1, 0)));
+  }, [daySections.length]);
 
   const showInitialLoading = loading && events.length === 0;
 
   const goToDay = useCallback(
     (index: number) => {
-      const day = visibleDays[index];
+      const day = daySections[index];
       if (!day) return;
 
       lockScrollSpy();
       setActiveDay(index);
-      document
-        .getElementById(`day-${day.date}`)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      requestAnimationFrame(() => scrollToDaySection(day.date));
     },
-    [lockScrollSpy, visibleDays]
+    [lockScrollSpy, daySections]
   );
 
   const resetHome = useCallback(() => {
@@ -377,20 +386,15 @@ function HomePageContent({
   }, [loadEvents, lockScrollSpy]);
 
   useEffect(() => {
-    if (showInitialLoading || visibleDays.length === 0) return;
+    if (showInitialLoading || daySections.length === 0) return;
 
-    const sections = visibleDays
+    const sections = daySections
       .map((d) => document.getElementById(`day-${d.date}`))
       .filter(Boolean) as HTMLElement[];
 
     if (!sections.length) return;
 
-    const anchor =
-      parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--qvh-navbar-h"
-        )
-      ) + 8;
+    const anchor = getScrollAnchorOffset();
 
     let frame = 0;
 
@@ -423,7 +427,7 @@ function HomePageContent({
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [showInitialLoading, visibleDays]);
+  }, [showInitialLoading, daySections]);
 
   return (
     <div className="fh-body">
@@ -448,7 +452,7 @@ function HomePageContent({
           {isFeaturedMode && <DestacadosSection events={displayEvents} />}
 
           <DayTabs
-            days={visibleDays}
+            days={daySections}
             activeIndex={activeDay}
             onChange={goToDay}
           />
@@ -477,17 +481,9 @@ function HomePageContent({
             <div className="fh-empty">
               <p>No hay eventos en los próximos 7 días.</p>
             </div>
-          ) : visibleDays.length === 0 ? (
-            <div className="fh-empty">
-              <p>
-                {isFeaturedMode
-                  ? "No hay eventos en los próximos 7 días."
-                  : "No hay eventos para los filtros seleccionados en los próximos 7 días."}
-              </p>
-            </div>
           ) : (
             <div className="fh-day-feed" id="day-feed">
-              {visibleDays.map((section, i) => (
+              {daySections.map((section, i) => (
                 <section
                   key={section.date}
                   id={`day-${section.date}`}
@@ -504,7 +500,17 @@ function HomePageContent({
                     )}
                   </h2>
 
-                  {renderEventSections(section.events)}
+                  {section.events.length > 0 ? (
+                    renderEventSections(section.events)
+                  ) : (
+                    <div className="fh-day-empty">
+                      <p>
+                        {isFeaturedMode
+                          ? "Sin eventos este día."
+                          : "Sin eventos para estos filtros."}
+                      </p>
+                    </div>
+                  )}
                 </section>
               ))}
             </div>

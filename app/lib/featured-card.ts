@@ -10,7 +10,6 @@ import {
 } from "./football";
 import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb";
 import {
-  parseUfcHeadline,
   parseUfcImage,
   parseUfcKindFromSource,
   ufcKindLabel,
@@ -65,13 +64,20 @@ export function getSpotlightCardModel(
 
   if (sport === "ufc") {
     const kind = parseUfcKindFromSource(event.source);
+    const eventName = event.title?.trim() || "UFC";
+    const cardLine = event.competition?.trim();
+    const badge =
+      kind === "ppv" || /^UFC\s+\d+$/i.test(eventName)
+        ? eventName
+        : cardLine || ufcKindLabel(kind);
+
     return {
-      headline: event.title?.trim() || parseUfcHeadline(event.title ?? ""),
-      badge: event.competition?.trim() || ufcKindLabel(kind),
+      headline: eventName,
+      badge,
       badgeVariant: kind === "ppv" ? "ppv" : kind === "fight-night" ? "fight-night" : "ufc",
       dateLabel,
       time,
-      meta: event.platform?.trim() || "UFC",
+      meta: cardLine && cardLine !== ufcKindLabel(kind) ? cardLine : event.platform?.trim() || "UFC",
       platform: "UFC Fight Pass",
       poster: parseUfcImage(event.source) ?? undefined,
       visualClass: "qvh-spotlight-visual-ufc",

@@ -12,7 +12,14 @@ const API_BASE = "https://www.thesportsdb.com/api/v1/json/3";
 export const UFC_LEAGUE_ID = "4443";
 export const UFC_MAX_UPCOMING = 8;
 
-export type UfcKind = "ppv" | "fight-night" | "other";
+export type UfcKind = "ppv" | "fight-night" | "road" | "other";
+
+export type UfcEventLabel = {
+  eventName: string;
+  cardLine?: string;
+  kind: UfcKind;
+  eventNumber?: number;
+};
 
 export type UfcCronEvent = {
   external_id: string;
@@ -42,37 +49,94 @@ type RawEvent = {
   strPostponed?: string;
 };
 
+export function parseUfcEventLabel(strEvent: string): UfcEventLabel {
+  const raw = strEvent.trim();
+  if (!raw) {
+    return { eventName: "UFC", kind: "other" };
+  }
+
+  const numbered = raw.match(/^UFC\s+(\d+)\s*(.*)$/i);
+  if (numbered && !/fight\s+night/i.test(raw)) {
+    const eventNumber = parseInt(numbered[1], 10);
+    const cardLine = numbered[2]?.trim();
+    return {
+      eventName: `UFC ${eventNumber}`,
+      cardLine: cardLine || undefined,
+      kind: "ppv",
+      eventNumber,
+    };
+  }
+
+  const fightNight = raw.match(/^UFC\s+Fight\s+Night(?::|\s+)(\d+)?\s*(.*)$/i);
+  if (fightNight) {
+    const num = fightNight[1]?.trim();
+    const cardLine = fightNight[2]?.trim();
+    return {
+      eventName: num ? `UFC Fight Night ${num}` : "UFC Fight Night",
+      cardLine: cardLine || undefined,
+      kind: "fight-night",
+      eventNumber: num ? parseInt(num, 10) : undefined,
+    };
+  }
+
+  const roadEpisode = raw.match(/^Road to UFC\s+Season\s+(\d+)\s+Episode\s+(\d+)/i);
+  if (roadEpisode) {
+    return {
+      eventName: "Road to UFC",
+      cardLine: `Temporada ${roadEpisode[1]} · Episodio ${roadEpisode[2]}`,
+      kind: "road",
+    };
+  }
+
+  if (/^Road to UFC/i.test(raw)) {
+    return {
+      eventName: "Road to UFC",
+      cardLine: raw.replace(/^Road to UFC\s*/i, "").trim() || undefined,
+      kind: "road",
+    };
+  }
+
+  return {
+    eventName: raw,
+    kind: "other",
+  };
+}
+
+/** @deprecated Usar parseUfcEventLabel */
 export function parseUfcHeadline(strEvent: string): string {
-  const cleaned = strEvent
-    .replace(/^Road to UFC\s+/i, "")
-    .replace(/^UFC\s+Fight Night\s+\d+\s+/i, "")
-    .replace(/^UFC\s+\d+\s+/i, "")
-    .trim();
-  return cleaned || strEvent.replace(/^UFC\s+/i, "").trim();
+  const label = parseUfcEventLabel(strEvent);
+  if (label.cardLine && label.kind === "ppv") {
+    return label.cardLine;
+  }
+  return label.eventName;
 }
 
 export function parseUfcKind(strEvent: string): UfcKind {
-  if (/^UFC\s+\d+/i.test(strEvent) && !/Fight Night/i.test(strEvent)) {
-    return "ppv";
-  }
-  if (/Fight Night/i.test(strEvent)) return "fight-night";
-  return "other";
+  return parseUfcEventLabel(strEvent).kind;
 }
 
 export function ufcKindLabel(kind: UfcKind): string {
   if (kind === "ppv") return "PPV";
   if (kind === "fight-night") return "Fight Night";
+  if (kind === "road") return "Road to UFC";
   return "UFC";
+}
+
+export function isMainUfcCard(strEvent: string): boolean {
+  const kind = parseUfcKind(strEvent);
+  return kind === "ppv" || kind === "fight-night";
 }
 
 export function encodeUfcSource(
   poster?: string | null,
   thumb?: string | null,
-  kind?: UfcKind
+  kind?: UfcKind,
+  eventNumber?: number
 ): string {
   const parts = ["ufc"];
   const image = poster?.trim() || thumb?.trim();
   if (image) parts.push(`img:${image}`);
+  if (eventNumber) parts.push(`num:${eventNumber}`);
   if (kind) parts.push(`kind:${kind}`);
   return parts.join("|");
 }
@@ -84,8 +148,13 @@ export function parseUfcImage(source?: string | null): string | null {
 }
 
 export function parseUfcKindFromSource(source?: string | null): UfcKind {
-  const match = source?.match(/\|kind:(ppv|fight-night|other)/);
+  const match = source?.match(/\|kind:(ppv|fight-night|road|other)/);
   return (match?.[1] as UfcKind) || "other";
+}
+
+export function parseUfcEventNumberFromSource(source?: string | null): number | null {
+  const match = source?.match(/\|num:(\d+)/);
+  return match ? parseInt(match[1], 10) : null;
 }
 
 export function formatEventDateLabel(date: string): string {
@@ -119,8 +188,7 @@ function normalizeRaw(raw: RawEvent, weekDates: string[]): UfcCronEvent | null {
   const weekEnd = weekDates[weekDates.length - 1];
   if (date < today || date > weekEnd) return null;
 
-  const kind = parseUfcKind(raw.strEvent);
-  const headline = parseUfcHeadline(raw.strEvent);
+  const label = parseUfcEventLabel(raw.strEvent);
   const venue = raw.strVenue?.trim() || "Por confirmar";
   const location = [raw.strCity?.trim(), raw.strCountry?.trim()]
     .filter(Boolean)
@@ -128,14 +196,19 @@ function normalizeRaw(raw: RawEvent, weekDates: string[]): UfcCronEvent | null {
 
   return {
     external_id: `ufc_${raw.idEvent}`,
-    title: headline,
+    title: label.eventName,
     date,
     time,
     sport: "ufc",
     category: "deportes",
-    competition: ufcKindLabel(kind),
+    competition: label.cardLine || ufcKindLabel(label.kind),
     platform: location ? `${venue} · ${location}` : venue,
-    source: encodeUfcSource(raw.strPoster, raw.strThumb, kind),
+    source: encodeUfcSource(
+      raw.strPoster,
+      raw.strThumb,
+      label.kind,
+      label.eventNumber
+    ),
   };
 }
 
@@ -164,18 +237,38 @@ export async function fetchUfcCronEvents(
   ]);
 
   const map = new Map<string, UfcCronEvent>();
+  const roadEvents: UfcCronEvent[] = [];
 
   for (const raw of [...(nextData?.events ?? []), ...(seasonData?.events ?? [])]) {
+    if (!raw.strEvent) continue;
     const event = normalizeRaw(raw, weekDates);
-    if (event) map.set(event.external_id, event);
+    if (!event) continue;
+
+    if (parseUfcKind(raw.strEvent) === "road") {
+      roadEvents.push(event);
+      continue;
+    }
+
+    map.set(event.external_id, event);
   }
 
-  return [...map.values()]
+  const mainEvents = [...map.values()].sort(
+    (a, b) =>
+      a.date.localeCompare(b.date) || (a.time ?? "").localeCompare(b.time ?? "")
+  );
+
+  if (mainEvents.length >= UFC_MAX_UPCOMING) {
+    return mainEvents.slice(0, UFC_MAX_UPCOMING);
+  }
+
+  const extras = roadEvents
     .sort(
       (a, b) =>
         a.date.localeCompare(b.date) || (a.time ?? "").localeCompare(b.time ?? "")
     )
-    .slice(0, UFC_MAX_UPCOMING);
+    .slice(0, UFC_MAX_UPCOMING - mainEvents.length);
+
+  return [...mainEvents, ...extras];
 }
 
 /** @deprecated Usar fetchUfcCronEvents vía cron */

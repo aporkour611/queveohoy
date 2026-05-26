@@ -3,10 +3,10 @@ export function competitionMatchClass(
   sport?: string | null
 ): string {
   if (sport === "formula1" || sport === "motos") return "fh-match_motor";
-  if (sport === "ufc") return "fh-match_ufc";
+  if (sport === "ufc") return "fh-match_ufc fh-match-media";
   if (sport === "cine") return "fh-match_cine fh-match-media";
   if (sport === "series") return "fh-match_series fh-match-media";
-  if (sport === "tv") return "fh-match_tv";
+  if (sport === "tv") return "fh-match_tv fh-match-media";
   if (["tenis", "basket", "ciclismo"].includes(sport ?? "")) {
     return "fh-match_default";
   }

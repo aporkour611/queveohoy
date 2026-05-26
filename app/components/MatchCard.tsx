@@ -7,15 +7,78 @@ import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
 import { parseTmdbPoster, parseTmdbEpisodeMeta } from "../lib/tmdb";
-import { parseUfcImage } from "../lib/thesportsdb-ufc";
+import { parseUfcImage, parseUfcKindFromSource, ufcKindLabel } from "../lib/thesportsdb-ufc";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
+import { formatDisplayDateLabel } from "../lib/timezone";
+import { useTimezone } from "../lib/timezone-context";
 import type { EventRow } from "./types";
 
 type Props = {
   event: EventRow;
 };
+
+type SpotlightCardContent = {
+  visualClass: string;
+  badgeClass: string;
+  badgeLabel: string;
+  title: string;
+  subtitle?: string | null;
+  posterUrl?: string | null;
+  dateLabel: string;
+  time: string;
+  channels: string[];
+};
+
+function SpotlightCardContent({
+  visualClass,
+  badgeClass,
+  badgeLabel,
+  title,
+  subtitle,
+  posterUrl,
+  dateLabel,
+  time,
+  channels,
+}: SpotlightCardContent) {
+  return (
+    <>
+      <div
+        className={`fh-media-spotlight-visual ${visualClass}`}
+        style={posterUrl ? { backgroundImage: `url(${posterUrl})` } : undefined}
+      >
+        <div className="fh-media-spotlight-overlay" aria-hidden />
+        <span className={`fh-media-spotlight-badge ${badgeClass}`}>
+          {badgeLabel}
+        </span>
+        <div className="fh-media-spotlight-when">
+          {dateLabel ? (
+            <span className="fh-media-spotlight-date">{dateLabel}</span>
+          ) : null}
+          <span className="fh-media-spotlight-time">{time}</span>
+        </div>
+      </div>
+
+      <div className="fh-media-spotlight-body">
+        <h4 className="fh-media-spotlight-title">{title}</h4>
+        {subtitle ? <p className="fh-media-spotlight-meta">{subtitle}</p> : null}
+        {channels.length > 0 ? (
+          <div className="fh-m-chan">
+            {channels.map((ch) => (
+              <span
+                key={ch}
+                className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
+              >
+                {ch}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </>
+  );
+}
 
 function EventDetailsPanel({ event }: { event: EventRow }) {
   const details = useMemo(() => buildEventDetails(event), [event]);
@@ -52,16 +115,24 @@ function EventDetailsPanel({ event }: { event: EventRow }) {
 
 export const MatchCard = memo(function MatchCard({ event }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const { timeZone } = useTimezone();
   const isCine = event.sport === "cine";
   const isSeries = event.sport === "series";
   const isTv = event.sport === "tv";
   const isMedia = isCine || isSeries || isTv;
   const isUfc = event.sport === "ufc";
+  const ufcKind = isUfc ? parseUfcKindFromSource(event.source) : null;
   const mediaTitle = event.title?.trim() || "Sin título";
   const episodeMeta = isSeries ? parseTmdbEpisodeMeta(event.external_id) : null;
   const mediaSubtitle =
     event.competition?.trim() ||
     (episodeMeta ? `T${episodeMeta.season} · E${episodeMeta.episode}` : null);
+  const ufcSubtitle =
+    isUfc && event.competition?.trim() && event.competition !== ufcKindLabel(ufcKind ?? "other")
+      ? event.competition.trim()
+      : isUfc
+        ? event.platform?.trim() || null
+        : null;
   const posterUrl = isUfc
     ? parseUfcImage(event.source)
     : parseTmdbPoster(event.source);
@@ -100,6 +171,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     event.away_team || event.title?.split(" vs ").slice(1).join(" vs ")
   );
   const time = displayTime(event.time);
+  const dateLabel = event.date ? formatDisplayDateLabel(event.date, timeZone) : "";
   const channels = parseChannels(event.platform);
   const compFull = event.competition ?? "";
   const isFinal = compFull.includes("· Final");
@@ -110,10 +182,10 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     setExpanded((open) => !open);
   }
 
-  const cardShell = (children: ReactNode) => (
+  const cardShell = (children: ReactNode, extraClass = "") => (
     <div className={`fh-cardcol${expanded ? " fh-cardcol-expanded" : ""}`}>
       <div
-        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}`}
+        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}`}
         role="button"
         tabIndex={0}
         aria-expanded={expanded}
@@ -135,60 +207,54 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     </div>
   );
 
-  if (isMedia || isUfc) {
+  if (isMedia) {
+    const mediaVisualClass = isCine
+      ? "fh-media-spotlight-visual-cine"
+      : isSeries
+        ? "fh-media-spotlight-visual-series"
+        : "fh-media-spotlight-visual-premiere";
+    const mediaBadgeClass = isCine
+      ? "fh-media-spotlight-badge-cine"
+      : isSeries
+        ? "fh-media-spotlight-badge-series"
+        : "fh-media-spotlight-badge-premiere";
+    const mediaBadgeLabel = isSeries ? "Serie" : isTv ? "Reality" : "Cine";
+
     return cardShell(
-      <>
-          <div className="fh-m-comp" />
-
-          {isMedia ? (
-            <span
-              className={`fh-media-type-badge ${
-                isSeries
-                  ? "fh-media-type-badge-series"
-                  : isTv
-                    ? "fh-media-type-badge-series"
-                    : "fh-media-type-badge-cine"
-              }`}
-            >
-              {isSeries ? "Serie" : isTv ? "Reality" : "Cine"}
-            </span>
-          ) : null}
-
-          <div className="fh-m-title fh-m-title-media">
-            <span className="fh-dest-team">{mediaTitle}</span>
-          </div>
-
-          {isMedia && mediaSubtitle ? (
-            <p className="fh-media-subtitle">{mediaSubtitle}</p>
-          ) : null}
-
-          <div className="fh-m-logos fh-m-logos-media">
-            <TeamCrest
-              srcList={posterUrl ? [posterUrl] : []}
-              name={mediaTitle}
-              size={50}
-              className="fh-crest-fallback"
-            />
-            <span className="fh-m-time">{time}</span>
-            <div className="fh-media-spacer" aria-hidden />
-          </div>
-
-        {channels.length > 0 && (
-          <div className="fh-m-chan">
-            {channels.map((ch) => (
-              <span
-                key={ch}
-                className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
-              >
-                {ch}
-              </span>
-            ))}
-          </div>
-        )}
-      </>
+      <SpotlightCardContent
+        visualClass={mediaVisualClass}
+        badgeClass={mediaBadgeClass}
+        badgeLabel={mediaBadgeLabel}
+        title={mediaTitle}
+        subtitle={mediaSubtitle}
+        posterUrl={posterUrl}
+        dateLabel={dateLabel}
+        time={time}
+        channels={channels}
+      />,
+      "fh-match-media-spotlight"
     );
   }
 
+  if (isUfc) {
+    const ufcBadgeLabel =
+      mediaTitle.startsWith("UFC") ? mediaTitle : ufcKindLabel(ufcKind ?? "other");
+
+    return cardShell(
+      <SpotlightCardContent
+        visualClass="fh-media-spotlight-visual-ufc"
+        badgeClass="fh-media-spotlight-badge-ufc"
+        badgeLabel={ufcBadgeLabel}
+        title={mediaTitle}
+        subtitle={ufcSubtitle}
+        posterUrl={posterUrl}
+        dateLabel={dateLabel}
+        time={time}
+        channels={channels}
+      />,
+      "fh-match-media-spotlight"
+    );
+  }
   return cardShell(
     <>
         <div className="fh-m-comp" />

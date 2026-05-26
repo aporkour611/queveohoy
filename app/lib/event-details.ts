@@ -68,8 +68,15 @@ export function buildEventDetails(event: EventRow): EventDetail[] {
 
   if (sport === "ufc") {
     const kind = parseUfcKindFromSource(event.source);
+    const eventName = event.title?.trim() || "UFC";
+    const cardLine = event.competition?.trim();
+    pushDetail(rows, "Evento", eventName);
+    pushDetail(
+      rows,
+      "Cartelera",
+      cardLine && cardLine !== ufcKindLabel(kind) ? cardLine : null
+    );
     pushDetail(rows, "Tipo de evento", ufcKindLabel(kind));
-    pushDetail(rows, "Cartelera", event.title);
     pushDetail(
       rows,
       "Emisión",

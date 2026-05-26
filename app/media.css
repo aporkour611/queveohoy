@@ -260,6 +260,12 @@
   box-shadow: 0 0 10px rgba(139, 92, 246, 0.35);
 }
 
+.fh-media-type-badge-ufc {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.35);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .fh-media-type-badge {
     animation: fh-media-badge-pulse 2.8s ease-in-out infinite;
@@ -292,4 +298,179 @@
 .fh-match_series .fh-m-chan span,
 .fh-match_cine .fh-m-chan span {
   font-weight: 700;
+}
+
+/* Tarjetas cine/series — hero con póster como destacados */
+.fh-match-media-spotlight {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.fh-match_cine.fh-match-media-spotlight,
+.fh-match_series.fh-match-media-spotlight,
+.fh-match_ufc.fh-match-media-spotlight {
+  background: #fff;
+}
+
+.fh-match-media-spotlight.fh-match-expanded {
+  padding: 0;
+}
+
+.fh-match-media-spotlight .fh-m-expand-hint,
+.fh-match-media-spotlight .fh-m-details {
+  margin: 0;
+  padding: 0 12px 12px;
+}
+
+.fh-match-media-spotlight.fh-match-expanded .fh-m-expand-hint,
+.fh-match-media-spotlight.fh-match-expanded .fh-m-details {
+  padding: 0 14px 14px;
+}
+
+.fh-media-spotlight-visual {
+  position: relative;
+  height: 132px;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+.fh-media-spotlight-visual-cine {
+  background: linear-gradient(135deg, #451a03 0%, #d97706 48%, #78350f 100%);
+}
+
+.fh-media-spotlight-visual-series {
+  background: linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #4c1d95 100%);
+}
+
+.fh-media-spotlight-visual-premiere {
+  background: linear-gradient(135deg, #1a0a2e 0%, #6b21a8 42%, #3b0764 100%);
+}
+
+.fh-media-spotlight-visual-ufc {
+  background: linear-gradient(135deg, #450a0a 0%, #dc2626 50%, #7f1d1d 100%);
+}
+
+.fh-media-spotlight-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.72) 100%
+  );
+}
+
+.fh-media-spotlight-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.fh-media-spotlight-badge-cine {
+  background: rgba(217, 119, 6, 0.92);
+  border-color: rgba(254, 243, 199, 0.45);
+}
+
+.fh-media-spotlight-badge-series {
+  background: rgba(124, 58, 237, 0.92);
+  border-color: rgba(233, 213, 255, 0.45);
+}
+
+.fh-media-spotlight-badge-premiere {
+  background: rgba(168, 85, 247, 0.95);
+  border-color: rgba(233, 213, 255, 0.55);
+}
+
+.fh-media-spotlight-badge-ufc {
+  background: rgba(212, 20, 20, 0.92);
+  border-color: rgba(255, 120, 120, 0.45);
+}
+
+.fh-media-spotlight-when {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fh-media-spotlight-date {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.fh-media-spotlight-time {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.fh-media-spotlight-body {
+  padding: 10px 12px 12px;
+}
+
+.fh-match-media-spotlight.fh-match-expanded .fh-media-spotlight-body {
+  padding: 12px 14px 10px;
+}
+
+.fh-media-spotlight-title {
+  margin: 0 0 4px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #212529;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fh-media-spotlight-meta {
+  margin: 0 0 8px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #6b21a8;
+  line-height: 1.3;
+}
+
+.fh-match_cine.fh-match-media-spotlight .fh-media-spotlight-meta {
+  color: #b45309;
+}
+
+.fh-match_ufc.fh-match-media-spotlight .fh-media-spotlight-meta {
+  color: #991b1b;
+}
+
+.fh-match-media-spotlight .fh-m-chan {
+  margin-top: 2px;
+}
+
+@media (min-width: 768px) {
+  .fh-media-spotlight-visual {
+    height: 148px;
+  }
 }
