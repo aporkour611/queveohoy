@@ -15,8 +15,8 @@ import { AdminNavLink } from "./AdminNavLink";
 import { Logo } from "./Logo";
 import { RegionTimezoneBar } from "./RegionTimezoneBar";
 import { DestacadosSection } from "./DestacadosSection";
-import { JustWatchBrandedLink } from "./JustWatchBrandedLink";
 import { MatchCard } from "./MatchCard";
+import { MediaEntertainmentSection } from "./MediaEntertainmentSection";
 import { ScrollToTop } from "./ScrollToTop";
 import { SiteFooter } from "./SiteFooter";
 import type { EventRow } from "./types";
@@ -132,53 +132,7 @@ function groupForDisplay(events: EventRow[]) {
 }
 
 function renderMediaBlock(cine: EventRow[], series: EventRow[]) {
-  if (cine.length === 0 && series.length === 0) return null;
-
-  return (
-    <div className="fh-media-day-block">
-      <div className="fh-media-day-banner">
-        <span className="fh-media-day-icon" aria-hidden>
-          🎬
-        </span>
-        <div>
-          <p className="fh-media-day-kicker">Entretenimiento</p>
-          <h3 className="fh-media-day-title">Cine y series</h3>
-        </div>
-      </div>
-
-      {cine.length > 0 && (
-        <div className="fh-media-subsection fh-media-subsection-cine">
-          <div className="fh-comp-header fh-comp-cine">
-            <h3>Estrenos en cines</h3>
-            <span className="fh-comp-count">{cine.length}</span>
-          </div>
-          <div className="fh-match-grid fh-match-grid-media">
-            {cine.map((e) => (
-              <MatchCard key={e.id} event={e} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {series.length > 0 && (
-        <div className="fh-media-subsection fh-media-subsection-series">
-          <div className="fh-comp-header fh-comp-series">
-            <h3>Capítulos y series</h3>
-            <span className="fh-comp-count">{series.length}</span>
-          </div>
-          <div className="fh-match-grid fh-match-grid-media">
-            {series.map((e) => (
-              <MatchCard key={e.id} event={e} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="fh-media-day-foot">
-        <JustWatchBrandedLink href="https://www.justwatch.com/es" variant="gold" />
-      </div>
-    </div>
-  );
+  return <MediaEntertainmentSection cine={cine} series={series} />;
 }
 
 function renderEventSections(events: EventRow[]) {

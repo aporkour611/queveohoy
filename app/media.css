@@ -1,28 +1,391 @@
-/* Cine y series — bloque visual distinto del deporte */
+/* Cine y series — estilo queveo.es (tarjetas verticales, rail oscuro) */
 
-@keyframes fh-media-banner-glow {
-  0%,
-  100% {
-    box-shadow:
-      0 0 0 1px rgba(124, 58, 237, 0.25),
-      0 8px 28px rgba(124, 58, 237, 0.12);
+@keyframes qvh-media-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
-  50% {
-    box-shadow:
-      0 0 0 1px rgba(217, 119, 6, 0.35),
-      0 10px 32px rgba(217, 119, 6, 0.18);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes fh-media-bar-shine {
-  0% {
-    background-position: 200% 0;
+.qvh-media-section {
+  margin-top: 1.75rem;
+  padding: 16px 0 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.qvh-media-section-head {
+  margin-bottom: 14px;
+  padding: 0 2px;
+}
+
+.qvh-media-section-kicker {
+  margin: 0 0 4px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8a8a96;
+}
+
+.qvh-media-section-title {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.qvh-media-rail-block {
+  margin-bottom: 18px;
+}
+
+.qvh-media-rail-block:last-of-type {
+  margin-bottom: 10px;
+}
+
+.qvh-media-rail-head {
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.qvh-media-rail-kicker {
+  margin: 0 0 2px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a8a96;
+}
+
+.qvh-media-rail-title {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #d4d4d8;
+}
+
+.qvh-media-rail-scroll {
+  overflow-x: auto;
+  margin: 0 -15px;
+  padding: 4px 15px 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+.qvh-media-rail-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.qvh-media-rail-track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+}
+
+.qvh-media-card-col {
+  flex: 0 0 auto;
+  width: 200px;
+}
+
+.qvh-media-card-col-expanded {
+  width: min(320px, 88vw);
+}
+
+.qvh-media-card {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #101015;
+  box-shadow:
+    0 30px 80px -20px rgba(0, 0, 0, 0.7),
+    0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  user-select: none;
+  animation: qvh-media-fade-up 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.qvh-media-card-tilt {
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s ease;
+}
+
+.qvh-media-card-tilt:hover {
+  transform: translateY(-4px);
+}
+
+.qvh-media-card-expanded {
+  box-shadow:
+    0 36px 90px -18px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(168, 85, 247, 0.25);
+}
+
+.qvh-media-card-poster {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: #101015;
+}
+
+.qvh-media-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+
+.qvh-media-card-tilt:hover .qvh-media-card-image {
+  transform: scale(1.07);
+}
+
+.qvh-media-card-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #451a03 100%);
+}
+
+.qvh-media-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.25) 40%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+}
+
+.qvh-media-card-top {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.qvh-media-platform-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 62%;
+  padding: 4px 8px 4px 4px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.qvh-media-platform-icon {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.qvh-media-platform-icon-netflix {
+  background: linear-gradient(135deg, #e50914, #831010);
+}
+
+.qvh-media-platform-icon-prime {
+  background: linear-gradient(135deg, #00a8e1, #0578ff);
+}
+
+.qvh-media-platform-icon-disney {
+  background: linear-gradient(135deg, #113ccf, #0e1a40);
+}
+
+.qvh-media-platform-icon-max {
+  background: linear-gradient(135deg, #002be7, #001871);
+}
+
+.qvh-media-platform-icon-movistar {
+  background: linear-gradient(135deg, #019df4, #0066a1);
+}
+
+.qvh-media-platform-icon-filmin {
+  background: linear-gradient(135deg, #00d4aa, #008f74);
+}
+
+.qvh-media-platform-icon-apple {
+  background: linear-gradient(135deg, #555, #111);
+}
+
+.qvh-media-platform-icon-default {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+}
+
+.qvh-media-platform-name {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qvh-media-type-badge {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.qvh-media-type-badge-release {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  box-shadow: 0 0 18px -2px rgba(168, 85, 247, 0.55);
+}
+
+.qvh-media-type-badge-trending {
+  background: linear-gradient(135deg, #d946ef, #a855f7);
+  box-shadow: 0 0 18px -2px rgba(217, 70, 239, 0.5);
+}
+
+.qvh-media-type-badge-heat {
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  box-shadow: 0 0 18px -2px rgba(251, 191, 36, 0.5);
+}
+
+.qvh-media-type-badge-news {
+  background: linear-gradient(135deg, #06b6d4, #0284c7);
+  box-shadow: 0 0 18px -2px rgba(14, 165, 233, 0.45);
+}
+
+.qvh-media-card-bottom {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 1;
+}
+
+.qvh-media-card-title {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.qvh-media-card-subtitle {
+  margin: 3px 0 0;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qvh-media-card-when {
+  margin: 4px 0 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.qvh-media-card-hint {
+  margin: 0;
+  padding: 8px 10px 10px;
+  text-align: center;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.72rem;
+  color: #8a8a96;
+}
+
+.qvh-media-card-details {
+  padding: 10px 12px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  gap: 7px;
+  user-select: text;
+}
+
+.qvh-media-detail-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 34%) 1fr;
+  gap: 8px;
+  align-items: start;
+}
+
+.qvh-media-detail-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #8a8a96;
+}
+
+.qvh-media-detail-value {
+  font-size: 0.78rem;
+  color: #d4d4d8;
+  line-height: 1.35;
+}
+
+.qvh-media-section-foot {
+  margin-top: 6px;
+  padding: 0 2px;
+}
+
+.qvh-media-section .jw-branded-link-gold {
+  opacity: 0.92;
+}
+
+.qvh-media-section .jw-watch {
+  margin-top: 4px;
+}
+
+.qvh-media-section .jw-watch-label {
+  color: #8a8a96;
+}
+
+@media (min-width: 640px) {
+  .qvh-media-card-col {
+    width: 230px;
   }
-  100% {
-    background-position: -200% 0;
+
+  .qvh-media-section-title {
+    font-size: 1.85rem;
+  }
+
+  .qvh-media-card-title {
+    font-size: 0.98rem;
   }
 }
 
+/* Legacy sport cards (UFC spotlight, etc.) */
 @keyframes fh-media-card-in {
   from {
     opacity: 0;
@@ -34,209 +397,16 @@
   }
 }
 
-@keyframes fh-media-badge-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.04);
-  }
-}
-
-.fh-media-day-block {
-  margin-top: 1.75rem;
-  padding: 14px 12px 10px;
-  border-radius: 14px;
-  background:
-    linear-gradient(135deg, rgba(237, 233, 254, 0.95) 0%, rgba(254, 243, 199, 0.92) 100%);
-  border: 1px solid rgba(124, 58, 237, 0.22);
-  position: relative;
-  overflow: hidden;
-}
-
-.fh-media-day-block::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 12px,
-    rgba(124, 58, 237, 0.03) 12px,
-    rgba(124, 58, 237, 0.03) 24px
-  );
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .fh-media-day-block {
-    animation: fh-media-banner-glow 4s ease-in-out infinite;
-  }
-}
-
-.fh-media-day-banner {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-  padding: 0 4px;
-}
-
-.fh-media-day-icon {
-  font-size: 1.6rem;
-  line-height: 1;
-  filter: drop-shadow(0 2px 6px rgba(124, 58, 237, 0.25));
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .fh-media-day-icon {
-    animation: fh-media-badge-pulse 2.4s ease-in-out infinite;
-  }
-}
-
-.fh-media-day-kicker {
-  margin: 0;
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #7c3aed;
-  font-weight: 700;
-}
-
-.fh-media-day-title {
-  margin: 0;
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #4c1d95;
-  line-height: 1.1;
-}
-
-.fh-media-subsection {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 10px;
-}
-
-.fh-media-subsection:last-child {
-  margin-bottom: 0;
-}
-
-.fh-comp-header.fh-comp-cine {
-  background: linear-gradient(90deg, #92400e 0%, #d97706 55%, #fbbf24 100%);
-  color: #fff;
-}
-
-.fh-comp-header.fh-comp-cine .fh-comp-count {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.fh-comp-header.fh-comp-series {
-  background: linear-gradient(90deg, #4c1d95 0%, #7c3aed 55%, #a855f7 100%);
-  color: #fff;
-}
-
-.fh-comp-header.fh-comp-series .fh-comp-count {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.fh-match-grid-media {
-  gap: 12px;
-}
-
 .fh-match-media {
   position: relative;
   overflow: hidden;
-  border-width: 2px;
-  border-style: solid;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .fh-match-media {
-    animation: fh-media-card-in 0.45s ease both;
-  }
-
-  .fh-match-grid-media .fh-match-media:nth-child(1) {
-    animation-delay: 0.04s;
-  }
-
-  .fh-match-grid-media .fh-match-media:nth-child(2) {
-    animation-delay: 0.08s;
-  }
-
-  .fh-match-grid-media .fh-match-media:nth-child(3) {
-    animation-delay: 0.12s;
-  }
-
-  .fh-match-grid-media .fh-match-media:nth-child(n + 4) {
-    animation-delay: 0.16s;
-  }
+.fh-match_ufc.fh-match-media {
+  border-color: #dc2626;
 }
 
-.fh-match-media .fh-m-comp {
-  height: 5px;
-  margin: -12px -12px 10px;
-  border: none;
-  border-radius: 8px 8px 0 0;
-  background-size: 200% 100%;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .fh-match-media .fh-m-comp {
-    animation: fh-media-bar-shine 3.5s linear infinite;
-  }
-}
-
-.fh-match_cine.fh-match-media {
-  background: linear-gradient(160deg, #fffbeb 0%, #fef3c7 45%, #fff7ed 100%);
-  border-color: #f59e0b;
-  box-shadow: 0 8px 22px rgba(245, 158, 11, 0.16);
-}
-
-.fh-match_cine.fh-match-media .fh-m-comp {
-  background-image: linear-gradient(
-    90deg,
-    #b45309 0%,
-    #fbbf24 25%,
-    #fde68a 50%,
-    #fbbf24 75%,
-    #b45309 100%
-  );
-}
-
-.fh-match_series.fh-match-media {
-  background: linear-gradient(160deg, #faf5ff 0%, #ede9fe 45%, #f5f3ff 100%);
-  border-color: #8b5cf6;
-  box-shadow: 0 8px 22px rgba(139, 92, 246, 0.16);
-}
-
-.fh-match_series.fh-match-media .fh-m-comp {
-  background-image: linear-gradient(
-    90deg,
-    #5b21b6 0%,
-    #a855f7 25%,
-    #ddd6fe 50%,
-    #a855f7 75%,
-    #5b21b6 100%
-  );
-}
-
-.fh-match-media:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(76, 29, 149, 0.18);
-}
-
-.fh-match_cine.fh-match-media:hover {
-  box-shadow: 0 12px 28px rgba(245, 158, 11, 0.22);
-}
-
-.fh-media-type-badge {
+.fh-media-type-badge-ufc {
   display: inline-block;
   margin-bottom: 6px;
   padding: 2px 9px;
@@ -246,69 +416,17 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.fh-media-type-badge-cine {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #fff;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
-}
-
-.fh-media-type-badge-series {
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-  color: #fff;
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.35);
-}
-
-.fh-media-type-badge-ufc {
   background: linear-gradient(135deg, #dc2626, #991b1b);
   color: #fff;
   box-shadow: 0 0 10px rgba(220, 38, 38, 0.35);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .fh-media-type-badge {
-    animation: fh-media-badge-pulse 2.8s ease-in-out infinite;
-  }
-}
-
-.fh-media-subtitle {
-  margin: -2px 0 8px;
-  text-align: center;
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: #6b21a8;
-}
-
-.fh-match_cine .fh-media-subtitle {
-  color: #b45309;
-}
-
-.fh-match_series .fh-m-title-media .fh-dest-team,
-.fh-match_cine .fh-m-title-media .fh-dest-team {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.15;
-}
-
-.fh-match_series .fh-m-chan span,
-.fh-match_cine .fh-m-chan span {
-  font-weight: 700;
-}
-
-/* Tarjetas cine/series — hero con póster como destacados */
 .fh-match-media-spotlight {
   padding: 0;
   overflow: hidden;
   border-radius: 12px;
 }
 
-.fh-match_cine.fh-match-media-spotlight,
-.fh-match_series.fh-match-media-spotlight,
 .fh-match_ufc.fh-match-media-spotlight {
   background: #fff;
 }
@@ -323,29 +441,12 @@
   padding: 0 12px 12px;
 }
 
-.fh-match-media-spotlight.fh-match-expanded .fh-m-expand-hint,
-.fh-match-media-spotlight.fh-match-expanded .fh-m-details {
-  padding: 0 14px 14px;
-}
-
 .fh-media-spotlight-visual {
   position: relative;
   height: 132px;
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
-}
-
-.fh-media-spotlight-visual-cine {
-  background: linear-gradient(135deg, #451a03 0%, #d97706 48%, #78350f 100%);
-}
-
-.fh-media-spotlight-visual-series {
-  background: linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #4c1d95 100%);
-}
-
-.fh-media-spotlight-visual-premiere {
-  background: linear-gradient(135deg, #1a0a2e 0%, #6b21a8 42%, #3b0764 100%);
 }
 
 .fh-media-spotlight-visual-ufc {
@@ -376,21 +477,6 @@
   text-transform: uppercase;
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.fh-media-spotlight-badge-cine {
-  background: rgba(217, 119, 6, 0.92);
-  border-color: rgba(254, 243, 199, 0.45);
-}
-
-.fh-media-spotlight-badge-series {
-  background: rgba(124, 58, 237, 0.92);
-  border-color: rgba(233, 213, 255, 0.45);
-}
-
-.fh-media-spotlight-badge-premiere {
-  background: rgba(168, 85, 247, 0.95);
-  border-color: rgba(233, 213, 255, 0.55);
 }
 
 .fh-media-spotlight-badge-ufc {
@@ -430,10 +516,6 @@
   padding: 10px 12px 12px;
 }
 
-.fh-match-media-spotlight.fh-match-expanded .fh-media-spotlight-body {
-  padding: 12px 14px 10px;
-}
-
 .fh-media-spotlight-title {
   margin: 0 0 4px;
   font-family: "Barlow Condensed", sans-serif;
@@ -441,10 +523,6 @@
   font-weight: 700;
   line-height: 1.15;
   color: #212529;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .fh-media-spotlight-meta {
@@ -452,21 +530,7 @@
   font-family: "Barlow Condensed", sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
-  letter-spacing: 0.03em;
-  color: #6b21a8;
-  line-height: 1.3;
-}
-
-.fh-match_cine.fh-match-media-spotlight .fh-media-spotlight-meta {
-  color: #b45309;
-}
-
-.fh-match_ufc.fh-match-media-spotlight .fh-media-spotlight-meta {
   color: #991b1b;
-}
-
-.fh-match-media-spotlight .fh-m-chan {
-  margin-top: 2px;
 }
 
 @media (min-width: 768px) {

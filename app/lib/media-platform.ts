@@ -1,0 +1,32 @@
+export type MediaPlatformStyle = {
+  name: string;
+  initials?: string;
+  accent: "netflix" | "prime" | "disney" | "max" | "movistar" | "filmin" | "apple" | "default";
+};
+
+export function resolveMediaPlatform(channel?: string | null): MediaPlatformStyle | null {
+  const raw = channel?.trim();
+  if (!raw) return null;
+
+  const c = raw.toLowerCase();
+  if (/netflix/i.test(c)) return { name: "Netflix", initials: "N", accent: "netflix" };
+  if (/prime|amazon/i.test(c)) return { name: "Prime Video", initials: "p", accent: "prime" };
+  if (/disney/i.test(c)) return { name: "Disney+", initials: "D+", accent: "disney" };
+  if (/max|hbo/i.test(c)) return { name: "Max", initials: "M", accent: "max" };
+  if (/movistar|m\+/i.test(c)) return { name: "Movistar+", initials: "M+", accent: "movistar" };
+  if (/filmin/i.test(c)) return { name: "Filmin", initials: "F", accent: "filmin" };
+  if (/apple/i.test(c)) return { name: "Apple TV+", initials: "tv", accent: "apple" };
+
+  return { name: raw, initials: raw.slice(0, 2).toUpperCase(), accent: "default" };
+}
+
+export type MediaBadgeTone = "release" | "trending" | "heat" | "news";
+
+export function mediaBadgeForEvent(
+  sport: "cine" | "series",
+  isPremiere: boolean
+): { label: string; tone: MediaBadgeTone } {
+  if (sport === "cine") return { label: "Cine", tone: "heat" };
+  if (isPremiere) return { label: "Estreno", tone: "release" };
+  return { label: "Serie", tone: "news" };
+}
