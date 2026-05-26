@@ -102,4 +102,25 @@ export function pickCuratedDestacados(
   );
 }
 
+/** Incluye favoritos del usuario en la franja Destacados (sin duplicar) */
+export function mergeDestacadosWithFavorites(
+  curated: EventRow[],
+  favoriteEvents: EventRow[]
+): EventRow[] {
+  const byId = new Map<number, EventRow>();
+
+  for (const event of favoriteEvents) {
+    byId.set(event.id, event);
+  }
+  for (const event of curated) {
+    if (!byId.has(event.id)) byId.set(event.id, event);
+  }
+
+  return [...byId.values()].sort(
+    (a, b) =>
+      (a.date ?? "").localeCompare(b.date ?? "") ||
+      (a.time ?? "").localeCompare(b.time ?? "")
+  );
+}
+
 export { isSeasonPremiereEvent };

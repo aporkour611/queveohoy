@@ -1,10 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import type { EventRow } from "./types";
 import { useFavorites } from "../lib/favorites-context";
 
 type Props = {
   eventId: number;
+  event?: EventRow;
 };
 
 function HeartIcon({ active }: { active: boolean }) {
@@ -31,7 +33,7 @@ function HeartIcon({ active }: { active: boolean }) {
   );
 }
 
-export function FavoriteHeartButton({ eventId }: Props) {
+export function FavoriteHeartButton({ eventId, event }: Props) {
   const router = useRouter();
   const { loaded, isLoggedIn, isFavorite, toggleFavorite } = useFavorites();
   const active = isFavorite(eventId);
@@ -51,7 +53,7 @@ export function FavoriteHeartButton({ eventId }: Props) {
           router.push("/entrar?next=/");
           return;
         }
-        void toggleFavorite(eventId);
+        void toggleFavorite(eventId, event);
       }}
     >
       <HeartIcon active={active} />

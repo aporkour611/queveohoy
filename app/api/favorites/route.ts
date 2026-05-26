@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { EventRow } from "@/app/components/types";
 import { createClient } from "@/app/lib/supabase/server";
 
 export async function GET() {
@@ -8,12 +9,12 @@ export async function GET() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ eventIds: [] });
+    return NextResponse.json({ eventIds: [], events: [] });
   }
 
   const { data, error } = await supabase
     .from("favorites")
-    .select("event_id")
+    .select("event_id, created_at, events(*)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -21,7 +22,12 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  const events = (data ?? [])
+    .map((row) => row.events as unknown as EventRow | null)
+    .filter((event): event is EventRow => Boolean(event?.id));
+
   return NextResponse.json({
     eventIds: (data ?? []).map((row) => row.event_id as number),
+    events,
   });
 }

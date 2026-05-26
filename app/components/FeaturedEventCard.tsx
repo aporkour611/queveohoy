@@ -25,7 +25,7 @@ export function FeaturedEventCard({ event, className }: Props) {
             : undefined
         }
       >
-        <FavoriteHeartButton eventId={event.id} />
+        <FavoriteHeartButton eventId={event.id} event={event} />
         <div className="qvh-spotlight-overlay" />
 
         {card.showTeamDuel && card.homeCrest && card.awayCrest ? (
