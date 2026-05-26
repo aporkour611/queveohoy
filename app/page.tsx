@@ -9,24 +9,21 @@ import { EventFilters } from "./components/EventFilters";
 import { Logo } from "./components/Logo";
 import { MatchCard } from "./components/MatchCard";
 import type { EventRow } from "./components/types";
+import {
+  formatMadridMonthShort,
+  formatMadridWeekday,
+  getMadridWeekDates,
+  madridDayNumber,
+  madridDayTitle,
+} from "./lib/madrid-time";
 
-function getDateOffset(offset: number) {
-  const d = new Date();
-  d.setDate(d.getDate() + offset);
-  return d.toISOString().split("T")[0];
-}
-
-const DAYS = Array.from({ length: 10 }, (_, i) => {
-  const d = new Date();
-  d.setDate(d.getDate() + i);
-  const month = d.toLocaleDateString("es-ES", { month: "short" }).replace(".", "");
-  const weekday = d
-    .toLocaleDateString("es-ES", { weekday: "short" })
-    .replace(".", "");
+const DAYS = getMadridWeekDates(10).map((date, i) => {
+  const weekday = formatMadridWeekday(date, "short");
+  const month = formatMadridMonthShort(date);
   return {
     label: i === 0 ? "HOY" : weekday.charAt(0).toUpperCase() + weekday.slice(1, 3),
-    date: d.toISOString().split("T")[0],
-    num: d.getDate(),
+    date,
+    num: madridDayNumber(date),
     month: month.charAt(0).toUpperCase() + month.slice(1),
     showSep: i === 7,
   };
@@ -112,13 +109,7 @@ export default function Home() {
     [visibleEvents]
   );
 
-  const dayDate = new Date(DAYS[activeDay].date + "T12:00:00");
-  const dayTitle =
-    activeDay === 0
-      ? `Hoy ${dayDate.toLocaleDateString("es-ES", { weekday: "long" })}, ${dayDate.getDate()} de ${dayDate.toLocaleDateString("es-ES", { month: "long" })}`
-      : activeDay === 1
-        ? `Mañana ${dayDate.toLocaleDateString("es-ES", { weekday: "long" })}, ${dayDate.getDate()} de ${dayDate.toLocaleDateString("es-ES", { month: "long" })}`
-        : `${dayDate.toLocaleDateString("es-ES", { weekday: "long" })}, ${dayDate.getDate()} de ${dayDate.toLocaleDateString("es-ES", { month: "long" })}`;
+  const dayTitle = madridDayTitle(DAYS[activeDay].date, activeDay);
 
   return (
     <div className="fh-body">
@@ -236,7 +227,9 @@ export default function Home() {
             )}
           </div>
 
-          <p className="fh-footer">Qué ver hoy — horarios en península (España)</p>
+          <p className="fh-footer">
+            Horario península y Baleares (Europe/Madrid) · queveohoy.es
+          </p>
         </div>
       </div>
     </div>

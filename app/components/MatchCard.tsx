@@ -4,6 +4,7 @@ import { TeamCrest } from "./TeamCrest";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
 import { competitionMatchClass } from "../lib/competition-style";
+import { displayTime } from "../lib/madrid-time";
 import type { EventRow } from "./types";
 
 export function MatchCard({ event }: { event: EventRow }) {
@@ -15,7 +16,7 @@ export function MatchCard({ event }: { event: EventRow }) {
   const away = shortTeamName(
     event.away_team || event.title?.split(" vs ").slice(1).join(" vs ")
   );
-  const time = event.time?.slice(0, 5) ?? "—";
+  const time = displayTime(event.time);
   const channels = parseChannels(event.platform);
   const compFull = event.competition ?? "";
   const isFinal = compFull.includes("· Final");

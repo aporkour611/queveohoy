@@ -2,6 +2,13 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { defaultChannelsForCompetition } from "@/app/lib/channels";
 import { dedupeEvents, findDuplicateIdsToRemove } from "@/app/lib/dedupe-events";
+import {
+  ergastToMadrid,
+  getMadridWeekDates,
+  madridWeekUtcRange,
+  parseUtcIso,
+  splitToMadrid,
+} from "@/app/lib/madrid-time";
 
 function getSupabase() {
   return createClient(
@@ -10,16 +17,8 @@ function getSupabase() {
   );
 }
 
-function formatDate(d: Date) {
-  return d.toISOString().split("T")[0];
-}
-
 function getWeekDates() {
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
-    return formatDate(d);
-  });
+  return getMadridWeekDates(7);
 }
 
 async function upsertEvents(events: any[]) {
@@ -57,18 +56,15 @@ async function fetchFootball() {
       if (!data.matches) continue;
 
       for (const match of data.matches) {
-        const utcDate = new Date(match.utcDate);
+        const utcDate = parseUtcIso(match.utcDate);
+        const { date, time } = splitToMadrid(utcDate);
         events.push({
           external_id: `football_${match.id}`,
           title: `${match.homeTeam.shortName || match.homeTeam.name} vs ${match.awayTeam.shortName || match.awayTeam.name}`,
           home_team: match.homeTeam.name,
           away_team: match.awayTeam.name,
-          date: formatDate(utcDate),
-          time: utcDate.toLocaleTimeString("es-ES", {
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "Europe/Madrid",
-          }),
+          date,
+          time,
           sport: "futbol",
           category: "deportes",
           competition:
@@ -101,14 +97,14 @@ async function fetchF1() {
     const events: any[] = [];
 
     for (const race of races) {
-      const raceDate = race.date;
-      if (!dates.includes(raceDate)) continue;
+      const raceMadrid = ergastToMadrid(race.date, race.time);
+      if (!dates.includes(raceMadrid.date)) continue;
 
       events.push({
         external_id: `f1_${race.season}_${race.round}_race`,
         title: `F1 — ${race.raceName}`,
-        date: raceDate,
-        time: race.time ? race.time.slice(0, 5) : "15:00",
+        date: raceMadrid.date,
+        time: raceMadrid.time,
         sport: "formula1",
         category: "deportes",
         competition: "Fórmula 1",
@@ -117,11 +113,12 @@ async function fetchF1() {
       });
 
       if (race.Qualifying) {
+        const qMadrid = ergastToMadrid(race.Qualifying.date, race.Qualifying.time);
         events.push({
           external_id: `f1_${race.season}_${race.round}_qualy`,
           title: `F1 Clasificación — ${race.raceName}`,
-          date: race.Qualifying.date,
-          time: race.Qualifying.time ? race.Qualifying.time.slice(0, 5) : "15:00",
+          date: qMadrid.date,
+          time: qMadrid.time,
           sport: "formula1",
           category: "deportes",
           competition: "Fórmula 1",
@@ -146,9 +143,7 @@ async function fetchEsports() {
     { slug: "dota-2", sport: "dota2" },
   ];
 
-  const dates = getWeekDates();
-  const dateFrom = dates[0] + "T00:00:00Z";
-  const dateTo = dates[6] + "T23:59:59Z";
+  const { dates, from: dateFrom, to: dateTo } = madridWeekUtcRange(7);
   const events: any[] = [];
 
   for (const game of games) {
@@ -163,7 +158,7 @@ async function fetchEsports() {
 
       for (const match of data) {
         if (!match.begin_at) continue;
-        const dt = new Date(match.begin_at);
+        const { date, time } = splitToMadrid(parseUtcIso(match.begin_at));
         const team1 = match.opponents?.[0]?.opponent?.name || "TBD";
         const team2 = match.opponents?.[1]?.opponent?.name || "TBD";
 
@@ -172,12 +167,8 @@ async function fetchEsports() {
           title: `${team1} vs ${team2}`,
           home_team: team1,
           away_team: team2,
-          date: formatDate(dt),
-          time: dt.toLocaleTimeString("es-ES", {
-            hour: "2-digit",
-            minute: "2-digit",
-            timeZone: "Europe/Madrid",
-          }),
+          date,
+          time,
           sport: game.sport,
           category: "esports",
           competition: match.league?.name || match.serie?.full_name || "",
