@@ -102,7 +102,7 @@ export function JustWatchWhereToWatch({
         <p className="jw-watch-status">Buscando plataformas…</p>
       ) : failed ? (
         <p className="jw-watch-status">
-          No pudimos cargar la disponibilidad ahora. Consulta la ficha en JustWatch.
+          Activa tu token de JustWatch (JUSTWATCH_PARTNER_TOKEN) o consulta la ficha directamente.
         </p>
       ) : data?.offers.length ? (
         <ul className="jw-watch-list">
@@ -139,6 +139,8 @@ export function JustWatchWhereToWatch({
             </li>
           ))}
         </ul>
+      ) : data?.statusMessage ? (
+        <p className="jw-watch-status">{data.statusMessage}</p>
       ) : (
         <p className="jw-watch-status">
           Sin plataformas listadas en España. Mira opciones en la ficha de JustWatch.

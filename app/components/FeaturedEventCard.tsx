@@ -17,7 +17,8 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
 }: Props) {
   const { timeZone } = useTimezone();
   const card = getSpotlightCardModel(event, timeZone);
-  const isMedia = event.sport === "cine" || event.sport === "series";
+  const isMedia =
+    event.sport === "cine" || event.sport === "series" || event.sport === "tv";
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (

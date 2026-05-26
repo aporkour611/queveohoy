@@ -19,7 +19,8 @@ type Props = {
 
 function EventDetailsPanel({ event }: { event: EventRow }) {
   const details = useMemo(() => buildEventDetails(event), [event]);
-  const isMedia = event.sport === "cine" || event.sport === "series";
+  const isMedia =
+    event.sport === "cine" || event.sport === "series" || event.sport === "tv";
 
   if (isMedia) {
     return (

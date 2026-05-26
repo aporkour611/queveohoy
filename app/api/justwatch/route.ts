@@ -8,7 +8,11 @@ import {
 export async function GET(request: Request) {
   if (!getJustWatchPartnerToken()) {
     return NextResponse.json(
-      { error: "JUSTWATCH_PARTNER_TOKEN missing" },
+      {
+        error: "missing_token",
+        message:
+          "Configura JUSTWATCH_PARTNER_TOKEN (o JUSTWATCH_API_KEY) en Vercel y .env.local",
+      },
       { status: 503 }
     );
   }
@@ -24,7 +28,13 @@ export async function GET(request: Request) {
 
   const data = await fetchJustWatchAvailability(ref);
   if (!data) {
-    return NextResponse.json({ error: "JustWatch unavailable" }, { status: 502 });
+    return NextResponse.json(
+      {
+        error: "justwatch_unavailable",
+        message: "JustWatch no respondió para este título con TMDB id " + ref.tmdbId,
+      },
+      { status: 502 }
+    );
   }
 
   return NextResponse.json(data, {

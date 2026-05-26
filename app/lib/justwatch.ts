@@ -39,10 +39,17 @@ type RawOffer = {
   urls?: { standard_web?: string };
 };
 
+type RawUpcoming = {
+  release_type?: string;
+  release_window_from?: string;
+  release_window_to?: string;
+};
+
 type RawTitleResponse = {
   title?: string;
   full_path?: string;
-  offers?: RawOffer[];
+  offers?: RawOffer[] | null;
+  upcoming?: RawUpcoming[];
   episodes?: {
     season_number?: number;
     episode_number?: number;
@@ -62,7 +69,11 @@ let providersCache: {
 } | null = null;
 
 export function getJustWatchPartnerToken(): string | undefined {
-  return process.env.JUSTWATCH_PARTNER_TOKEN?.trim();
+  return (
+    process.env.JUSTWATCH_PARTNER_TOKEN?.trim() ||
+    process.env.JUSTWATCH_API_KEY?.trim() ||
+    process.env.JUSTWATCH_TOKEN?.trim()
+  );
 }
 
 function monetizationLabel(type?: string): string {
@@ -93,6 +104,23 @@ function formatPrice(price?: number, currency?: string): string | undefined {
   } catch {
     return `${price} ${currency ?? "EUR"}`;
   }
+}
+
+function upcomingMessage(upcoming?: RawUpcoming[]): string | undefined {
+  const next = upcoming?.[0];
+  if (!next?.release_window_from) return undefined;
+
+  const from = next.release_window_from.slice(0, 10);
+  const to = next.release_window_to?.slice(0, 10);
+  const type =
+    next.release_type === "theatrical"
+      ? "Estreno en cines"
+      : next.release_type === "digital"
+        ? "Próximo en streaming"
+        : "Próximo estreno";
+
+  if (to && to !== from) return `${type}: ${from} – ${to}`;
+  return `${type}: ${from}`;
 }
 
 function pickEpisodeOffers(
@@ -151,19 +179,45 @@ function normalizeOffers(
     .map((item) => item.offer);
 }
 
-async function justWatchFetch<T>(path: string): Promise<T | null> {
+function buildOffersUrl(ref: JustWatchMediaRef, useDeprecatedPath: boolean): string {
+  const { objectType, tmdbId, season } = ref;
   const token = getJustWatchPartnerToken();
-  if (!token) return null;
+  if (!token) return "";
 
-  const url = `${JUSTWATCH_API_ROOT}${path}${path.includes("?") ? "&" : "?"}token=${encodeURIComponent(token)}`;
-  const res = await fetch(url, { next: { revalidate: 3600 } });
-
-  if (!res.ok) {
-    console.error(`JustWatch ${path}: HTTP ${res.status}`);
-    return null;
+  if (objectType === "show" && season) {
+    if (useDeprecatedPath) {
+      return `${JUSTWATCH_API_ROOT}/offers/object_type/show/id_type/tmdb/id/${tmdbId}/season_number/${season}/locale/${JUSTWATCH_LOCALE}?token=${encodeURIComponent(token)}`;
+    }
+    return `${JUSTWATCH_API_ROOT}/offers/object_type/show/id_type/tmdb/season_number/${season}/locale/${JUSTWATCH_LOCALE}?id=${tmdbId}&token=${encodeURIComponent(token)}`;
   }
 
-  return res.json() as Promise<T>;
+  if (useDeprecatedPath) {
+    return `${JUSTWATCH_API_ROOT}/offers/object_type/${objectType}/id_type/tmdb/id/${tmdbId}/locale/${JUSTWATCH_LOCALE}?token=${encodeURIComponent(token)}`;
+  }
+
+  return `${JUSTWATCH_API_ROOT}/offers/object_type/${objectType}/id_type/tmdb/locale/${JUSTWATCH_LOCALE}?id=${tmdbId}&token=${encodeURIComponent(token)}`;
+}
+
+async function fetchOffersResponse(
+  ref: JustWatchMediaRef
+): Promise<RawTitleResponse | null> {
+  const attempts = [false, true];
+
+  for (const useDeprecatedPath of attempts) {
+    const url = buildOffersUrl(ref, useDeprecatedPath);
+    if (!url) return null;
+
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (res.ok) {
+      return res.json() as Promise<RawTitleResponse>;
+    }
+
+    console.error(
+      `JustWatch ${useDeprecatedPath ? "legacy" : "v2"} ${ref.objectType}/${ref.tmdbId}: HTTP ${res.status}`
+    );
+  }
+
+  return null;
 }
 
 async function getProvidersById(): Promise<Map<number, RawProvider>> {
@@ -172,10 +226,20 @@ async function getProvidersById(): Promise<Map<number, RawProvider>> {
     return providersCache.byId;
   }
 
-  const data = await justWatchFetch<RawProvider[]>(
-    `/providers/all/locale/${JUSTWATCH_LOCALE}`
+  const token = getJustWatchPartnerToken();
+  if (!token) return new Map();
+
+  const res = await fetch(
+    `${JUSTWATCH_API_ROOT}/providers/all/locale/${JUSTWATCH_LOCALE}?token=${encodeURIComponent(token)}`,
+    { next: { revalidate: 3600 } }
   );
 
+  if (!res.ok) {
+    console.error(`JustWatch providers: HTTP ${res.status}`);
+    return new Map();
+  }
+
+  const data = (await res.json()) as RawProvider[];
   const byId = new Map<number, RawProvider>();
   for (const provider of data ?? []) {
     if (provider.id) byId.set(provider.id, provider);
@@ -189,16 +253,6 @@ async function getProvidersById(): Promise<Map<number, RawProvider>> {
   return byId;
 }
 
-function offersPath(ref: JustWatchMediaRef): string {
-  const { objectType, tmdbId, season } = ref;
-
-  if (objectType === "show" && season) {
-    return `/offers/object_type/show/id_type/tmdb/id/${tmdbId}/season_number/${season}/locale/${JUSTWATCH_LOCALE}`;
-  }
-
-  return `/offers/object_type/${objectType}/id_type/tmdb/id/${tmdbId}/locale/${JUSTWATCH_LOCALE}`;
-}
-
 export async function fetchJustWatchAvailability(
   ref: JustWatchMediaRef
 ): Promise<JustWatchAvailability | null> {
@@ -206,7 +260,7 @@ export async function fetchJustWatchAvailability(
 
   const [providers, response] = await Promise.all([
     getProvidersById(),
-    justWatchFetch<RawTitleResponse>(offersPath(ref)),
+    fetchOffersResponse(ref),
   ]);
 
   if (!response) return null;
@@ -220,9 +274,14 @@ export async function fetchJustWatchAvailability(
       ? pickEpisodeOffers(response, ref.season, ref.episode)
       : (response.offers ?? []);
 
+  const offers = normalizeOffers(rawOffers, providers).slice(0, 8);
+  const statusMessage =
+    offers.length === 0 ? upcomingMessage(response.upcoming) : undefined;
+
   return {
     title: response.title,
     titleUrl,
-    offers: normalizeOffers(rawOffers, providers).slice(0, 8),
+    offers,
+    statusMessage,
   };
 }
