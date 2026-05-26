@@ -3,6 +3,9 @@
 import { useMemo } from "react";
 import type { EventRow } from "./types";
 import { pickCuratedDestacados } from "../lib/destacados-config";
+import { FEED_DAY_COUNT } from "../lib/events-feed";
+import { buildDisplayDays } from "../lib/timezone";
+import { useTimezone } from "../lib/timezone-context";
 import { FeaturedEventCard } from "./FeaturedEventCard";
 
 type Props = {
@@ -10,7 +13,15 @@ type Props = {
 };
 
 export function DestacadosSection({ events }: Props) {
-  const featured = useMemo(() => pickCuratedDestacados(events), [events]);
+  const { timeZone } = useTimezone();
+  const todayKey = useMemo(
+    () => buildDisplayDays(timeZone, FEED_DAY_COUNT)[0]?.date ?? "",
+    [timeZone]
+  );
+  const featured = useMemo(
+    () => pickCuratedDestacados(events, { scope: "today", todayKey }),
+    [events, todayKey]
+  );
 
   if (featured.length === 0) return null;
 
@@ -22,7 +33,7 @@ export function DestacadosSection({ events }: Props) {
           <div>
             <h2 className="qvh-destacados-title">Lo imprescindible</h2>
             <p className="qvh-destacados-sub">
-              Lo más relevante hoy en España — deportes, realities y estrenos
+              Solo lo de hoy en España — deportes, realities y estrenos
             </p>
           </div>
         </div>

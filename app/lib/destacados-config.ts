@@ -30,8 +30,18 @@ export const DESTACADOS_SERIES_PATTERNS: RegExp[] = [
   /^Euphoria\b/i,
 ];
 
-const MIN_DESTACADOS = 5;
+const MIN_DESTACADOS_WEEK = 5;
+const MIN_DESTACADOS_TODAY = 3;
 const MAX_DESTACADOS = 10;
+
+export type DestacadosScope = "today" | "week";
+
+export type PickCuratedDestacadosOptions = {
+  /** Solo eventos de este día (YYYY-MM-DD en la zona del usuario). */
+  todayKey?: string;
+  scope?: DestacadosScope;
+  windowDays?: number;
+};
 
 function matchesRule(event: EventRow, rule: DestacadoRule): boolean {
   if (rule.externalId) {
@@ -83,11 +93,20 @@ function matchesFlagshipTv(event: EventRow): boolean {
 /** Eventos curados para la franja Destacados (orden = reglas + TV + estrenos + autocompletado) */
 export function pickCuratedDestacados(
   events: EventRow[],
-  windowDays = 7
+  options: PickCuratedDestacadosOptions = {}
 ): EventRow[] {
+  const scope = options.scope ?? "today";
+  const windowDays = options.windowDays ?? 7;
+  const today =
+    options.todayKey ?? toMadridDateKey(new Date());
   const week = new Set(getMadridWeekDates(windowDays));
-  const today = toMadridDateKey(new Date());
   const inWindow = events.filter((e) => e.date && week.has(e.date));
+  const pool =
+    scope === "today"
+      ? inWindow.filter((e) => e.date === today)
+      : inWindow;
+  const minDestacados =
+    scope === "today" ? MIN_DESTACADOS_TODAY : MIN_DESTACADOS_WEEK;
   const picked: EventRow[] = [];
   const seen = new Set<number>();
 
@@ -98,32 +117,34 @@ export function pickCuratedDestacados(
   };
 
   for (const rule of DESTACADOS_RULES) {
-    const match = inWindow.find((e) => matchesRule(e, rule));
+    const match = pool.find((e) => matchesRule(e, rule));
     if (match) add(match);
   }
 
-  for (const event of inWindow.filter(matchesFlagshipTv)) {
+  for (const event of pool.filter(matchesFlagshipTv)) {
     add(event);
   }
 
-  for (const event of inWindow.filter(isSpanishTvFlagship)) {
+  for (const event of pool.filter(isSpanishTvFlagship)) {
     add(event);
   }
 
-  for (const event of inWindow.filter(isSeasonPremiereEvent)) {
+  for (const event of pool.filter(isSeasonPremiereEvent)) {
     add(event);
   }
 
-  for (const event of inWindow.filter(matchesFollowedSeries)) {
+  for (const event of pool.filter(matchesFollowedSeries)) {
     add(event);
   }
 
-  if (picked.length < MIN_DESTACADOS) {
-    const candidates = inWindow
+  if (picked.length < minDestacados) {
+    const candidates = pool
       .filter((event) => !seen.has(event.id))
       .sort((a, b) => {
-        const scoreA = eventPriority(a) + (a.date === today ? 20 : 0);
-        const scoreB = eventPriority(b) + (b.date === today ? 20 : 0);
+        const scoreA =
+          eventPriority(a) + (scope === "week" && a.date === today ? 20 : 0);
+        const scoreB =
+          eventPriority(b) + (scope === "week" && b.date === today ? 20 : 0);
         return (
           scoreB - scoreA || (a.time ?? "").localeCompare(b.time ?? "")
         );
