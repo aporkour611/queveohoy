@@ -32,6 +32,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Home es 100% cliente: no refrescar sesion aqui (evita timeouts en Vercel)
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.next();
+  }
+
   return updateSession(request);
 }
 

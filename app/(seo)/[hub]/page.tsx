@@ -6,7 +6,6 @@ import {
   buildHubMetadataDescription,
   buildHubMetadataTitle,
   getSeoHub,
-  SEO_HUBS,
 } from "../../lib/seo-hubs";
 import { pageMetadata } from "../../lib/seo";
 
@@ -15,10 +14,6 @@ export const revalidate = 300;
 type PageProps = {
   params: Promise<{ hub: string }>;
 };
-
-export function generateStaticParams() {
-  return SEO_HUBS.map((hub) => ({ hub: hub.slug }));
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { hub: slug } = await params;

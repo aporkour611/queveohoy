@@ -1,17 +1,7 @@
-import type { Metadata } from "next";
-import { HomeApp } from "./components/HomeApp";
-import { HomeJsonLd } from "./components/HomeJsonLd";
-import { homeMetadata } from "./lib/seo";
+"use client";
 
-export const metadata: Metadata = homeMetadata;
-
-export const dynamic = "force-dynamic";
+import { HomePage } from "./components/HomePage";
 
 export default function Page() {
-  return (
-    <>
-      <HomeJsonLd />
-      <HomeApp />
-    </>
-  );
+  return <HomePage />;
 }

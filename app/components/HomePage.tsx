@@ -30,6 +30,68 @@ import {
   mapEventsToTimezone,
 } from "../lib/timezone";
 import { resolveDayEventsForFeed } from "../lib/upcoming-events";
+import {
+  defaultDescription,
+  siteBrand,
+  siteName,
+  siteUrl,
+} from "../lib/seo";
+
+function HomeJsonLdInline() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteUrl}/#organization`,
+        name: siteBrand,
+        url: siteUrl,
+        logo: `${siteUrl}/logo-queveohoy.png`,
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${siteUrl}/#website`,
+        name: siteName,
+        alternateName: ["que veo hoy", "qué ver hoy", "queveohoy"],
+        url: siteUrl,
+        description: defaultDescription,
+        inLanguage: "es-ES",
+        publisher: { "@id": `${siteUrl}/#organization` },
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${siteUrl}/#webpage`,
+        url: siteUrl,
+        name: "Qué ver hoy en TV y streaming",
+        description: defaultDescription,
+        isPartOf: { "@id": `${siteUrl}/#website` },
+        inLanguage: "es-ES",
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
+function HomeShell() {
+  return (
+    <div className="fh-body">
+      <main className="fh-content">
+        <div className="fh-container fh-main">
+          <div className="fh-empty fh-loading" style={{ minHeight: "40vh" }}>
+            <div className="qvh-spinner" aria-hidden />
+            <p>Cargando agenda…</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
 
 type Props = {
   initialEvents?: EventRow[];
@@ -108,19 +170,32 @@ export function HomePage({
   pageLead,
   children,
 }: Props = {}) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
+  if (!ready) {
+    return <HomeShell />;
+  }
+
   return (
-    <TimezoneProvider>
-      <FavoritesProvider>
-        <HomePageContent
-          initialEvents={initialEvents}
-          initialError={initialError}
-          pageTitle={pageTitle}
-          pageLead={pageLead}
-        >
-          {children}
-        </HomePageContent>
-      </FavoritesProvider>
-    </TimezoneProvider>
+    <>
+      <HomeJsonLdInline />
+      <TimezoneProvider>
+        <FavoritesProvider>
+          <HomePageContent
+            initialEvents={initialEvents}
+            initialError={initialError}
+            pageTitle={pageTitle}
+            pageLead={pageLead}
+          >
+            {children}
+          </HomePageContent>
+        </FavoritesProvider>
+      </TimezoneProvider>
+    </>
   );
 }
 
