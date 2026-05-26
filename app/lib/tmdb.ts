@@ -110,6 +110,54 @@ export function parseTmdbPoster(source?: string | null): string | null {
   return `https://image.tmdb.org/t/p/w185${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+/** Series que el cron siempre vigila (episodios en Destacados) */
+export const EDITORIAL_TV_TMDB_IDS = [
+  124364, // FROM
+  77169, // Euphoria
+  250307, // MobLand
+] as const;
+
+export function parseTmdbEpisodeMeta(externalId?: string | null) {
+  const match = externalId?.match(
+    /^tmdb_tv_(\d+)_(\d{4}-\d{2}-\d{2})_s(\d+)e(\d+)$/
+  );
+  if (!match) return null;
+  return {
+    showId: match[1],
+    airDate: match[2],
+    season: parseInt(match[3], 10),
+    episode: parseInt(match[4], 10),
+  };
+}
+
+export function isSeasonPremiereEvent(event: {
+  sport?: string | null;
+  external_id?: string | null;
+  competition?: string | null;
+}): boolean {
+  if (event.sport !== "series") return false;
+  if (/estreno · temporada/i.test(event.competition ?? "")) return true;
+  const meta = parseTmdbEpisodeMeta(event.external_id);
+  return meta?.episode === 1 && (meta.season ?? 0) >= 2;
+}
+
+export function seriesCompetitionLabel(
+  season: number,
+  episode: number,
+  trendingRank: number | undefined
+): string {
+  if (episode === 1 && season >= 2) {
+    return `Estreno · Temporada ${season}`;
+  }
+  if (episode === 1 && season === 1) {
+    return "Estreno · Temporada 1";
+  }
+  if (trendingRank !== undefined && trendingRank <= 4) {
+    return "Serie top · Nuevo episodio";
+  }
+  return "Nuevo episodio";
+}
+
 export function parseTmdbBuzzScore(source?: string | null): number {
   const match = source?.match(/\|buzz:(\d+)/);
   return match ? parseInt(match[1], 10) : 0;
@@ -236,6 +284,65 @@ async function fetchTopMovies(
   return pickTopScored(scored, TMDB_MAX_MOVIES_WEEK);
 }
 
+async function buildSeriesEvent(
+  showId: number,
+  dateFrom: string,
+  dateTo: string,
+  trendingRank: number | undefined,
+  seen: Set<string>,
+  options?: { skipQualityBar?: boolean }
+): Promise<ScoredEvent | null> {
+  const detail = await tmdbGet<TmdbShowDetail>(`/tv/${showId}`);
+  if (!detail) return null;
+  if (!options?.skipQualityBar && !passesQualityBar(detail, MIN_TV_VOTES)) {
+    return null;
+  }
+
+  const next = detail.next_episode_to_air;
+  const airDate = next?.air_date;
+  if (!airDate || airDate < dateFrom || airDate > dateTo) return null;
+
+  const dedupeKey = `${showId}_${airDate}`;
+  if (seen.has(dedupeKey)) return null;
+  seen.add(dedupeKey);
+
+  const showName = detail.name?.trim();
+  if (!showName) return null;
+
+  const season = next?.season_number ?? 0;
+  const episode = next?.episode_number ?? 0;
+  const epLabel =
+    season && episode ? `T${season}E${episode}` : null;
+  const epName = next?.name?.trim();
+  const title = epLabel
+    ? epName
+      ? `${showName} — ${epLabel}: ${epName}`
+      : `${showName} — ${epLabel}`
+    : showName;
+
+  const score = tmdbBuzzScore({
+    popularity: detail.popularity,
+    vote_count: detail.vote_count,
+    vote_average: detail.vote_average,
+    trendingRank,
+  });
+
+  return {
+    score,
+    event: {
+      external_id: `tmdb_tv_${showId}_${airDate}_s${season}e${episode}`,
+      title,
+      date: airDate,
+      time: "22:00",
+      sport: "series",
+      category: "cine",
+      competition: seriesCompetitionLabel(season, episode, trendingRank),
+      platform: defaultPlatformForSeries(detail.networks),
+      source: encodeTmdbSource(detail.poster_path, score),
+    },
+  };
+}
+
 async function fetchTopSeries(
   dateFrom: string,
   dateTo: string,
@@ -249,56 +356,42 @@ async function fetchTopSeries(
     .slice(0, 25);
 
   for (const [showId, rank] of candidates) {
-    const detail = await tmdbGet<TmdbShowDetail>(`/tv/${showId}`);
-    if (!detail) continue;
-    if (!passesQualityBar(detail, MIN_TV_VOTES)) continue;
-
-    const next = detail.next_episode_to_air;
-    const airDate = next?.air_date;
-    if (!airDate || airDate < dateFrom || airDate > dateTo) continue;
-
-    const dedupeKey = `${showId}_${airDate}`;
-    if (seen.has(dedupeKey)) continue;
-    seen.add(dedupeKey);
-
-    const showName = detail.name?.trim();
-    if (!showName) continue;
-
-    const epLabel =
-      next?.season_number && next?.episode_number
-        ? `T${next.season_number}E${next.episode_number}`
-        : null;
-    const epName = next?.name?.trim();
-    const title = epLabel
-      ? epName
-        ? `${showName} — ${epLabel}: ${epName}`
-        : `${showName} — ${epLabel}`
-      : showName;
-
-    const score = tmdbBuzzScore({
-      popularity: detail.popularity,
-      vote_count: detail.vote_count,
-      vote_average: detail.vote_average,
-      trendingRank: rank,
-    });
-
-    scored.push({
-      score,
-      event: {
-        external_id: `tmdb_tv_${showId}_${airDate}_s${next?.season_number ?? 0}e${next?.episode_number ?? 0}`,
-        title,
-        date: airDate,
-        time: "22:00",
-        sport: "series",
-        category: "cine",
-        competition: rank <= 4 ? "Serie top · Nuevo episodio" : "Nuevo episodio",
-        platform: defaultPlatformForSeries(detail.networks),
-        source: encodeTmdbSource(detail.poster_path, score),
-      },
-    });
+    const built = await buildSeriesEvent(showId, dateFrom, dateTo, rank, seen);
+    if (built) scored.push(built);
   }
 
   return pickTopScored(scored, TMDB_MAX_SERIES_WEEK);
+}
+
+async function fetchEditorialSeries(
+  dateFrom: string,
+  dateTo: string,
+  trendingRank: Map<number, number>
+): Promise<TmdbCronEvent[]> {
+  const events: TmdbCronEvent[] = [];
+  const seen = new Set<string>();
+
+  for (const showId of EDITORIAL_TV_TMDB_IDS) {
+    const built = await buildSeriesEvent(
+      showId,
+      dateFrom,
+      dateTo,
+      trendingRank.get(showId),
+      seen,
+      { skipQualityBar: true }
+    );
+    if (built) events.push(built.event);
+  }
+
+  return events;
+}
+
+function mergeSeriesByExternalId(...lists: TmdbCronEvent[][]): TmdbCronEvent[] {
+  const byId = new Map<string, TmdbCronEvent>();
+  for (const list of lists) {
+    for (const event of list) byId.set(event.external_id, event);
+  }
+  return [...byId.values()];
 }
 
 export async function fetchTmdbEventsForWeek(
@@ -318,10 +411,13 @@ export async function fetchTmdbEventsForWeek(
     fetchTrendingRank("tv"),
   ]);
 
-  const [movies, series] = await Promise.all([
+  const [movies, trendingSeries, editorialSeries] = await Promise.all([
     fetchTopMovies(dateFrom, dateTo, movieTrending),
     fetchTopSeries(dateFrom, dateTo, tvTrending),
+    fetchEditorialSeries(dateFrom, dateTo, tvTrending),
   ]);
+
+  const series = mergeSeriesByExternalId(trendingSeries, editorialSeries);
 
   return { movies, series };
 }

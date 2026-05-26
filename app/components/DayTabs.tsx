@@ -37,7 +37,7 @@ export function DayTabs({ days, activeIndex, onChange }: Props) {
   return (
     <div
       ref={listRef}
-      className="qvh-day-tabs qvh-day-tabs-sticky"
+      className="qvh-day-tabs"
       role="tablist"
       aria-label="Elegir día"
     >

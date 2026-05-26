@@ -24,13 +24,12 @@
   --qvh-text-on-light: #14141c;
   --qvh-border: #2a2a38;
   --qvh-border-light: #e0e0e8;
-  --qvh-navbar-h: 78px;
-  --qvh-day-tabs-h: 58px;
+  --qvh-navbar-h: 60px;
 }
 
 @media (max-width: 640px) {
   :root {
-    --qvh-navbar-h: 118px;
+    --qvh-navbar-h: 64px;
   }
 }
 
@@ -375,4 +374,69 @@
 .fh-active-pill[data-sport="valorant"],
 .fh-active-pill[data-sport="lol"] {
   background: var(--qvh-green);
+}
+
+/* ── Volver arriba (FAB) ── */
+.qvh-scroll-top {
+  position: fixed;
+  right: 16px;
+  bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  z-index: 980;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px 0 14px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(93, 95, 239, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: #fff;
+  cursor: pointer;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(93, 95, 239, 0.35);
+  opacity: 0;
+  transform: translateY(20px) scale(0.92);
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.qvh-scroll-top.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.qvh-scroll-top:hover {
+  background: var(--qvh-purple-hover);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(160, 162, 255, 0.4);
+}
+
+.qvh-scroll-top:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.qvh-scroll-top-label {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  .qvh-scroll-top {
+    right: 24px;
+    bottom: 28px;
+    height: 52px;
+    padding: 0 18px 0 16px;
+  }
 }

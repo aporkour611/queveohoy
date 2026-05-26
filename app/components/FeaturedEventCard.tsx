@@ -57,7 +57,9 @@ export function FeaturedEventCard({ event, className }: Props) {
             className={`qvh-spotlight-platform ${
               card.badgeVariant === "champions"
                 ? "qvh-spotlight-platform-champions"
-                : ""
+                : card.badgeVariant === "premiere"
+                  ? "qvh-spotlight-platform-premiere"
+                  : ""
             }`}
           >
             {card.platform}

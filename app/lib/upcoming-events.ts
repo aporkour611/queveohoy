@@ -3,6 +3,7 @@ import { filterEventsForDisplay } from "./event-crests";
 import {
   pickFeaturedEvents,
   pickFilteredEvents,
+  pickHomePageEvents,
   pickUpcomingFeaturedEvents,
   pickUpcomingFilteredEvents,
 } from "./featured";
@@ -91,7 +92,7 @@ export function resolveDayEventsForFeed(
   const dayEvents = filterEventsForDisplay(allEvents).filter((e) => e.date === date);
 
   if (isFeaturedMode) {
-    return pickFilteredEvents(dayEvents);
+    return pickHomePageEvents(dayEvents);
   }
 
   return pickFilteredEvents(

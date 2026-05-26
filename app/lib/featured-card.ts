@@ -6,7 +6,7 @@ import {
   shortTeamName,
   teamCrestUrl,
 } from "./football";
-import { parseTmdbPoster } from "./tmdb";
+import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb";
 import {
   formatEventDateLabel,
   parseUfcHeadline,
@@ -25,6 +25,7 @@ export type SpotlightBadgeVariant =
   | "motor"
   | "esports"
   | "media"
+  | "premiere"
   | "default";
 
 export type SpotlightCardModel = {
@@ -74,16 +75,23 @@ export function getSpotlightCardModel(event: EventRow): SpotlightCardModel {
   }
 
   if (sport === "cine" || sport === "series") {
+    const premiere = sport === "series" && isSeasonPremiereEvent(event);
+    const competition = event.competition?.trim() || "";
+
     return {
       headline: event.title?.trim() || "Sin título",
-      badge: sport === "cine" ? "Cine" : "Series",
-      badgeVariant: "media",
+      badge: premiere ? "Estreno" : sport === "cine" ? "Cine" : "Series",
+      badgeVariant: premiere ? "premiere" : "media",
       dateLabel,
       time,
-      meta: event.competition?.trim() || sportLabel(sport),
+      meta: premiere
+        ? competition || "Nuevo estreno de temporada"
+        : competition || sportLabel(sport),
       platform: event.platform?.trim() || channels || "TV y streaming",
       poster: parseTmdbPoster(event.source) ?? undefined,
-      visualClass: "qvh-spotlight-visual-media",
+      visualClass: premiere
+        ? "qvh-spotlight-visual-premiere"
+        : "qvh-spotlight-visual-media",
     };
   }
 

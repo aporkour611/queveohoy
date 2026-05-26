@@ -42,11 +42,29 @@ export const FEATURED_CATEGORY_ORDER = [
   "tv",
 ] as const;
 
-/** Cuántos eventos destacados por categoría en la home sin filtros */
+/** Cuántos eventos destacados por categoría (legacy / upcoming) */
 export const FEATURED_PER_CATEGORY = 1;
+
+/** Home sin filtros: tope por categoría/deporte dentro de cada día */
+export const HOME_SECTION_MAX = 5;
 
 /** Umbral para considerar un evento "importante" (reintento de escudos en cron) */
 export const IMPORTANT_EVENT_MIN_SCORE = 75;
+
+const KNOCKOUT_BONUS: { match: RegExp; score: number }[] = [
+  { match: /\bfinal\b|gran final/i, score: 18 },
+  { match: /semifinal|semi-final|semi final|last.?16|octavos|cuartos|quarter/i, score: 12 },
+  { match: /playoff|eliminatoria|knockout|round of/i, score: 8 },
+];
+
+const IMPORTANT_FOOTBALL_TEAMS =
+  /real madrid|barcelona|atl[eé]tico madrid|sevilla|villarreal|real sociedad|athletic|betis|valencia|psg|paris saint|marseille|lyon|monaco|manchester (city|united)|liverpool|arsenal|chelsea|tottenham|newcastle|bayern|dortmund|leverkusen|juventus|inter milan|ac milan|napoli|roma|lazio|ajax|benfica|porto|sporting cp|celtic|rangers|river plate|boca juniors|flamengo|palmeiras|corinthians/i;
+
+const IMPORTANT_ESPORTS_ORGS =
+  /t1\b|gen\.g|hanwha|kt rolster|dk\b|g2\b|fnatic|vitality|karmine|sentinels|cloud9|team liquid|faze|navi|100 thieves|loud|paper rex|drx\b|bilibili|jd gaming|weibo|edg\b|blg\b|m80\b|falcons|heroic|mouz|spirit/i;
+
+const IMPORTANT_ESPORTS_EVENTS =
+  /worlds|msi\b|major|iem|blast|vct|champions tour|lec|lck|lpl|lcs|pgl/i;
 
 export function isImportantEvent(e: EventRow): boolean {
   return eventPriority(e) >= IMPORTANT_EVENT_MIN_SCORE;
@@ -64,6 +82,32 @@ export function eventPriority(e: EventRow): number {
   }
 
   if (comp.includes("· Final")) score += 15;
+
+  for (const { match, score: s } of KNOCKOUT_BONUS) {
+    if (match.test(comp) || match.test(e.title ?? "")) {
+      score += s;
+      break;
+    }
+  }
+
+  if (e.sport === "futbol") {
+    const home = e.home_team ?? "";
+    const away = e.away_team ?? "";
+    const homeBig = IMPORTANT_FOOTBALL_TEAMS.test(home);
+    const awayBig = IMPORTANT_FOOTBALL_TEAMS.test(away);
+    if (homeBig && awayBig) score += 14;
+    else if (homeBig || awayBig) score += 7;
+  }
+
+  if (e.sport === "csgo" || e.sport === "valorant" || e.sport === "lol") {
+    const blob = `${e.competition ?? ""} ${e.title ?? ""} ${e.home_team ?? ""} ${e.away_team ?? ""}`;
+    if (IMPORTANT_ESPORTS_EVENTS.test(blob)) score += 10;
+    const homeOrg = IMPORTANT_ESPORTS_ORGS.test(e.home_team ?? "");
+    const awayOrg = IMPORTANT_ESPORTS_ORGS.test(e.away_team ?? "");
+    if (homeOrg && awayOrg) score += 8;
+    else if (homeOrg || awayOrg) score += 4;
+  }
+
   if (e.sport === "cine" || e.sport === "series") {
     const buzz = parseTmdbBuzzScore(e.source);
     if (buzz > 0) score += Math.min(50, Math.round(buzz / 8));
@@ -74,6 +118,42 @@ export function eventPriority(e: EventRow): number {
   }
 
   return score;
+}
+
+function sortByPriority(events: EventRow[]): EventRow[] {
+  return [...events].sort(
+    (a, b) =>
+      eventPriority(b) - eventPriority(a) ||
+      (a.time ?? "").localeCompare(b.time ?? "")
+  );
+}
+
+/** Clave de bloque en la home (competición de fútbol o deporte) */
+export function displaySectionKey(e: EventRow): string {
+  if (e.sport === "futbol") {
+    return `futbol:${(e.competition || "Fútbol").split(" · ")[0]}`;
+  }
+  return `sport:${e.sport ?? "otros"}`;
+}
+
+/** Home sin filtros: hasta 5 eventos top por categoría (Valorant, CS2, Champions…) */
+export function pickHomePageEvents(dayEvents: EventRow[]): EventRow[] {
+  const eligible = dayEvents.filter(eventCanDisplay);
+  const bySection = new Map<string, EventRow[]>();
+
+  for (const e of eligible) {
+    const key = displaySectionKey(e);
+    const list = bySection.get(key) ?? [];
+    list.push(e);
+    bySection.set(key, list);
+  }
+
+  const picked: EventRow[] = [];
+  for (const list of bySection.values()) {
+    picked.push(...sortByPriority(list).slice(0, HOME_SECTION_MAX));
+  }
+
+  return sortByPriority(picked);
 }
 
 function groupByCategory(events: EventRow[]): Map<string, EventRow[]> {
@@ -106,29 +186,17 @@ function pickTopPerCategory(
       for (const sportId of ["cine", "series"] as const) {
         const sportList = list.filter((e) => e.sport === sportId);
         if (!sportList.length) continue;
-        const sorted = [...sportList].sort(
-          (a, b) =>
-            eventPriority(b) - eventPriority(a) ||
-            (a.time ?? "").localeCompare(b.time ?? "")
-        );
+        const sorted = sortByPriority(sportList);
         picked.push(sorted[0]);
       }
       continue;
     }
 
-    const sorted = [...list].sort(
-      (a, b) =>
-        eventPriority(b) - eventPriority(a) ||
-        (a.time ?? "").localeCompare(b.time ?? "")
-    );
+    const sorted = sortByPriority(list);
     picked.push(...sorted.slice(0, FEATURED_PER_CATEGORY));
   }
 
-  return picked.sort(
-    (a, b) =>
-      eventPriority(b) - eventPriority(a) ||
-      (a.time ?? "").localeCompare(b.time ?? "")
-  );
+  return sortByPriority(picked);
 }
 
 /** Vista principal: lo más importante de cada categoría (con escudos si aplica) */

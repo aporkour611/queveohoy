@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { dedupeEvents } from "./lib/dedupe-events";
 import { filterEventsForDisplay } from "./lib/event-crests";
-import { LEGEND_ITEMS, STORAGE_KEY, sportLabel, ALL_SPORT_IDS } from "./lib/filter-config";
+import { STORAGE_KEY, sportLabel, ALL_SPORT_IDS } from "./lib/filter-config";
 import { DayTabs } from "./components/DayTabs";
 import { EventFilters } from "./components/EventFilters";
 import { LoadingState } from "./components/LoadingState";
@@ -12,6 +12,7 @@ import { AdminNavLink } from "./components/AdminNavLink";
 import { Logo } from "./components/Logo";
 import { DestacadosSection } from "./components/DestacadosSection";
 import { MatchCard } from "./components/MatchCard";
+import { ScrollToTop } from "./components/ScrollToTop";
 import { SiteFooter } from "./components/SiteFooter";
 import type { EventRow } from "./components/types";
 import { competitionAccentClass, sportAccentClass } from "./lib/sport-accent";
@@ -238,13 +239,7 @@ export default function Home() {
         getComputedStyle(document.documentElement).getPropertyValue(
           "--qvh-navbar-h"
         )
-      ) +
-      parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--qvh-day-tabs-h"
-        )
-      ) +
-      8;
+      ) + 8;
 
     let frame = 0;
 
@@ -287,14 +282,6 @@ export default function Home() {
           <h1 className="qvh-hero-title">
             Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
           </h1>
-          <ul className="qvh-legend" aria-label="Categorías">
-            {LEGEND_ITEMS.map((item) => (
-              <li key={item.label}>
-                <span className={`qvh-dot ${item.dot}`} />
-                {item.label}
-              </li>
-            ))}
-          </ul>
           <div className="fh-nav-links">
             <AdminNavLink />
           </div>
@@ -378,6 +365,8 @@ export default function Home() {
           <SiteFooter />
         </div>
       </div>
+
+      <ScrollToTop />
     </div>
   );
 }

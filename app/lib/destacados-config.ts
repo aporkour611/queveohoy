@@ -1,6 +1,7 @@
 import type { EventRow } from "../components/types";
 import { parseFootballTeamIds } from "./football";
 import { getMadridWeekDates } from "./madrid-time";
+import { isSeasonPremiereEvent } from "./tmdb";
 
 export type DestacadoRule = {
   id: string;
@@ -16,6 +17,12 @@ export const DESTACADOS_RULES: DestacadoRule[] = [
     id: "psg-arsenal",
     teamIds: ["524", "57"],
   },
+];
+
+/** Cada nuevo episodio de estas series va a Destacados */
+export const DESTACADOS_SERIES_PATTERNS: RegExp[] = [
+  /^FROM\b/i,
+  /^Euphoria\b/i,
 ];
 
 function matchesRule(event: EventRow, rule: DestacadoRule): boolean {
@@ -53,7 +60,13 @@ function matchesRule(event: EventRow, rule: DestacadoRule): boolean {
   return false;
 }
 
-/** Eventos curados para la franja Destacados (orden = DESTACADOS_RULES) */
+function matchesFollowedSeries(event: EventRow): boolean {
+  if (event.sport !== "series") return false;
+  const title = event.title ?? "";
+  return DESTACADOS_SERIES_PATTERNS.some((pattern) => pattern.test(title));
+}
+
+/** Eventos curados para la franja Destacados (orden = reglas + estrenos + series) */
 export function pickCuratedDestacados(
   events: EventRow[],
   windowDays = 7
@@ -63,12 +76,23 @@ export function pickCuratedDestacados(
   const picked: EventRow[] = [];
   const seen = new Set<number>();
 
+  const add = (event: EventRow) => {
+    if (seen.has(event.id)) return;
+    seen.add(event.id);
+    picked.push(event);
+  };
+
   for (const rule of DESTACADOS_RULES) {
     const match = inWindow.find((e) => matchesRule(e, rule));
-    if (match && !seen.has(match.id)) {
-      seen.add(match.id);
-      picked.push(match);
-    }
+    if (match) add(match);
+  }
+
+  for (const event of inWindow.filter(isSeasonPremiereEvent)) {
+    add(event);
+  }
+
+  for (const event of inWindow.filter(matchesFollowedSeries)) {
+    add(event);
   }
 
   return picked.sort(
@@ -77,3 +101,5 @@ export function pickCuratedDestacados(
       (a.time ?? "").localeCompare(b.time ?? "")
   );
 }
+
+export { isSeasonPremiereEvent };

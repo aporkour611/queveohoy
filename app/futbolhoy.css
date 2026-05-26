@@ -13,8 +13,8 @@
 
 .fh-content {
   background-color: var(--qvh-bg-elevated);
-  padding-bottom: 40px;
-  min-height: calc(100vh - 90px);
+  padding: var(--qvh-navbar-h) 0 40px;
+  min-height: 100vh;
 }
 
 .fh-container {
@@ -23,14 +23,17 @@
   padding: 0 15px;
 }
 
-/* ── Navbar ── */
+/* ── Navbar (solo esta barra queda fija al scroll) ── */
 .fh-navbar {
   background-color: var(--qvh-bg) !important;
   padding: 0;
   box-shadow: 0 1px 0 var(--qvh-border);
   border-bottom: 1px solid var(--qvh-border);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 960;
 }
 
@@ -52,35 +55,29 @@
 .fh-navbar-inner {
   max-width: 960px;
   margin: 0 auto;
-  padding: 14px 15px;
+  padding: 12px 15px;
   display: grid;
   grid-template-columns: auto 1fr auto;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto;
   align-items: center;
-  gap: 8px 20px;
+  gap: 8px 16px;
 }
 
 .fh-navbar-inner > .qvh-logo-link {
   grid-column: 1;
-  grid-row: 1 / 3;
+  grid-row: 1;
   align-self: center;
 }
 
 .fh-navbar-inner > .qvh-hero-title {
   grid-column: 2;
   grid-row: 1;
-  align-self: end;
-}
-
-.fh-navbar-inner > .qvh-legend {
-  grid-column: 2;
-  grid-row: 2;
-  align-self: start;
+  align-self: center;
 }
 
 .fh-nav-links {
   grid-column: 3;
-  grid-row: 1 / 3;
+  grid-row: 1;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -168,22 +165,18 @@
 
 @media (max-width: 640px) {
   .fh-navbar-inner {
-    grid-template-columns: auto 1fr auto;
-    grid-template-rows: auto auto auto;
+    padding: 10px 12px;
     gap: 6px 10px;
-    padding: 10px 12px 12px;
   }
 
   .fh-navbar-inner > .qvh-logo-link {
     grid-column: 1;
     grid-row: 1;
-    align-self: center;
   }
 
   .fh-navbar-inner > .qvh-hero-title {
     grid-column: 2;
     grid-row: 1;
-    align-self: center;
     font-size: clamp(0.82rem, 3.6vw, 1rem);
     text-align: left;
     line-height: 1.15;
@@ -192,24 +185,6 @@
   .fh-nav-links {
     grid-column: 3;
     grid-row: 1;
-    align-self: center;
-  }
-
-  .fh-navbar-inner > .qvh-legend {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    border-top: 1px solid var(--qvh-border);
-    padding-top: 10px;
-    margin-top: 2px;
-    justify-content: space-between;
-    gap: 8px 6px;
-    font-size: 0.72rem;
-  }
-
-  .qvh-legend li {
-    flex: 1 1 calc(50% - 6px);
-    min-width: 0;
-    justify-content: center;
   }
 
   .qvh-logo-tiles .qvh-tile {
@@ -238,16 +213,6 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   border-bottom: 1px solid var(--qvh-border);
-}
-
-.qvh-day-tabs-sticky {
-  position: sticky;
-  top: var(--qvh-navbar-h);
-  z-index: 950;
-  background: var(--qvh-bg-elevated);
-  margin: 0 -15px;
-  padding-left: 15px;
-  padding-right: 15px;
 }
 
 .qvh-day-tabs::-webkit-scrollbar {
@@ -325,7 +290,7 @@
 }
 
 .fh-day-section {
-  scroll-margin-top: calc(var(--qvh-navbar-h) + var(--qvh-day-tabs-h));
+  scroll-margin-top: calc(var(--qvh-navbar-h) + 8px);
 }
 
 .fh-day-empty {
@@ -346,9 +311,6 @@
 .fh-matchday-header {
   padding: 12px 10px;
   margin: 0 -15px 0.5rem;
-  position: sticky;
-  top: calc(var(--qvh-navbar-h) + var(--qvh-day-tabs-h));
-  z-index: 900;
   color: #fff;
   font-family: "Barlow Condensed", sans-serif;
   text-align: center;
@@ -368,9 +330,6 @@
 .fh-comp-header {
   padding: 10px 14px;
   margin: 0 -15px 0.2rem;
-  position: sticky;
-  top: calc(var(--qvh-navbar-h) + var(--qvh-day-tabs-h) + 52px);
-  z-index: 899;
   min-height: 45px;
   color: #fff;
   font-family: "Barlow Condensed", sans-serif;
@@ -1057,7 +1016,7 @@
 }
 
 .qvh-legal-page {
-  padding: 32px 0 48px;
+  padding: calc(var(--qvh-navbar-h) + 32px) 0 48px;
   color: var(--qvh-text);
 }
 
