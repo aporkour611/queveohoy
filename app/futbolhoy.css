@@ -1275,6 +1275,7 @@
   border-radius: 10px;
   padding: 28px 24px 22px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  color: #212529;
 }
 
 .fh-auth-card h1 {
@@ -1287,7 +1288,7 @@
 
 .fh-auth-lead {
   margin: 0 0 18px;
-  color: var(--qvh-text-muted);
+  color: #555;
   font-size: 0.95rem;
   line-height: 1.45;
 }
