@@ -190,10 +190,10 @@ function HomePageContent({
       }
     } catch {}
 
-    if (!hasInitialData && !initialError) {
+    if (!hasInitialData) {
       void loadEvents();
     }
-  }, [hasInitialData, initialError, loadEvents]);
+  }, [hasInitialData, loadEvents]);
 
   useEffect(() => {
     try {

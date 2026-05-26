@@ -45,7 +45,7 @@ export default async function Page() {
     <>
       <HomeJsonLd events={events} />
       <HomePage
-        initialEvents={events}
+        initialEvents={[]}
         initialError={error}
         pageTitle={pageTitle}
         pageLead={pageLead}
