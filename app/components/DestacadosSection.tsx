@@ -24,7 +24,10 @@ export function DestacadosSection({ events }: Props) {
 
   if (featured.length === 0) return null;
 
-  const hasUserFavorites = isLoggedIn && favoriteEvents.length > 0;
+  const subtitle =
+    isLoggedIn && favoriteEvents.length > 0
+      ? "Tus favoritos y lo más visto"
+      : "Lo más visto";
 
   return (
     <section className="qvh-destacados" aria-label="Destacados">
@@ -33,11 +36,7 @@ export function DestacadosSection({ events }: Props) {
           <span className="qvh-destacados-dot" aria-hidden />
           <div>
             <h2 className="qvh-destacados-title">Destacados</h2>
-            <p className="qvh-destacados-sub">
-              {hasUserFavorites
-                ? "Tus favoritos y selección editorial"
-                : "Selección editorial"}
-            </p>
+            <p className="qvh-destacados-sub">{subtitle}</p>
           </div>
         </div>
       </div>
