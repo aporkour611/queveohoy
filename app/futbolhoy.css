@@ -113,19 +113,39 @@
   color: var(--qvh-text);
 }
 
-/* ── Days carousel ── */
+.fh-main {
+  padding-top: 4px;
+}
+
+/* ── Days carousel (tema oscuro) ── */
+.qvh-days-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.qvh-days-label {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--qvh-text-muted);
+  flex-shrink: 0;
+  writing-mode: horizontal-tb;
+}
+
 #fh-days-carousel {
-  height: 50px;
+  height: 54px;
+  flex: 1;
+  min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-}
-
-#fh-days-carousel::-webkit-scrollbar {
-  display: none;
 }
 
 #fh-days-carousel .fh-day {
@@ -133,16 +153,28 @@
   display: inline-block;
   width: 7em !important;
   height: 7em;
-  background-color: #fff;
+  background-color: var(--qvh-bg-panel);
   border-radius: 0.6em;
-  box-shadow: 0 1px 0 #bdbdbd;
+  box-shadow: 0 1px 0 var(--qvh-border);
+  border: 1px solid var(--qvh-border);
   margin: 0 3px;
   position: relative;
   overflow: hidden;
-  border: none;
   cursor: pointer;
   vertical-align: top;
   padding: 0;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#fh-days-carousel .fh-day span.fh-day-num {
+  font-size: 2.5em;
+  letter-spacing: -0.05em;
+  padding-top: 0.9em;
+  color: var(--qvh-text);
+}
+
+#fh-days-carousel::-webkit-scrollbar {
+  display: none;
 }
 
 #fh-days-carousel .fh-day * {
@@ -170,13 +202,6 @@
   font-size: 1.2em;
 }
 
-#fh-days-carousel .fh-day span.fh-day-num {
-  font-size: 2.5em;
-  letter-spacing: -0.05em;
-  padding-top: 0.9em;
-  color: #2f2f2f;
-}
-
 #fh-days-carousel .fh-day:hover {
   background-color: rgba(93, 95, 239, 0.15);
 }
@@ -200,17 +225,19 @@
 }
 
 .fh-matchday-header {
-  padding: 10px;
-  margin: 0 -15px 0.2rem;
+  padding: 12px 10px;
+  margin: 0 -15px 0.5rem;
   position: sticky;
   top: 0;
   z-index: 900;
   color: #fff;
   font-family: "Barlow Condensed", sans-serif;
   text-align: center;
-  background-color: var(--qvh-muted);
-  font-size: 1.3em;
+  background: linear-gradient(90deg, var(--qvh-muted) 0%, #1a1a24 100%);
+  font-size: 1.25em;
   font-weight: 600;
+  border-bottom: 2px solid var(--qvh-purple);
+  text-transform: capitalize;
 }
 
 .fh-matchday-header .fh-md-count {
@@ -220,12 +247,12 @@
 }
 
 .fh-comp-header {
-  padding: 10px;
+  padding: 10px 14px;
   margin: 0 -15px 0.2rem;
   position: sticky;
   top: 45px;
   z-index: 899;
-  height: 45px;
+  min-height: 45px;
   color: #fff;
   font-family: "Barlow Condensed", sans-serif;
   text-align: center;
@@ -233,6 +260,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+}
+
+.fh-comp-header.fh-comp-purple {
+  background: linear-gradient(90deg, var(--qvh-purple-dim), var(--qvh-purple));
+}
+
+.fh-comp-header.fh-comp-orange {
+  background: linear-gradient(90deg, #7a3820, var(--qvh-orange));
+}
+
+.fh-comp-header.fh-comp-green {
+  background: linear-gradient(90deg, #155a35, var(--qvh-green));
+}
+
+.fh-comp-header.fh-comp-blue {
+  background: linear-gradient(90deg, #1e4a9e, var(--qvh-blue));
+}
+
+.fh-comp-count {
+  font-size: 0.75em;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 8px;
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+
+.fh-section-block {
+  margin-bottom: 8px;
 }
 
 .fh-comp-header h3 {
@@ -247,7 +304,8 @@
 .fh-match-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0;
+  gap: 8px;
+  padding: 8px 0 4px;
 }
 
 @media (min-width: 768px) {
@@ -257,21 +315,29 @@
 }
 
 .fh-cardcol {
-  padding: 5px 10px;
+  padding: 0;
 }
 
 @media (min-width: 768px) {
   .fh-cardcol {
-    padding: 5px;
+    padding: 0;
   }
 }
 
 /* ── Match card ── */
 .fh-match {
-  padding: 10px;
+  padding: 12px;
   background-color: #fff;
   height: 100%;
-  border: 1px solid #bfbfbf;
+  border: 1px solid var(--qvh-border-light);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.fh-match:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
 }
 
 .fh-match .fh-m-comp {
@@ -328,9 +394,9 @@
 
 .fh-match .fh-m-time {
   font-family: "Barlow Condensed", sans-serif;
-  color: var(--qvh-purple);
-  font-weight: 700;
-  font-size: 1.8em;
+  color: var(--qvh-purple-dim);
+  font-weight: 800;
+  font-size: 1.85em;
   margin: 0 10px;
   vertical-align: -4px;
   display: inline-block;
@@ -463,8 +529,10 @@
 .fh-filters-panel {
   background: var(--qvh-bg-panel);
   border: 1px solid var(--qvh-border);
-  padding: 12px 14px;
-  margin-bottom: 14px;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .fh-filters-head {

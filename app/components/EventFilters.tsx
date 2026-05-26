@@ -1,6 +1,7 @@
 "use client";
 
 import { FILTER_GROUPS } from "../lib/filter-config";
+import { sportLabel } from "../lib/filter-config";
 
 type Props = {
   selected: string[];
@@ -24,7 +25,14 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
   return (
     <div className="fh-filters-panel">
       <div className="fh-filters-head">
-        <span className="fh-filters-title">¿Qué quieres ver?</span>
+        <div>
+          <span className="fh-filters-title">¿Qué quieres ver?</span>
+          {!isFeaturedMode && (
+            <span className="fh-filters-active-count">
+              {selected.length} seleccionado{selected.length !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
         {selected.length > 0 && (
           <button type="button" className="fh-filters-clear" onClick={clearAll}>
             Ver destacados
@@ -32,11 +40,26 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
         )}
       </div>
 
-      {isFeaturedMode && (
+      {isFeaturedMode ? (
         <p className="fh-filters-hint">
-          Vista principal: los eventos más importantes de cada deporte. Elige
-          abajo para ver todo lo que te interese.
+          Vista principal: lo más importante de cada deporte. Activa categorías
+          para ver todo el calendario.
         </p>
+      ) : (
+        <div className="fh-active-filters">
+          {selected.map((id) => (
+            <button
+              key={id}
+              type="button"
+              className="fh-active-pill"
+              data-sport={id}
+              onClick={() => toggle(id)}
+              title="Quitar filtro"
+            >
+              {sportLabel(id)} ×
+            </button>
+          ))}
+        </div>
       )}
 
       {FILTER_GROUPS.map((group) => (

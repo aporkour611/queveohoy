@@ -6,9 +6,11 @@ import { dedupeEvents } from "./lib/dedupe-events";
 import { pickFeaturedEvents } from "./lib/featured";
 import { STORAGE_KEY, sportLabel } from "./lib/filter-config";
 import { EventFilters } from "./components/EventFilters";
+import { LoadingState } from "./components/LoadingState";
 import { Logo } from "./components/Logo";
 import { MatchCard } from "./components/MatchCard";
 import type { EventRow } from "./components/types";
+import { competitionAccentClass, sportAccentClass } from "./lib/sport-accent";
 import {
   formatMadridMonthShort,
   formatMadridWeekday,
@@ -31,7 +33,8 @@ const DAYS = getMadridWeekDates(10).map((date, i) => {
 
 function groupForDisplay(events: EventRow[]) {
   const football: Record<string, EventRow[]> = {};
-  const bySport: Record<string, EventRow[]> = {};
+  const bySport: Record<string, { label: string; sportId: string; events: EventRow[] }> =
+    {};
 
   for (const e of events) {
     if (e.sport === "futbol") {
@@ -39,9 +42,15 @@ function groupForDisplay(events: EventRow[]) {
       if (!football[key]) football[key] = [];
       football[key].push(e);
     } else {
-      const key = sportLabel(e.sport ?? "otros");
-      if (!bySport[key]) bySport[key] = [];
-      bySport[key].push(e);
+      const sportId = e.sport ?? "otros";
+      if (!bySport[sportId]) {
+        bySport[sportId] = {
+          label: sportLabel(sportId),
+          sportId,
+          events: [],
+        };
+      }
+      bySport[sportId].events.push(e);
     }
   }
 
@@ -124,20 +133,30 @@ export default function Home() {
       </nav>
 
       <div className="fh-content">
-        <div className="fh-title-bar">
+        <section className="qvh-hero">
           <div className="fh-container">
-            <h1>Qué ver hoy en TV y streaming</h1>
+            <p className="qvh-hero-kicker">Horario Madrid · 1-2 semanas vista</p>
+            <h1 className="qvh-hero-title">
+              Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
+            </h1>
+            <ul className="qvh-legend" aria-label="Categorías">
+              <li><span className="qvh-dot qvh-dot-purple" /> Fútbol mundial</li>
+              <li><span className="qvh-dot qvh-dot-orange" /> Deportes</li>
+              <li><span className="qvh-dot qvh-dot-green" /> E-sports</li>
+              <li><span className="qvh-dot qvh-dot-blue" /> F1 & más</li>
+            </ul>
           </div>
-        </div>
+        </section>
 
-        <div className="fh-container">
+        <div className="fh-container fh-main">
           <EventFilters
             selected={selectedSports}
             onChange={setSelectedSports}
             isFeaturedMode={isFeaturedMode}
           />
 
-          <div id="fh-days-carousel">
+          <div id="fh-days-carousel" className="qvh-days-wrap">
+            <span className="qvh-days-label">Día</span>
             {DAYS.map((day, i) => (
               <span key={day.date} style={{ display: "inline" }}>
                 {day.showSep && <span className="fh-cal-sep" />}
@@ -164,7 +183,7 @@ export default function Home() {
             </h2>
 
             {loading ? (
-              <div className="fh-empty">Cargando partidos...</div>
+              <LoadingState />
             ) : loadError ? (
               <div className="fh-empty">
                 <p>No se pudieron cargar los eventos.</p>
@@ -199,9 +218,12 @@ export default function Home() {
             ) : (
               <>
                 {Object.entries(sections.football).map(([comp, evs]) => (
-                  <div key={comp}>
-                    <div className="fh-comp-header">
+                  <div key={comp} className="fh-section-block">
+                    <div
+                      className={`fh-comp-header ${competitionAccentClass(comp)}`}
+                    >
                       <h3>{comp}</h3>
+                      <span className="fh-comp-count">{evs.length}</span>
                     </div>
                     <div className="fh-match-grid">
                       {evs.map((e) => (
@@ -211,10 +233,13 @@ export default function Home() {
                   </div>
                 ))}
 
-                {Object.entries(sections.bySport).map(([label, evs]) => (
-                  <div key={label}>
-                    <div className="fh-comp-header">
+                {Object.values(sections.bySport).map(({ label, sportId, events: evs }) => (
+                  <div key={sportId} className="fh-section-block">
+                    <div
+                      className={`fh-comp-header ${sportAccentClass(sportId)}`}
+                    >
                       <h3>{label}</h3>
+                      <span className="fh-comp-count">{evs.length}</span>
                     </div>
                     <div className="fh-match-grid">
                       {evs.map((e) => (

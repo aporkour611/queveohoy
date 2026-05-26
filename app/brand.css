@@ -15,6 +15,7 @@
   --qvh-blue: #2563eb;
   --qvh-gold: #c9a227;
   --qvh-text: #ffffff;
+  --qvh-text-muted: #9a9ab0;
   --qvh-text-on-light: #14141c;
   --qvh-border: #2a2a38;
   --qvh-border-light: #e0e0e8;
@@ -177,4 +178,156 @@
   border-radius: 2px;
   margin-right: 6px;
   vertical-align: middle;
+}
+
+/* ── Hero ── */
+.qvh-hero {
+  background: linear-gradient(180deg, var(--qvh-bg) 0%, var(--qvh-bg-elevated) 100%);
+  border-bottom: 1px solid var(--qvh-border);
+  padding: 20px 0 18px;
+  position: relative;
+}
+
+.qvh-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--qvh-purple) 0%,
+    var(--qvh-orange) 50%,
+    var(--qvh-green) 100%
+  );
+}
+
+.qvh-hero-kicker {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--qvh-text-muted);
+  margin: 0 0 6px;
+}
+
+.qvh-hero-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
+  font-weight: 800;
+  margin: 0 0 14px;
+  line-height: 1.05;
+  color: var(--qvh-text);
+}
+
+.qvh-hero-accent {
+  color: var(--qvh-purple);
+}
+
+.qvh-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.9rem;
+  color: var(--qvh-text-muted);
+}
+
+.qvh-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qvh-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.qvh-dot-purple {
+  background: var(--qvh-purple);
+}
+
+.qvh-dot-orange {
+  background: var(--qvh-orange);
+}
+
+.qvh-dot-green {
+  background: var(--qvh-green);
+}
+
+.qvh-dot-blue {
+  background: var(--qvh-blue);
+}
+
+/* Spinner */
+.qvh-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--qvh-border);
+  border-top-color: var(--qvh-purple);
+  border-radius: 50%;
+  animation: qvh-spin 0.7s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes qvh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fh-loading p {
+  margin: 0;
+  color: var(--qvh-text-muted);
+}
+
+/* Active filter pills */
+.fh-filters-active-count {
+  display: block;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.8rem;
+  color: var(--qvh-purple-hover);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.fh-active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.fh-active-pill {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+  background: var(--qvh-purple);
+}
+
+.fh-active-pill[data-sport="tenis"] {
+  background: var(--qvh-orange);
+}
+
+.fh-active-pill[data-sport="formula1"] {
+  background: var(--qvh-blue);
+}
+
+.fh-active-pill[data-sport="csgo"],
+.fh-active-pill[data-sport="valorant"],
+.fh-active-pill[data-sport="lol"],
+.fh-active-pill[data-sport="dota2"] {
+  background: var(--qvh-green);
 }
