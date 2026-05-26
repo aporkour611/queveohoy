@@ -16,9 +16,9 @@ import {
   formatMadridMonthShort,
   formatMadridWeekday,
   formatUpcomingBadge,
-  formatUpcomingSectionDate,
   getMadridWeekDates,
   madridDayNumber,
+  madridDayOffset,
   madridDayTitle,
 } from "./lib/madrid-time";
 import { resolveVisibleEvents } from "./lib/upcoming-events";
@@ -297,8 +297,11 @@ export default function Home() {
                 {isUpcoming
                   ? upcomingByDate.map(([date, dateEvents]) => (
                       <div key={date} className="fh-upcoming-day">
-                        <h3 className="fh-upcoming-date">
-                          {formatUpcomingSectionDate(date)}
+                        <h3 className="fh-matchday-header">
+                          {madridDayTitle(
+                            date,
+                            madridDayOffset(todayDate, date)
+                          )}
                         </h3>
                         {renderEventSections(dateEvents, upcomingBadgeFor)}
                       </div>

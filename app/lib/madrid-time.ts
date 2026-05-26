@@ -104,6 +104,12 @@ export function madridDayNumber(dateKey: string): number {
   return parseInt(dateKey.split("-")[2], 10);
 }
 
+export function madridDayOffset(fromDateKey: string, toDateKey: string): number {
+  const from = Date.parse(`${fromDateKey}T12:00:00Z`);
+  const to = Date.parse(`${toDateKey}T12:00:00Z`);
+  return Math.round((to - from) / 86_400_000);
+}
+
 export function madridDayTitle(dateKey: string, offsetFromToday: number): string {
   const d = madridDateTimeToUtc(dateKey, "12:00");
   const weekday = d.toLocaleDateString("es-ES", {
@@ -126,18 +132,6 @@ export function formatEventDayShort(dateKey: string): string {
   const month = formatMadridMonthShort(dateKey);
   const day = madridDayNumber(dateKey);
   return `${weekday} ${day} ${month.toLowerCase()}`;
-}
-
-export function formatUpcomingSectionDate(dateKey: string): string {
-  const weekday = formatMadridWeekday(dateKey, "long");
-  const d = madridDateTimeToUtc(dateKey, "12:00");
-  const month = d.toLocaleDateString("es-ES", {
-    timeZone: MADRID_TZ,
-    month: "long",
-  });
-  const monthCap = month.charAt(0).toUpperCase() + month.slice(1);
-  const day = madridDayNumber(dateKey);
-  return `${weekday}, ${day} de ${monthCap}`;
 }
 
 export function formatUpcomingBadge(

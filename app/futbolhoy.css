@@ -391,13 +391,9 @@
   margin-top: 4px;
 }
 
-.fh-upcoming-date {
-  margin: 0 0 12px;
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 1.35em;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--qvh-text);
+.fh-upcoming-day .fh-matchday-header {
+  position: static;
+  top: auto;
 }
 
 .fh-match .fh-m-title {
