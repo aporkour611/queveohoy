@@ -439,10 +439,7 @@ function HomePageContent({
                     id={`day-title-${section.date}`}
                     className="fh-matchday-header"
                   >
-                    {section.title}{" "}
-                    <span className="fh-md-count">
-                      ({section.events.length})
-                    </span>
+                    {section.title}
                     {isFeaturedMode && i === activeDay && (
                       <span className="fh-featured-badge">Destacados</span>
                     )}
