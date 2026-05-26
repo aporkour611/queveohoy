@@ -11,6 +11,7 @@ import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
 import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
+import { fetchUfcCronEvents } from "@/app/lib/thesportsdb-ufc";
 import {
   ergastToMadrid,
   getMadridWeekDates,
@@ -193,6 +194,19 @@ async function fetchEsports() {
   const prepared = await prepareEventsForImport(unique);
   await upsertEvents(prepared);
   console.log(`E-Sports: ${prepared.length}/${unique.length} eventos`);
+}
+
+async function fetchUfc(): Promise<{ count: number; error?: string }> {
+  try {
+    const events = await fetchUfcCronEvents(7);
+    const upsertError = await upsertEvents(events);
+    if (upsertError) return { count: events.length, error: upsertError };
+    console.log(`UFC: ${events.length} eventos`);
+    return { count: events.length };
+  } catch (e) {
+    console.error("Error fetching UFC:", e);
+    return { count: 0, error: String(e) };
+  }
 }
 
 async function purgeStaleTmdbEvents(): Promise<{ purged: number; error?: string }> {
@@ -403,6 +417,14 @@ export async function GET() {
     console.error("✗ TMDB error:", e);
   }
 
+  let ufc: { count: number; error?: string } = { count: 0 };
+  try {
+    ufc = await fetchUfc();
+    console.log("✓ UFC done");
+  } catch (e) {
+    console.error("✗ UFC error:", e);
+  }
+
   let enrich: { enriched: number; error?: string } = { enriched: 0 };
   try {
     enrich = await enrichImportantEventsMissingCrests();
@@ -445,6 +467,8 @@ export async function GET() {
     tmdbSeries: tmdb.series,
     tmdbPurged: tmdb.purged,
     tmdbError: tmdb.error,
+    ufc: ufc.count,
+    ufcError: ufc.error,
     crestsEnriched: enrich.enriched,
     crestEnrichError: enrich.error,
     crestsPurged: purge.purged,

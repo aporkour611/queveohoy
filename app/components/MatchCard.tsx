@@ -4,6 +4,7 @@ import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { parseTmdbPoster } from "../lib/tmdb";
+import { parseUfcImage } from "../lib/thesportsdb-ufc";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
@@ -15,8 +16,11 @@ type Props = {
 
 export function MatchCard({ event }: Props) {
   const isMedia = event.sport === "cine" || event.sport === "series";
+  const isUfc = event.sport === "ufc";
   const mediaTitle = event.title?.trim() || "Sin título";
-  const posterUrl = parseTmdbPoster(event.source);
+  const posterUrl = isUfc
+    ? parseUfcImage(event.source)
+    : parseTmdbPoster(event.source);
 
   const esportsLogos = parseEsportsTeamLogos(event.source);
   const footballIds =
@@ -58,7 +62,7 @@ export function MatchCard({ event }: Props) {
   const compDisplay = compFull.split(" · ")[0] || compFull;
   const matchClass = competitionMatchClass(compDisplay, event.sport);
 
-  if (isMedia) {
+  if (isMedia || isUfc) {
     return (
       <div className="fh-cardcol">
         <div className={`fh-match ${matchClass}`}>

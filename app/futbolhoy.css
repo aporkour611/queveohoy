@@ -402,6 +402,10 @@
   background: linear-gradient(90deg, var(--qvh-motor-dim), var(--qvh-motor));
 }
 
+.fh-comp-header.fh-comp-ufc {
+  background: linear-gradient(90deg, #8b0f0f, var(--qvh-ufc));
+}
+
 .fh-comp-header.fh-comp-gold {
   background: linear-gradient(90deg, #8a6914, var(--qvh-gold));
   color: #1a1a1a;
@@ -681,6 +685,13 @@
 .fh-match_f1 .fh-m-comp,
 .fh-match_motor .fh-m-comp {
   border-color: var(--qvh-motor);
+}
+
+.fh-match_ufc {
+  background-color: #fce8e8;
+}
+.fh-match_ufc .fh-m-comp {
+  border-color: var(--qvh-ufc);
 }
 
 .fh-match_cine {

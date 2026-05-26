@@ -15,6 +15,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
       { id: "tenis", label: "Tenis" },
       { id: "basket", label: "Basket" },
       { id: "ciclismo", label: "Ciclismo" },
+      { id: "ufc", label: "UFC" },
     ],
   },
   {

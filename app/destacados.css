@@ -1,11 +1,11 @@
-/* ── UFC upcoming (TheSportsDB) ── */
-.ufc-section {
+/* ── Destacados (spotlight cards) ── */
+.qvh-destacados {
   margin: 0 0 20px;
   padding: 16px 0 4px;
   border-bottom: 1px solid var(--qvh-border);
 }
 
-.ufc-section-head {
+.qvh-destacados-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -13,30 +13,23 @@
   gap: 12px;
 }
 
-.ufc-section-brand {
+.qvh-destacados-brand {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
 }
 
-.ufc-section-badge {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.ufc-section-dot {
+.qvh-destacados-dot {
   width: 10px;
   height: 10px;
   border-radius: 3px;
-  background: #d41414;
+  background: var(--qvh-purple);
   flex-shrink: 0;
-  box-shadow: 0 0 0 3px rgba(212, 20, 20, 0.2);
+  box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.25);
 }
 
-.ufc-section-title {
+.qvh-destacados-title {
   margin: 0;
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.35rem;
@@ -45,13 +38,13 @@
   line-height: 1.1;
 }
 
-.ufc-section-sub {
+.qvh-destacados-sub {
   margin: 2px 0 0;
   font-size: 0.82rem;
   color: var(--qvh-text-muted);
 }
 
-.ufc-scroll {
+.qvh-destacados-scroll {
   display: flex;
   gap: 12px;
   overflow-x: auto;
@@ -60,11 +53,11 @@
   scrollbar-width: none;
 }
 
-.ufc-scroll::-webkit-scrollbar {
+.qvh-destacados-scroll::-webkit-scrollbar {
   display: none;
 }
 
-.ufc-card {
+.qvh-spotlight-card {
   flex: 0 0 min(280px, 82vw);
   border-radius: 12px;
   overflow: hidden;
@@ -74,31 +67,53 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.ufc-card:hover {
+.qvh-spotlight-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
 }
 
-.ufc-card-visual {
+.qvh-spotlight-visual {
   position: relative;
   height: 148px;
-  background:
-    linear-gradient(135deg, #1a0505 0%, #3d0a0a 45%, #120606 100%);
   background-size: cover;
   background-position: center top;
 }
 
-.ufc-card-overlay {
+.qvh-spotlight-visual-ufc {
+  background: linear-gradient(135deg, #1a0505 0%, #3d0a0a 45%, #120606 100%);
+}
+
+.qvh-spotlight-visual-futbol {
+  background: linear-gradient(135deg, #2a2460 0%, #5d5fef 55%, #1a1840 100%);
+}
+
+.qvh-spotlight-visual-motor {
+  background: linear-gradient(135deg, #053a3a 0%, #0d9488 55%, #042424 100%);
+}
+
+.qvh-spotlight-visual-esports {
+  background: linear-gradient(135deg, #0f3320 0%, #1f6e43 55%, #081a10 100%);
+}
+
+.qvh-spotlight-visual-media {
+  background: linear-gradient(135deg, #3a2e08 0%, #c9a227 55%, #1a1505 100%);
+}
+
+.qvh-spotlight-visual-default {
+  background: linear-gradient(135deg, #2d2d3a 0%, #4547c4 55%, #14141c 100%);
+}
+
+.qvh-spotlight-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.12) 0%,
     rgba(0, 0, 0, 0.72) 100%
   );
 }
 
-.ufc-card-kind {
+.qvh-spotlight-badge {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -115,17 +130,35 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.ufc-card-kind-ppv {
+.qvh-spotlight-badge-ppv,
+.qvh-spotlight-badge-ufc {
   background: rgba(212, 20, 20, 0.88);
   border-color: rgba(255, 120, 120, 0.35);
 }
 
-.ufc-card-kind-fight-night {
-  background: rgba(93, 95, 239, 0.75);
+.qvh-spotlight-badge-fight-night,
+.qvh-spotlight-badge-futbol {
+  background: rgba(93, 95, 239, 0.82);
   border-color: rgba(160, 162, 255, 0.35);
 }
 
-.ufc-card-date {
+.qvh-spotlight-badge-motor {
+  background: rgba(13, 148, 136, 0.85);
+  border-color: rgba(120, 220, 210, 0.35);
+}
+
+.qvh-spotlight-badge-esports {
+  background: rgba(31, 110, 67, 0.88);
+  border-color: rgba(140, 220, 170, 0.35);
+}
+
+.qvh-spotlight-badge-media {
+  background: rgba(201, 162, 39, 0.9);
+  border-color: rgba(255, 230, 150, 0.35);
+  color: #1a1a1a;
+}
+
+.qvh-spotlight-when {
   position: absolute;
   left: 10px;
   right: 10px;
@@ -137,7 +170,7 @@
   gap: 8px;
 }
 
-.ufc-card-date-label {
+.qvh-spotlight-date {
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
@@ -145,7 +178,7 @@
   text-transform: capitalize;
 }
 
-.ufc-card-time {
+.qvh-spotlight-time {
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.35rem;
   font-weight: 800;
@@ -153,11 +186,11 @@
   line-height: 1;
 }
 
-.ufc-card-body {
+.qvh-spotlight-body {
   padding: 12px 14px 14px;
 }
 
-.ufc-card-headline {
+.qvh-spotlight-headline {
   margin: 0 0 6px;
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.15rem;
@@ -166,14 +199,14 @@
   color: var(--qvh-text);
 }
 
-.ufc-card-meta {
+.qvh-spotlight-meta {
   margin: 0 0 8px;
   font-size: 0.82rem;
   color: var(--qvh-text-muted);
   line-height: 1.35;
 }
 
-.ufc-card-platform {
+.qvh-spotlight-platform {
   margin: 0;
   display: inline-block;
   padding: 3px 8px;
@@ -182,43 +215,16 @@
   font-size: 0.78rem;
   font-weight: 600;
   color: #fff;
-  background: rgba(212, 20, 20, 0.22);
-  border: 1px solid rgba(212, 20, 20, 0.35);
-}
-
-.ufc-card-skeleton {
-  height: 248px;
-  background: linear-gradient(
-    90deg,
-    var(--qvh-muted) 0%,
-    #3a3a48 50%,
-    var(--qvh-muted) 100%
-  );
-  background-size: 200% 100%;
-  animation: ufc-shimmer 1.2s ease-in-out infinite;
-}
-
-.ufc-skeleton-row {
-  display: flex;
-  gap: 12px;
-  overflow: hidden;
-}
-
-@keyframes ufc-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+  background: rgba(93, 95, 239, 0.22);
+  border: 1px solid rgba(93, 95, 239, 0.35);
 }
 
 @media (min-width: 768px) {
-  .ufc-card {
+  .qvh-spotlight-card {
     flex-basis: 300px;
   }
 
-  .ufc-card-visual {
+  .qvh-spotlight-visual {
     height: 160px;
   }
 }

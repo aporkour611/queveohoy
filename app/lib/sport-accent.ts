@@ -4,6 +4,8 @@ export function sportAccentClass(sportId?: string | null): string {
     case "basket":
     case "ciclismo":
       return "fh-comp-purple";
+    case "ufc":
+      return "fh-comp-ufc";
     case "formula1":
     case "motos":
       return "fh-comp-motor";

@@ -10,22 +10,20 @@ import {
 
 const API_BASE = "https://www.thesportsdb.com/api/v1/json/3";
 export const UFC_LEAGUE_ID = "4443";
-export const UFC_MAX_UPCOMING = 6;
+export const UFC_MAX_UPCOMING = 8;
 
-export type UfcEvent = {
-  id: string;
+export type UfcKind = "ppv" | "fight-night" | "other";
+
+export type UfcCronEvent = {
+  external_id: string;
   title: string;
-  headline: string;
-  kind: "ppv" | "fight-night" | "other";
   date: string;
   time: string;
-  dateLabel: string;
-  venue: string;
-  location: string;
-  poster?: string;
-  thumb?: string;
-  badge?: string;
+  sport: "ufc";
+  category: "deportes";
+  competition: string;
   platform: string;
+  source: string;
 };
 
 type RawEvent = {
@@ -40,12 +38,11 @@ type RawEvent = {
   strCountry?: string;
   strPoster?: string;
   strThumb?: string;
-  strLeagueBadge?: string;
   strStatus?: string;
   strPostponed?: string;
 };
 
-function parseHeadline(strEvent: string): string {
+export function parseUfcHeadline(strEvent: string): string {
   const cleaned = strEvent
     .replace(/^Road to UFC\s+/i, "")
     .replace(/^UFC\s+Fight Night\s+\d+\s+/i, "")
@@ -54,7 +51,7 @@ function parseHeadline(strEvent: string): string {
   return cleaned || strEvent.replace(/^UFC\s+/i, "").trim();
 }
 
-function parseKind(strEvent: string): UfcEvent["kind"] {
+export function parseUfcKind(strEvent: string): UfcKind {
   if (/^UFC\s+\d+/i.test(strEvent) && !/Fight Night/i.test(strEvent)) {
     return "ppv";
   }
@@ -62,13 +59,36 @@ function parseKind(strEvent: string): UfcEvent["kind"] {
   return "other";
 }
 
-function kindLabel(kind: UfcEvent["kind"]): string {
+export function ufcKindLabel(kind: UfcKind): string {
   if (kind === "ppv") return "PPV";
   if (kind === "fight-night") return "Fight Night";
   return "UFC";
 }
 
-function formatDateLabel(date: string): string {
+export function encodeUfcSource(
+  poster?: string | null,
+  thumb?: string | null,
+  kind?: UfcKind
+): string {
+  const parts = ["ufc"];
+  const image = poster?.trim() || thumb?.trim();
+  if (image) parts.push(`img:${image}`);
+  if (kind) parts.push(`kind:${kind}`);
+  return parts.join("|");
+}
+
+export function parseUfcImage(source?: string | null): string | null {
+  if (!source?.startsWith("ufc")) return null;
+  const match = source.match(/\|img:([^|]+)/) ?? source.match(/^ufc\|img:([^|]+)/);
+  return match?.[1]?.trim() || null;
+}
+
+export function parseUfcKindFromSource(source?: string | null): UfcKind {
+  const match = source?.match(/\|kind:(ppv|fight-night|other)/);
+  return (match?.[1] as UfcKind) || "other";
+}
+
+export function formatEventDateLabel(date: string): string {
   const today = toMadridDateKey(new Date());
   const tomorrow = getMadridWeekDates(2)[1];
   if (date === today) return "Hoy";
@@ -78,7 +98,7 @@ function formatDateLabel(date: string): string {
   return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1, 3)} ${madridDayNumber(date)} ${month}`;
 }
 
-function normalizeEvent(raw: RawEvent): UfcEvent | null {
+function normalizeRaw(raw: RawEvent, weekDates: string[]): UfcCronEvent | null {
   if (!raw.idEvent || !raw.strEvent) return null;
   if (raw.strPostponed === "yes") return null;
   if (raw.strStatus === "FT") return null;
@@ -96,29 +116,26 @@ function normalizeEvent(raw: RawEvent): UfcEvent | null {
   }
 
   const today = toMadridDateKey(new Date());
-  if (date < today) return null;
+  const weekEnd = weekDates[weekDates.length - 1];
+  if (date < today || date > weekEnd) return null;
 
+  const kind = parseUfcKind(raw.strEvent);
+  const headline = parseUfcHeadline(raw.strEvent);
   const venue = raw.strVenue?.trim() || "Por confirmar";
-  const city = raw.strCity?.trim();
-  const country = raw.strCountry?.trim();
-  const location = [city, country].filter(Boolean).join(", ") || country || "";
-
-  const kind = parseKind(raw.strEvent);
+  const location = [raw.strCity?.trim(), raw.strCountry?.trim()]
+    .filter(Boolean)
+    .join(", ");
 
   return {
-    id: raw.idEvent,
-    title: raw.strEvent.trim(),
-    headline: parseHeadline(raw.strEvent),
-    kind,
+    external_id: `ufc_${raw.idEvent}`,
+    title: headline,
     date,
     time,
-    dateLabel: formatDateLabel(date),
-    venue,
-    location,
-    poster: raw.strPoster?.trim() || undefined,
-    thumb: raw.strThumb?.trim() || undefined,
-    badge: raw.strLeagueBadge?.trim() || undefined,
-    platform: kind === "ppv" ? "PPV · UFC Fight Pass" : "UFC Fight Pass",
+    sport: "ufc",
+    category: "deportes",
+    competition: ufcKindLabel(kind),
+    platform: location ? `${venue} · ${location}` : venue,
+    source: encodeUfcSource(raw.strPoster, raw.strThumb, kind),
   };
 }
 
@@ -132,20 +149,10 @@ async function fetchJson<T>(path: string): Promise<T | null> {
   }
 }
 
-function dedupeAndSort(events: UfcEvent[]): UfcEvent[] {
-  const map = new Map<string, UfcEvent>();
-  for (const event of events) {
-    map.set(event.id, event);
-  }
-  return [...map.values()].sort(
-    (a, b) =>
-      a.date.localeCompare(b.date) || (a.time ?? "").localeCompare(b.time ?? "")
-  );
-}
-
-export async function fetchUpcomingUfcEvents(
-  limit = UFC_MAX_UPCOMING
-): Promise<UfcEvent[]> {
+export async function fetchUfcCronEvents(
+  dayCount = 7
+): Promise<UfcCronEvent[]> {
+  const weekDates = getMadridWeekDates(dayCount);
   const year = new Date().getFullYear();
   const [nextData, seasonData] = await Promise.all([
     fetchJson<{ events?: RawEvent[] | null }>(
@@ -156,19 +163,39 @@ export async function fetchUpcomingUfcEvents(
     ),
   ]);
 
-  const pool: UfcEvent[] = [];
+  const map = new Map<string, UfcCronEvent>();
 
-  for (const raw of nextData?.events ?? []) {
-    const event = normalizeEvent(raw);
-    if (event) pool.push(event);
+  for (const raw of [...(nextData?.events ?? []), ...(seasonData?.events ?? [])]) {
+    const event = normalizeRaw(raw, weekDates);
+    if (event) map.set(event.external_id, event);
   }
 
-  for (const raw of seasonData?.events ?? []) {
-    const event = normalizeEvent(raw);
-    if (event) pool.push(event);
-  }
-
-  return dedupeAndSort(pool).slice(0, limit);
+  return [...map.values()]
+    .sort(
+      (a, b) =>
+        a.date.localeCompare(b.date) || (a.time ?? "").localeCompare(b.time ?? "")
+    )
+    .slice(0, UFC_MAX_UPCOMING);
 }
 
-export { kindLabel };
+/** @deprecated Usar fetchUfcCronEvents vía cron */
+export async function fetchUpcomingUfcEvents(limit = UFC_MAX_UPCOMING) {
+  const events = await fetchUfcCronEvents(7);
+  return events.slice(0, limit).map((e) => ({
+    id: e.external_id.replace(/^ufc_/, ""),
+    title: e.title,
+    headline: e.title,
+    kind: parseUfcKindFromSource(e.source),
+    date: e.date,
+    time: e.time,
+    dateLabel: formatEventDateLabel(e.date),
+    venue: e.platform.split(" · ")[0] ?? e.platform,
+    location: e.platform.includes(" · ")
+      ? e.platform.split(" · ").slice(1).join(" · ")
+      : "",
+    poster: parseUfcImage(e.source) ?? undefined,
+    platform: "UFC Fight Pass",
+  }));
+}
+
+export { ufcKindLabel as kindLabel };

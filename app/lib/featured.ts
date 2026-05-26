@@ -27,6 +27,7 @@ const SPORT_BASE: Record<string, number> = {
   tenis: 60,
   basket: 58,
   ciclismo: 55,
+  ufc: 63,
   csgo: 55,
   valorant: 54,
   lol: 53,

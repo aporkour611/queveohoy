@@ -10,8 +10,8 @@ import { EventFilters } from "./components/EventFilters";
 import { LoadingState } from "./components/LoadingState";
 import { AdminNavLink } from "./components/AdminNavLink";
 import { Logo } from "./components/Logo";
+import { DestacadosSection } from "./components/DestacadosSection";
 import { MatchCard } from "./components/MatchCard";
-import { UfcUpcoming } from "./components/UfcUpcoming";
 import { SiteFooter } from "./components/SiteFooter";
 import type { EventRow } from "./components/types";
 import { competitionAccentClass, sportAccentClass } from "./lib/sport-accent";
@@ -218,7 +218,7 @@ export default function Home() {
   }, [loadEvents, lockScrollSpy]);
 
   useEffect(() => {
-    if (loading || visibleDays.length === 0) return;
+    if (loading || visibleDays.length === 0 || isFeaturedMode) return;
 
     const sections = visibleDays
       .map((d) => document.getElementById(`day-${d.date}`))
@@ -270,7 +270,10 @@ export default function Home() {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [loading, visibleDays]);
+  }, [loading, visibleDays, isFeaturedMode]);
+
+  const activeFeaturedDate =
+    visibleDays[activeDay]?.date ?? ALL_DAYS[0]?.date ?? "";
 
   return (
     <div className="fh-body">
@@ -302,13 +305,15 @@ export default function Home() {
             isFeaturedMode={isFeaturedMode}
           />
 
-          <UfcUpcoming />
-
           <DayTabs
             days={visibleDays}
             activeIndex={activeDay}
             onChange={goToDay}
           />
+
+          {isFeaturedMode && activeFeaturedDate && (
+            <DestacadosSection events={events} date={activeFeaturedDate} />
+          )}
 
           {refreshing && !loading && (
             <p className="fh-feed-refresh" aria-live="polite">
@@ -342,7 +347,7 @@ export default function Home() {
                   : "No hay eventos para los filtros seleccionados en los próximos 7 días."}
               </p>
             </div>
-          ) : (
+          ) : isFeaturedMode ? null : (
             <div className="fh-day-feed">
               {visibleDays.map((section, i) => (
                 <section
@@ -357,9 +362,6 @@ export default function Home() {
                   >
                     {section.title}{" "}
                     <span className="fh-md-count">({section.events.length})</span>
-                    {isFeaturedMode && i === activeDay && (
-                      <span className="fh-featured-badge">Destacados</span>
-                    )}
                   </h2>
 
                   {renderEventSections(section.events)}
