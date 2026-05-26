@@ -128,6 +128,18 @@ export function formatEventDayShort(dateKey: string): string {
   return `${weekday} ${day} ${month.toLowerCase()}`;
 }
 
+export function formatUpcomingSectionDate(dateKey: string): string {
+  const weekday = formatMadridWeekday(dateKey, "long");
+  const d = madridDateTimeToUtc(dateKey, "12:00");
+  const month = d.toLocaleDateString("es-ES", {
+    timeZone: MADRID_TZ,
+    month: "long",
+  });
+  const monthCap = month.charAt(0).toUpperCase() + month.slice(1);
+  const day = madridDayNumber(dateKey);
+  return `${weekday}, ${day} de ${monthCap}`;
+}
+
 export function formatUpcomingBadge(
   eventDate: string,
   selectedDate: string,

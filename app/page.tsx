@@ -16,6 +16,7 @@ import {
   formatMadridMonthShort,
   formatMadridWeekday,
   formatUpcomingBadge,
+  formatUpcomingSectionDate,
   getMadridWeekDates,
   madridDayNumber,
   madridDayTitle,
@@ -58,6 +59,64 @@ function groupForDisplay(events: EventRow[]) {
   }
 
   return { football, bySport };
+}
+
+function groupEventsByDate(events: EventRow[]): [string, EventRow[]][] {
+  const map = new Map<string, EventRow[]>();
+  for (const e of events) {
+    const d = e.date ?? "";
+    if (!d) continue;
+    if (!map.has(d)) map.set(d, []);
+    map.get(d)!.push(e);
+  }
+  return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
+}
+
+function renderEventSections(
+  events: EventRow[],
+  upcomingBadgeFor: (eventDate: string | null | undefined) => string | null
+) {
+  const sections = groupForDisplay(events);
+
+  return (
+    <>
+      {Object.entries(sections.football).map(([comp, evs]) => (
+        <div key={comp} className="fh-section-block">
+          <div className={`fh-comp-header ${competitionAccentClass(comp)}`}>
+            <h3>{comp}</h3>
+            <span className="fh-comp-count">{evs.length}</span>
+          </div>
+          <div className="fh-match-grid">
+            {evs.map((e) => (
+              <MatchCard
+                key={e.id}
+                event={e}
+                upcomingBadge={upcomingBadgeFor(e.date)}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {Object.values(sections.bySport).map(({ label, sportId, events: evs }) => (
+        <div key={sportId} className="fh-section-block">
+          <div className={`fh-comp-header ${sportAccentClass(sportId)}`}>
+            <h3>{label}</h3>
+            <span className="fh-comp-count">{evs.length}</span>
+          </div>
+          <div className="fh-match-grid">
+            {evs.map((e) => (
+              <MatchCard
+                key={e.id}
+                event={e}
+                upcomingBadge={upcomingBadgeFor(e.date)}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+    </>
+  );
 }
 
 export default function Home() {
@@ -139,9 +198,9 @@ export default function Home() {
       ? formatUpcomingBadge(eventDate, selectedDate, todayDate)
       : null;
 
-  const sections = useMemo(
-    () => groupForDisplay(visibleEvents),
-    [visibleEvents]
+  const upcomingByDate = useMemo(
+    () => (isUpcoming ? groupEventsByDate(visibleEvents) : []),
+    [isUpcoming, visibleEvents]
   );
 
   const dayTitle = madridDayTitle(DAYS[activeDay].date, activeDay);
@@ -235,45 +294,16 @@ export default function Home() {
                 {upcomingMessage && (
                   <p className="fh-upcoming-notice">{upcomingMessage}</p>
                 )}
-                {Object.entries(sections.football).map(([comp, evs]) => (
-                  <div key={comp} className="fh-section-block">
-                    <div
-                      className={`fh-comp-header ${competitionAccentClass(comp)}`}
-                    >
-                      <h3>{comp}</h3>
-                      <span className="fh-comp-count">{evs.length}</span>
-                    </div>
-                    <div className="fh-match-grid">
-                      {evs.map((e) => (
-                        <MatchCard
-                          key={e.id}
-                          event={e}
-                          upcomingBadge={upcomingBadgeFor(e.date)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                {Object.values(sections.bySport).map(({ label, sportId, events: evs }) => (
-                  <div key={sportId} className="fh-section-block">
-                    <div
-                      className={`fh-comp-header ${sportAccentClass(sportId)}`}
-                    >
-                      <h3>{label}</h3>
-                      <span className="fh-comp-count">{evs.length}</span>
-                    </div>
-                    <div className="fh-match-grid">
-                      {evs.map((e) => (
-                        <MatchCard
-                          key={e.id}
-                          event={e}
-                          upcomingBadge={upcomingBadgeFor(e.date)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                {isUpcoming
+                  ? upcomingByDate.map(([date, dateEvents]) => (
+                      <div key={date} className="fh-upcoming-day">
+                        <h3 className="fh-upcoming-date">
+                          {formatUpcomingSectionDate(date)}
+                        </h3>
+                        {renderEventSections(dateEvents, upcomingBadgeFor)}
+                      </div>
+                    ))
+                  : renderEventSections(visibleEvents, upcomingBadgeFor)}
               </>
             )}
           </div>
