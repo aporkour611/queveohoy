@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useMemo, useState } from "react";
+import { RemotePoster } from "./RemotePoster";
 import { buildEventDetails } from "../lib/event-details";
 import { parseChannels } from "../lib/channels";
 import { displayTime } from "../lib/madrid-time";
@@ -79,8 +80,11 @@ export const MediaPosterCard = memo(function MediaPosterCard({
       >
         <div className="qvh-media-card-poster">
           {posterUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={posterUrl} alt="" className="qvh-media-card-image" loading="lazy" />
+            <RemotePoster
+              src={posterUrl}
+              className="qvh-media-card-image qvh-remote-poster"
+              sizes="(max-width: 768px) 45vw, 180px"
+            />
           ) : (
             <div className="qvh-media-card-fallback" aria-hidden />
           )}

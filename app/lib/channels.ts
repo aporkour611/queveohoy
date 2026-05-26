@@ -51,3 +51,38 @@ export function defaultChannelsForCompetition(competition?: string | null): stri
   if (c.includes("world cup") || c.includes("mundial")) return "Movistar+, RTVE, DAZN";
   return "DAZN, Movistar+";
 }
+
+const SPORT_CHANNEL_DEFAULTS: Record<string, string> = {
+  formula1: "DAZN F1, Movistar+",
+  motos: "DAZN, Movistar+",
+  ufc: "DAZN, Movistar+",
+  basket: "Movistar+, DAZN",
+  tenis: "Movistar+, Eurosport",
+  ciclismo: "Eurosport, Teledeporte",
+  csgo: "Twitch, YouTube",
+  valorant: "Twitch, YouTube",
+  lol: "Twitch, YouTube",
+  tv: "RTVE, Telecinco, Antena 3",
+  series: "Movistar+, HBO Max, Netflix",
+  cine: "Movistar+, Filmin",
+};
+
+/** Canales para mostrar: plataforma real o fallback heurístico. */
+export function resolveChannelsForEvent(event: {
+  sport?: string | null;
+  competition?: string | null;
+  platform?: string | null;
+}): string[] {
+  const fromPlatform = parseChannels(event.platform);
+  if (fromPlatform.length) return fromPlatform;
+
+  const sport = event.sport ?? "";
+  if (sport === "futbol") {
+    return parseChannels(defaultChannelsForCompetition(event.competition));
+  }
+
+  const sportDefault = SPORT_CHANNEL_DEFAULTS[sport];
+  if (sportDefault) return parseChannels(sportDefault);
+
+  return [];
+}

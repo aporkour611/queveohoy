@@ -18,6 +18,7 @@ import {
   eventStartIso,
   schemaEventType,
 } from "./seo-events";
+import { eventSlug } from "./event-slug";
 import {
   defaultDescription,
   homeTitle,
@@ -400,4 +401,44 @@ export function buildHomePageLead(events: EventRow[]): string {
   }
 
   return `${count} eventos hoy en TV y streaming: fútbol, Champions, deportes, series y estrenos con horario y canal en España.`;
+}
+
+export function buildPartidoJsonLd(event: EventRow) {
+  const slug = eventSlug(event);
+  const pageUrl = `${siteUrl}/partido/${slug}`;
+  const name = eventLabel(event);
+  const startDate = eventStartIso(event.date, event.time);
+  const channel = event.platform?.split(",")[0]?.trim();
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: siteUrl },
+          { "@type": "ListItem", position: 2, name, item: pageUrl },
+        ],
+      },
+      {
+        "@type": schemaEventType(event.sport),
+        name,
+        description: [event.competition, event.platform].filter(Boolean).join(" · "),
+        ...(startDate
+          ? {
+              startDate,
+              eventStatus: "https://schema.org/EventScheduled",
+            }
+          : {}),
+        ...(channel
+          ? {
+              broadcastOfEvent: {
+                "@type": "BroadcastEvent",
+                videoFormat: channel,
+              },
+            }
+          : {}),
+      },
+    ],
+  };
 }

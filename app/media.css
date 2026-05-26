@@ -222,10 +222,13 @@
   background: #101015;
 }
 
-.qvh-media-card-image {
-  width: 100%;
-  height: 100%;
+.qvh-media-card-image,
+.qvh-remote-poster {
   object-fit: cover;
+  object-position: center top;
+}
+
+.qvh-media-card-image {
   transition: transform 0.7s ease;
 }
 
@@ -510,6 +513,7 @@
 .fh-media-spotlight-visual {
   position: relative;
   height: 132px;
+  overflow: hidden;
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;

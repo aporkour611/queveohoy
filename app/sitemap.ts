@@ -4,12 +4,15 @@ import {
   getRollingSeoDateKeys,
   partidosHoyDatePath,
 } from "./lib/seo-date";
+import { fetchFeedEvents } from "./lib/events-feed-server";
+import { partidoSlugsForSitemap } from "./lib/event-slug";
 import { SEO_GUIDES } from "./lib/seo-guides";
 import { SEO_HUBS } from "./lib/seo-hubs";
 import { siteUrl } from "./lib/seo";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const { events } = await fetchFeedEvents();
 
   const hubEntries = SEO_HUBS.map((hub) => ({
     url: `${siteUrl}/${hub.slug}`,
@@ -33,6 +36,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: guide.priority,
   }));
 
+  const partidoEntries = partidoSlugsForSitemap(events).map((slug) => ({
+    url: `${siteUrl}/partido/${slug}`,
+    lastModified: now,
+    changeFrequency: "hourly" as const,
+    priority: 0.7,
+  }));
+
   return [
     {
       url: siteUrl,
@@ -42,6 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...hubEntries,
     ...dateEntries,
+    ...partidoEntries,
     ...guideEntries,
     {
       url: `${siteUrl}/privacidad`,

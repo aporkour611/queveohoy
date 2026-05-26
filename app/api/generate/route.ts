@@ -1,10 +1,15 @@
+import { NextResponse } from "next/server";
+import { isCronAuthorized } from "@/app/lib/admin-auth";
 import { supabase } from "@/app/lib/supabase";
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isCronAuthorized(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const today = new Date().toISOString().split("T")[0];
 
   try {
-    // evitar duplicados grandes
     const { data: existing } = await supabase
       .from("events")
       .select("*")
@@ -18,7 +23,6 @@ export async function GET() {
       });
     }
 
-    // API real
     const res = await fetch(
       "https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=" +
         today +
@@ -26,7 +30,6 @@ export async function GET() {
     );
 
     const json = await res.json();
-
     const rawEvents = json?.events || [];
 
     const events = rawEvents.slice(0, 8).map((e: any, index: number) => ({
@@ -35,13 +38,10 @@ export async function GET() {
       category: "Fútbol",
       platform: e.strLeague || "TV",
       date: today,
-
-      // base de trending futuro
       popularity: Math.max(1, 10 - index),
       featured: index < 2,
     }));
 
-    // fallback
     if (events.length === 0) {
       events.push({
         title: "Evento destacado del día",
@@ -54,7 +54,6 @@ export async function GET() {
       });
     }
 
-    // insert seguro
     const { error } = await supabase
       .from("events")
       .upsert(events, { onConflict: "title,date" });

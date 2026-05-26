@@ -11,7 +11,6 @@ import {
 export const alt = "Qué veo hoy — agenda TV y partidos";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const revalidate = 300;
 
 export default async function Image() {
   const { events } = await fetchFeedEvents();

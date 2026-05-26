@@ -13,6 +13,7 @@ export const SEO_HUB_NAV_LINKS = [
   { slug: "motogp", title: "MotoGP hoy" },
   { slug: "baloncesto", title: "Baloncesto hoy en TV" },
   { slug: "ciclismo", title: "Ciclismo hoy en TV" },
+  { slug: "esports", title: "E-Sports hoy" },
   { slug: "copa-del-rey", title: "Copa del Rey hoy" },
 ] as const;
 
@@ -26,4 +27,5 @@ export const SEO_FOOTER_HUB_SLUGS = [
   "formula-1",
   "ufc",
   "series",
+  "esports",
 ] as const;

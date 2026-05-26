@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { teamInitials } from "../lib/football";
 
@@ -73,14 +74,15 @@ export function TeamCrest({
           {initials}
         </div>
       ) : (
-        <img
+        <Image
           key={`${urlIndex}-${retry}`}
           src={crestSrc(currentUrl, retry)}
           alt=""
           width={size}
           height={size}
+          className="fh-team-crest-img"
+          sizes={`${size}px`}
           loading="lazy"
-          decoding="async"
           onError={handleError}
         />
       )}

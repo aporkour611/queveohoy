@@ -13,8 +13,11 @@ import {
   parseUfcMainEventFighters,
   ufcKindLabel,
 } from "../lib/thesportsdb-ufc-client";
+import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
-import { parseChannels, isFreeTvChannel } from "../lib/channels";
+import { parseChannels, isFreeTvChannel, resolveChannelsForEvent } from "../lib/channels";
+import { partidoPath } from "../lib/event-slug";
+import Link from "next/link";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
 import { formatDisplayDateLabel } from "../lib/timezone";
@@ -67,12 +70,8 @@ function SpotlightCardContent({
         className={`fh-media-spotlight-visual ${visualClass}${
           duelActive ? " fh-media-spotlight-visual-ufc-duel" : ""
         }`}
-        style={
-          posterUrl && !duelActive
-            ? { backgroundImage: `url(${posterUrl})` }
-            : undefined
-        }
       >
+        {posterUrl && !duelActive ? <RemotePoster src={posterUrl} /> : null}
         {duelActive ? (
           <UfcFightVisual
             f1Url={ufcF1Url}
@@ -194,7 +193,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   );
   const time = displayTime(event.time);
   const dateLabel = event.date ? formatDisplayDateLabel(event.date, timeZone) : "";
-  const channels = parseChannels(event.platform);
+  const channels = resolveChannelsForEvent(event);
   const compFull = event.competition ?? "";
   const isFinal = compFull.includes("· Final");
   const compDisplay = compFull.split(" · ")[0] || compFull;
@@ -303,9 +302,15 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         )}
 
         <div className="fh-m-title">
-          <span className="fh-dest-team">{home}</span>
-          {" - "}
-          <span className="fh-dest-team">{away}</span>
+          <Link
+            href={partidoPath(event)}
+            className="fh-m-title-link"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="fh-dest-team">{home}</span>
+            {" - "}
+            <span className="fh-dest-team">{away}</span>
+          </Link>
         </div>
 
         <div className="fh-m-logos">

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { FEED_REVALIDATE_SECONDS } from "@/app/lib/cache-config";
 import { fetchFeedEvents } from "@/app/lib/events-feed-server";
 
-export const revalidate = 300;
+export const revalidate = 600;
 
 export async function GET() {
   const { events, error } = await fetchFeedEvents();
@@ -14,7 +15,7 @@ export async function GET() {
     { events },
     {
       headers: {
-        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+        "Cache-Control": `public, s-maxage=${FEED_REVALIDATE_SECONDS}, stale-while-revalidate=${FEED_REVALIDATE_SECONDS * 2}`,
       },
     }
   );

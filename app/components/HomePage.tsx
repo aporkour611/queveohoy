@@ -18,6 +18,7 @@ import { Logo } from "./Logo";
 import { RegionTimezoneBar } from "./RegionTimezoneBar";
 import { HomeCalendarHero } from "./HomeCalendarHero";
 import { DestacadosSection } from "./DestacadosSection";
+import { EventSearch } from "./EventSearch";
 import { ScrollToTop } from "./ScrollToTop";
 import { SiteFooter } from "./SiteFooter";
 import type { EventRow } from "./types";
@@ -27,6 +28,7 @@ import {
   filterEventsInWeek,
   mapEventsToTimezone,
 } from "../lib/timezone";
+import { filterEventsByQuery } from "../lib/event-search";
 import { resolveDayEventsForFeed } from "../lib/upcoming-events";
 
 type Props = {
@@ -83,7 +85,8 @@ function HomePageContent({
   const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(initialError);
   const [activeDay, setActiveDay] = useState(0);
-  const [weekView, setWeekView] = useState(true);
+  const [weekView, setWeekView] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
@@ -204,6 +207,12 @@ function HomePageContent({
 
   const activeSection = daySections[activeDay];
 
+  const searchResults = useMemo(
+    () => filterEventsByQuery(displayEvents, searchQuery),
+    [displayEvents, searchQuery]
+  );
+  const showSearch = searchQuery.trim().length >= 2;
+
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
     if (scrollLockTimerRef.current !== null) {
@@ -254,8 +263,10 @@ function HomePageContent({
     setActiveDay(0);
     setWeekView(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    void loadEvents({ silent: true });
-  }, [loadEvents, lockScrollSpy]);
+    if (!hasInitialData) {
+      void loadEvents({ silent: true });
+    }
+  }, [hasInitialData, loadEvents, lockScrollSpy]);
 
   useEffect(() => {
     if (!weekView || showInitialLoading || daySections.length === 0) return;
@@ -324,6 +335,15 @@ function HomePageContent({
             isFeaturedMode={isFeaturedMode}
           />
 
+          <EventSearch
+            events={displayEvents}
+            onQueryChange={setSearchQuery}
+            onPickDay={(date) => {
+              const index = daySections.findIndex((d) => d.date === date);
+              if (index >= 0) goToDay(index);
+            }}
+          />
+
           {isFeaturedMode && <DestacadosSection events={displayEvents} />}
 
           <DayTabs
@@ -380,6 +400,18 @@ function HomePageContent({
           ) : events.length === 0 ? (
             <div className="fh-empty">
               <p>No hay eventos en los próximos 7 días.</p>
+            </div>
+          ) : showSearch ? (
+            <div className="fh-day-feed" id="day-feed">
+              <section className="fh-day-section fh-matchday">
+                <h2 className="fh-matchday-header">
+                  Resultados de búsqueda
+                </h2>
+                <EventDaySections
+                  events={searchResults}
+                  emptyMessage="Sin eventos para esta búsqueda."
+                />
+              </section>
             </div>
           ) : weekView ? (
             <div className="fh-day-feed" id="day-feed">

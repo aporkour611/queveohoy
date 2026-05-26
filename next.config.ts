@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["react", "react-dom"],
   },
   images: {
+    formats: ["image/webp"],
+    minimumCacheTTL: 60 * 60 * 24,
+    deviceSizes: [640, 750, 828, 1080],
+    imageSizes: [32, 48, 64, 96, 128, 256],
     remotePatterns: [
       {
         protocol: "https",
@@ -36,6 +40,14 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "image.tmdb.org",
+      },
+      {
+        protocol: "https",
+        hostname: "r2.thesportsdb.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.thesportsdb.com",
       },
     ],
   },

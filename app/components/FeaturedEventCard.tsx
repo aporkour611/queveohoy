@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { useTimezone } from "../lib/timezone-context";
+import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
 
 type Props = {
@@ -25,12 +27,10 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
           card.showUfcDuel ? " qvh-spotlight-visual-ufc-duel" : ""
         }`}
-        style={
-          card.poster && !card.showTeamDuel && !card.showUfcDuel
-            ? { backgroundImage: `url(${card.poster})` }
-            : undefined
-        }
       >
+        {card.poster && !card.showTeamDuel && !card.showUfcDuel ? (
+          <RemotePoster src={card.poster} priority={false} />
+        ) : null}
         <div className="qvh-spotlight-overlay" />
 
         {card.showUfcDuel ? (
@@ -44,25 +44,25 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
         ) : card.showTeamDuel && card.homeCrest && card.awayCrest ? (
           <div className="qvh-spotlight-duel" aria-hidden>
             <div className="qvh-spotlight-duel-team">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={card.homeCrest}
                 alt=""
+                width={48}
+                height={48}
                 className="qvh-spotlight-crest"
                 loading="lazy"
-                decoding="async"
               />
               <span className="qvh-spotlight-duel-name">{card.homeName}</span>
             </div>
             <span className="qvh-spotlight-duel-vs">vs</span>
             <div className="qvh-spotlight-duel-team">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={card.awayCrest}
                 alt=""
+                width={48}
+                height={48}
                 className="qvh-spotlight-crest"
                 loading="lazy"
-                decoding="async"
               />
               <span className="qvh-spotlight-duel-name">{card.awayName}</span>
             </div>

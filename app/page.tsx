@@ -12,7 +12,7 @@ import {
 } from "./lib/seo-jsonld";
 import { pageMetadata, seoKeywords } from "./lib/seo";
 
-export const revalidate = 300;
+export const revalidate = 600;
 
 export async function generateMetadata(): Promise<Metadata> {
   const { events } = await fetchFeedEvents();

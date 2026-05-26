@@ -69,6 +69,9 @@ export function hubLinkForEvent(
   if (event.sport === "ufc") {
     return SEO_HUBS.find((h) => h.slug === "ufc") ?? null;
   }
+  if (event.sport === "csgo" || event.sport === "valorant" || event.sport === "lol") {
+    return SEO_HUBS.find((h) => h.slug === "esports") ?? null;
+  }
   if (event.sport === "series" || event.sport === "cine") {
     return SEO_HUBS.find((h) => h.slug === "series") ?? null;
   }

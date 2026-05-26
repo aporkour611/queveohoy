@@ -13,7 +13,7 @@ import {
 } from "../../../lib/seo-date";
 import { pageMetadata } from "../../../lib/seo";
 
-export const revalidate = 300;
+export const revalidate = 600;
 
 export function generateStaticParams() {
   return getRollingSeoDateKeys().map((fecha) => ({ fecha }));

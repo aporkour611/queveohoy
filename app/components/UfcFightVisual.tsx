@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type Props = {
   f1Url?: string | null;
   f2Url?: string | null;
@@ -29,13 +31,13 @@ export function UfcFightVisual({
     <div className={rootClass} aria-hidden>
       <div className={size === "spotlight" ? "qvh-ufc-fighter" : "fh-ufc-fighter"}>
         {f1Url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={f1Url}
             alt=""
+            width={120}
+            height={120}
             className={imgClass}
             loading="lazy"
-            decoding="async"
           />
         ) : (
           <span className="fh-ufc-fighter-fallback">{initials(f1Name)}</span>
@@ -44,13 +46,13 @@ export function UfcFightVisual({
       <span className={size === "spotlight" ? "qvh-ufc-vs" : "fh-ufc-vs"}>vs</span>
       <div className={size === "spotlight" ? "qvh-ufc-fighter" : "fh-ufc-fighter"}>
         {f2Url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={f2Url}
             alt=""
+            width={120}
+            height={120}
             className={imgClass}
             loading="lazy"
-            decoding="async"
           />
         ) : (
           <span className="fh-ufc-fighter-fallback">{initials(f2Name)}</span>
