@@ -1,6 +1,11 @@
 import type { EventRow } from "../components/types";
 import { parseFootballTeamIds } from "./football";
-import { getMadridWeekDates } from "./madrid-time";
+import { eventPriority } from "./featured";
+import { getMadridWeekDates, toMadridDateKey } from "./madrid-time";
+import {
+  isSpanishTvFlagship,
+  SPANISH_TV_TITLE_PATTERNS,
+} from "./spanish-tv-curated";
 import { isSeasonPremiereEvent } from "./tmdb";
 
 export type DestacadoRule = {
@@ -24,6 +29,9 @@ export const DESTACADOS_SERIES_PATTERNS: RegExp[] = [
   /^FROM\b/i,
   /^Euphoria\b/i,
 ];
+
+const MIN_DESTACADOS = 5;
+const MAX_DESTACADOS = 10;
 
 function matchesRule(event: EventRow, rule: DestacadoRule): boolean {
   if (rule.externalId) {
@@ -66,12 +74,19 @@ function matchesFollowedSeries(event: EventRow): boolean {
   return DESTACADOS_SERIES_PATTERNS.some((pattern) => pattern.test(title));
 }
 
-/** Eventos curados para la franja Destacados (orden = reglas + estrenos + series) */
+function matchesFlagshipTv(event: EventRow): boolean {
+  if (event.sport !== "tv") return false;
+  const blob = `${event.title ?? ""} ${event.competition ?? ""}`;
+  return SPANISH_TV_TITLE_PATTERNS.some((pattern) => pattern.test(blob));
+}
+
+/** Eventos curados para la franja Destacados (orden = reglas + TV + estrenos + autocompletado) */
 export function pickCuratedDestacados(
   events: EventRow[],
   windowDays = 7
 ): EventRow[] {
   const week = new Set(getMadridWeekDates(windowDays));
+  const today = toMadridDateKey(new Date());
   const inWindow = events.filter((e) => e.date && week.has(e.date));
   const picked: EventRow[] = [];
   const seen = new Set<number>();
@@ -87,6 +102,14 @@ export function pickCuratedDestacados(
     if (match) add(match);
   }
 
+  for (const event of inWindow.filter(matchesFlagshipTv)) {
+    add(event);
+  }
+
+  for (const event of inWindow.filter(isSpanishTvFlagship)) {
+    add(event);
+  }
+
   for (const event of inWindow.filter(isSeasonPremiereEvent)) {
     add(event);
   }
@@ -95,8 +118,26 @@ export function pickCuratedDestacados(
     add(event);
   }
 
+  if (picked.length < MIN_DESTACADOS) {
+    const candidates = inWindow
+      .filter((event) => !seen.has(event.id))
+      .sort((a, b) => {
+        const scoreA = eventPriority(a) + (a.date === today ? 20 : 0);
+        const scoreB = eventPriority(b) + (b.date === today ? 20 : 0);
+        return (
+          scoreB - scoreA || (a.time ?? "").localeCompare(b.time ?? "")
+        );
+      });
+
+    for (const event of candidates) {
+      if (picked.length >= MAX_DESTACADOS) break;
+      add(event);
+    }
+  }
+
   return picked.sort(
     (a, b) =>
+      eventPriority(b) - eventPriority(a) ||
       (a.date ?? "").localeCompare(b.date ?? "") ||
       (a.time ?? "").localeCompare(b.time ?? "")
   );

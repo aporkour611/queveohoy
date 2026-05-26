@@ -16,6 +16,9 @@ export function resolveMediaPlatform(channel?: string | null): MediaPlatformStyl
   if (/movistar|m\+/i.test(c)) return { name: "Movistar+", initials: "M+", accent: "movistar" };
   if (/filmin/i.test(c)) return { name: "Filmin", initials: "F", accent: "filmin" };
   if (/apple/i.test(c)) return { name: "Apple TV+", initials: "tv", accent: "apple" };
+  if (/telecinco|mitele/i.test(c)) return { name: "Telecinco", initials: "T5", accent: "default" };
+  if (/rtve|pepetv/i.test(c)) return { name: "RTVE", initials: "R", accent: "default" };
+  if (/antena|atresplayer/i.test(c)) return { name: "Antena 3", initials: "A3", accent: "default" };
 
   return { name: raw, initials: raw.slice(0, 2).toUpperCase(), accent: "default" };
 }
@@ -23,9 +26,10 @@ export function resolveMediaPlatform(channel?: string | null): MediaPlatformStyl
 export type MediaBadgeTone = "release" | "trending" | "heat" | "news";
 
 export function mediaBadgeForEvent(
-  sport: "cine" | "series",
+  sport: "cine" | "series" | "tv",
   isPremiere: boolean
 ): { label: string; tone: MediaBadgeTone } {
+  if (sport === "tv") return { label: "TV", tone: "trending" };
   if (sport === "cine") return { label: "Cine", tone: "heat" };
   if (isPremiere) return { label: "Estreno", tone: "release" };
   return { label: "Serie", tone: "news" };

@@ -43,7 +43,8 @@ export const MediaPosterCard = memo(function MediaPosterCard({
 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const { timeZone } = useTimezone();
-  const sport = event.sport === "cine" ? "cine" : "series";
+  const sport =
+    event.sport === "cine" ? "cine" : event.sport === "tv" ? "tv" : "series";
   const title = event.title?.trim() || "Sin título";
   const posterUrl = parseTmdbPoster(event.source);
   const channels = parseChannels(event.platform);

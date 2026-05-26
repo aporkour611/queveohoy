@@ -1,6 +1,7 @@
 import type { EventRow } from "../components/types";
 import { sportFilterGroupId } from "./filter-config";
 import { eventCanDisplay, filterEventsForDisplay } from "./event-crests";
+import { spanishTvPriorityBonus } from "./spanish-tv-curated";
 import { capTopMediaEvents, parseTmdbBuzzScore } from "./tmdb";
 
 const COMPETITION_PRIORITY: { match: RegExp; score: number }[] = [
@@ -23,7 +24,7 @@ const SPORT_BASE: Record<string, number> = {
   motos: 64,
   cine: 62,
   series: 61,
-  tv: 68,
+  tv: 72,
   tenis: 60,
   basket: 58,
   ciclismo: 55,
@@ -112,6 +113,10 @@ export function eventPriority(e: EventRow): number {
     const buzz = parseTmdbBuzzScore(e.source);
     if (buzz > 0) score += Math.min(50, Math.round(buzz / 8));
   }
+
+  const tvBonus = spanishTvPriorityBonus(e);
+  if (tvBonus > 0) score = Math.max(score, tvBonus);
+
   if ((e as { featured?: boolean }).featured) score += 25;
   if ((e as { popularity?: number }).popularity) {
     score += Math.min(20, (e as { popularity?: number }).popularity ?? 0);

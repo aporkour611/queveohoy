@@ -6,6 +6,7 @@ import { MediaPosterCard } from "./MediaPosterCard";
 type Props = {
   cine: EventRow[];
   series: EventRow[];
+  tv?: EventRow[];
 };
 
 function MediaRail({
@@ -15,7 +16,7 @@ function MediaRail({
   events,
 }: {
   label: string;
-  accent: "cine" | "series";
+  accent: "cine" | "series" | "tv";
   count: number;
   events: EventRow[];
 }) {
@@ -41,11 +42,11 @@ function MediaRail({
   );
 }
 
-export function MediaEntertainmentSection({ cine, series }: Props) {
-  if (cine.length === 0 && series.length === 0) return null;
+export function MediaEntertainmentSection({ cine, series, tv = [] }: Props) {
+  if (cine.length === 0 && series.length === 0 && tv.length === 0) return null;
 
   return (
-    <section className="qvh-media-section" aria-label="Cine y series">
+    <section className="qvh-media-section" aria-label="Entretenimiento">
       <header className="qvh-media-hero">
         <div className="qvh-media-hero-glow" aria-hidden />
         <div className="qvh-media-hero-inner">
@@ -54,12 +55,18 @@ export function MediaEntertainmentSection({ cine, series }: Props) {
             Entretenimiento
           </p>
           <h3 className="qvh-media-hero-title">
-            Cine <span className="qvh-media-hero-amp">&</span> series
+            TV, cine <span className="qvh-media-hero-amp">&</span> series
           </h3>
         </div>
         <div className="qvh-media-hero-rule" aria-hidden />
       </header>
 
+      <MediaRail
+        label="Reality, OT y Eurovisión"
+        accent="tv"
+        count={tv.length}
+        events={tv}
+      />
       <MediaRail
         label="En cines"
         accent="cine"

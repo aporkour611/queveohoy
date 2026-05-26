@@ -14,6 +14,7 @@ import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
 import { Logo } from "./Logo";
 import { RegionTimezoneBar } from "./RegionTimezoneBar";
+import { HomeCalendarHero } from "./HomeCalendarHero";
 import { DestacadosSection } from "./DestacadosSection";
 import { MatchCard } from "./MatchCard";
 import { MediaEntertainmentSection } from "./MediaEntertainmentSection";
@@ -31,6 +32,7 @@ import { resolveDayEventsForFeed } from "../lib/upcoming-events";
 type Props = {
   initialEvents?: EventRow[];
   initialError?: string | null;
+  initialFetchedAt?: string | null;
   children?: ReactNode;
 };
 
@@ -56,6 +58,7 @@ function groupForDisplay(events: EventRow[]) {
     {};
   const cine: EventRow[] = [];
   const series: EventRow[] = [];
+  const tv: EventRow[] = [];
 
   for (const e of events) {
     if (e.sport === "futbol") {
@@ -66,6 +69,8 @@ function groupForDisplay(events: EventRow[]) {
       cine.push(e);
     } else if (e.sport === "series") {
       series.push(e);
+    } else if (e.sport === "tv") {
+      tv.push(e);
     } else {
       const sportId = e.sport ?? "otros";
       if (!bySport[sportId]) {
@@ -79,11 +84,11 @@ function groupForDisplay(events: EventRow[]) {
     }
   }
 
-  return { football, bySport, cine, series };
+  return { football, bySport, cine, series, tv };
 }
 
-function renderMediaBlock(cine: EventRow[], series: EventRow[]) {
-  return <MediaEntertainmentSection cine={cine} series={series} />;
+function renderMediaBlock(cine: EventRow[], series: EventRow[], tv: EventRow[]) {
+  return <MediaEntertainmentSection cine={cine} series={series} tv={tv} />;
 }
 
 function renderEventSections(events: EventRow[]) {
@@ -119,7 +124,7 @@ function renderEventSections(events: EventRow[]) {
         </div>
       ))}
 
-      {renderMediaBlock(sections.cine, sections.series)}
+      {renderMediaBlock(sections.cine, sections.series, sections.tv)}
     </>
   );
 }
@@ -127,6 +132,7 @@ function renderEventSections(events: EventRow[]) {
 export function HomePage({
   initialEvents = [],
   initialError = null,
+  initialFetchedAt = null,
   children,
 }: Props = {}) {
   return (
@@ -135,6 +141,7 @@ export function HomePage({
         <HomePageContent
           initialEvents={initialEvents}
           initialError={initialError}
+          initialFetchedAt={initialFetchedAt}
         >
           {children}
         </HomePageContent>
@@ -146,6 +153,7 @@ export function HomePage({
 function HomePageContent({
   initialEvents = [],
   initialError = null,
+  initialFetchedAt = null,
   children,
 }: Props = {}) {
   const { timeZone } = useTimezone();
@@ -365,6 +373,8 @@ function HomePageContent({
 
       <main className="fh-content">
         <div className="fh-container fh-main">
+          <HomeCalendarHero fetchedAt={initialFetchedAt} />
+
           <EventFilters
             selected={selectedSports}
             onChange={setSelectedSports}

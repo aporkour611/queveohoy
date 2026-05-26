@@ -123,6 +123,11 @@
   box-shadow: 0 0 14px rgba(124, 58, 237, 0.35);
 }
 
+.qvh-media-rail-accent-tv {
+  background: linear-gradient(180deg, #f472b6, #d946ef);
+  box-shadow: 0 0 14px rgba(217, 70, 239, 0.35);
+}
+
 .qvh-media-rail-copy {
   display: flex;
   align-items: baseline;

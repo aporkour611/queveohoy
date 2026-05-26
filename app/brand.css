@@ -454,6 +454,51 @@
   }
 }
 
+/* ── Hero calendario (home) ── */
+.qvh-calendar-hero {
+  margin-bottom: 16px;
+  padding: 4px 2px 0;
+}
+
+.qvh-calendar-hero-kicker {
+  margin: 0 0 6px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--qvh-text-muted);
+}
+
+.qvh-calendar-hero-title {
+  margin: 0 0 8px;
+  font-family: var(--qvh-font-display);
+  font-size: clamp(1.85rem, 6vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--qvh-text);
+}
+
+.qvh-calendar-hero-lead {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--qvh-text-muted);
+  max-width: 36rem;
+}
+
+.qvh-calendar-hero-lead strong {
+  color: var(--qvh-text);
+  font-weight: 600;
+}
+
+.qvh-calendar-hero-updated {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.42);
+}
+
 /* ── Banner consentimiento cookies ── */
 .qvh-cookie-banner {
   position: fixed;

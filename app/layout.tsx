@@ -33,6 +33,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://crests.football-data.org" />
         <link rel="preconnect" href="https://image.tmdb.org" />
+        <link rel="preconnect" href="https://r2.thesportsdb.com" />
       </head>
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
         <CookieConsentRoot>{children}</CookieConsentRoot>

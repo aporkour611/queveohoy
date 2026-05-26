@@ -6,6 +6,25 @@ export type FilterGroup = {
   options: FilterOption[];
 };
 
+export type QuickFilter = {
+  id: string;
+  label: string;
+  sportIds: string[];
+};
+
+/** Filtros rápidos visibles — calendario diario con profundización opcional */
+export const QUICK_FILTERS: QuickFilter[] = [
+  { id: "all", label: "Todo", sportIds: [] },
+  {
+    id: "deportes",
+    label: "Deportes",
+    sportIds: ["futbol", "tenis", "basket", "ciclismo", "ufc"],
+  },
+  { id: "motor", label: "Motor", sportIds: ["formula1", "motos"] },
+  { id: "tv", label: "Televisión", sportIds: ["tv"] },
+  { id: "cine", label: "Cine y series", sportIds: ["cine", "series"] },
+];
+
 export const FILTER_GROUPS: FilterGroup[] = [
   {
     id: "deportes",
@@ -46,7 +65,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
   {
     id: "tv",
     label: "TV",
-    options: [{ id: "tv", label: "Reality y estrenos" }],
+    options: [{ id: "tv", label: "Reality, OT y Eurovisión" }],
   },
 ];
 

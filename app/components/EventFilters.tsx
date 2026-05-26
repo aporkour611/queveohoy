@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FILTER_GROUPS, sportLabel } from "../lib/filter-config";
+import { FILTER_GROUPS, QUICK_FILTERS, sportLabel } from "../lib/filter-config";
 
 type Props = {
   selected: string[];
@@ -35,8 +35,33 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
 
   const summary = filterSummary(selected);
 
+  function isQuickFilterActive(sportIds: string[]): boolean {
+    if (sportIds.length === 0) return selected.length === 0;
+    if (sportIds.length !== selected.length) return false;
+    return sportIds.every((id) => selected.includes(id));
+  }
+
   return (
     <div className={`fh-filters-panel ${open ? "is-open" : ""}`}>
+      <div className="fh-quick-filters" role="group" aria-label="Filtros rápidos">
+        {QUICK_FILTERS.map((quick) => (
+          <button
+            key={quick.id}
+            type="button"
+            className={`fh-quick-filter ${
+              isQuickFilterActive(quick.sportIds) ? "active" : ""
+            }`}
+            aria-pressed={isQuickFilterActive(quick.sportIds)}
+            onClick={() => {
+              onChange(quick.sportIds);
+              setOpen(false);
+            }}
+          >
+            {quick.label}
+          </button>
+        ))}
+      </div>
+
       <button
         type="button"
         className="fh-filters-trigger"
@@ -61,7 +86,7 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
               {isFeaturedMode
                 ? open
                   ? "Elige categorías abajo"
-                  : "Solo lo más importante · pulsa para filtrar más"
+                  : "Calendario con lo más importante · pulsa para afinar"
                 : summary || `${selected.length} seleccionado${selected.length !== 1 ? "s" : ""}`}
             </span>
           </span>
@@ -107,8 +132,8 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
       >
         {isFeaturedMode && (
           <p className="fh-filters-hint">
-            Destacados de hoy por categoría. Abre el desplegable para ver todo
-            un deporte o sección concreta.
+            Calendario con lo esencial. Abre el desplegable solo si quieres
+            filtrar un deporte o sección concreta.
           </p>
         )}
 

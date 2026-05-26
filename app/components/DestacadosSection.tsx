@@ -15,12 +15,15 @@ export function DestacadosSection({ events }: Props) {
   if (featured.length === 0) return null;
 
   return (
-    <section className="qvh-destacados" aria-label="Lo más visto">
+    <section className="qvh-destacados" aria-label="Lo imprescindible">
       <div className="qvh-destacados-head">
         <div className="qvh-destacados-brand">
           <span className="qvh-destacados-dot" aria-hidden />
           <div>
-            <h2 className="qvh-destacados-title">Lo más visto</h2>
+            <h2 className="qvh-destacados-title">Lo imprescindible</h2>
+            <p className="qvh-destacados-sub">
+              Lo más relevante hoy en España — deportes, realities y estrenos
+            </p>
           </div>
         </div>
       </div>

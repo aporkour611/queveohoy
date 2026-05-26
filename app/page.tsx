@@ -1,3 +1,4 @@
+import { HomeEventOutline } from "./components/HomeEventOutline";
 import { HomePage } from "./components/HomePage";
 import { HomeJsonLd } from "./components/HomeJsonLd";
 import { fetchFeedEvents } from "./lib/events-feed-server";
@@ -12,7 +13,13 @@ export default async function Page() {
   return (
     <>
       <HomeJsonLd />
-      <HomePage initialEvents={events} initialError={error} />
+      <HomePage
+        initialEvents={events}
+        initialError={error}
+        initialFetchedAt={new Date().toISOString()}
+      >
+        <HomeEventOutline events={events} />
+      </HomePage>
     </>
   );
 }
