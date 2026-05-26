@@ -1,3 +1,4 @@
+import { isCronAuthorized } from "@/app/lib/admin-auth";
 import { createSupabaseAdmin } from "@/app/lib/supabase-admin";
 import { NextResponse } from "next/server";
 import { defaultChannelsForCompetition } from "@/app/lib/channels";
@@ -449,7 +450,11 @@ async function purgeEventsWithoutCrests(): Promise<{
   return { purged: ids.length };
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isCronAuthorized(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   console.log("=== CRON INICIADO ===");
   console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "OK" : "MISSING");
   console.log("Football key:", process.env.FOOTBALL_DATA_API_KEY ? "OK" : "MISSING");

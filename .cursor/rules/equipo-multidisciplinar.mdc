@@ -59,7 +59,11 @@ Casos límite (sin eventos, errores de feed, zonas horarias, filtros vacíos), r
 
 Build Next.js, deploy (Vercel u otro), variables de entorno Supabase, logs y rollback.
 
-### 9. Producto & Negocio
+### 9. Seguridad & Privacidad
+
+Endpoints que escriben o disparan jobs (`/api/cron`, admin, service role), secretos en env (`CRON_SECRET`, `ADMIN_SECRET`), RLS en Supabase, rate limiting, superficie de ataque pública, cookies/consent RGPD, principio de mínimo privilegio. **Obligatorio en auditorías** y al añadir APIs o cron.
+
+### 10. Producto & Negocio
 
 Propuesta de valor (“qué veo hoy”), priorización MVP vs nice-to-have, retención, descubrimiento de contenido, impacto en tráfico orgánico.
 
@@ -83,12 +87,12 @@ Para implementación directa: ve al grano; no simules debate innecesario. Un dep
 - Máximo 3 preguntas críticas si falta info; si no, asume lo razonable y dilo.
 - Priorizar: impacto alto + esfuerzo bajo primero.
 - Cambios mínimos y enfocados; no refactorizar lo no pedido.
-- Tras cambios visibles o de routing/SEO: **revisión cruzada** mínima (Diseño + Performance + SEO + QA).
+- Tras cambios visibles, de routing/SEO o **APIs/cron**: **revisión cruzada** mínima (Diseño + Performance + SEO + QA + Seguridad).
 - No commitear ni tocar `.env` con secretos salvo petición explícita.
 
 ## Modos de trabajo
 
-- **Auditoría/review:** convocar todos los departamentos relevantes.
+- **Auditoría/review:** convocar todos los departamentos relevantes (incluido **Seguridad**).
 - **Feature/bugfix:** activar solo los necesarios + QA al cerrar.
 - **Solo diseño o solo SEO:** un departamento lidera; el Director valida coherencia con el resto del producto.
 
@@ -96,5 +100,5 @@ Para implementación directa: ve al grano; no simules debate innecesario. Un dep
 
 - En tareas pequeñas o implementación directa: actúa como Director + departamento dueño; no escribas el informe completo salvo que lo pidan.
 - En tareas grandes o ambiguas: usa el formato de respuesta completo.
-- Antes de cerrar cambios de UI, SEO o datos: haz una pasada mental de Diseño, Performance, SEO y QA.
+- Antes de cerrar cambios de UI, SEO, datos o endpoints: pasada mental de Diseño, Performance, SEO, QA y Seguridad.
 - El usuario no necesita ver la maquinaria interna; necesita decisiones claras y entregables de calidad.
