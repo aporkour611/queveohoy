@@ -1,5 +1,18 @@
 import type { NextConfig } from "next";
 
+const hubSlugs = [
+  "partidos-hoy",
+  "futbol",
+  "champions",
+  "laliga",
+  "premier-league",
+  "formula-1",
+  "motogp",
+  "ufc",
+  "baloncesto",
+  "series",
+];
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -12,6 +25,27 @@ const nextConfig: NextConfig = {
         hostname: "cdn.pandascore.co",
       },
     ],
+  },
+  async rewrites() {
+    return {
+      beforeFiles: hubSlugs.map((slug) => ({
+        source: `/${slug}`,
+        destination: `/agenda/${slug}`,
+      })),
+    };
+  },
+  async headers() {
+    return [
+      {
+        source: "/",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, must-revalidate",
+          },
+        ],
+      },
+    ];
   },
 };
 
