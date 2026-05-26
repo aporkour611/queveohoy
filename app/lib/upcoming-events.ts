@@ -91,7 +91,7 @@ export function resolveDayEventsForFeed(
   const dayEvents = filterEventsForDisplay(allEvents).filter((e) => e.date === date);
 
   if (isFeaturedMode) {
-    return pickFeaturedEvents(dayEvents);
+    return pickFilteredEvents(dayEvents);
   }
 
   return pickFilteredEvents(

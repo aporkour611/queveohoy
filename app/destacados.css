@@ -1,7 +1,7 @@
 /* ── Destacados (spotlight cards) ── */
 .qvh-destacados {
-  margin: 0 0 20px;
-  padding: 16px 0 4px;
+  margin: 0 0 16px;
+  padding: 0 0 16px;
   border-bottom: 1px solid var(--qvh-border);
 }
 
@@ -87,6 +87,61 @@
   background: linear-gradient(135deg, #2a2460 0%, #5d5fef 55%, #1a1840 100%);
 }
 
+.qvh-spotlight-visual-champions {
+  background: linear-gradient(135deg, #0a0a2e 0%, #1a1060 40%, #050518 100%);
+}
+
+.qvh-spotlight-duel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px 12px 36px;
+}
+
+.qvh-spotlight-duel-team {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.qvh-spotlight-crest {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+}
+
+.qvh-spotlight-duel-name {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  text-align: center;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qvh-spotlight-duel-vs {
+  flex-shrink: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  padding-bottom: 18px;
+}
+
 .qvh-spotlight-visual-motor {
   background: linear-gradient(135deg, #053a3a 0%, #0d9488 55%, #042424 100%);
 }
@@ -140,6 +195,12 @@
 .qvh-spotlight-badge-futbol {
   background: rgba(93, 95, 239, 0.82);
   border-color: rgba(160, 162, 255, 0.35);
+}
+
+.qvh-spotlight-badge-champions {
+  background: rgba(201, 162, 39, 0.92);
+  border-color: rgba(255, 230, 150, 0.45);
+  color: #1a1028;
 }
 
 .qvh-spotlight-badge-motor {
@@ -217,6 +278,12 @@
   color: #fff;
   background: rgba(93, 95, 239, 0.22);
   border: 1px solid rgba(93, 95, 239, 0.35);
+}
+
+.qvh-spotlight-platform-champions {
+  background: rgba(201, 162, 39, 0.18);
+  border-color: rgba(201, 162, 39, 0.45);
+  color: #f5e6a8;
 }
 
 @media (min-width: 768px) {

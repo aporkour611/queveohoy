@@ -1,6 +1,11 @@
 import { sportLabel } from "./filter-config";
 import { parseChannels } from "./channels";
 import { displayTime } from "./madrid-time";
+import {
+  parseFootballTeamIds,
+  shortTeamName,
+  teamCrestUrl,
+} from "./football";
 import { parseTmdbPoster } from "./tmdb";
 import {
   formatEventDateLabel,
@@ -16,6 +21,7 @@ export type SpotlightBadgeVariant =
   | "fight-night"
   | "ufc"
   | "futbol"
+  | "champions"
   | "motor"
   | "esports"
   | "media"
@@ -31,6 +37,11 @@ export type SpotlightCardModel = {
   platform: string;
   poster?: string;
   visualClass?: string;
+  homeCrest?: string;
+  awayCrest?: string;
+  homeName?: string;
+  awayName?: string;
+  showTeamDuel?: boolean;
 };
 
 function teamTitle(event: EventRow): string | null {
@@ -103,15 +114,33 @@ export function getSpotlightCardModel(event: EventRow): SpotlightCardModel {
   }
 
   if (sport === "futbol") {
+    const ids = parseFootballTeamIds(
+      event.external_id,
+      event.source,
+      event.home_team,
+      event.away_team
+    );
+    const homeName = shortTeamName(event.home_team);
+    const awayName = shortTeamName(event.away_team);
+    const competition = event.competition?.split(" · ")[0]?.trim() || "Fútbol";
+    const isChampions = /champions/i.test(event.competition ?? "");
+
     return {
       headline: teamTitle(event) || event.title?.trim() || "Partido",
-      badge: event.competition?.split(" · ")[0]?.trim() || "Fútbol",
-      badgeVariant: "futbol",
+      badge: competition,
+      badgeVariant: isChampions ? "champions" : "futbol",
       dateLabel,
       time,
-      meta: channels || event.competition?.trim() || "Fútbol",
+      meta: channels || competition,
       platform: event.platform?.trim() || channels || "TV",
-      visualClass: "qvh-spotlight-visual-futbol",
+      visualClass: isChampions
+        ? "qvh-spotlight-visual-champions"
+        : "qvh-spotlight-visual-futbol",
+      homeCrest: ids ? teamCrestUrl(ids.homeId) : undefined,
+      awayCrest: ids ? teamCrestUrl(ids.awayId) : undefined,
+      homeName,
+      awayName,
+      showTeamDuel: Boolean(ids),
     };
   }
 

@@ -15,12 +15,29 @@ export function FeaturedEventCard({ event, className }: Props) {
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}`}
         style={
-          card.poster
+          card.poster && !card.showTeamDuel
             ? { backgroundImage: `url(${card.poster})` }
             : undefined
         }
       >
         <div className="qvh-spotlight-overlay" />
+
+        {card.showTeamDuel && card.homeCrest && card.awayCrest ? (
+          <div className="qvh-spotlight-duel" aria-hidden>
+            <div className="qvh-spotlight-duel-team">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={card.homeCrest} alt="" className="qvh-spotlight-crest" />
+              <span className="qvh-spotlight-duel-name">{card.homeName}</span>
+            </div>
+            <span className="qvh-spotlight-duel-vs">vs</span>
+            <div className="qvh-spotlight-duel-team">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={card.awayCrest} alt="" className="qvh-spotlight-crest" />
+              <span className="qvh-spotlight-duel-name">{card.awayName}</span>
+            </div>
+          </div>
+        ) : null}
+
         <span
           className={`qvh-spotlight-badge qvh-spotlight-badge-${card.badgeVariant}`}
         >
@@ -36,7 +53,15 @@ export function FeaturedEventCard({ event, className }: Props) {
         <h3 className="qvh-spotlight-headline">{card.headline}</h3>
         {card.meta ? <p className="qvh-spotlight-meta">{card.meta}</p> : null}
         {card.platform ? (
-          <p className="qvh-spotlight-platform">{card.platform}</p>
+          <p
+            className={`qvh-spotlight-platform ${
+              card.badgeVariant === "champions"
+                ? "qvh-spotlight-platform-champions"
+                : ""
+            }`}
+          >
+            {card.platform}
+          </p>
         ) : null}
       </div>
     </article>

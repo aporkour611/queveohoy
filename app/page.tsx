@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { dedupeEvents } from "./lib/dedupe-events";
 import { filterEventsForDisplay } from "./lib/event-crests";
-import { LEGEND_ITEMS, STORAGE_KEY, sportLabel } from "./lib/filter-config";
+import { LEGEND_ITEMS, STORAGE_KEY, sportLabel, ALL_SPORT_IDS } from "./lib/filter-config";
 import { DayTabs } from "./components/DayTabs";
 import { EventFilters } from "./components/EventFilters";
 import { LoadingState } from "./components/LoadingState";
@@ -151,7 +151,14 @@ export default function Home() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) setSelectedSports(parsed);
+        if (Array.isArray(parsed)) {
+          setSelectedSports(
+            parsed.filter(
+              (id): id is string =>
+                typeof id === "string" && ALL_SPORT_IDS.includes(id)
+            )
+          );
+        }
       }
     } catch {}
     void loadEvents();
@@ -218,7 +225,7 @@ export default function Home() {
   }, [loadEvents, lockScrollSpy]);
 
   useEffect(() => {
-    if (loading || visibleDays.length === 0 || isFeaturedMode) return;
+    if (loading || visibleDays.length === 0) return;
 
     const sections = visibleDays
       .map((d) => document.getElementById(`day-${d.date}`))
@@ -270,10 +277,7 @@ export default function Home() {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [loading, visibleDays, isFeaturedMode]);
-
-  const activeFeaturedDate =
-    visibleDays[activeDay]?.date ?? ALL_DAYS[0]?.date ?? "";
+  }, [loading, visibleDays]);
 
   return (
     <div className="fh-body">
@@ -305,15 +309,13 @@ export default function Home() {
             isFeaturedMode={isFeaturedMode}
           />
 
+          {isFeaturedMode && <DestacadosSection events={events} />}
+
           <DayTabs
             days={visibleDays}
             activeIndex={activeDay}
             onChange={goToDay}
           />
-
-          {isFeaturedMode && activeFeaturedDate && (
-            <DestacadosSection events={events} date={activeFeaturedDate} />
-          )}
 
           {refreshing && !loading && (
             <p className="fh-feed-refresh" aria-live="polite">
@@ -343,11 +345,11 @@ export default function Home() {
             <div className="fh-empty">
               <p>
                 {isFeaturedMode
-                  ? "No hay destacados en los próximos 7 días."
+                  ? "No hay eventos en los próximos 7 días."
                   : "No hay eventos para los filtros seleccionados en los próximos 7 días."}
               </p>
             </div>
-          ) : isFeaturedMode ? null : (
+          ) : (
             <div className="fh-day-feed">
               {visibleDays.map((section, i) => (
                 <section
@@ -362,6 +364,9 @@ export default function Home() {
                   >
                     {section.title}{" "}
                     <span className="fh-md-count">({section.events.length})</span>
+                    {isFeaturedMode && i === activeDay && (
+                      <span className="fh-featured-badge">Destacados</span>
+                    )}
                   </h2>
 
                   {renderEventSections(section.events)}
