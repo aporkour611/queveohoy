@@ -95,12 +95,16 @@
   display: block;
 }
 
-.qvh-wm-muted {
-  color: var(--qvh-muted-text);
+.qvh-wm-q {
+  color: var(--qvh-purple);
 }
 
-.qvh-wm-accent {
-  color: var(--qvh-purple);
+.qvh-wm-v {
+  color: #d4845a;
+}
+
+.qvh-wm-h {
+  color: #3aab6e;
 }
 
 @media (min-width: 480px) {

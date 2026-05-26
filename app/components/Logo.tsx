@@ -28,9 +28,9 @@ export function Logo({ variant = "header" }: Props) {
       </span>
       <span className="qvh-logo-divider" aria-hidden />
       <span className="qvh-logo-wordmark">
-        <span className="qvh-wm qvh-wm-muted">que</span>
-        <span className="qvh-wm qvh-wm-accent">veo</span>
-        <span className="qvh-wm qvh-wm-muted">hoy</span>
+        <span className="qvh-wm qvh-wm-q">que</span>
+        <span className="qvh-wm qvh-wm-v">veo</span>
+        <span className="qvh-wm qvh-wm-h">hoy</span>
       </span>
     </Link>
   );
