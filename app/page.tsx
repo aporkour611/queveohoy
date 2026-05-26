@@ -15,10 +15,12 @@ import { competitionAccentClass, sportAccentClass } from "./lib/sport-accent";
 import {
   formatMadridMonthShort,
   formatMadridWeekday,
+  formatUpcomingBadge,
   getMadridWeekDates,
   madridDayNumber,
   madridDayTitle,
 } from "./lib/madrid-time";
+import { resolveVisibleEvents } from "./lib/upcoming-events";
 
 const DAYS = getMadridWeekDates(10).map((date, i) => {
   const weekday = formatMadridWeekday(date, "short");
@@ -107,12 +109,35 @@ export default function Home() {
     [events, activeDay]
   );
 
-  const visibleEvents = useMemo(() => {
-    if (isFeaturedMode) {
-      return pickFeaturedEvents(dayEvents);
-    }
-    return dayEvents.filter((e) => selectedSports.includes(e.sport ?? ""));
-  }, [dayEvents, isFeaturedMode, selectedSports]);
+  const todayDate = DAYS[0].date;
+  const selectedDate = DAYS[activeDay].date;
+
+  const { events: visibleEvents, isUpcoming, message: upcomingMessage } =
+    useMemo(
+      () =>
+        resolveVisibleEvents(
+          events,
+          dayEvents,
+          selectedDate,
+          todayDate,
+          selectedSports,
+          isFeaturedMode,
+          pickFeaturedEvents
+        ),
+      [
+        events,
+        dayEvents,
+        selectedDate,
+        todayDate,
+        selectedSports,
+        isFeaturedMode,
+      ]
+    );
+
+  const upcomingBadgeFor = (eventDate: string | null | undefined) =>
+    isUpcoming && eventDate
+      ? formatUpcomingBadge(eventDate, selectedDate, todayDate)
+      : null;
 
   const sections = useMemo(
     () => groupForDisplay(visibleEvents),
@@ -207,6 +232,9 @@ export default function Home() {
               </div>
             ) : (
               <>
+                {upcomingMessage && (
+                  <p className="fh-upcoming-notice">{upcomingMessage}</p>
+                )}
                 {Object.entries(sections.football).map(([comp, evs]) => (
                   <div key={comp} className="fh-section-block">
                     <div
@@ -217,7 +245,11 @@ export default function Home() {
                     </div>
                     <div className="fh-match-grid">
                       {evs.map((e) => (
-                        <MatchCard key={e.id} event={e} />
+                        <MatchCard
+                          key={e.id}
+                          event={e}
+                          upcomingBadge={upcomingBadgeFor(e.date)}
+                        />
                       ))}
                     </div>
                   </div>
@@ -233,7 +265,11 @@ export default function Home() {
                     </div>
                     <div className="fh-match-grid">
                       {evs.map((e) => (
-                        <MatchCard key={e.id} event={e} />
+                        <MatchCard
+                          key={e.id}
+                          event={e}
+                          upcomingBadge={upcomingBadgeFor(e.date)}
+                        />
                       ))}
                     </div>
                   </div>

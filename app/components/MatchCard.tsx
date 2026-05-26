@@ -7,8 +7,18 @@ import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
 import type { EventRow } from "./types";
 
-export function MatchCard({ event }: { event: EventRow }) {
-  const ids = parseFootballTeamIds(event.external_id, event.source);
+type Props = {
+  event: EventRow;
+  upcomingBadge?: string | null;
+};
+
+export function MatchCard({ event, upcomingBadge }: Props) {
+  const ids = parseFootballTeamIds(
+    event.external_id,
+    event.source,
+    event.home_team,
+    event.away_team
+  );
   const homeCrest = ids ? teamCrestUrl(ids.homeId) : null;
   const awayCrest = ids ? teamCrestUrl(ids.awayId) : null;
 
@@ -27,6 +37,12 @@ export function MatchCard({ event }: { event: EventRow }) {
     <div className="fh-cardcol">
       <div className={`fh-match ${matchClass}`}>
         <div className="fh-m-comp" />
+
+        {upcomingBadge && (
+          <div className="fh-m-upcoming">
+            <span>{upcomingBadge}</span>
+          </div>
+        )}
 
         {isFinal && (
           <div className="fh-m-phase">
