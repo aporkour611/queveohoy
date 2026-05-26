@@ -1,28 +1,30 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { HomePageSkeleton } from "./HomePageSkeleton";
+
+function HomeLoading() {
+  return (
+    <div className="fh-body">
+      <main className="fh-content">
+        <div className="fh-container fh-main">
+          <div className="fh-empty fh-loading" style={{ minHeight: "40vh" }}>
+            <div className="qvh-spinner" aria-hidden />
+            <p>Cargando agenda…</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
 
 const HomePage = dynamic(
   () => import("./HomePage").then((mod) => mod.HomePage),
   {
     ssr: false,
-    loading: () => <HomePageSkeleton />,
+    loading: HomeLoading,
   }
 );
 
-type Props = {
-  pageTitle: string;
-  pageLead: string;
-};
-
-export function HomePageClient({ pageTitle, pageLead }: Props) {
-  return (
-    <HomePage
-      initialEvents={[]}
-      initialError={null}
-      pageTitle={pageTitle}
-      pageLead={pageLead}
-    />
-  );
+export function HomePageClient() {
+  return <HomePage />;
 }

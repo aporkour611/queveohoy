@@ -27,13 +27,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Page() {
-  const pageTitle = buildHomeMetadataTitle();
-  const pageLead = defaultDescription;
-
   return (
     <>
       <HomeJsonLd events={[]} />
-      <HomePageClient pageTitle={pageTitle} pageLead={pageLead} />
+      <HomePageClient />
     </>
   );
 }

@@ -32,8 +32,8 @@ import {
 import { resolveDayEventsForFeed } from "../lib/upcoming-events";
 
 type Props = {
-  initialEvents: EventRow[];
-  initialError: string | null;
+  initialEvents?: EventRow[];
+  initialError?: string | null;
   pageTitle?: string;
   pageLead?: string;
   children?: ReactNode;
@@ -102,12 +102,12 @@ function renderEventSections(events: EventRow[]) {
 }
 
 export function HomePage({
-  initialEvents,
-  initialError,
+  initialEvents = [],
+  initialError = null,
   pageTitle,
   pageLead,
   children,
-}: Props) {
+}: Props = {}) {
   return (
     <TimezoneProvider>
       <FavoritesProvider>
@@ -125,12 +125,12 @@ export function HomePage({
 }
 
 function HomePageContent({
-  initialEvents,
-  initialError,
+  initialEvents = [],
+  initialError = null,
   pageTitle = "Qué ver hoy en TV y streaming",
   pageLead = "Partidos, Champions, LaLiga, F1, UFC, baloncesto, series y más con horario y canal en España.",
   children,
-}: Props) {
+}: Props = {}) {
   const { timeZone } = useTimezone();
   const [events, setEvents] = useState(initialEvents);
   const [loading, setLoading] = useState(false);
