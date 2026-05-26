@@ -15,6 +15,7 @@ function siteOrigin() {
 
 function authErrorMessage(message: string): string {
   const lower = message.toLowerCase();
+
   if (lower.includes("invalid login credentials")) {
     return "Correo o contraseña incorrectos.";
   }
@@ -27,7 +28,24 @@ function authErrorMessage(message: string): string {
   if (lower.includes("unable to validate email")) {
     return "Introduce un correo válido.";
   }
-  return "No se pudo completar la operación. Inténtalo de nuevo.";
+  if (lower.includes("database error saving new user")) {
+    return "Error al crear la cuenta en la base de datos. Falta ejecutar la migración de perfiles en Supabase.";
+  }
+  if (
+    lower.includes("error sending confirmation email") ||
+    lower.includes("over_email_send_rate_limit") ||
+    lower.includes("email rate limit")
+  ) {
+    return "No se pudo enviar el correo de confirmación. Espera unos minutos e inténtalo de nuevo.";
+  }
+  if (lower.includes("signup") && lower.includes("disabled")) {
+    return "El registro está desactivado en este momento.";
+  }
+  if (lower.includes("redirect") && lower.includes("url")) {
+    return "Configuración de registro incorrecta (URL de retorno). Revisa Supabase → Authentication → URL Configuration.";
+  }
+
+  return `No se pudo completar la operación. (${message})`;
 }
 
 export async function signInAction(
@@ -42,11 +60,20 @@ export async function signInAction(
     return { error: "Introduce correo y contraseña." };
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) {
-    return { error: authErrorMessage(error.message) };
+    if (error) {
+      return { error: authErrorMessage(error.message) };
+    }
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? authErrorMessage(error.message)
+          : "No se pudo iniciar sesión.",
+    };
   }
 
   redirect(nextPath.startsWith("/") ? nextPath : "/cuenta");
@@ -71,37 +98,51 @@ export async function signUpAction(
     return { error: "Las contraseñas no coinciden." };
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        display_name: displayName || email.split("@")[0],
+  let redirectTo: string | null = null;
+
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: displayName || email.split("@")[0],
+        },
+        emailRedirectTo: `${siteOrigin()}/auth/callback?next=/cuenta`,
       },
-      emailRedirectTo: `${siteOrigin()}/auth/callback?next=/cuenta`,
-    },
-  });
+    });
 
-  if (error) {
-    return { error: authErrorMessage(error.message) };
+    if (error) {
+      return { error: authErrorMessage(error.message) };
+    }
+
+    const display = displayName || email.split("@")[0];
+    void notifyAdminNewSignup({
+      email,
+      displayName: display,
+      confirmedImmediately: Boolean(data.session),
+    });
+
+    if (data.session) {
+      redirectTo = "/cuenta";
+    } else {
+      return {
+        success:
+          "Cuenta creada. Revisa tu correo para confirmar el registro e inicia sesión.",
+      };
+    }
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? authErrorMessage(error.message)
+          : "No se pudo crear la cuenta.",
+    };
   }
 
-  const display = displayName || email.split("@")[0];
-  void notifyAdminNewSignup({
-    email,
-    displayName: display,
-    confirmedImmediately: Boolean(data.session),
-  });
-
-  if (data.session) {
-    redirect("/cuenta");
-  }
-
-  return {
-    success:
-      "Cuenta creada. Revisa tu correo para confirmar el registro e inicia sesión.",
-  };
+  if (redirectTo) redirect(redirectTo);
+  return { error: "No se pudo crear la cuenta." };
 }
 
 export async function signOutAction() {
