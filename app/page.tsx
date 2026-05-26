@@ -135,7 +135,6 @@ export default function Home() {
       <div className="fh-content">
         <section className="qvh-hero">
           <div className="fh-container">
-            <p className="qvh-hero-kicker">Horario Madrid · 1-2 semanas vista</p>
             <h1 className="qvh-hero-title">
               Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
             </h1>
