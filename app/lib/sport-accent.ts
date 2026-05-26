@@ -1,7 +1,9 @@
 export function sportAccentClass(sportId?: string | null): string {
   switch (sportId) {
     case "tenis":
-      return "fh-comp-orange";
+    case "basket":
+    case "ciclismo":
+      return "fh-comp-purple";
     case "formula1":
     case "motos":
       return "fh-comp-blue";
@@ -14,9 +16,6 @@ export function sportAccentClass(sportId?: string | null): string {
     case "valorant":
     case "lol":
       return "fh-comp-green";
-    case "basket":
-    case "ciclismo":
-      return "fh-comp-purple";
     default:
       return "fh-comp-purple";
   }

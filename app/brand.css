@@ -127,15 +127,11 @@
 }
 
 .fh-filter-chip[data-sport="futbol"].active,
+.fh-filter-chip[data-sport="tenis"].active,
 .fh-filter-chip[data-sport="basket"].active,
 .fh-filter-chip[data-sport="ciclismo"].active {
   background: var(--qvh-purple);
   border-color: var(--qvh-purple);
-}
-
-.fh-filter-chip[data-sport="tenis"].active {
-  background: var(--qvh-orange);
-  border-color: var(--qvh-orange);
 }
 
 .fh-filter-chip[data-sport="formula1"].active,
@@ -341,10 +337,6 @@
   font-weight: 600;
   color: #fff;
   background: var(--qvh-purple);
-}
-
-.fh-active-pill[data-sport="tenis"] {
-  background: var(--qvh-orange);
 }
 
 .fh-active-pill[data-sport="formula1"],
