@@ -1,7 +1,14 @@
 import { createSupabaseAdmin } from "@/app/lib/supabase-admin";
 import { NextResponse } from "next/server";
 import { defaultChannelsForCompetition } from "@/app/lib/channels";
+import {
+  needsCrestEnrichment,
+  prepareEventsForImport,
+  shouldPurgeEvent,
+} from "@/app/lib/cron-events";
 import { dedupeEvents, findDuplicateIdsToRemove } from "@/app/lib/dedupe-events";
+import { eventHasTeamCrests } from "@/app/lib/event-crests";
+import { enrichEventCrests } from "@/app/lib/event-enrich";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
 import {
   ergastToMadrid,
@@ -79,10 +86,11 @@ async function fetchFootball() {
   }
 
   const unique = dedupeEvents(events);
-  const upsertError = await upsertEvents(unique);
+  const prepared = await prepareEventsForImport(unique);
+  const upsertError = await upsertEvents(prepared);
   if (upsertError) errors.push(`upsert: ${upsertError}`);
-  console.log(`Football: ${unique.length} eventos`);
-  return { count: unique.length, dateFrom, dateTo, errors };
+  console.log(`Football: ${prepared.length}/${unique.length} eventos`);
+  return { count: prepared.length, dateFrom, dateTo, errors };
 }
 
 async function fetchF1() {
@@ -182,8 +190,9 @@ async function fetchEsports() {
   }
 
   const unique = dedupeEvents(events);
-  await upsertEvents(unique);
-  console.log(`E-Sports: ${unique.length} eventos`);
+  const prepared = await prepareEventsForImport(unique);
+  await upsertEvents(prepared);
+  console.log(`E-Sports: ${prepared.length}/${unique.length} eventos`);
 }
 
 async function removeDuplicateRows() {
@@ -204,6 +213,66 @@ async function removeDuplicateRows() {
 
   console.log(`Duplicados eliminados: ${ids.length}`);
   return { removed: ids.length };
+}
+
+async function enrichImportantEventsMissingCrests(): Promise<{
+  enriched: number;
+  error?: string;
+}> {
+  const { data, error } = await getSupabase().from("events").select("*");
+  if (error || !data?.length) {
+    return { enriched: 0, error: error?.message };
+  }
+
+  let enriched = 0;
+  for (const row of data) {
+    if (!needsCrestEnrichment(row)) continue;
+
+    const updated = await enrichEventCrests(row, 3);
+    if (!updated || !eventHasTeamCrests(updated)) continue;
+
+    const { error: upError } = await getSupabase()
+      .from("events")
+      .update({
+        home_team: updated.home_team,
+        away_team: updated.away_team,
+        source: updated.source,
+      })
+      .eq("id", row.id);
+
+    if (!upError) {
+      enriched++;
+      console.log(`Escudos recuperados: ${updated.title}`);
+    }
+  }
+
+  return { enriched };
+}
+
+async function purgeEventsWithoutCrests(): Promise<{
+  purged: number;
+  error?: string;
+}> {
+  const { data, error } = await getSupabase().from("events").select("*");
+  if (error || !data?.length) {
+    return { purged: 0, error: error?.message };
+  }
+
+  const ids = data.filter(shouldPurgeEvent).map((e) => e.id);
+  if (!ids.length) return { purged: 0 };
+
+  const { error: delError } = await getSupabase()
+    .from("events")
+    .delete()
+    .in("id", ids);
+
+  if (delError) {
+    console.error("Purge error:", delError);
+    return { purged: 0, error: delError.message };
+  }
+
+  console.log(`Eventos sin escudo descartados: ${ids.length}`);
+  return { purged: ids.length };
 }
 
 export async function GET() {
@@ -229,6 +298,22 @@ export async function GET() {
     console.error("✗ Esports error:", e);
   }
 
+  let enrich: { enriched: number; error?: string } = { enriched: 0 };
+  try {
+    enrich = await enrichImportantEventsMissingCrests();
+    console.log("✓ Crest enrich done");
+  } catch (e) {
+    console.error("✗ Crest enrich error:", e);
+  }
+
+  let purge: { purged: number; error?: string } = { purged: 0 };
+  try {
+    purge = await purgeEventsWithoutCrests();
+    console.log("✓ Crest purge done");
+  } catch (e) {
+    console.error("✗ Crest purge error:", e);
+  }
+
   let dedupe: { removed: number; error?: string } = { removed: 0 };
   try {
     dedupe = await removeDuplicateRows();
@@ -243,6 +328,10 @@ export async function GET() {
     ok: true,
     timestamp: new Date().toISOString(),
     football,
+    crestsEnriched: enrich.enriched,
+    crestEnrichError: enrich.error,
+    crestsPurged: purge.purged,
+    crestPurgeError: purge.error,
     duplicatesRemoved: dedupe.removed,
     dedupeError: dedupe.error,
     hint:

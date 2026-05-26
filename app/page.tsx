@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { dedupeEvents } from "./lib/dedupe-events";
+import { filterEventsWithCrests } from "./lib/event-crests";
 import { LEGEND_ITEMS, STORAGE_KEY, sportLabel } from "./lib/filter-config";
 import { DayTabs } from "./components/DayTabs";
 import { EventFilters } from "./components/EventFilters";
@@ -146,7 +147,7 @@ export default function Home() {
       setLoadError(error.message);
       setEvents([]);
     } else {
-      setEvents(dedupeEvents(data || []) as EventRow[]);
+      setEvents(filterEventsWithCrests(dedupeEvents(data || []) as EventRow[]));
     }
     setLoading(false);
   }

@@ -1,6 +1,6 @@
 import type { EventRow } from "../components/types";
 import { sportFilterGroupId } from "./filter-config";
-import { eventHasTeamCrests } from "./event-crests";
+import { eventHasTeamCrests, filterEventsWithCrests } from "./event-crests";
 
 const COMPETITION_PRIORITY: { match: RegExp; score: number }[] = [
   { match: /champions|mundial|world cup/i, score: 100 },
@@ -43,6 +43,13 @@ export const FEATURED_CATEGORY_ORDER = [
 
 /** Cuántos eventos destacados por categoría en la home sin filtros */
 export const FEATURED_PER_CATEGORY = 1;
+
+/** Umbral para considerar un evento "importante" (reintento de escudos en cron) */
+export const IMPORTANT_EVENT_MIN_SCORE = 75;
+
+export function isImportantEvent(e: EventRow): boolean {
+  return eventPriority(e) >= IMPORTANT_EVENT_MIN_SCORE;
+}
 
 export function eventPriority(e: EventRow): number {
   let score = SPORT_BASE[e.sport ?? ""] ?? 40;
@@ -111,9 +118,9 @@ export function pickFeaturedEvents(dayEvents: EventRow[]): EventRow[] {
   return pickTopPerCategory(dayEvents, true);
 }
 
-/** Al filtrar: todo el día/categoría, también sin escudo o menor importancia */
+/** Al filtrar: solo eventos con escudo en deportes de equipo */
 export function pickFilteredEvents(events: EventRow[]): EventRow[] {
-  return [...events].sort(
+  return filterEventsWithCrests(events).sort(
     (a, b) =>
       eventPriority(b) - eventPriority(a) ||
       (a.time ?? "").localeCompare(b.time ?? "")

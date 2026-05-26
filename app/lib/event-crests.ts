@@ -11,6 +11,10 @@ const TEAM_CREST_SPORTS = new Set([
   "dota2",
 ]);
 
+export function isTeamCrestSport(sport?: string | null): boolean {
+  return !!sport && TEAM_CREST_SPORTS.has(sport);
+}
+
 /** Partidos con dos equipos: exigen escudo/logo en ambos lados */
 export function eventHasTeamCrests(e: EventRow): boolean {
   const sport = e.sport ?? "";
@@ -34,4 +38,9 @@ export function eventHasTeamCrests(e: EventRow): boolean {
   }
 
   return true;
+}
+
+/** Oculta partidos de equipo sin escudos/logos en toda la app */
+export function filterEventsWithCrests<T extends EventRow>(events: T[]): T[] {
+  return events.filter(eventHasTeamCrests);
 }

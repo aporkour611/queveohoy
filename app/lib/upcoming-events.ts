@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import { filterEventsWithCrests } from "./event-crests";
 import {
   pickFeaturedEvents,
   pickFilteredEvents,
@@ -20,8 +21,11 @@ export function resolveVisibleEvents(
   selectedSports: string[],
   isFeaturedMode: boolean
 ): UpcomingResult {
+  const crestedAll = filterEventsWithCrests(allEvents);
+  const crestedDay = filterEventsWithCrests(dayEvents);
+
   if (isFeaturedMode) {
-    const featuredToday = pickFeaturedEvents(dayEvents);
+    const featuredToday = pickFeaturedEvents(crestedDay);
     if (featuredToday.length > 0) {
       return {
         events: featuredToday,
@@ -30,7 +34,7 @@ export function resolveVisibleEvents(
       };
     }
 
-    const upcomingFeatured = pickUpcomingFeaturedEvents(allEvents, selectedDate);
+    const upcomingFeatured = pickUpcomingFeaturedEvents(crestedAll, selectedDate);
     if (upcomingFeatured.length === 0) {
       return { events: [], isUpcoming: false, message: null };
     }
@@ -46,7 +50,7 @@ export function resolveVisibleEvents(
   }
 
   const forDay = pickFilteredEvents(
-    dayEvents.filter((e) => selectedSports.includes(e.sport ?? ""))
+    crestedDay.filter((e) => selectedSports.includes(e.sport ?? ""))
   );
 
   if (forDay.length > 0) {
@@ -54,7 +58,7 @@ export function resolveVisibleEvents(
   }
 
   const upcoming = pickUpcomingFilteredEvents(
-    allEvents.filter(
+    crestedAll.filter(
       (e) =>
         selectedSports.includes(e.sport ?? "") &&
         e.date &&
