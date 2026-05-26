@@ -461,29 +461,114 @@
   background-color: #a00303;
 }
 
-.fh-sub-filters {
+/* ── Filtros de contenido ── */
+.fh-filters-panel {
+  background: #fff;
+  border: 1px solid #bfbfbf;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.fh-filters-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.fh-filters-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.15em;
+  font-weight: 700;
+  color: #252a33;
+}
+
+.fh-filters-clear {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.9em;
+  padding: 4px 12px;
+  border: 1px solid #bf0404;
+  background: #fff;
+  color: #bf0404;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.fh-filters-clear:hover {
+  background: #f6d8d9;
+}
+
+.fh-filters-hint {
+  font-size: 0.85em;
+  color: #666;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.fh-filter-group {
+  margin-bottom: 10px;
+}
+
+.fh-filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.fh-filter-group-label {
+  display: block;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.85em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8d8e90;
+  margin-bottom: 6px;
+}
+
+.fh-filter-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 10px 0;
-  margin-bottom: 5px;
 }
 
-.fh-sub-filters button {
+.fh-filter-chip {
   font-family: "Barlow Condensed", sans-serif;
   font-size: 0.95em;
-  padding: 4px 12px;
-  border: 1px solid #bfbfbf;
-  background: #fff;
+  padding: 6px 14px;
+  border: 1.5px solid #bfbfbf;
+  background: #f9f9f9;
   border-radius: 3px;
   cursor: pointer;
   color: #525252;
+  font-weight: 500;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
 
-.fh-sub-filters button.active {
-  background: #252a33;
+.fh-filter-chip:hover {
+  border-color: #bf0404;
+  color: #bf0404;
+}
+
+.fh-filter-chip.active {
+  background: #bf0404;
+  border-color: #bf0404;
   color: #fff;
-  border-color: #252a33;
+  font-weight: 700;
+}
+
+.fh-featured-badge {
+  display: inline-block;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.75em;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: khaki;
+  color: #333;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-left: 8px;
+  vertical-align: middle;
 }
 
 .fh-footer {

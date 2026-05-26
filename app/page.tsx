@@ -3,32 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { dedupeEvents } from "./lib/dedupe-events";
+import { pickFeaturedEvents } from "./lib/featured";
+import { STORAGE_KEY, sportLabel } from "./lib/filter-config";
+import { EventFilters } from "./components/EventFilters";
 import { MatchCard } from "./components/MatchCard";
-
-const SPORT_TABS = [
-  { id: "all", label: "Todo" },
-  { id: "deportes", label: "Fútbol" },
-  { id: "esports", label: "E-Sports" },
-];
-
-const SUB_FILTERS: Record<string, { id: string; label: string }[]> = {
-  deportes: [
-    { id: "futbol", label: "Fútbol" },
-    { id: "formula1", label: "F1" },
-    { id: "tenis", label: "Tenis" },
-    { id: "basket", label: "Basket" },
-  ],
-  esports: [
-    { id: "csgo", label: "CS2" },
-    { id: "valorant", label: "Valorant" },
-    { id: "lol", label: "LoL" },
-    { id: "dota2", label: "Dota 2" },
-  ],
-};
-
-function getChildIds(catId: string): string[] {
-  return SUB_FILTERS[catId]?.map((s) => s.id) ?? [];
-}
+import type { EventRow } from "./components/types";
 
 function getDateOffset(offset: number) {
   const d = new Date();
@@ -52,21 +31,40 @@ const DAYS = Array.from({ length: 10 }, (_, i) => {
   };
 });
 
+function groupForDisplay(events: EventRow[]) {
+  const football: Record<string, EventRow[]> = {};
+  const bySport: Record<string, EventRow[]> = {};
+
+  for (const e of events) {
+    if (e.sport === "futbol") {
+      const key = (e.competition || "Fútbol").split(" · ")[0];
+      if (!football[key]) football[key] = [];
+      football[key].push(e);
+    } else {
+      const key = sportLabel(e.sport ?? "otros");
+      if (!bySport[key]) bySport[key] = [];
+      bySport[key].push(e);
+    }
+  }
+
+  return { football, bySport };
+}
+
 export default function Home() {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [activeDay, setActiveDay] = useState(0);
-  const [activeCat, setActiveCat] = useState("deportes");
-  const [activeSub, setActiveSub] = useState<string | null>("futbol");
+  const [selectedSports, setSelectedSports] = useState<string[]>([]);
+
+  const isFeaturedMode = selectedSports.length === 0;
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("qvh_filters");
+      const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const { cat, sub } = JSON.parse(saved);
-        if (cat) setActiveCat(cat);
-        if (sub !== undefined) setActiveSub(sub);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) setSelectedSports(parsed);
       }
     } catch {}
     loadEvents();
@@ -74,12 +72,9 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(
-        "qvh_filters",
-        JSON.stringify({ cat: activeCat, sub: activeSub })
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedSports));
     } catch {}
-  }, [activeCat, activeSub]);
+  }, [selectedSports]);
 
   async function loadEvents() {
     setLoading(true);
@@ -94,59 +89,27 @@ export default function Home() {
       setLoadError(error.message);
       setEvents([]);
     } else {
-      setEvents(dedupeEvents(data || []));
+      setEvents(dedupeEvents(data || []) as EventRow[]);
     }
     setLoading(false);
   }
 
-  function resetFilters() {
-    setActiveCat("all");
-    setActiveSub(null);
-    setActiveDay(0);
-    try {
-      localStorage.removeItem("qvh_filters");
-    } catch {}
-  }
+  const dayEvents = useMemo(
+    () => events.filter((e) => e.date === DAYS[activeDay].date),
+    [events, activeDay]
+  );
 
-  const dayEvents = events.filter((e) => e.date === DAYS[activeDay].date);
-
-  const visibleEvents = dayEvents.filter((e) => {
-    if (activeCat === "all") return true;
-    if (activeSub) return e.sport === activeSub;
-    const children = getChildIds(activeCat);
-    if (activeCat === "deportes" && !activeSub) {
-      return e.sport === "futbol";
+  const visibleEvents = useMemo(() => {
+    if (isFeaturedMode) {
+      return pickFeaturedEvents(dayEvents);
     }
-    return children.includes(e.sport) || e.category === activeCat;
-  });
+    return dayEvents.filter((e) => selectedSports.includes(e.sport ?? ""));
+  }, [dayEvents, isFeaturedMode, selectedSports]);
 
-  const sections = useMemo(() => {
-    const football: Record<string, any[]> = {};
-    const other: Record<string, any[]> = {};
-
-    for (const e of visibleEvents) {
-      if (e.sport === "futbol") {
-        const key = (e.competition || "Otros").split(" · ")[0];
-        if (!football[key]) football[key] = [];
-        football[key].push(e);
-      } else {
-        const key =
-          e.sport === "csgo"
-            ? "CS2"
-            : e.sport === "valorant"
-              ? "Valorant"
-              : e.sport === "lol"
-                ? "League of Legends"
-                : e.sport === "dota2"
-                  ? "Dota 2"
-                  : e.sport || "Otros";
-        if (!other[key]) other[key] = [];
-        other[key].push(e);
-      }
-    }
-
-    return { football, other };
-  }, [visibleEvents]);
+  const sections = useMemo(
+    () => groupForDisplay(visibleEvents),
+    [visibleEvents]
+  );
 
   const dayDate = new Date(DAYS[activeDay].date + "T12:00:00");
   const dayTitle =
@@ -171,31 +134,19 @@ export default function Home() {
       </nav>
 
       <div className="fh-content">
-        <div className="fh-container">
-          <div className="fh-sports-selector">
-            {SPORT_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                className={`fh-sport-col ${activeCat === tab.id ? "selected" : ""}`}
-                onClick={() => {
-                  setActiveCat(tab.id);
-                  setActiveSub(null);
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         <div className="fh-title-bar">
           <div className="fh-container">
-            <h1>Partidos de fútbol hoy en TV</h1>
+            <h1>Qué ver hoy en TV y streaming</h1>
           </div>
         </div>
 
         <div className="fh-container">
+          <EventFilters
+            selected={selectedSports}
+            onChange={setSelectedSports}
+            isFeaturedMode={isFeaturedMode}
+          />
+
           <div id="fh-days-carousel">
             {DAYS.map((day, i) => (
               <span key={day.date} style={{ display: "inline" }}>
@@ -213,33 +164,13 @@ export default function Home() {
             ))}
           </div>
 
-          {SUB_FILTERS[activeCat] && (
-            <div className="fh-sub-filters">
-              <button
-                type="button"
-                className={activeSub === null ? "active" : ""}
-                onClick={() => setActiveSub(null)}
-              >
-                Todos
-              </button>
-              {SUB_FILTERS[activeCat].map((sub) => (
-                <button
-                  key={sub.id}
-                  type="button"
-                  className={activeSub === sub.id ? "active" : ""}
-                  onClick={() =>
-                    setActiveSub((p) => (p === sub.id ? null : sub.id))
-                  }
-                >
-                  {sub.label}
-                </button>
-              ))}
-            </div>
-          )}
-
           <div className="fh-matchday">
             <h2 className="fh-matchday-header">
-              {dayTitle} <span className="fh-md-count">({visibleEvents.length})</span>
+              {dayTitle}{" "}
+              <span className="fh-md-count">({visibleEvents.length})</span>
+              {isFeaturedMode && (
+                <span className="fh-featured-badge">Destacados</span>
+              )}
             </h2>
 
             {loading ? (
@@ -248,7 +179,11 @@ export default function Home() {
               <div className="fh-empty">
                 <p>No se pudieron cargar los eventos.</p>
                 <p style={{ fontSize: "0.85em" }}>{loadError}</p>
-                <button type="button" className="fh-btn fh-btn-primary" onClick={loadEvents}>
+                <button
+                  type="button"
+                  className="fh-btn fh-btn-primary"
+                  onClick={loadEvents}
+                >
                   Reintentar
                 </button>
               </div>
@@ -257,11 +192,17 @@ export default function Home() {
                 <p>
                   {events.length === 0
                     ? "No hay eventos. Abre /api/cron para importar."
-                    : "Sin eventos para este día o filtro."}
+                    : isFeaturedMode
+                      ? "Sin destacados este día. Usa los filtros para explorar más deportes."
+                      : "Ningún evento para los filtros seleccionados."}
                 </p>
-                {events.length > 0 && (
-                  <button type="button" className="fh-btn" onClick={resetFilters}>
-                    Ver todo · Hoy
+                {!isFeaturedMode && (
+                  <button
+                    type="button"
+                    className="fh-btn"
+                    onClick={() => setSelectedSports([])}
+                  >
+                    Ver destacados
                   </button>
                 )}
               </div>
@@ -280,7 +221,7 @@ export default function Home() {
                   </div>
                 ))}
 
-                {Object.entries(sections.other).map(([label, evs]) => (
+                {Object.entries(sections.bySport).map(([label, evs]) => (
                   <div key={label}>
                     <div className="fh-comp-header">
                       <h3>{label}</h3>
