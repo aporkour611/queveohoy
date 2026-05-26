@@ -50,5 +50,13 @@ export function AuthNavLink() {
     );
   }
 
-  return <Link href="/entrar">Entrar</Link>;
+  return (
+    <span className="fh-nav-auth-guest">
+      <Link href="/entrar">Inicia sesión</Link>
+      <span className="fh-nav-auth-sep" aria-hidden>
+        /
+      </span>
+      <Link href="/registro">Regístrate</Link>
+    </span>
+  );
 }
