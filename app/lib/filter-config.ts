@@ -62,6 +62,13 @@ export function sportLabel(sportId: string): string {
   return sportId;
 }
 
+export function sportFilterGroupId(sportId: string): string | null {
+  for (const g of FILTER_GROUPS) {
+    if (g.options.some((o) => o.id === sportId)) return g.id;
+  }
+  return null;
+}
+
 export const STORAGE_KEY = "qvh_sport_filters";
 
 /** Leyenda del hero (nombre + clase de punto de color) */

@@ -61,7 +61,7 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
               {isFeaturedMode
                 ? open
                   ? "Elige categorías abajo"
-                  : "Pulsa para desplegar categorías"
+                  : "Solo lo más importante · pulsa para filtrar más"
                 : summary || `${selected.length} seleccionado${selected.length !== 1 ? "s" : ""}`}
             </span>
           </span>
@@ -98,7 +98,8 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
       >
         {isFeaturedMode && (
           <p className="fh-filters-hint">
-            Lo esencial de hoy. Elige una o varias categorías.
+            Destacados de hoy por categoría. Abre el desplegable para ver todo
+            un deporte o sección concreta.
           </p>
         )}
 

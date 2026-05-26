@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { dedupeEvents } from "./lib/dedupe-events";
-import { pickFeaturedEvents } from "./lib/featured";
 import { LEGEND_ITEMS, STORAGE_KEY, sportLabel } from "./lib/filter-config";
 import { DayTabs } from "./components/DayTabs";
 import { EventFilters } from "./components/EventFilters";
@@ -169,8 +168,7 @@ export default function Home() {
           selectedDate,
           todayDate,
           selectedSports,
-          isFeaturedMode,
-          pickFeaturedEvents
+          isFeaturedMode
         ),
       [
         events,
@@ -260,7 +258,7 @@ export default function Home() {
                   {events.length === 0
                     ? "No hay eventos. Abre /api/cron para importar."
                     : isFeaturedMode
-                      ? "Sin destacados este día. Usa los filtros para explorar más deportes."
+                      ? "Sin destacados con escudo este día. Abre filtros para ver más eventos."
                       : "Ningún evento para los filtros seleccionados."}
                 </p>
                 {!isFeaturedMode && (
