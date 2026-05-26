@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import type { ReactNode } from "react";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { STORAGE_KEY, ALL_SPORT_IDS } from "../lib/filter-config";
@@ -17,7 +18,7 @@ import { AdminNavLink } from "./AdminNavLink";
 import { Logo } from "./Logo";
 import { RegionTimezoneBar } from "./RegionTimezoneBar";
 import { HomeCalendarHero } from "./HomeCalendarHero";
-import { DestacadosSection } from "./DestacadosSection";
+import { LazyMount } from "./LazyMount";
 import { EventSearch } from "./EventSearch";
 import { ScrollToTop } from "./ScrollToTop";
 import { SiteFooter } from "./SiteFooter";
@@ -30,6 +31,12 @@ import {
 } from "../lib/timezone";
 import { filterEventsByQuery } from "../lib/event-search";
 import { resolveDayEventsForFeed } from "../lib/upcoming-events";
+
+const DestacadosSection = dynamic(
+  () =>
+    import("./DestacadosSection").then((mod) => mod.DestacadosSection),
+  { loading: () => null }
+);
 
 type Props = {
   initialEvents?: EventRow[];
@@ -432,14 +439,19 @@ function HomePageContent({
                     )}
                   </h2>
 
-                  <EventDaySections
-                    events={section.events}
-                    emptyMessage={
-                      isFeaturedMode
-                        ? "Sin eventos este día."
-                        : "Sin eventos para estos filtros."
-                    }
-                  />
+                  <LazyMount
+                    eager={i === 0 || Math.abs(i - activeDay) <= 1}
+                    minHeight={Math.max(180, section.events.length * 28)}
+                  >
+                    <EventDaySections
+                      events={section.events}
+                      emptyMessage={
+                        isFeaturedMode
+                          ? "Sin eventos este día."
+                          : "Sin eventos para estos filtros."
+                      }
+                    />
+                  </LazyMount>
                 </section>
               ))}
             </div>

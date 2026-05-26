@@ -1,3 +1,5 @@
+import { normalizeRemoteImageUrl } from "./remote-image";
+
 const ESPORTS_SPORTS = new Set(["csgo", "valorant", "lol"]);
 
 const LOGO_PREFIX = "pandascore-logos:";
@@ -27,8 +29,8 @@ export function parseEsportsTeamLogos(source?: string | null): {
   const sep = rest.indexOf("::");
   if (sep === -1) return null;
 
-  const homeUrl = rest.slice(0, sep).trim() || null;
-  const awayUrl = rest.slice(sep + 2).trim() || null;
+  const homeUrl = normalizeRemoteImageUrl(rest.slice(0, sep).trim());
+  const awayUrl = normalizeRemoteImageUrl(rest.slice(sep + 2).trim());
 
   if (!homeUrl && !awayUrl) return null;
   return { homeUrl, awayUrl };
@@ -46,7 +48,7 @@ export function pandascoreTeamLogo(opponent?: {
   const candidates: string[] = [];
 
   const url = opponent.image_url?.trim();
-  if (url) candidates.push(url.replace(/^http:\/\//i, "https://"));
+  if (url) candidates.push(normalizeRemoteImageUrl(url) ?? url);
 
   if (opponent.id && opponent.slug) {
     candidates.push(
@@ -82,8 +84,8 @@ export function pandascoreTeamLogoCandidates(opponent?: {
 
   function add(url?: string | null) {
     if (!url) return;
-    const normalized = url.replace(/^http:\/\//i, "https://");
-    if (seen.has(normalized)) return;
+    const normalized = normalizeRemoteImageUrl(url);
+    if (!normalized || seen.has(normalized)) return;
     seen.add(normalized);
     out.push(normalized);
   }
@@ -108,14 +110,16 @@ export function pandascoreTeamLogoCandidates(opponent?: {
 export function esportsLogoFallbackUrls(url?: string | null): string[] {
   if (!url?.trim()) return [];
 
-  const normalized = url.replace(/^http:\/\//i, "https://");
+  const normalized = normalizeRemoteImageUrl(url);
+  if (!normalized?.trim()) return [];
+
   const seen = new Set<string>();
   const out: string[] = [];
 
   function add(candidate?: string | null) {
     if (!candidate) return;
-    const value = candidate.replace(/^http:\/\//i, "https://");
-    if (seen.has(value)) return;
+    const value = normalizeRemoteImageUrl(candidate);
+    if (!value || seen.has(value)) return;
     seen.add(value);
     out.push(value);
   }

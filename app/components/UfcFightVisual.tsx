@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { safeRemoteImageUrl } from "../lib/remote-image";
 
 type Props = {
   f1Url?: string | null;
@@ -25,19 +26,24 @@ export function UfcFightVisual({
     .join(" ");
   const imgClass = size === "spotlight" ? "qvh-ufc-fighter-img" : "fh-ufc-fighter-img";
 
-  if (!f1Url && !f2Url && !f1Name?.trim() && !f2Name?.trim()) return null;
+  const f1Safe = safeRemoteImageUrl(f1Url);
+  const f2Safe = safeRemoteImageUrl(f2Url);
+
+  if (!f1Safe && !f2Safe && !f1Name?.trim() && !f2Name?.trim()) return null;
 
   return (
     <div className={rootClass} aria-hidden>
       <div className={size === "spotlight" ? "qvh-ufc-fighter" : "fh-ufc-fighter"}>
-        {f1Url ? (
+        {f1Safe ? (
           <Image
-            src={f1Url}
+            src={f1Safe}
             alt=""
             width={120}
             height={120}
             className={imgClass}
             loading="lazy"
+            sizes="120px"
+            quality={60}
           />
         ) : (
           <span className="fh-ufc-fighter-fallback">{initials(f1Name)}</span>
@@ -45,14 +51,16 @@ export function UfcFightVisual({
       </div>
       <span className={size === "spotlight" ? "qvh-ufc-vs" : "fh-ufc-vs"}>vs</span>
       <div className={size === "spotlight" ? "qvh-ufc-fighter" : "fh-ufc-fighter"}>
-        {f2Url ? (
+        {f2Safe ? (
           <Image
-            src={f2Url}
+            src={f2Safe}
             alt=""
             width={120}
             height={120}
             className={imgClass}
             loading="lazy"
+            sizes="120px"
+            quality={60}
           />
         ) : (
           <span className="fh-ufc-fighter-fallback">{initials(f2Name)}</span>

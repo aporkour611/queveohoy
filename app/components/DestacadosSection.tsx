@@ -40,8 +40,12 @@ export function DestacadosSection({ events }: Props) {
       </div>
 
       <div className="qvh-destacados-scroll">
-        {featured.map((event) => (
-          <FeaturedEventCard key={event.id} event={event} />
+        {featured.map((event, index) => (
+          <FeaturedEventCard
+            key={event.id}
+            event={event}
+            priority={index < 2}
+          />
         ))}
       </div>
     </section>

@@ -31,7 +31,7 @@ export function HomeEventOutline({ events }: Props) {
     mapEventsToTimezone(events, MADRID_TZ),
     MADRID_TZ,
     FEED_DAY_COUNT
-  ).slice(0, 80);
+  ).slice(0, 40);
 
   const days = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)
     .map((day) => ({

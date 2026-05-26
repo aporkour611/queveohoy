@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { teamInitials } from "../lib/football";
+import { normalizeRemoteImageUrl, safeRemoteImageUrl } from "../lib/remote-image";
 
 type Props = {
   src?: string | null;
@@ -27,7 +28,13 @@ export function TeamCrest({
 }: Props) {
   const urls = useMemo(() => {
     const list = srcList?.length ? srcList : src ? [src] : [];
-    return [...new Set(list.map((u) => u.replace(/^http:\/\//i, "https://")))];
+    return [
+      ...new Set(
+        list
+          .map((u) => normalizeRemoteImageUrl(u))
+          .filter((u): u is string => Boolean(u))
+      ),
+    ];
   }, [src, srcList]);
 
   const [urlIndex, setUrlIndex] = useState(0);
@@ -39,7 +46,8 @@ export function TeamCrest({
     (name?.split("").reduce((a, c) => a + c.charCodeAt(0), 0) ?? 0) % 360;
 
   const currentUrl = urls[urlIndex];
-  const showPlaceholder = !currentUrl || failed;
+  const safeUrl = safeRemoteImageUrl(currentUrl);
+  const showPlaceholder = !safeUrl || failed;
   const wrapperClass = ["fh-team-crest", className].filter(Boolean).join(" ");
 
   function handleError() {
@@ -76,7 +84,7 @@ export function TeamCrest({
       ) : (
         <Image
           key={`${urlIndex}-${retry}`}
-          src={crestSrc(currentUrl, retry)}
+          src={crestSrc(safeUrl, retry)}
           alt=""
           width={size}
           height={size}

@@ -39,6 +39,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "cdn-api.pandascore.co",
+      },
+      {
+        protocol: "https",
         hostname: "image.tmdb.org",
       },
       {
