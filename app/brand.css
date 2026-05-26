@@ -221,11 +221,12 @@
 /* ── Hero (navbar) ── */
 .qvh-hero-title {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: clamp(1rem, 2.8vw, 1.45rem);
+  font-size: clamp(1.05rem, 2.8vw, 1.5rem);
   font-weight: 800;
-  margin: 0 0 6px;
-  line-height: 1.05;
+  margin: 0;
+  line-height: 1.1;
   color: var(--qvh-text);
+  letter-spacing: -0.01em;
 }
 
 .qvh-hero-accent {
@@ -235,19 +236,28 @@
 .qvh-legend {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--qvh-border);
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 12px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px 8px;
+  width: 100%;
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: var(--qvh-text-muted);
 }
 
 .qvh-legend li {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  flex: 1 1 0;
+  min-width: 72px;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .qvh-dot {
