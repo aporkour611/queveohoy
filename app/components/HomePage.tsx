@@ -81,8 +81,6 @@ function HomeJsonLdInline() {
 type Props = {
   initialEvents?: EventRow[];
   initialError?: string | null;
-  pageTitle?: string;
-  pageLead?: string;
   children?: ReactNode;
 };
 
@@ -151,8 +149,6 @@ function renderEventSections(events: EventRow[]) {
 export function HomePage({
   initialEvents = [],
   initialError = null,
-  pageTitle,
-  pageLead,
   children,
 }: Props = {}) {
   return (
@@ -163,8 +159,6 @@ export function HomePage({
           <HomePageContent
             initialEvents={initialEvents}
             initialError={initialError}
-            pageTitle={pageTitle}
-            pageLead={pageLead}
           >
             {children}
           </HomePageContent>
@@ -177,8 +171,6 @@ export function HomePage({
 function HomePageContent({
   initialEvents = [],
   initialError = null,
-  pageTitle = "Qué ver hoy en TV y streaming",
-  pageLead = "Partidos, Champions, LaLiga, F1, UFC, baloncesto, series y más con horario y canal en España.",
   children,
 }: Props = {}) {
   const { timeZone } = useTimezone();
@@ -326,9 +318,6 @@ function HomePageContent({
 
       <main className="fh-content">
         <div className="fh-container fh-main">
-          <h1 className="fh-page-title">{pageTitle}</h1>
-          <p className="fh-page-lead">{pageLead}</p>
-
           <EventFilters
             selected={selectedSports}
             onChange={setSelectedSports}
