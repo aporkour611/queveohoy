@@ -195,29 +195,67 @@ async function fetchEsports() {
   console.log(`E-Sports: ${prepared.length}/${unique.length} eventos`);
 }
 
+async function purgeStaleTmdbEvents(): Promise<{ purged: number; error?: string }> {
+  const { data, error } = await getSupabase()
+    .from("events")
+    .select("id, external_id");
+
+  if (error) {
+    return { purged: 0, error: error.message };
+  }
+
+  const ids =
+    data
+      ?.filter((row) => row.external_id?.startsWith("tmdb_"))
+      .map((row) => row.id) ?? [];
+
+  if (!ids.length) return { purged: 0 };
+
+  const { error: delError } = await getSupabase()
+    .from("events")
+    .delete()
+    .in("id", ids);
+
+  if (delError) {
+    return { purged: 0, error: delError.message };
+  }
+
+  console.log(`TMDB antiguos eliminados: ${ids.length}`);
+  return { purged: ids.length };
+}
+
 async function fetchTmdb(): Promise<{
   movies: number;
   series: number;
+  purged: number;
   error?: string;
 }> {
   try {
     const { movies, series, error } = await fetchTmdbEventsForWeek(7);
     if (error) {
       console.error("TMDB:", error);
-      return { movies: 0, series: 0, error };
+      return { movies: 0, series: 0, purged: 0, error };
     }
 
+    const purge = await purgeStaleTmdbEvents();
     const events = [...movies, ...series];
     const upsertError = await upsertEvents(events);
     if (upsertError) {
-      return { movies: movies.length, series: series.length, error: upsertError };
+      return {
+        movies: movies.length,
+        series: series.length,
+        purged: purge.purged,
+        error: upsertError,
+      };
     }
 
-    console.log(`TMDB: ${movies.length} cine, ${series.length} series`);
-    return { movies: movies.length, series: series.length };
+    console.log(
+      `TMDB: ${movies.length} cine, ${series.length} series (${purge.purged} antiguos borrados)`
+    );
+    return { movies: movies.length, series: series.length, purged: purge.purged };
   } catch (e) {
     console.error("Error fetching TMDB:", e);
-    return { movies: 0, series: 0, error: String(e) };
+    return { movies: 0, series: 0, purged: 0, error: String(e) };
   }
 }
 
@@ -353,9 +391,10 @@ export async function GET() {
     console.error("✗ Esports error:", e);
   }
 
-  let tmdb: { movies: number; series: number; error?: string } = {
+  let tmdb: { movies: number; series: number; purged: number; error?: string } = {
     movies: 0,
     series: 0,
+    purged: 0,
   };
   try {
     tmdb = await fetchTmdb();
@@ -404,6 +443,7 @@ export async function GET() {
     football,
     tmdbMovies: tmdb.movies,
     tmdbSeries: tmdb.series,
+    tmdbPurged: tmdb.purged,
     tmdbError: tmdb.error,
     crestsEnriched: enrich.enriched,
     crestEnrichError: enrich.error,

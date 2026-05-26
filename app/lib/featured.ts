@@ -1,6 +1,7 @@
 import type { EventRow } from "../components/types";
 import { sportFilterGroupId } from "./filter-config";
 import { eventCanDisplay, filterEventsForDisplay } from "./event-crests";
+import { capTopMediaEvents, parseTmdbBuzzScore } from "./tmdb";
 
 const COMPETITION_PRIORITY: { match: RegExp; score: number }[] = [
   { match: /champions|mundial|world cup/i, score: 100 },
@@ -62,6 +63,10 @@ export function eventPriority(e: EventRow): number {
   }
 
   if (comp.includes("· Final")) score += 15;
+  if (e.sport === "cine" || e.sport === "series") {
+    const buzz = parseTmdbBuzzScore(e.source);
+    if (buzz > 0) score += Math.min(50, Math.round(buzz / 8));
+  }
   if ((e as { featured?: boolean }).featured) score += 25;
   if ((e as { popularity?: number }).popularity) {
     score += Math.min(20, (e as { popularity?: number }).popularity ?? 0);
@@ -95,6 +100,21 @@ function pickTopPerCategory(
   for (const cat of FEATURED_CATEGORY_ORDER) {
     const list = byCategory.get(cat);
     if (!list?.length) continue;
+
+    if (cat === "cine") {
+      for (const sportId of ["cine", "series"] as const) {
+        const sportList = list.filter((e) => e.sport === sportId);
+        if (!sportList.length) continue;
+        const sorted = [...sportList].sort(
+          (a, b) =>
+            eventPriority(b) - eventPriority(a) ||
+            (a.time ?? "").localeCompare(b.time ?? "")
+        );
+        picked.push(sorted[0]);
+      }
+      continue;
+    }
+
     const sorted = [...list].sort(
       (a, b) =>
         eventPriority(b) - eventPriority(a) ||
@@ -115,13 +135,14 @@ export function pickFeaturedEvents(dayEvents: EventRow[]): EventRow[] {
   return pickTopPerCategory(dayEvents, true);
 }
 
-/** Al filtrar: solo eventos con escudo en deportes de equipo */
+/** Al filtrar: solo eventos con escudo en deportes de equipo; cine/series top por día */
 export function pickFilteredEvents(events: EventRow[]): EventRow[] {
-  return filterEventsForDisplay(events).sort(
+  const sorted = filterEventsForDisplay(events).sort(
     (a, b) =>
       eventPriority(b) - eventPriority(a) ||
       (a.time ?? "").localeCompare(b.time ?? "")
   );
+  return capTopMediaEvents(sorted) as EventRow[];
 }
 
 /** Próximos al filtrar: ordenados por importancia, sin exigir escudo */
