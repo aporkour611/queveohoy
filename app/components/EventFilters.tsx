@@ -42,8 +42,7 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
 
       {isFeaturedMode ? (
         <p className="fh-filters-hint">
-          Vista principal: lo más importante de cada deporte. Activa categorías
-          para ver todo el calendario.
+          Lo esencial de hoy. Filtra abajo para ver más eventos.
         </p>
       ) : (
         <div className="fh-active-filters">

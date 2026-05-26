@@ -31,7 +31,6 @@ export function Logo({ variant = "header" }: Props) {
         <span className="qvh-wm qvh-wm-muted">que</span>
         <span className="qvh-wm qvh-wm-accent">veo</span>
         <span className="qvh-wm qvh-wm-muted">hoy</span>
-        <span className="qvh-wm-es">.es</span>
       </span>
     </Link>
   );

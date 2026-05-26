@@ -102,19 +102,6 @@
   color: var(--qvh-purple);
 }
 
-.qvh-wm-es {
-  display: inline-block;
-  margin-top: 2px;
-  font-size: 0.55rem;
-  font-weight: 700;
-  background: var(--qvh-purple);
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 4px;
-  width: fit-content;
-  letter-spacing: 0;
-}
-
 @media (min-width: 480px) {
   .qvh-tile {
     width: 40px;
