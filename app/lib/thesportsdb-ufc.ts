@@ -7,12 +7,25 @@ import {
   splitToMadrid,
   toMadridDateKey,
 } from "./madrid-time";
+import {
+  parseUfcEventNumberFromSource,
+  parseUfcImage,
+  parseUfcKindFromSource,
+  type UfcKind,
+  ufcKindLabel,
+} from "./thesportsdb-ufc-client";
+
+export type { UfcKind } from "./thesportsdb-ufc-client";
+export {
+  parseUfcEventNumberFromSource,
+  parseUfcImage,
+  parseUfcKindFromSource,
+  ufcKindLabel,
+} from "./thesportsdb-ufc-client";
 
 const API_BASE = "https://www.thesportsdb.com/api/v1/json/3";
 export const UFC_LEAGUE_ID = "4443";
 export const UFC_MAX_UPCOMING = 8;
-
-export type UfcKind = "ppv" | "fight-night" | "road" | "other";
 
 export type UfcEventLabel = {
   eventName: string;
@@ -115,13 +128,6 @@ export function parseUfcKind(strEvent: string): UfcKind {
   return parseUfcEventLabel(strEvent).kind;
 }
 
-export function ufcKindLabel(kind: UfcKind): string {
-  if (kind === "ppv") return "PPV";
-  if (kind === "fight-night") return "Fight Night";
-  if (kind === "road") return "Road to UFC";
-  return "UFC";
-}
-
 export function isMainUfcCard(strEvent: string): boolean {
   const kind = parseUfcKind(strEvent);
   return kind === "ppv" || kind === "fight-night";
@@ -139,22 +145,6 @@ export function encodeUfcSource(
   if (eventNumber) parts.push(`num:${eventNumber}`);
   if (kind) parts.push(`kind:${kind}`);
   return parts.join("|");
-}
-
-export function parseUfcImage(source?: string | null): string | null {
-  if (!source?.startsWith("ufc")) return null;
-  const match = source.match(/\|img:([^|]+)/) ?? source.match(/^ufc\|img:([^|]+)/);
-  return match?.[1]?.trim() || null;
-}
-
-export function parseUfcKindFromSource(source?: string | null): UfcKind {
-  const match = source?.match(/\|kind:(ppv|fight-night|road|other)/);
-  return (match?.[1] as UfcKind) || "other";
-}
-
-export function parseUfcEventNumberFromSource(source?: string | null): number | null {
-  const match = source?.match(/\|num:(\d+)/);
-  return match ? parseInt(match[1], 10) : null;
 }
 
 export function formatEventDateLabel(date: string): string {

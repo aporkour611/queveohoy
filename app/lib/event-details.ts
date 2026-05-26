@@ -2,8 +2,8 @@ import type { EventRow } from "../components/types";
 import { parseChannels } from "./channels";
 import { sportLabel } from "./filter-config";
 import { footballSpotlightMeta } from "./football";
-import { parseTmdbBuzzScore, parseTmdbEpisodeMeta } from "./tmdb";
-import { parseUfcKindFromSource, ufcKindLabel } from "./thesportsdb-ufc";
+import { parseTmdbBuzzScore, parseTmdbEpisodeMeta } from "./tmdb-client";
+import { parseUfcKindFromSource, ufcKindLabel } from "./thesportsdb-ufc-client";
 
 export type EventDetail = {
   label: string;

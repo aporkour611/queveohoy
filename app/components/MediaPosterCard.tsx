@@ -14,7 +14,7 @@ import {
   isSeasonPremiereEvent,
   parseTmdbEpisodeMeta,
   parseTmdbPoster,
-} from "../lib/tmdb";
+} from "../lib/tmdb-client";
 import type { EventRow } from "./types";
 
 type Props = {

@@ -1,7 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
-import { CookieConsentBanner } from "./CookieConsentBanner";
+
+const CookieConsentBanner = dynamic(
+  () =>
+    import("./CookieConsentBanner").then((mod) => mod.CookieConsentBanner),
+  { ssr: false }
+);
 
 export function CookieConsentRoot({ children }: { children: ReactNode }) {
   return (

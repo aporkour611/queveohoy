@@ -1,7 +1,5 @@
 /* Layout de partidos — paleta queveohoy.es */
 
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&display=swap");
-
 .fh-body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
@@ -55,7 +53,7 @@
   border-radius: 999px;
   background: transparent;
   color: var(--qvh-text-muted);
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -83,7 +81,7 @@
   border-radius: 8px;
   background-color: #1a1a24;
   color: #fff;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.82rem;
   font-weight: 600;
   padding: 5px 24px 5px 8px;
@@ -153,7 +151,7 @@
 }
 
 .fh-nav-links a {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.1rem;
   color: #fff;
   text-decoration: none;
@@ -186,7 +184,7 @@
   border-radius: 999px;
   background: transparent;
   color: #fff;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.05rem;
   opacity: 0.9;
   cursor: pointer;
@@ -242,7 +240,7 @@
 .fh-nav-account-dropdown-head {
   margin: 0;
   padding: 8px 12px 6px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.95rem;
   font-weight: 700;
   color: #fff;
@@ -353,7 +351,7 @@
   display: block;
   padding: 10px 12px;
   border-radius: 8px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
@@ -372,7 +370,7 @@
 
 .fh-nav-auth-sep {
   color: var(--qvh-text-muted);
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1rem;
   opacity: 0.7;
   user-select: none;
@@ -381,7 +379,7 @@
 /* ── Sports selector ── */
 .fh-sports-selector {
   display: flex;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-weight: 500;
   margin: 0 -15px 0;
   background: #fff;
@@ -425,7 +423,7 @@
 .fh-title-bar h1 {
   padding: 0;
   margin: 0;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.5em;
   font-weight: 600;
   color: var(--qvh-text);
@@ -570,7 +568,7 @@
   cursor: pointer;
   color: var(--qvh-text-muted);
   transition: background 0.12s ease, color 0.12s ease;
-  font-family: "Barlow Condensed", "Inter", sans-serif;
+  font-family: var(--qvh-font-display), "Inter", sans-serif;
   position: relative;
 }
 
@@ -627,6 +625,8 @@
 
 .fh-day-section {
   scroll-margin-top: calc(var(--qvh-navbar-h) + 8px);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 480px;
 }
 
 .fh-day-empty {
@@ -648,7 +648,7 @@
   padding: 12px 10px;
   margin: 0 -15px 0.5rem;
   color: #fff;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   text-align: center;
   background: linear-gradient(90deg, var(--qvh-muted) 0%, #1a1a24 100%);
   font-size: 1.25em;
@@ -662,7 +662,7 @@
   margin: 0 -15px 0.2rem;
   min-height: 45px;
   color: #fff;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   text-align: center;
   background-color: var(--qvh-purple-dim);
   display: flex;
@@ -789,7 +789,7 @@
 .fh-m-expand-hint {
   margin: 8px 0 0;
   text-align: center;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.78em;
   letter-spacing: 0.02em;
   color: #8a8a8a;
@@ -809,7 +809,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 14px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.95em;
   line-height: 1.25;
 }
@@ -827,7 +827,7 @@
 }
 
 .fh-match .fh-m-comp {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-weight: 400;
   padding: 2px 4px 0;
   text-align: center;
@@ -848,7 +848,7 @@
   padding: 0 10px;
   font-weight: 500;
   border-radius: 3px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.9em;
 }
 
@@ -872,7 +872,7 @@
 }
 
 .fh-match .fh-m-title {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   letter-spacing: -1px;
   font-size: 1.4em;
   font-weight: 500;
@@ -939,7 +939,7 @@
 }
 
 .fh-match .fh-m-time {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   color: var(--qvh-purple-dim);
   font-weight: 800;
   font-size: 1.85em;
@@ -954,7 +954,7 @@
 }
 
 .fh-match .fh-m-chan span {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   margin: 0 2px 2px;
   display: inline-block;
   padding: 2px 6px;
@@ -1065,7 +1065,7 @@
   text-align: center;
   padding: 40px 20px;
   color: var(--qvh-text-muted);
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
 }
 
 .fh-btn {
@@ -1075,7 +1075,7 @@
   border-radius: 15px;
   padding: 8px 20px;
   cursor: pointer;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   margin-top: 12px;
 }
 
@@ -1178,7 +1178,7 @@
   border-radius: 99px;
   background: var(--qvh-purple);
   color: #fff;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.85em;
   font-weight: 700;
   display: inline-flex;
@@ -1219,7 +1219,7 @@
 }
 
 .fh-filters-title {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.05em;
   font-weight: 700;
   color: var(--qvh-text);
@@ -1227,7 +1227,7 @@
 }
 
 .fh-filters-clear {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.9em;
   padding: 6px 12px;
   margin-top: 12px;
@@ -1289,7 +1289,7 @@
 
 .fh-filter-group-label {
   display: block;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.85em;
   font-weight: 700;
   text-transform: uppercase;
@@ -1305,7 +1305,7 @@
 }
 
 .fh-filter-chip {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.95em;
   padding: 6px 14px;
   border: 1.5px solid var(--qvh-border);
@@ -1329,7 +1329,7 @@
 
 .fh-featured-badge {
   display: inline-block;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.72em;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -1356,7 +1356,7 @@
   color: var(--qvh-text-muted);
   font-size: 0.85em;
   padding: 20px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
 }
 
 .qvh-site-footer {
@@ -1370,7 +1370,7 @@
   max-width: 720px;
   margin: 0 auto;
   text-align: center;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
 }
 
 .qvh-site-footer-copy {
@@ -1417,13 +1417,13 @@
 }
 
 .qvh-legal-page h1 {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 2rem;
   margin: 0 0 8px;
 }
 
 .qvh-legal-page h2 {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.25rem;
   margin: 24px 0 8px;
   color: var(--qvh-text);
@@ -1484,7 +1484,7 @@
 
 .fh-auth-card h1 {
   margin: 0 0 10px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 2rem;
   font-weight: 600;
   color: #212529;
@@ -1508,7 +1508,7 @@
 }
 
 .fh-auth-field span {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.95rem;
   font-weight: 600;
   color: #444;
@@ -1604,7 +1604,7 @@
 
 .fh-account-greeting {
   margin: 0;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.35rem;
   font-weight: 600;
   color: #212529;
@@ -1622,7 +1622,7 @@
 }
 
 .fh-account-details dt {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.85rem;
   font-weight: 600;
   color: #777;
@@ -1645,7 +1645,7 @@
 
 .fh-account-soon h2 {
   margin: 0 0 6px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.1rem;
   font-weight: 600;
   color: #212529;
@@ -1716,7 +1716,7 @@
 
 .fh-account-sidebar-kicker {
   margin: 0;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1725,7 +1725,7 @@
 
 .fh-account-sidebar-name {
   margin: 0;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.2rem;
   font-weight: 700;
 }
@@ -1763,7 +1763,7 @@
 }
 
 .fh-account-menu-label {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.05rem;
   font-weight: 700;
   color: #fff;
@@ -1788,7 +1788,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.95rem;
   color: var(--qvh-purple-hover);
   text-decoration: none;
@@ -1810,7 +1810,7 @@
 
 .fh-account-main h1 {
   margin: 0 0 10px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 2rem;
   font-weight: 600;
   color: #212529;
@@ -1856,7 +1856,7 @@
 
 .fh-fav-list-main strong {
   color: #212529;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.05rem;
 }
 
@@ -1881,7 +1881,7 @@
 
 .fh-settings-block h2 {
   margin: 0 0 6px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.1rem;
   color: #212529;
 }

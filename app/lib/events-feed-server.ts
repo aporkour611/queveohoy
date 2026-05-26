@@ -1,7 +1,7 @@
 import type { EventRow } from "../components/types";
 import { cache } from "react";
 import { createClient } from "./supabase/server";
-import { FEED_DAY_COUNT, normalizeFeedEvents } from "./events-feed";
+import { FEED_DAY_COUNT, FEED_EVENT_SELECT, normalizeFeedEvents } from "./events-feed";
 import { getEventsQueryDateRange } from "./timezone";
 
 async function loadFeedEvents(): Promise<{
@@ -14,7 +14,7 @@ async function loadFeedEvents(): Promise<{
 
     const { data, error } = await supabase
       .from("events")
-      .select("*")
+      .select(FEED_EVENT_SELECT)
       .gte("date", from)
       .lte("date", to)
       .order("date", { ascending: true })

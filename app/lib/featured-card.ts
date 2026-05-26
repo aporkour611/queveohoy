@@ -8,12 +8,12 @@ import {
   teamCrestUrl,
   footballSpotlightMeta,
 } from "./football";
-import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb";
+import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb-client";
 import {
   parseUfcImage,
   parseUfcKindFromSource,
   ufcKindLabel,
-} from "./thesportsdb-ufc";
+} from "./thesportsdb-ufc-client";
 import type { EventRow } from "../components/types";
 
 export type SpotlightBadgeVariant =

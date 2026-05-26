@@ -5,8 +5,12 @@ import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
-import { parseTmdbPoster, parseTmdbEpisodeMeta } from "../lib/tmdb";
-import { parseUfcImage, parseUfcKindFromSource, ufcKindLabel } from "../lib/thesportsdb-ufc";
+import { parseTmdbPoster, parseTmdbEpisodeMeta } from "../lib/tmdb-client";
+import {
+  parseUfcImage,
+  parseUfcKindFromSource,
+  ufcKindLabel,
+} from "../lib/thesportsdb-ufc-client";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";

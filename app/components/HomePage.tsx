@@ -2,11 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { supabase } from "../lib/supabase";
-import {
-  FEED_DAY_COUNT,
-  normalizeFeedEvents,
-} from "../lib/events-feed";
+import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { STORAGE_KEY, sportLabel, ALL_SPORT_IDS } from "../lib/filter-config";
 import {
   COOKIE_CONSENT_EVENT,
@@ -29,58 +25,9 @@ import { TimezoneProvider, useTimezone } from "../lib/timezone-context";
 import {
   buildDisplayDays,
   filterEventsInWeek,
-  getEventsQueryDateRange,
   mapEventsToTimezone,
 } from "../lib/timezone";
 import { resolveDayEventsForFeed } from "../lib/upcoming-events";
-import {
-  defaultDescription,
-  siteBrand,
-  siteName,
-  siteUrl,
-} from "../lib/seo";
-
-function HomeJsonLdInline() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${siteUrl}/#organization`,
-        name: siteBrand,
-        url: siteUrl,
-        logo: `${siteUrl}/logo-queveohoy.png`,
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${siteUrl}/#website`,
-        name: siteName,
-        alternateName: ["que veo hoy", "qué ver hoy", "queveohoy"],
-        url: siteUrl,
-        description: defaultDescription,
-        inLanguage: "es-ES",
-        publisher: { "@id": `${siteUrl}/#organization` },
-      },
-      {
-        "@type": "WebPage",
-        "@id": `${siteUrl}/#webpage`,
-        url: siteUrl,
-        name: "Qué ver hoy en TV y streaming",
-        description: defaultDescription,
-        isPartOf: { "@id": `${siteUrl}/#website` },
-        inLanguage: "es-ES",
-      },
-    ],
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
-}
-
 type Props = {
   initialEvents?: EventRow[];
   initialError?: string | null;
@@ -184,7 +131,6 @@ export function HomePage({
 }: Props = {}) {
   return (
     <>
-      <HomeJsonLdInline />
       <TimezoneProvider>
         <HomePageContent
           initialEvents={initialEvents}
@@ -224,20 +170,24 @@ function HomePageContent({
     }
     setLoadError(null);
 
-    const { from, to } = getEventsQueryDateRange(FEED_DAY_COUNT);
-    const { data, error } = await supabase
-      .from("events")
-      .select("*")
-      .gte("date", from)
-      .lte("date", to)
-      .order("date", { ascending: true })
-      .order("time", { ascending: true });
+    try {
+      const res = await fetch("/api/events");
+      const body = (await res.json()) as {
+        events?: EventRow[];
+        error?: string;
+      };
 
-    if (error) {
-      setLoadError(error.message);
+      if (!res.ok || body.error) {
+        setLoadError(body.error ?? "No se pudieron cargar los eventos");
+        if (!silent) setEvents([]);
+      } else {
+        setEvents(body.events ?? []);
+      }
+    } catch (err) {
+      setLoadError(
+        err instanceof Error ? err.message : "No se pudieron cargar los eventos"
+      );
       if (!silent) setEvents([]);
-    } else {
-      setEvents(normalizeFeedEvents(data as EventRow[]));
     }
 
     if (silent) {

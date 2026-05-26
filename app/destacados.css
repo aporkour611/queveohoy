@@ -31,7 +31,7 @@
 
 .qvh-destacados-title {
   margin: 0;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.35rem;
   font-weight: 700;
   color: var(--qvh-text);
@@ -157,7 +157,7 @@
 }
 
 .qvh-spotlight-duel-name {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.72rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.92);
@@ -171,7 +171,7 @@
 
 .qvh-spotlight-duel-vs {
   flex-shrink: 0;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.85rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -256,7 +256,7 @@
   z-index: 1;
   padding: 4px 10px;
   border-radius: 999px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -322,7 +322,7 @@
 }
 
 .qvh-spotlight-date {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.05rem;
   font-weight: 700;
   color: #fff;
@@ -330,7 +330,7 @@
 }
 
 .qvh-spotlight-time {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.35rem;
   font-weight: 800;
   color: #fff;
@@ -343,7 +343,7 @@
 
 .qvh-spotlight-headline {
   margin: 0 0 6px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 1.15rem;
   font-weight: 700;
   line-height: 1.15;
@@ -362,7 +362,7 @@
   display: inline-block;
   padding: 3px 8px;
   border-radius: 4px;
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: var(--qvh-font-display);
   font-size: 0.78rem;
   font-weight: 600;
   color: #fff;

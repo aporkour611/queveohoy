@@ -14,6 +14,9 @@ const hubSlugs = [
 ];
 
 const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ["react", "react-dom"],
+  },
   images: {
     remotePatterns: [
       {
@@ -23,6 +26,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "cdn.pandascore.co",
+      },
+      {
+        protocol: "https",
+        hostname: "image.tmdb.org",
       },
     ],
   },
