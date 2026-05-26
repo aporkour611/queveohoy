@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { dedupeEvents } from "./lib/dedupe-events";
 import { filterEventsWithCrests } from "./lib/event-crests";
@@ -19,10 +19,9 @@ import {
   formatMadridWeekday,
   getMadridWeekDates,
   madridDayNumber,
-  madridDayOffset,
   madridDayTitle,
 } from "./lib/madrid-time";
-import { resolveVisibleEvents } from "./lib/upcoming-events";
+import { resolveDayEventsForFeed } from "./lib/upcoming-events";
 
 const DAYS = getMadridWeekDates(10).map((date, i) => {
   const weekday = formatMadridWeekday(date, "short");
@@ -60,17 +59,6 @@ function groupForDisplay(events: EventRow[]) {
   }
 
   return { football, bySport };
-}
-
-function groupEventsByDate(events: EventRow[]): [string, EventRow[]][] {
-  const map = new Map<string, EventRow[]>();
-  for (const e of events) {
-    const d = e.date ?? "";
-    if (!d) continue;
-    if (!map.has(d)) map.set(d, []);
-    map.get(d)!.push(e);
-  }
-  return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
 }
 
 function renderEventSections(events: EventRow[]) {
@@ -115,6 +103,7 @@ export default function Home() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [activeDay, setActiveDay] = useState(0);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
+  const scrollLockRef = useRef(false);
 
   const isFeaturedMode = selectedSports.length === 0;
 
@@ -153,41 +142,64 @@ export default function Home() {
     setLoading(false);
   }
 
-  const dayEvents = useMemo(
-    () => events.filter((e) => e.date === DAYS[activeDay].date),
-    [events, activeDay]
-  );
-
-  const todayDate = DAYS[0].date;
-  const selectedDate = DAYS[activeDay].date;
-
-  const { events: visibleEvents, isUpcoming, message: upcomingMessage } =
-    useMemo(
-      () =>
-        resolveVisibleEvents(
+  const daySections = useMemo(
+    () =>
+      DAYS.map((day, index) => ({
+        ...day,
+        index,
+        title: madridDayTitle(day.date, index),
+        events: resolveDayEventsForFeed(
           events,
-          dayEvents,
-          selectedDate,
-          todayDate,
+          day.date,
           selectedSports,
           isFeaturedMode
         ),
-      [
-        events,
-        dayEvents,
-        selectedDate,
-        todayDate,
-        selectedSports,
-        isFeaturedMode,
-      ]
-    );
-
-  const upcomingByDate = useMemo(
-    () => (isUpcoming ? groupEventsByDate(visibleEvents) : []),
-    [isUpcoming, visibleEvents]
+      })),
+    [events, selectedSports, isFeaturedMode]
   );
 
-  const dayTitle = madridDayTitle(DAYS[activeDay].date, activeDay);
+  const goToDay = useCallback((index: number) => {
+    scrollLockRef.current = true;
+    setActiveDay(index);
+    const el = document.getElementById(`day-${DAYS[index].date}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => {
+      scrollLockRef.current = false;
+    }, 700);
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+
+    const sections = DAYS.map((d) =>
+      document.getElementById(`day-${d.date}`)
+    ).filter(Boolean) as HTMLElement[];
+
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (scrollLockRef.current) return;
+
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        const top = visible[0]?.target.id;
+        if (!top) return;
+
+        const idx = DAYS.findIndex((d) => `day-${d.date}` === top);
+        if (idx >= 0) setActiveDay(idx);
+      },
+      {
+        rootMargin: "-12% 0px -58% 0px",
+        threshold: [0, 0.15, 0.35],
+      }
+    );
+
+    for (const section of sections) observer.observe(section);
+    return () => observer.disconnect();
+  }, [loading, events, selectedSports, isFeaturedMode]);
 
   return (
     <div className="fh-body">
@@ -222,72 +234,62 @@ export default function Home() {
           <DayTabs
             days={DAYS}
             activeIndex={activeDay}
-            onChange={setActiveDay}
+            onChange={goToDay}
           />
 
-          <div className="fh-matchday">
-            <h2 className="fh-matchday-header">
-              {dayTitle}{" "}
-              <span className="fh-md-count">({visibleEvents.length})</span>
-              {isFeaturedMode && (
-                <span className="fh-featured-badge">Destacados</span>
-              )}
-            </h2>
-
-            {loading ? (
-              <LoadingState />
-            ) : loadError ? (
-              <div className="fh-empty">
-                <p>No se pudieron cargar los eventos.</p>
-                <p style={{ fontSize: "0.85em" }}>{loadError}</p>
-                <button
-                  type="button"
-                  className="fh-btn fh-btn-primary"
-                  onClick={loadEvents}
+          {loading ? (
+            <LoadingState />
+          ) : loadError ? (
+            <div className="fh-empty">
+              <p>No se pudieron cargar los eventos.</p>
+              <p style={{ fontSize: "0.85em" }}>{loadError}</p>
+              <button
+                type="button"
+                className="fh-btn fh-btn-primary"
+                onClick={loadEvents}
+              >
+                Reintentar
+              </button>
+            </div>
+          ) : events.length === 0 ? (
+            <div className="fh-empty">
+              <p>No hay eventos. Abre /api/cron para importar.</p>
+            </div>
+          ) : (
+            <div className="fh-day-feed">
+              {daySections.map((section) => (
+                <section
+                  key={section.date}
+                  id={`day-${section.date}`}
+                  className="fh-day-section fh-matchday"
+                  aria-labelledby={`day-title-${section.date}`}
                 >
-                  Reintentar
-                </button>
-              </div>
-            ) : visibleEvents.length === 0 ? (
-              <div className="fh-empty">
-                <p>
-                  {events.length === 0
-                    ? "No hay eventos. Abre /api/cron para importar."
-                    : isFeaturedMode
-                      ? "Sin destacados con escudo este día. Abre filtros para ver más eventos."
-                      : "Ningún evento para los filtros seleccionados."}
-                </p>
-                {!isFeaturedMode && (
-                  <button
-                    type="button"
-                    className="fh-btn"
-                    onClick={() => setSelectedSports([])}
+                  <h2
+                    id={`day-title-${section.date}`}
+                    className="fh-matchday-header"
                   >
-                    Eliminar filtros
-                  </button>
-                )}
-              </div>
-            ) : (
-              <>
-                {upcomingMessage && (
-                  <p className="fh-upcoming-notice">{upcomingMessage}</p>
-                )}
-                {isUpcoming
-                  ? upcomingByDate.map(([date, dateEvents]) => (
-                      <div key={date} className="fh-upcoming-day">
-                        <h3 className="fh-matchday-header">
-                          {madridDayTitle(
-                            date,
-                            madridDayOffset(todayDate, date)
-                          )}
-                        </h3>
-                        {renderEventSections(dateEvents)}
-                      </div>
-                    ))
-                  : renderEventSections(visibleEvents)}
-              </>
-            )}
-          </div>
+                    {section.title}{" "}
+                    <span className="fh-md-count">({section.events.length})</span>
+                    {isFeaturedMode && section.index === activeDay && (
+                      <span className="fh-featured-badge">Destacados</span>
+                    )}
+                  </h2>
+
+                  {section.events.length === 0 ? (
+                    <div className="fh-day-empty">
+                      <p>
+                        {isFeaturedMode
+                          ? "Sin destacados este día."
+                          : "Sin eventos para los filtros seleccionados."}
+                      </p>
+                    </div>
+                  ) : (
+                    renderEventSections(section.events)
+                  )}
+                </section>
+              ))}
+            </div>
+          )}
 
           <SiteFooter />
         </div>

@@ -231,6 +231,16 @@
   border-bottom: 1px solid var(--qvh-border);
 }
 
+.qvh-day-tabs-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 950;
+  background: var(--qvh-bg-elevated);
+  margin: 0 -15px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
 .qvh-day-tabs::-webkit-scrollbar {
   display: none;
 }
@@ -299,6 +309,27 @@
 }
 
 /* ── Matchday sections ── */
+.fh-day-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fh-day-section {
+  scroll-margin-top: 72px;
+}
+
+.fh-day-empty {
+  padding: 16px 10px 24px;
+  text-align: center;
+  color: var(--qvh-text-muted);
+  font-size: 0.9em;
+}
+
+.fh-day-empty p {
+  margin: 0;
+}
+
 .fh-matchday {
   margin-bottom: 30px;
 }
@@ -307,7 +338,7 @@
   padding: 12px 10px;
   margin: 0 -15px 0.5rem;
   position: sticky;
-  top: 0;
+  top: 56px;
   z-index: 900;
   color: #fff;
   font-family: "Barlow Condensed", sans-serif;
@@ -329,7 +360,7 @@
   padding: 10px 14px;
   margin: 0 -15px 0.2rem;
   position: sticky;
-  top: 45px;
+  top: 108px;
   z-index: 899;
   min-height: 45px;
   color: #fff;

@@ -80,3 +80,21 @@ export function resolveVisibleEvents(
       : `No hay eventos este día. Próximos en calendario:`,
   };
 }
+
+/** Un día en el feed continuo (sin saltar a días futuros dentro del mismo bloque) */
+export function resolveDayEventsForFeed(
+  allEvents: EventRow[],
+  date: string,
+  selectedSports: string[],
+  isFeaturedMode: boolean
+): EventRow[] {
+  const dayEvents = filterEventsWithCrests(allEvents).filter((e) => e.date === date);
+
+  if (isFeaturedMode) {
+    return pickFeaturedEvents(dayEvents);
+  }
+
+  return pickFilteredEvents(
+    dayEvents.filter((e) => selectedSports.includes(e.sport ?? ""))
+  );
+}
