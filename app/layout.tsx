@@ -8,6 +8,7 @@ import "./media.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { Analytics } from "./components/Analytics";
 import { rootMetadata, siteUrl } from "./lib/seo";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 /** Funciones cerca de Supabase / usuarios en España (menos latencia). */
 export const preferredRegion = ["cdg1", "fra1"];
@@ -48,6 +49,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
         <CookieConsentRoot>{children}</CookieConsentRoot>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
