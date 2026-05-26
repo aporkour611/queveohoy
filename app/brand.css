@@ -20,6 +20,14 @@
   --qvh-text-on-light: #14141c;
   --qvh-border: #2a2a38;
   --qvh-border-light: #e0e0e8;
+  --qvh-navbar-h: 78px;
+  --qvh-day-tabs-h: 58px;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --qvh-navbar-h: 118px;
+  }
 }
 
 /* ── Logo ── */

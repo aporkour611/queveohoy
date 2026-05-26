@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 type DayTab = {
   date: string;
@@ -18,16 +18,21 @@ type Props = {
 export function DayTabs({ days, activeIndex, onChange }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  function scrollTabIntoView(index: number) {
     const tab = listRef.current?.querySelector<HTMLElement>(
-      `[data-day-index="${activeIndex}"]`
+      `[data-day-index="${index}"]`
     );
     tab?.scrollIntoView({
       inline: "center",
       block: "nearest",
       behavior: "smooth",
     });
-  }, [activeIndex]);
+  }
+
+  function handleSelect(index: number) {
+    onChange(index);
+    requestAnimationFrame(() => scrollTabIntoView(index));
+  }
 
   return (
     <div
@@ -44,7 +49,7 @@ export function DayTabs({ days, activeIndex, onChange }: Props) {
           data-day-index={i}
           aria-selected={activeIndex === i}
           className={`qvh-day-tab ${activeIndex === i ? "active" : ""}`}
-          onClick={() => onChange(i)}
+          onClick={() => handleSelect(i)}
         >
           <span className="qvh-day-tab-label">{day.label}</span>
           <span className="qvh-day-tab-date">

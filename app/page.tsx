@@ -100,12 +100,43 @@ function renderEventSections(events: EventRow[]) {
 export default function Home() {
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [activeDay, setActiveDay] = useState(0);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const scrollLockRef = useRef(false);
+  const scrollLockTimerRef = useRef<number | null>(null);
 
   const isFeaturedMode = selectedSports.length === 0;
+
+  const loadEvents = useCallback(async (options?: { silent?: boolean }) => {
+    const silent = options?.silent ?? false;
+    if (silent) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+    setLoadError(null);
+
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .order("date", { ascending: true })
+      .order("time", { ascending: true });
+
+    if (error) {
+      setLoadError(error.message);
+      if (!silent) setEvents([]);
+    } else {
+      setEvents(filterEventsWithCrests(dedupeEvents(data || []) as EventRow[]));
+    }
+
+    if (silent) {
+      setRefreshing(false);
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     try {
@@ -115,32 +146,14 @@ export default function Home() {
         if (Array.isArray(parsed)) setSelectedSports(parsed);
       }
     } catch {}
-    loadEvents();
-  }, []);
+    void loadEvents();
+  }, [loadEvents]);
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedSports));
     } catch {}
   }, [selectedSports]);
-
-  async function loadEvents() {
-    setLoading(true);
-    setLoadError(null);
-    const { data, error } = await supabase
-      .from("events")
-      .select("*")
-      .order("date", { ascending: true })
-      .order("time", { ascending: true });
-
-    if (error) {
-      setLoadError(error.message);
-      setEvents([]);
-    } else {
-      setEvents(filterEventsWithCrests(dedupeEvents(data || []) as EventRow[]));
-    }
-    setLoading(false);
-  }
 
   const daySections = useMemo(
     () =>
@@ -158,15 +171,33 @@ export default function Home() {
     [events, selectedSports, isFeaturedMode]
   );
 
-  const goToDay = useCallback((index: number) => {
+  const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
-    setActiveDay(index);
-    const el = document.getElementById(`day-${DAYS[index].date}`);
-    el?.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.setTimeout(() => {
+    if (scrollLockTimerRef.current !== null) {
+      window.clearTimeout(scrollLockTimerRef.current);
+    }
+    scrollLockTimerRef.current = window.setTimeout(() => {
       scrollLockRef.current = false;
-    }, 700);
+      scrollLockTimerRef.current = null;
+    }, ms);
   }, []);
+
+  const goToDay = useCallback(
+    (index: number) => {
+      lockScrollSpy();
+      setActiveDay(index);
+      const el = document.getElementById(`day-${DAYS[index].date}`);
+      el?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [lockScrollSpy]
+  );
+
+  const resetHome = useCallback(() => {
+    lockScrollSpy();
+    setActiveDay(0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    void loadEvents({ silent: true });
+  }, [loadEvents, lockScrollSpy]);
 
   useEffect(() => {
     if (loading) return;
@@ -177,35 +208,57 @@ export default function Home() {
 
     if (!sections.length) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (scrollLockRef.current) return;
+    const anchor =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--qvh-navbar-h"
+        )
+      ) +
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--qvh-day-tabs-h"
+        )
+      ) +
+      8;
 
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    let frame = 0;
 
-        const top = visible[0]?.target.id;
-        if (!top) return;
+    function syncActiveDay() {
+      if (scrollLockRef.current) return;
 
-        const idx = DAYS.findIndex((d) => `day-${d.date}` === top);
-        if (idx >= 0) setActiveDay(idx);
-      },
-      {
-        rootMargin: "-12% 0px -58% 0px",
-        threshold: [0, 0.15, 0.35],
+      let next = 0;
+      for (let i = 0; i < sections.length; i++) {
+        if (sections[i].getBoundingClientRect().top <= anchor) {
+          next = i;
+        }
       }
-    );
+      setActiveDay((prev) => (prev === next ? prev : next));
+    }
 
-    for (const section of sections) observer.observe(section);
-    return () => observer.disconnect();
+    function onScroll() {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        syncActiveDay();
+      });
+    }
+
+    syncActiveDay();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, [loading, events, selectedSports, isFeaturedMode]);
 
   return (
     <div className="fh-body">
       <nav className="fh-navbar">
         <div className="fh-navbar-inner">
-          <Logo />
+          <Logo onHomeClick={resetHome} />
           <h1 className="qvh-hero-title">
             Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
           </h1>
@@ -237,7 +290,13 @@ export default function Home() {
             onChange={goToDay}
           />
 
-          {loading ? (
+          {refreshing && !loading && (
+            <p className="fh-feed-refresh" aria-live="polite">
+              Actualizando eventos…
+            </p>
+          )}
+
+          {loading && events.length === 0 ? (
             <LoadingState />
           ) : loadError ? (
             <div className="fh-empty">
@@ -246,7 +305,7 @@ export default function Home() {
               <button
                 type="button"
                 className="fh-btn fh-btn-primary"
-                onClick={loadEvents}
+                onClick={() => void loadEvents()}
               >
                 Reintentar
               </button>
