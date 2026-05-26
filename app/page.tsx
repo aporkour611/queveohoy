@@ -192,16 +192,7 @@ export default function Home() {
       <nav className="fh-navbar">
         <div className="fh-navbar-inner">
           <Logo />
-          <div className="fh-nav-links">
-            <a href="/">Partidos</a>
-            <AdminNavLink />
-          </div>
-        </div>
-      </nav>
-
-      <div className="fh-content">
-        <section className="qvh-hero">
-          <div className="fh-container">
+          <div className="fh-navbar-hero">
             <h1 className="qvh-hero-title">
               Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
             </h1>
@@ -214,8 +205,13 @@ export default function Home() {
               ))}
             </ul>
           </div>
-        </section>
+          <div className="fh-nav-links">
+            <AdminNavLink />
+          </div>
+        </div>
+      </nav>
 
+      <div className="fh-content">
         <div className="fh-container fh-main">
           <EventFilters
             selected={selectedSports}
