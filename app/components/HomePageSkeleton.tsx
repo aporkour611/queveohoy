@@ -1,3 +1,5 @@
+"use client";
+
 import { Logo } from "./Logo";
 
 /** Placeholder mientras carga la home en el cliente (evita SSR pesado). */
