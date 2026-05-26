@@ -10,6 +10,7 @@ import { dedupeEvents, findDuplicateIdsToRemove } from "@/app/lib/dedupe-events"
 import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
+import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
 import {
   ergastToMadrid,
   getMadridWeekDates,
@@ -194,6 +195,32 @@ async function fetchEsports() {
   console.log(`E-Sports: ${prepared.length}/${unique.length} eventos`);
 }
 
+async function fetchTmdb(): Promise<{
+  movies: number;
+  series: number;
+  error?: string;
+}> {
+  try {
+    const { movies, series, error } = await fetchTmdbEventsForWeek(7);
+    if (error) {
+      console.error("TMDB:", error);
+      return { movies: 0, series: 0, error };
+    }
+
+    const events = [...movies, ...series];
+    const upsertError = await upsertEvents(events);
+    if (upsertError) {
+      return { movies: movies.length, series: series.length, error: upsertError };
+    }
+
+    console.log(`TMDB: ${movies.length} cine, ${series.length} series`);
+    return { movies: movies.length, series: series.length };
+  } catch (e) {
+    console.error("Error fetching TMDB:", e);
+    return { movies: 0, series: 0, error: String(e) };
+  }
+}
+
 async function removeDuplicateRows() {
   const { data, error } = await getSupabase().from("events").select("*");
   if (error || !data?.length) {
@@ -307,6 +334,7 @@ export async function GET() {
   console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "OK" : "MISSING");
   console.log("Football key:", process.env.FOOTBALL_DATA_API_KEY ? "OK" : "MISSING");
   console.log("Pandascore key:", process.env.PANDASCORE_API_KEY ? "OK" : "MISSING");
+  console.log("TMDB key:", process.env.TMDB_API_KEY ? "OK" : "MISSING");
 
   let football = { count: 0, dateFrom: "", dateTo: "", errors: [] as string[] };
 
@@ -323,6 +351,17 @@ export async function GET() {
     console.log("✓ Esports done");
   } catch (e) {
     console.error("✗ Esports error:", e);
+  }
+
+  let tmdb: { movies: number; series: number; error?: string } = {
+    movies: 0,
+    series: 0,
+  };
+  try {
+    tmdb = await fetchTmdb();
+    console.log("✓ TMDB done");
+  } catch (e) {
+    console.error("✗ TMDB error:", e);
   }
 
   let enrich: { enriched: number; error?: string } = { enriched: 0 };
@@ -363,6 +402,9 @@ export async function GET() {
     ok: true,
     timestamp: new Date().toISOString(),
     football,
+    tmdbMovies: tmdb.movies,
+    tmdbSeries: tmdb.series,
+    tmdbError: tmdb.error,
     crestsEnriched: enrich.enriched,
     crestEnrichError: enrich.error,
     crestsPurged: purge.purged,

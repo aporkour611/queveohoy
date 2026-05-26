@@ -532,6 +532,20 @@
   font-size: 1.1em;
 }
 
+.fh-match .fh-m-title-media {
+  padding: 0 8px;
+}
+
+.fh-match .fh-m-logos-media {
+  gap: 10px;
+}
+
+.fh-media-spacer {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
 .fh-match .fh-m-logos {
   display: flex;
   align-items: center;

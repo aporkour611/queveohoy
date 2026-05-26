@@ -3,6 +3,7 @@
 import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
+import { parseTmdbPoster } from "../lib/tmdb";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
@@ -13,6 +14,10 @@ type Props = {
 };
 
 export function MatchCard({ event }: Props) {
+  const isMedia = event.sport === "cine" || event.sport === "series";
+  const mediaTitle = event.title?.trim() || "Sin título";
+  const posterUrl = parseTmdbPoster(event.source);
+
   const esportsLogos = parseEsportsTeamLogos(event.source);
   const footballIds =
     event.sport === "futbol"
@@ -52,6 +57,44 @@ export function MatchCard({ event }: Props) {
   const isFinal = compFull.includes("· Final");
   const compDisplay = compFull.split(" · ")[0] || compFull;
   const matchClass = competitionMatchClass(compDisplay, event.sport);
+
+  if (isMedia) {
+    return (
+      <div className="fh-cardcol">
+        <div className={`fh-match ${matchClass}`}>
+          <div className="fh-m-comp" />
+
+          <div className="fh-m-title fh-m-title-media">
+            <span className="fh-dest-team">{mediaTitle}</span>
+          </div>
+
+          <div className="fh-m-logos fh-m-logos-media">
+            <TeamCrest
+              srcList={posterUrl ? [posterUrl] : []}
+              name={mediaTitle}
+              size={50}
+              className="fh-crest-fallback"
+            />
+            <span className="fh-m-time">{time}</span>
+            <div className="fh-media-spacer" aria-hidden />
+          </div>
+
+          {channels.length > 0 && (
+            <div className="fh-m-chan">
+              {channels.map((ch) => (
+                <span
+                  key={ch}
+                  className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
+                >
+                  {ch}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fh-cardcol">
