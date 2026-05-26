@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { ADMIN_COOKIE, getAdminSecret, isAdminCookieValid } from "@/app/lib/admin-auth";
+import {
+  ADMIN_COOKIE,
+  getAdminSecret,
+  isAdminCookieValid,
+} from "@/app/lib/admin-auth";
+import { updateSession } from "@/app/lib/supabase/middleware";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const secret = getAdminSecret();
   const adminKey = request.nextUrl.searchParams.get("admin");
 
@@ -27,9 +32,11 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  return updateSession(request);
 }
 
 export const config = {
-  matcher: ["/", "/admin/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };

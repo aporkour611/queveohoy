@@ -1120,3 +1120,208 @@
 .fh-crest-fallback {
   border-radius: 4px;
 }
+
+/* ── Auth / cuenta ── */
+.fh-navbar-inner-auth {
+  grid-template-columns: auto 1fr auto;
+}
+
+.fh-auth-page {
+  flex: 1;
+  padding: 24px 0 48px;
+}
+
+.fh-auth-card {
+  max-width: 440px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--qvh-border-light);
+  border-radius: 10px;
+  padding: 28px 24px 22px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+.fh-auth-card h1 {
+  margin: 0 0 10px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.fh-auth-lead {
+  margin: 0 0 18px;
+  color: var(--qvh-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.fh-auth-form {
+  display: grid;
+  gap: 14px;
+}
+
+.fh-auth-field {
+  display: grid;
+  gap: 6px;
+}
+
+.fh-auth-field span {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.fh-auth-field input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.fh-auth-field input:focus {
+  outline: 2px solid rgba(93, 95, 239, 0.35);
+  border-color: var(--qvh-purple);
+}
+
+.fh-auth-submit {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.fh-auth-message {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.fh-auth-message-error {
+  background: #fdecec;
+  color: #9b1c1c;
+}
+
+.fh-auth-message-success {
+  background: #ecf9ef;
+  color: #1f6b3a;
+}
+
+.fh-auth-switch {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--qvh-text-muted);
+}
+
+.fh-auth-switch a {
+  color: var(--qvh-purple-hover);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.fh-auth-switch a:hover {
+  text-decoration: underline;
+}
+
+.fh-auth-back {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.fh-auth-back a {
+  color: var(--qvh-purple-hover);
+  text-decoration: none;
+}
+
+.fh-auth-back a:hover {
+  text-decoration: underline;
+}
+
+.fh-account-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.fh-account-greeting {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.fh-account-details {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.fh-account-details div {
+  display: grid;
+  gap: 2px;
+}
+
+.fh-account-details dt {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fh-account-details dd {
+  margin: 0;
+  font-size: 1rem;
+  color: #212529;
+}
+
+.fh-account-soon {
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(93, 95, 239, 0.08);
+  border: 1px dashed rgba(93, 95, 239, 0.35);
+}
+
+.fh-account-soon h2 {
+  margin: 0 0 6px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.fh-account-soon p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: #444;
+}
+
+.fh-account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.fh-account-actions .fh-btn {
+  margin-top: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fh-btn-ghost {
+  background: transparent;
+  border-color: #bbb;
+  color: #555;
+}
+
+.fh-btn-ghost:hover {
+  background: #f3f3f3;
+}

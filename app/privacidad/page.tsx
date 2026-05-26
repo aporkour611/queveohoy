@@ -30,16 +30,16 @@ export default function PrivacidadPage() {
           <section>
             <h2>Datos que tratamos</h2>
             <p>
-              Esta web no solicita registro ni recoge datos personales mediante
-              formularios. Podemos registrar datos técnicos habituales de
-              navegación (dirección IP, tipo de dispositivo, páginas visitadas)
-              a través del proveedor de alojamiento con fines de seguridad y
-              estadísticas agregadas.
+              Si creas una cuenta, guardamos tu correo electrónico y un nombre
+              de perfil para identificarte. Los filtros de categoría que elijas
+              se guardan en tu navegador (almacenamiento local) para recordar
+              tu preferencia en visitas posteriores.
             </p>
             <p>
-              Los filtros de categoría que elijas se guardan en tu navegador
-              (almacenamiento local) para recordar tu preferencia en visitas
-              posteriores.
+              También podemos registrar datos técnicos habituales de navegación
+              (dirección IP, tipo de dispositivo, páginas visitadas) a través
+              del proveedor de alojamiento con fines de seguridad y
+              estadísticas agregadas.
             </p>
           </section>
 

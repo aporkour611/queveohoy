@@ -2,8 +2,12 @@ import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 const DEFAULT_URL = "https://ctfzprpghyuikucxiogj.supabase.co";
 
-function supabaseUrl(): string {
+export function getSupabaseUrl(): string {
   return process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || DEFAULT_URL;
+}
+
+function supabaseUrl(): string {
+  return getSupabaseUrl();
 }
 
 /** Clave de servidor (sb_secret_ / service_role JWT): omite RLS */

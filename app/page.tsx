@@ -9,6 +9,7 @@ import { DayTabs } from "./components/DayTabs";
 import { EventFilters } from "./components/EventFilters";
 import { LoadingState } from "./components/LoadingState";
 import { AdminNavLink } from "./components/AdminNavLink";
+import { AuthNavLink } from "./components/AuthNavLink";
 import { Logo } from "./components/Logo";
 import { DestacadosSection } from "./components/DestacadosSection";
 import { MatchCard } from "./components/MatchCard";
@@ -283,6 +284,7 @@ export default function Home() {
             Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
           </h1>
           <div className="fh-nav-links">
+            <AuthNavLink />
             <AdminNavLink />
           </div>
         </div>
