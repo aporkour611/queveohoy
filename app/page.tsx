@@ -194,19 +194,17 @@ export default function Home() {
       <nav className="fh-navbar">
         <div className="fh-navbar-inner">
           <Logo />
-          <div className="fh-navbar-hero">
-            <h1 className="qvh-hero-title">
-              Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
-            </h1>
-            <ul className="qvh-legend" aria-label="Categorías">
-              {LEGEND_ITEMS.map((item) => (
-                <li key={item.label}>
-                  <span className={`qvh-dot ${item.dot}`} />
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <h1 className="qvh-hero-title">
+            Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
+          </h1>
+          <ul className="qvh-legend" aria-label="Categorías">
+            {LEGEND_ITEMS.map((item) => (
+              <li key={item.label}>
+                <span className={`qvh-dot ${item.dot}`} />
+                {item.label}
+              </li>
+            ))}
+          </ul>
           <div className="fh-nav-links">
             <AdminNavLink />
           </div>
