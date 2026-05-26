@@ -1,0 +1,502 @@
+/* Inspirado en futbolhoy.es — paleta y componentes principales */
+
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap");
+
+.fh-body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  background: #252a33;
+  color: #212529;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.fh-content {
+  background-color: #f3f4f7;
+  padding-bottom: 40px;
+  min-height: calc(100vh - 70px);
+}
+
+.fh-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* ── Navbar ── */
+.fh-navbar {
+  background-color: #252a33 !important;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.fh-navbar-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fh-logo {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+}
+
+.fh-logo span {
+  color: #bf0404;
+}
+
+.fh-nav-links {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.fh-nav-links a {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.1rem;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  opacity: 0.85;
+}
+
+.fh-nav-links a:hover {
+  opacity: 1;
+}
+
+/* ── Sports selector ── */
+.fh-sports-selector {
+  display: flex;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 500;
+  margin: 0 -15px 0;
+  background: #fff;
+}
+
+.fh-sports-selector .fh-sport-col {
+  flex: 1;
+  padding: 8px 0;
+  text-align: center;
+  border: 1px solid #fff;
+  border-top: 0;
+  border-bottom: 0;
+  cursor: pointer;
+  background: #fff;
+  color: #212529;
+  font-size: 1.05rem;
+  font-family: inherit;
+}
+
+.fh-sports-selector .fh-sport-col:hover {
+  background-color: #bf0404;
+  color: #fff;
+  border-color: #bf0404;
+}
+
+.fh-sports-selector .fh-sport-col.selected {
+  background-color: #bf0404;
+  color: #fff;
+  border-color: #bf0404;
+}
+
+/* ── Title bar ── */
+.fh-title-bar {
+  background-color: #fff;
+  box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.3);
+  padding: 10px 0;
+  margin-bottom: 15px;
+}
+
+.fh-title-bar h1 {
+  padding: 0;
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* ── Days carousel ── */
+#fh-days-carousel {
+  height: 50px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+#fh-days-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+#fh-days-carousel .fh-day {
+  font-size: 0.4em;
+  display: inline-block;
+  width: 7em !important;
+  height: 7em;
+  background-color: #fff;
+  border-radius: 0.6em;
+  box-shadow: 0 1px 0 #bdbdbd;
+  margin: 0 3px;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  vertical-align: top;
+  padding: 0;
+}
+
+#fh-days-carousel .fh-day * {
+  display: block;
+  width: 100%;
+  font-size: 1.5em;
+  font-weight: 700;
+  font-style: normal;
+  text-align: center;
+  font-family: "Barlow Condensed", sans-serif;
+}
+
+#fh-days-carousel .fh-day strong {
+  position: absolute;
+  top: 0;
+  padding: 0.1em 0;
+  color: #fff;
+  background-color: #bf0404;
+}
+
+#fh-days-carousel .fh-day em {
+  position: absolute;
+  bottom: -0.1em;
+  color: #bf0404;
+  font-size: 1.2em;
+}
+
+#fh-days-carousel .fh-day span.fh-day-num {
+  font-size: 2.5em;
+  letter-spacing: -0.05em;
+  padding-top: 0.9em;
+  color: #2f2f2f;
+}
+
+#fh-days-carousel .fh-day:hover {
+  background-color: #f6d8d9;
+}
+
+#fh-days-carousel .fh-day.selected {
+  background-color: #f6d8d9 !important;
+}
+
+.fh-cal-sep {
+  border-left: 2px solid #bf0404;
+  height: 45px !important;
+  display: inline-block;
+  margin: 0 5px;
+  vertical-align: top;
+}
+
+/* ── Matchday sections ── */
+.fh-matchday {
+  margin-bottom: 30px;
+}
+
+.fh-matchday-header {
+  padding: 10px;
+  margin: 0 -15px 0.2rem;
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  color: #fff;
+  font-family: "Barlow Condensed", sans-serif;
+  text-align: center;
+  background-color: #252a33;
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+.fh-matchday-header .fh-md-count {
+  color: #fff;
+  font-weight: 400;
+  font-size: 0.8em;
+}
+
+.fh-comp-header {
+  padding: 10px;
+  margin: 0 -15px 0.2rem;
+  position: sticky;
+  top: 45px;
+  z-index: 899;
+  height: 45px;
+  color: #fff;
+  font-family: "Barlow Condensed", sans-serif;
+  text-align: center;
+  background-color: #8d8e90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fh-comp-header h3 {
+  margin: 0;
+  font-size: 1.2em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.fh-match-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 768px) {
+  .fh-match-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fh-cardcol {
+  padding: 5px 10px;
+}
+
+@media (min-width: 768px) {
+  .fh-cardcol {
+    padding: 5px;
+  }
+}
+
+/* ── Match card ── */
+.fh-match {
+  padding: 10px;
+  background-color: #fff;
+  height: 100%;
+  border: 1px solid #bfbfbf;
+}
+
+.fh-match .fh-m-comp {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 400;
+  padding: 2px 4px 0;
+  text-align: center;
+  margin: -10px -10px 0;
+  border-top: 5px solid #bfbfbf;
+  font-size: 0.9em;
+  min-height: 5px;
+}
+
+.fh-match .fh-m-phase {
+  text-align: center;
+}
+
+.fh-match .fh-m-phase span {
+  background-color: khaki;
+  margin: 3px;
+  display: inline-block;
+  padding: 0 10px;
+  font-weight: 500;
+  border-radius: 3px;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.9em;
+}
+
+.fh-match .fh-m-title {
+  font-family: "Barlow Condensed", sans-serif;
+  letter-spacing: -1px;
+  font-size: 1.4em;
+  font-weight: 500;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.fh-match .fh-m-title .fh-dest-team {
+  color: #212529;
+  font-size: 1.1em;
+}
+
+.fh-match .fh-m-logos {
+  margin-bottom: 5px;
+  text-align: center;
+  line-height: 50px;
+}
+
+.fh-match .fh-m-logos img,
+.fh-match .fh-m-logos .fh-crest-fallback {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.fh-match .fh-m-time {
+  font-family: "Barlow Condensed", sans-serif;
+  color: #bf0404;
+  font-weight: 700;
+  font-size: 1.8em;
+  margin: 0 10px;
+  vertical-align: -4px;
+  display: inline-block;
+  height: 50px;
+  line-height: 50px;
+}
+
+.fh-match .fh-m-chan {
+  text-align: center;
+}
+
+.fh-match .fh-m-chan span {
+  font-family: "Barlow Condensed", sans-serif;
+  margin: 0 2px 2px;
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 0.8em;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.fh-match .fh-ch-free {
+  background-color: #73ae2f;
+  color: #fff;
+}
+
+.fh-match .fh-ch-paid {
+  background-color: #4267b2;
+  color: #fff;
+}
+
+/* Competition tints */
+.fh-match_championsleague {
+  background-color: #dee7f6;
+}
+.fh-match_championsleague .fh-m-comp {
+  border-color: #193056;
+}
+
+.fh-match_laliga {
+  background-color: #e3f2fd;
+}
+.fh-match_laliga .fh-m-comp {
+  border-color: #2196f3;
+}
+
+.fh-match_premierleague {
+  background-color: #f4e8fa;
+}
+.fh-match_premierleague .fh-m-comp {
+  border-color: #3d1350;
+}
+
+.fh-match_bundesliga {
+  background-color: #f6d8d9;
+}
+.fh-match_bundesliga .fh-m-comp {
+  border-color: #aa252c;
+}
+
+.fh-match_seriea {
+  background-color: #e9f8ed;
+}
+.fh-match_seriea .fh-m-comp {
+  border-color: #31984b;
+}
+
+.fh-match_europa {
+  background-color: #e5eefb;
+}
+.fh-match_europa .fh-m-comp {
+  border-color: #f68f00;
+}
+
+.fh-match_esports {
+  background-color: #f5f0ff;
+}
+.fh-match_esports .fh-m-comp {
+  border-color: #6b21a8;
+}
+
+.fh-match_default {
+  background-color: #fff;
+}
+.fh-match_default .fh-m-comp {
+  border-color: #bfbfbf;
+}
+
+/* ── Empty / loading ── */
+.fh-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-family: "Barlow Condensed", sans-serif;
+}
+
+.fh-btn {
+  background-color: #fff;
+  border: 1px solid silver;
+  font-size: 0.9em;
+  border-radius: 15px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-family: "Barlow Condensed", sans-serif;
+  margin-top: 12px;
+}
+
+.fh-btn:hover {
+  background-color: #e8e8e8;
+}
+
+.fh-btn-primary {
+  background-color: #bf0404;
+  color: #fff;
+  border-color: #bf0404;
+}
+
+.fh-btn-primary:hover {
+  background-color: #a00303;
+}
+
+.fh-sub-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 0;
+  margin-bottom: 5px;
+}
+
+.fh-sub-filters button {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 0.95em;
+  padding: 4px 12px;
+  border: 1px solid #bfbfbf;
+  background: #fff;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #525252;
+}
+
+.fh-sub-filters button.active {
+  background: #252a33;
+  color: #fff;
+  border-color: #252a33;
+}
+
+.fh-footer {
+  text-align: center;
+  color: #999;
+  font-size: 0.85em;
+  padding: 20px;
+  font-family: "Barlow Condensed", sans-serif;
+}
+
+.fh-crest-fallback {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  object-fit: contain;
+}

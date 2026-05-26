@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { defaultChannelsForCompetition } from "@/app/lib/channels";
+import { dedupeEvents, findDuplicateIdsToRemove } from "@/app/lib/dedupe-events";
 
 function getSupabase() {
   return createClient(
@@ -21,19 +23,24 @@ function getWeekDates() {
 }
 
 async function upsertEvents(events: any[]) {
-  if (!events.length) return;
+  if (!events.length) return null;
   const { error } = await getSupabase()
     .from("events")
     .upsert(events, { onConflict: "external_id", ignoreDuplicates: false });
-  if (error) console.error("Upsert error:", error);
+  if (error) {
+    console.error("Upsert error:", error);
+    return error.message;
+  }
+  return null;
 }
 
 async function fetchFootball() {
-    const competiciones = ["PD", "CL", "PL", "BL1", "SA", "WC", "FL1"];
+  const competiciones = ["PD", "CL", "PL", "BL1", "SA", "WC", "FL1"];
   const dates = getWeekDates();
   const dateFrom = dates[0];
   const dateTo = dates[6];
   const events: any[] = [];
+  const errors: string[] = [];
 
   for (const comp of competiciones) {
     try {
@@ -43,13 +50,17 @@ async function fetchFootball() {
       );
       const data = await res.json();
       console.log(`${comp} response:`, JSON.stringify(data).slice(0, 200));
+      if (!res.ok) {
+        errors.push(`${comp}: HTTP ${res.status} — ${data.message || "error"}`);
+        continue;
+      }
       if (!data.matches) continue;
 
       for (const match of data.matches) {
         const utcDate = new Date(match.utcDate);
         events.push({
           external_id: `football_${match.id}`,
-          title: `${match.homeTeam.name} vs ${match.awayTeam.name}`,
+          title: `${match.homeTeam.shortName || match.homeTeam.name} vs ${match.awayTeam.shortName || match.awayTeam.name}`,
           home_team: match.homeTeam.name,
           away_team: match.awayTeam.name,
           date: formatDate(utcDate),
@@ -60,9 +71,12 @@ async function fetchFootball() {
           }),
           sport: "futbol",
           category: "deportes",
-          competition: match.competition.name,
-          platform: "DAZN",
-          source: "football-data",
+          competition:
+            match.stage === "FINAL"
+              ? `${match.competition.name} · Final`
+              : match.competition.name,
+          platform: defaultChannelsForCompetition(match.competition.name),
+          source: `football-data:${match.homeTeam.id}:${match.awayTeam.id}`,
         });
       }
     } catch (e) {
@@ -70,8 +84,11 @@ async function fetchFootball() {
     }
   }
 
-  await upsertEvents(events);
-  console.log(`Football: ${events.length} eventos`);
+  const unique = dedupeEvents(events);
+  const upsertError = await upsertEvents(unique);
+  if (upsertError) errors.push(`upsert: ${upsertError}`);
+  console.log(`Football: ${unique.length} eventos`);
+  return { count: unique.length, dateFrom, dateTo, errors };
 }
 
 async function fetchF1() {
@@ -173,31 +190,73 @@ async function fetchEsports() {
     }
   }
 
-  await upsertEvents(events);
-  console.log(`E-Sports: ${events.length} eventos`);
+  const unique = dedupeEvents(events);
+  await upsertEvents(unique);
+  console.log(`E-Sports: ${unique.length} eventos`);
 }
 
-export async function GET(request: Request) {
-    console.log("=== CRON INICIADO ===");
-    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "OK" : "MISSING");
-    console.log("Football key:", process.env.FOOTBALL_DATA_API_KEY ? "OK" : "MISSING");
-    console.log("Pandascore key:", process.env.PANDASCORE_API_KEY ? "OK" : "MISSING");
-  
-    try {
-      await fetchFootball();
-      console.log("✓ Football done");
-    } catch (e) {
-      console.error("✗ Football error:", e);
-    }
-  
-    try {
-      await fetchEsports();
-      console.log("✓ Esports done");
-    } catch (e) {
-      console.error("✗ Esports error:", e);
-    }
-  
-    console.log("=== CRON TERMINADO ===");
-  
-    return NextResponse.json({ ok: true, timestamp: new Date().toISOString() });
+async function removeDuplicateRows() {
+  const { data, error } = await getSupabase().from("events").select("*");
+  if (error || !data?.length) {
+    console.error("Dedupe fetch error:", error);
+    return { removed: 0, error: error?.message };
   }
+
+  const ids = findDuplicateIdsToRemove(data);
+  if (!ids.length) return { removed: 0 };
+
+  const { error: delError } = await getSupabase().from("events").delete().in("id", ids);
+  if (delError) {
+    console.error("Dedupe delete error:", delError);
+    return { removed: 0, error: delError.message };
+  }
+
+  console.log(`Duplicados eliminados: ${ids.length}`);
+  return { removed: ids.length };
+}
+
+export async function GET() {
+  console.log("=== CRON INICIADO ===");
+  console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "OK" : "MISSING");
+  console.log("Football key:", process.env.FOOTBALL_DATA_API_KEY ? "OK" : "MISSING");
+  console.log("Pandascore key:", process.env.PANDASCORE_API_KEY ? "OK" : "MISSING");
+
+  let football = { count: 0, dateFrom: "", dateTo: "", errors: [] as string[] };
+
+  try {
+    football = await fetchFootball();
+    console.log("✓ Football done");
+  } catch (e) {
+    console.error("✗ Football error:", e);
+    football.errors.push(String(e));
+  }
+
+  try {
+    await fetchEsports();
+    console.log("✓ Esports done");
+  } catch (e) {
+    console.error("✗ Esports error:", e);
+  }
+
+  let dedupe: { removed: number; error?: string } = { removed: 0 };
+  try {
+    dedupe = await removeDuplicateRows();
+    console.log("✓ Dedupe done");
+  } catch (e) {
+    console.error("✗ Dedupe error:", e);
+  }
+
+  console.log("=== CRON TERMINADO ===");
+
+  return NextResponse.json({
+    ok: true,
+    timestamp: new Date().toISOString(),
+    football,
+    duplicatesRemoved: dedupe.removed,
+    dedupeError: dedupe.error,
+    hint:
+      football.count === 0
+        ? "La API respondió pero no hay partidos en este rango de fechas (fin de temporada). Prueba otro día en la UI."
+        : undefined,
+  });
+}
