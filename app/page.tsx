@@ -23,7 +23,9 @@ import {
 } from "./lib/madrid-time";
 import { resolveDayEventsForFeed } from "./lib/upcoming-events";
 
-const DAYS = getMadridWeekDates(10).map((date, i) => {
+const FEED_DAY_COUNT = 7;
+
+const ALL_DAYS = getMadridWeekDates(FEED_DAY_COUNT).map((date, i) => {
   const weekday = formatMadridWeekday(date, "short");
   const month = formatMadridMonthShort(date);
   return {
@@ -32,6 +34,7 @@ const DAYS = getMadridWeekDates(10).map((date, i) => {
     date,
     num: madridDayNumber(date),
     month: month.charAt(0).toUpperCase() + month.slice(1),
+    dayOffset: i,
   };
 });
 
@@ -155,21 +158,27 @@ export default function Home() {
     } catch {}
   }, [selectedSports]);
 
-  const daySections = useMemo(
+  const visibleDays = useMemo(
     () =>
-      DAYS.map((day, index) => ({
+      ALL_DAYS.map((day) => ({
         ...day,
-        index,
-        title: madridDayTitle(day.date, index),
+        title: madridDayTitle(day.date, day.dayOffset),
         events: resolveDayEventsForFeed(
           events,
           day.date,
           selectedSports,
           isFeaturedMode
         ),
-      })),
+      })).filter((day) => day.events.length > 0),
     [events, selectedSports, isFeaturedMode]
   );
+
+  useEffect(() => {
+    setActiveDay((prev) => {
+      if (visibleDays.length === 0) return 0;
+      return Math.min(prev, visibleDays.length - 1);
+    });
+  }, [visibleDays.length, selectedSports.join(",")]);
 
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
@@ -184,12 +193,16 @@ export default function Home() {
 
   const goToDay = useCallback(
     (index: number) => {
+      const day = visibleDays[index];
+      if (!day) return;
+
       lockScrollSpy();
       setActiveDay(index);
-      const el = document.getElementById(`day-${DAYS[index].date}`);
-      el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document
+        .getElementById(`day-${day.date}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
     },
-    [lockScrollSpy]
+    [lockScrollSpy, visibleDays]
   );
 
   const resetHome = useCallback(() => {
@@ -200,11 +213,11 @@ export default function Home() {
   }, [loadEvents, lockScrollSpy]);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || visibleDays.length === 0) return;
 
-    const sections = DAYS.map((d) =>
-      document.getElementById(`day-${d.date}`)
-    ).filter(Boolean) as HTMLElement[];
+    const sections = visibleDays
+      .map((d) => document.getElementById(`day-${d.date}`))
+      .filter(Boolean) as HTMLElement[];
 
     if (!sections.length) return;
 
@@ -252,7 +265,7 @@ export default function Home() {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [loading, events, selectedSports, isFeaturedMode]);
+  }, [loading, visibleDays]);
 
   return (
     <div className="fh-body">
@@ -285,7 +298,7 @@ export default function Home() {
           />
 
           <DayTabs
-            days={DAYS}
+            days={visibleDays}
             activeIndex={activeDay}
             onChange={goToDay}
           />
@@ -314,9 +327,17 @@ export default function Home() {
             <div className="fh-empty">
               <p>No hay eventos. Abre /api/cron para importar.</p>
             </div>
+          ) : visibleDays.length === 0 ? (
+            <div className="fh-empty">
+              <p>
+                {isFeaturedMode
+                  ? "No hay destacados en los próximos 7 días."
+                  : "No hay eventos para los filtros seleccionados en los próximos 7 días."}
+              </p>
+            </div>
           ) : (
             <div className="fh-day-feed">
-              {daySections.map((section) => (
+              {visibleDays.map((section, i) => (
                 <section
                   key={section.date}
                   id={`day-${section.date}`}
@@ -329,22 +350,12 @@ export default function Home() {
                   >
                     {section.title}{" "}
                     <span className="fh-md-count">({section.events.length})</span>
-                    {isFeaturedMode && section.index === activeDay && (
+                    {isFeaturedMode && i === activeDay && (
                       <span className="fh-featured-badge">Destacados</span>
                     )}
                   </h2>
 
-                  {section.events.length === 0 ? (
-                    <div className="fh-day-empty">
-                      <p>
-                        {isFeaturedMode
-                          ? "Sin destacados este día."
-                          : "Sin eventos para los filtros seleccionados."}
-                      </p>
-                    </div>
-                  ) : (
-                    renderEventSections(section.events)
-                  )}
+                  {renderEventSections(section.events)}
                 </section>
               ))}
             </div>
