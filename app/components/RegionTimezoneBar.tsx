@@ -1,28 +1,35 @@
 "use client";
 
-import { LATAM_COUNTRIES, useTimezone } from "../lib/timezone-context";
-import type { LatamCountryId } from "../lib/timezone-config";
+import {
+  LATAM_COUNTRIES,
+  SPAIN_ZONES,
+  useTimezone,
+} from "../lib/timezone-context";
+import type { LatamCountryId, SpainZoneId } from "../lib/timezone-config";
 
 export function RegionTimezoneBar() {
-  const { prefs, timeZoneLabel, setRegion, setLatamCountry } = useTimezone();
+  const { prefs, timeZoneLabel, setRegion, setSpainZone, setLatamCountry } =
+    useTimezone();
 
   return (
-    <div className="fh-tz-bar" role="region" aria-label="Zona horaria">
-      <div className="fh-tz-bar-inner">
-        <span className="fh-tz-bar-label">Horario</span>
+    <div className="fh-tz-picker" role="region" aria-label="Zona horaria">
+      <span className="fh-tz-picker-icon" aria-hidden>
+        ⏱
+      </span>
 
-        <div className="fh-tz-region-toggle" role="group" aria-label="Región">
+      <div className="fh-tz-picker-stack">
+        <div className="fh-tz-picker-tabs" role="group" aria-label="Región">
           <button
             type="button"
-            className={`fh-tz-region-btn${prefs.region === "es" ? " active" : ""}`}
+            className={`fh-tz-tab${prefs.region === "es" ? " active" : ""}`}
             aria-pressed={prefs.region === "es"}
             onClick={() => setRegion("es")}
           >
-            España
+            ES
           </button>
           <button
             type="button"
-            className={`fh-tz-region-btn${prefs.region === "latam" ? " active" : ""}`}
+            className={`fh-tz-tab${prefs.region === "latam" ? " active" : ""}`}
             aria-pressed={prefs.region === "latam"}
             onClick={() => setRegion("latam")}
           >
@@ -30,12 +37,28 @@ export function RegionTimezoneBar() {
           </button>
         </div>
 
-        {prefs.region === "latam" ? (
-          <label className="fh-tz-country">
-            <span className="sr-only">País y huso horario</span>
+        <label className="fh-tz-picker-zone">
+          <span className="sr-only">
+            {prefs.region === "es" ? "Zona de España" : "País LATAM"}
+          </span>
+          {prefs.region === "es" ? (
+            <select
+              value={prefs.spainZone}
+              onChange={(e) => setSpainZone(e.target.value as SpainZoneId)}
+              aria-label="Zona de España"
+            >
+              {SPAIN_ZONES.map((zone) => (
+                <option key={zone.id} value={zone.id}>
+                  {zone.label}
+                </option>
+              ))}
+            </select>
+          ) : (
             <select
               value={prefs.latamCountry}
-              onChange={(e) => setLatamCountry(e.target.value as LatamCountryId)}
+              onChange={(e) =>
+                setLatamCountry(e.target.value as LatamCountryId)
+              }
               aria-label="País y huso horario"
             >
               {LATAM_COUNTRIES.map((country) => (
@@ -44,14 +67,10 @@ export function RegionTimezoneBar() {
                 </option>
               ))}
             </select>
-          </label>
-        ) : (
-          <span className="fh-tz-current">{timeZoneLabel}</span>
-        )}
+          )}
+        </label>
 
-        {prefs.region === "latam" ? (
-          <span className="fh-tz-current fh-tz-current-compact">{timeZoneLabel}</span>
-        ) : null}
+        <span className="fh-tz-picker-active">{timeZoneLabel}</span>
       </div>
     </div>
   );

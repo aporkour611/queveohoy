@@ -13,7 +13,7 @@
 
 .fh-content {
   background-color: var(--qvh-bg-elevated);
-  padding: var(--qvh-header-h) 0 40px;
+  padding: var(--qvh-navbar-h) 0 40px;
   min-height: 100vh;
 }
 
@@ -23,101 +23,91 @@
   padding: 0 15px;
 }
 
-/* ── Zona horaria (barra superior) ── */
-.fh-tz-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 970;
-  background: #0a0a10;
-  border-bottom: 1px solid var(--qvh-border);
-}
-
-.fh-tz-bar-inner {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 0 15px;
-  min-height: var(--qvh-tz-bar-h);
+/* ── Selector horario (navbar, arriba a la derecha) ── */
+.fh-tz-picker {
   display: flex;
-  align-items: center;
-  gap: 10px 14px;
-  flex-wrap: wrap;
-}
-
-.fh-tz-bar-label {
-  font-family: "Barlow Condensed", sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--qvh-text-muted);
-}
-
-.fh-tz-region-toggle {
-  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 12px;
   border: 1px solid var(--qvh-border);
-  border-radius: 999px;
-  overflow: hidden;
+  background: linear-gradient(180deg, #12121a 0%, #0a0a10 100%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  max-width: 168px;
 }
 
-.fh-tz-region-btn {
+.fh-tz-picker-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+  margin-top: 2px;
+  opacity: 0.85;
+}
+
+.fh-tz-picker-stack {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.fh-tz-picker-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  padding: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.fh-tz-tab {
   border: 0;
+  border-radius: 999px;
   background: transparent;
   color: var(--qvh-text-muted);
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 5px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 4px 0;
   cursor: pointer;
 }
 
-.fh-tz-region-btn.active {
+.fh-tz-tab.active {
   background: var(--qvh-purple);
   color: #fff;
 }
 
-.fh-tz-country select {
+.fh-tz-picker-zone select {
+  width: 100%;
+  box-sizing: border-box;
   appearance: none;
-  background: var(--qvh-bg-panel);
-  color: var(--qvh-text);
-  border: 1px solid var(--qvh-border);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  padding: 6px 28px 6px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   font-weight: 600;
+  padding: 5px 24px 5px 8px;
   cursor: pointer;
   background-image:
-    linear-gradient(45deg, transparent 50%, var(--qvh-text-muted) 50%),
-    linear-gradient(135deg, var(--qvh-text-muted) 50%, transparent 50%);
+    linear-gradient(45deg, transparent 50%, #9a9ab0 50%),
+    linear-gradient(135deg, #9a9ab0 50%, transparent 50%);
   background-position:
-    calc(100% - 14px) 50%,
-    calc(100% - 9px) 50%;
-  background-size: 5px 5px, 5px 5px;
+    calc(100% - 11px) 50%,
+    calc(100% - 7px) 50%;
+  background-size: 4px 4px, 4px 4px;
   background-repeat: no-repeat;
 }
 
-.fh-tz-current {
+.fh-tz-picker-active {
   font-family: "Barlow Condensed", sans-serif;
-  font-size: 0.88rem;
-  color: var(--qvh-text-muted);
-}
-
-.fh-tz-current-compact {
-  margin-left: auto;
-}
-
-@media (max-width: 640px) {
-  .fh-tz-bar-inner {
-    gap: 8px 10px;
-  }
-
-  .fh-tz-current-compact {
-    width: 100%;
-    margin-left: 0;
-    font-size: 0.82rem;
-  }
+  font-size: 0.72rem;
+  line-height: 1.1;
+  color: var(--qvh-purple-hover);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Navbar (solo esta barra queda fija al scroll) ── */
@@ -127,7 +117,7 @@
   box-shadow: 0 1px 0 var(--qvh-border);
   border-bottom: 1px solid var(--qvh-border);
   position: fixed;
-  top: var(--qvh-tz-bar-h);
+  top: 0;
   left: 0;
   right: 0;
   width: 100%;
@@ -176,8 +166,9 @@
   grid-column: 3;
   grid-row: 1;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.45rem;
   flex-shrink: 0;
   align-self: center;
 }
@@ -282,6 +273,22 @@
   .fh-nav-links {
     grid-column: 3;
     grid-row: 1;
+    gap: 0.25rem;
+  }
+
+  .fh-tz-picker {
+    max-width: 118px;
+    padding: 5px 7px;
+    gap: 6px;
+  }
+
+  .fh-tz-picker-active {
+    display: none;
+  }
+
+  .fh-nav-links a {
+    font-size: 0.95rem;
+    padding: 0.3rem 0.45rem;
   }
 
   .qvh-logo-tiles .qvh-tile {
@@ -387,7 +394,7 @@
 }
 
 .fh-day-section {
-  scroll-margin-top: calc(var(--qvh-header-h) + 8px);
+  scroll-margin-top: calc(var(--qvh-navbar-h) + 8px);
 }
 
 .fh-day-empty {

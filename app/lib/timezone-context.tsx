@@ -15,9 +15,11 @@ import {
   parseTimezonePrefs,
   resolveTimeZone,
   resolveTimeZoneLabel,
+  SPAIN_ZONES,
   TIMEZONE_STORAGE_KEY,
   type LatamCountryId,
   type RegionId,
+  type SpainZoneId,
   type TimezonePrefs,
 } from "./timezone-config";
 
@@ -26,6 +28,7 @@ type TimezoneContextValue = {
   timeZone: string;
   timeZoneLabel: string;
   setRegion: (region: RegionId) => void;
+  setSpainZone: (zone: SpainZoneId) => void;
   setLatamCountry: (country: LatamCountryId) => void;
 };
 
@@ -54,6 +57,10 @@ export function TimezoneProvider({ children }: { children: ReactNode }) {
     setPrefs((prev) => ({ ...prev, region }));
   }, []);
 
+  const setSpainZone = useCallback((spainZone: SpainZoneId) => {
+    setPrefs((prev) => ({ ...prev, spainZone, region: "es" }));
+  }, []);
+
   const setLatamCountry = useCallback((latamCountry: LatamCountryId) => {
     setPrefs((prev) => ({ ...prev, latamCountry, region: "latam" }));
   }, []);
@@ -64,9 +71,10 @@ export function TimezoneProvider({ children }: { children: ReactNode }) {
       timeZone: resolveTimeZone(prefs),
       timeZoneLabel: resolveTimeZoneLabel(prefs),
       setRegion,
+      setSpainZone,
       setLatamCountry,
     }),
-    [prefs, setRegion, setLatamCountry]
+    [prefs, setRegion, setSpainZone, setLatamCountry]
   );
 
   return (
@@ -82,4 +90,4 @@ export function useTimezone() {
   return ctx;
 }
 
-export { LATAM_COUNTRIES };
+export { LATAM_COUNTRIES, SPAIN_ZONES };

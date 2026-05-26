@@ -254,7 +254,7 @@ function HomePage() {
     const anchor =
       parseFloat(
         getComputedStyle(document.documentElement).getPropertyValue(
-          "--qvh-header-h"
+          "--qvh-navbar-h"
         )
       ) + 8;
 
@@ -293,7 +293,6 @@ function HomePage() {
 
   return (
     <div className="fh-body">
-      <RegionTimezoneBar />
       <nav className="fh-navbar">
         <div className="fh-navbar-inner">
           <Logo onHomeClick={resetHome} />
@@ -301,6 +300,7 @@ function HomePage() {
             Qué ver <span className="qvh-hero-accent">hoy</span> en TV y streaming
           </h1>
           <div className="fh-nav-links">
+            <RegionTimezoneBar />
             <AuthNavLink />
             <AdminNavLink />
           </div>
