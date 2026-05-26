@@ -101,6 +101,21 @@ function renderEventSections(events: EventRow[]) {
   );
 }
 
+function HomeShell() {
+  return (
+    <div className="fh-body">
+      <main className="fh-content">
+        <div className="fh-container fh-main">
+          <div className="fh-empty fh-loading" style={{ minHeight: "40vh" }}>
+            <div className="qvh-spinner" aria-hidden />
+            <p>Cargando agenda…</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export function HomePage({
   initialEvents = [],
   initialError = null,
@@ -108,6 +123,16 @@ export function HomePage({
   pageLead,
   children,
 }: Props = {}) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
+  if (!ready) {
+    return <HomeShell />;
+  }
+
   return (
     <TimezoneProvider>
       <FavoritesProvider>
