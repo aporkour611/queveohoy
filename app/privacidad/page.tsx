@@ -1,9 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "../components/Logo";
+import { pageMetadata } from "../lib/seo";
 
-export const metadata = {
-  title: "Política de privacidad — queveohoy.es",
-};
+export const metadata: Metadata = pageMetadata(
+  "/privacidad",
+  "Política de privacidad",
+  "Información sobre el tratamiento de datos personales, cuentas de usuario y favoritos en queveohoy.es."
+);
 
 export default function PrivacidadPage() {
   return (

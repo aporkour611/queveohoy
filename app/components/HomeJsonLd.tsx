@@ -1,46 +1,12 @@
-import {
-  defaultDescription,
-  siteBrand,
-  siteName,
-  siteUrl,
-} from "../lib/seo";
+import type { EventRow } from "../components/types";
+import { buildHomeJsonLd } from "../lib/seo-jsonld";
 
-export function HomeJsonLd() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${siteUrl}/#organization`,
-        name: siteBrand,
-        url: siteUrl,
-        logo: `${siteUrl}/logo-queveohoy.png`,
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${siteUrl}/#website`,
-        name: siteName,
-        alternateName: ["que veo hoy", "qué ver hoy", "queveohoy"],
-        url: siteUrl,
-        description: defaultDescription,
-        inLanguage: "es-ES",
-        publisher: { "@id": `${siteUrl}/#organization` },
-      },
-      {
-        "@type": "WebPage",
-        "@id": `${siteUrl}/#webpage`,
-        url: siteUrl,
-        name: "Qué ver hoy en TV y streaming",
-        description: defaultDescription,
-        isPartOf: { "@id": `${siteUrl}/#website` },
-        about: {
-          "@type": "Thing",
-          name: "Programación deportiva y entretenimiento en televisión",
-        },
-        inLanguage: "es-ES",
-      },
-    ],
-  };
+type Props = {
+  events: EventRow[];
+};
+
+export function HomeJsonLd({ events }: Props) {
+  const jsonLd = buildHomeJsonLd(events);
 
   return (
     <script

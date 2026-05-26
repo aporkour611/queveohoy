@@ -1,9 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "../components/Logo";
+import { pageMetadata } from "../lib/seo";
 
-export const metadata = {
-  title: "Política de cookies — queveohoy.es",
-};
+export const metadata: Metadata = pageMetadata(
+  "/cookies",
+  "Política de cookies",
+  "Cookies, almacenamiento local y sesión de cuenta utilizados en queveohoy.es."
+);
 
 export default function CookiesPage() {
   return (

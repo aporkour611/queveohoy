@@ -88,6 +88,25 @@ export const rootMetadata: Metadata = {
   },
 };
 
+export function pageMetadata(
+  path: string,
+  title: string,
+  description: string
+): Metadata {
+  const url = path === "/" ? siteUrl : `${siteUrl}${path}`;
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      ...defaultOpenGraph,
+      title,
+      description,
+      url,
+    },
+  };
+}
+
 export const homeMetadata: Metadata = {
   title: homeTitle,
   description: defaultDescription,

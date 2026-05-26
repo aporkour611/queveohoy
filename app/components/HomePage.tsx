@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 import {
@@ -33,6 +34,7 @@ import { resolveDayEventsForFeed } from "../lib/upcoming-events";
 type Props = {
   initialEvents: EventRow[];
   initialError: string | null;
+  seoOutline?: ReactNode;
 };
 
 function groupForDisplay(events: EventRow[]) {
@@ -97,20 +99,21 @@ function renderEventSections(events: EventRow[]) {
   );
 }
 
-export function HomePage({ initialEvents, initialError }: Props) {
+export function HomePage({ initialEvents, initialError, seoOutline }: Props) {
   return (
     <TimezoneProvider>
       <FavoritesProvider>
         <HomePageContent
           initialEvents={initialEvents}
           initialError={initialError}
+          seoOutline={seoOutline}
         />
       </FavoritesProvider>
     </TimezoneProvider>
   );
 }
 
-function HomePageContent({ initialEvents, initialError }: Props) {
+function HomePageContent({ initialEvents, initialError, seoOutline }: Props) {
   const { timeZone } = useTimezone();
   const [events, setEvents] = useState(initialEvents);
   const [loading, setLoading] = useState(false);
@@ -333,6 +336,8 @@ function HomePageContent({ initialEvents, initialError }: Props) {
               </section>
             </div>
           ) : null}
+
+          {seoOutline}
 
           <SiteFooter />
         </div>

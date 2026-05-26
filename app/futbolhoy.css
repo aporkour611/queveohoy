@@ -1908,3 +1908,51 @@
     display: none;
   }
 }
+
+/* SEO: agenda semanal indexable (HTML estático en servidor) */
+.fh-seo-outline {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 32px;
+  border-top: 1px solid var(--fh-border, rgba(255, 255, 255, 0.08));
+}
+
+.fh-seo-outline-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--fh-muted, rgba(255, 255, 255, 0.55));
+  margin: 0 0 12px;
+}
+
+.fh-seo-outline-day {
+  margin-bottom: 16px;
+}
+
+.fh-seo-outline-day:last-child {
+  margin-bottom: 0;
+}
+
+.fh-seo-outline-day h3 {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fh-text, #fff);
+  margin: 0 0 6px;
+}
+
+.fh-seo-outline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fh-seo-outline-list li {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--fh-muted, rgba(255, 255, 255, 0.5));
+  padding: 2px 0;
+}
+
+.fh-seo-outline-list li strong {
+  color: var(--fh-text-secondary, rgba(255, 255, 255, 0.75));
+  font-weight: 500;
+}

@@ -1,9 +1,10 @@
 import type { EventRow } from "../components/types";
+import { cache } from "react";
 import { createClient } from "./supabase/server";
 import { FEED_DAY_COUNT, normalizeFeedEvents } from "./events-feed";
 import { getEventsQueryDateRange } from "./timezone";
 
-export async function fetchFeedEvents(): Promise<{
+async function loadFeedEvents(): Promise<{
   events: EventRow[];
   error: string | null;
 }> {
@@ -24,3 +25,5 @@ export async function fetchFeedEvents(): Promise<{
 
   return { events: normalizeFeedEvents(data as EventRow[]), error: null };
 }
+
+export const fetchFeedEvents = cache(loadFeedEvents);
