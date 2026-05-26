@@ -8,16 +8,11 @@ import {
 import type { LatamCountryId, SpainZoneId } from "../lib/timezone-config";
 
 export function RegionTimezoneBar() {
-  const { prefs, timeZoneLabel, setRegion, setSpainZone, setLatamCountry } =
-    useTimezone();
+  const { prefs, setRegion, setSpainZone, setLatamCountry } = useTimezone();
 
   return (
     <div className="fh-tz-picker" role="region" aria-label="Zona horaria">
-      <span className="fh-tz-picker-icon" aria-hidden>
-        ⏱
-      </span>
-
-      <div className="fh-tz-picker-stack">
+      <div className="fh-tz-picker-row">
         <div className="fh-tz-picker-tabs" role="group" aria-label="Región">
           <button
             type="button"
@@ -69,8 +64,6 @@ export function RegionTimezoneBar() {
             </select>
           )}
         </label>
-
-        <span className="fh-tz-picker-active">{timeZoneLabel}</span>
       </div>
     </div>
   );
