@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AccountShell } from "../components/AccountShell";
 import { createClient } from "../lib/supabase/server";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function CuentaLayout({
   children,

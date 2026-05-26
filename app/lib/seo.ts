@@ -20,9 +20,20 @@ export const seoKeywords = [
   "que ver hoy en tv",
   "partidos hoy",
   "partidos hoy en la tele",
+  "partidos hoy tv",
   "fútbol hoy tv",
+  "futbol hoy tv",
+  "champions hoy",
+  "champions league hoy",
+  "laliga hoy",
+  "laliga hoy tv",
   "agenda tv hoy",
   "horarios partidos hoy",
+  "formula 1 hoy",
+  "f1 hoy tv",
+  "ufc hoy",
+  "motogp hoy",
+  "series hoy tv",
   "queveohoy",
 ];
 
@@ -91,18 +102,26 @@ export const rootMetadata: Metadata = {
 export function pageMetadata(
   path: string,
   title: string,
-  description: string
+  description: string,
+  keywords?: string[]
 ): Metadata {
   const url = path === "/" ? siteUrl : `${siteUrl}${path}`;
   return {
     title,
     description,
+    ...(keywords?.length ? { keywords } : {}),
     alternates: { canonical: url },
     openGraph: {
       ...defaultOpenGraph,
       title,
       description,
       url,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/logo-queveohoy.png"],
     },
   };
 }

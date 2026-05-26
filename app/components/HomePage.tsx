@@ -34,6 +34,8 @@ import { resolveDayEventsForFeed } from "../lib/upcoming-events";
 type Props = {
   initialEvents: EventRow[];
   initialError: string | null;
+  pageTitle?: string;
+  pageLead?: string;
   seoOutline?: ReactNode;
 };
 
@@ -99,13 +101,21 @@ function renderEventSections(events: EventRow[]) {
   );
 }
 
-export function HomePage({ initialEvents, initialError, seoOutline }: Props) {
+export function HomePage({
+  initialEvents,
+  initialError,
+  pageTitle,
+  pageLead,
+  seoOutline,
+}: Props) {
   return (
     <TimezoneProvider>
       <FavoritesProvider>
         <HomePageContent
           initialEvents={initialEvents}
           initialError={initialError}
+          pageTitle={pageTitle}
+          pageLead={pageLead}
           seoOutline={seoOutline}
         />
       </FavoritesProvider>
@@ -113,7 +123,13 @@ export function HomePage({ initialEvents, initialError, seoOutline }: Props) {
   );
 }
 
-function HomePageContent({ initialEvents, initialError, seoOutline }: Props) {
+function HomePageContent({
+  initialEvents,
+  initialError,
+  pageTitle = "Qué ver hoy en TV y streaming",
+  pageLead = "Partidos, Champions, LaLiga, F1, UFC, baloncesto, series y más con horario y canal en España.",
+  seoOutline,
+}: Props) {
   const { timeZone } = useTimezone();
   const [events, setEvents] = useState(initialEvents);
   const [loading, setLoading] = useState(false);
@@ -259,11 +275,8 @@ function HomePageContent({ initialEvents, initialError, seoOutline }: Props) {
 
       <main className="fh-content">
         <div className="fh-container fh-main">
-          <h1 className="fh-page-title">Qué ver hoy en TV y streaming</h1>
-          <p className="fh-page-lead">
-            Partidos, Champions, LaLiga, F1, UFC, baloncesto, series y más con
-            horario y canal en España.
-          </p>
+          <h1 className="fh-page-title">{pageTitle}</h1>
+          <p className="fh-page-lead">{pageLead}</p>
 
           <EventFilters
             selected={selectedSports}

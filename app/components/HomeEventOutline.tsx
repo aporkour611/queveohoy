@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { EventRow } from "./types";
 import {
   buildDisplayDays,
@@ -7,13 +8,8 @@ import {
 } from "../lib/timezone";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { displayTime } from "../lib/madrid-time";
-
-function eventLabel(event: EventRow): string {
-  if (event.home_team && event.away_team) {
-    return `${event.home_team} vs ${event.away_team}`;
-  }
-  return event.title?.trim() || "Evento";
-}
+import { eventLabel } from "../lib/seo-events";
+import { hubLinkForEvent } from "./SeoHubLinks";
 
 function eventMeta(event: EventRow): string {
   const parts = [
@@ -52,12 +48,23 @@ export function HomeEventOutline({ events }: Props) {
         <div key={day.date} className="fh-seo-outline-day">
           <h3 id={`seo-day-${day.date}`}>{day.title}</h3>
           <ul>
-            {day.events.map((event) => (
-              <li key={event.id}>
-                <strong>{eventLabel(event)}</strong>
-                {eventMeta(event) ? ` — ${eventMeta(event)}` : ""}
-              </li>
-            ))}
+            {day.events.map((event) => {
+              const hub = hubLinkForEvent(event);
+
+              return (
+                <li key={event.id}>
+                  <strong>{eventLabel(event)}</strong>
+                  {eventMeta(event) ? ` — ${eventMeta(event)}` : ""}
+                  {hub ? (
+                    <>
+                      {" "}
+                      ·{" "}
+                      <Link href={`/${hub.slug}`}>{hub.title}</Link>
+                    </>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         </div>
       ))}

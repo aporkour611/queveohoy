@@ -6,6 +6,7 @@ import { fetchFeedEvents } from "./lib/events-feed-server";
 import {
   buildHomeMetadataDescription,
   buildHomeMetadataTitle,
+  buildHomePageLead,
 } from "./lib/seo-jsonld";
 import { defaultOpenGraph, siteUrl } from "./lib/seo";
 
@@ -37,6 +38,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Page() {
   const { events, error } = await fetchFeedEvents();
+  const pageTitle = buildHomeMetadataTitle();
+  const pageLead = buildHomePageLead(events);
 
   return (
     <>
@@ -44,6 +47,8 @@ export default async function Page() {
       <HomePage
         initialEvents={events}
         initialError={error}
+        pageTitle={pageTitle}
+        pageLead={pageLead}
         seoOutline={<HomeEventOutline events={events} />}
       />
     </>
