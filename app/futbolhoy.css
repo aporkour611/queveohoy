@@ -1317,6 +1317,20 @@
   border-radius: 8px;
   padding: 10px 12px;
   font: inherit;
+  color: #212529;
+  background-color: #fff;
+}
+
+.fh-auth-field input::placeholder {
+  color: #8a8a8a;
+}
+
+.fh-auth-field input:-webkit-autofill,
+.fh-auth-field input:-webkit-autofill:hover,
+.fh-auth-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #212529;
+  box-shadow: 0 0 0 1000px #fff inset;
+  transition: background-color 9999s ease-out 0s;
 }
 
 .fh-auth-field input:focus {
@@ -1351,7 +1365,7 @@
   margin: 4px 0 0;
   text-align: center;
   font-size: 0.92rem;
-  color: var(--qvh-text-muted);
+  color: #666;
 }
 
 .fh-auth-switch a {
@@ -1430,6 +1444,7 @@
   font-family: "Barlow Condensed", sans-serif;
   font-size: 1.1rem;
   font-weight: 600;
+  color: #212529;
 }
 
 .fh-account-soon p {
@@ -1451,6 +1466,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  color: #212529;
 }
 
 .fh-btn-ghost {
