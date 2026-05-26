@@ -8,9 +8,11 @@ import {
   toMadridDateKey,
 } from "./madrid-time";
 import {
+  encodeUfcSource as buildUfcSource,
   parseUfcEventNumberFromSource,
   parseUfcImage,
   parseUfcKindFromSource,
+  parseUfcMainEventFighters,
   type UfcKind,
   ufcKindLabel,
 } from "./thesportsdb-ufc-client";
@@ -18,8 +20,10 @@ import {
 export type { UfcKind } from "./thesportsdb-ufc-client";
 export {
   parseUfcEventNumberFromSource,
+  parseUfcFighterImages,
   parseUfcImage,
   parseUfcKindFromSource,
+  parseUfcMainEventFighters,
   ufcKindLabel,
 } from "./thesportsdb-ufc-client";
 
@@ -44,6 +48,8 @@ export type UfcCronEvent = {
   competition: string;
   platform: string;
   source: string;
+  home_team?: string | null;
+  away_team?: string | null;
 };
 
 type RawEvent = {
@@ -137,14 +143,94 @@ export function encodeUfcSource(
   poster?: string | null,
   thumb?: string | null,
   kind?: UfcKind,
-  eventNumber?: number
+  eventNumber?: number,
+  fighters?: { f1?: string | null; f2?: string | null }
 ): string {
-  const parts = ["ufc"];
-  const image = poster?.trim() || thumb?.trim();
-  if (image) parts.push(`img:${image}`);
-  if (eventNumber) parts.push(`num:${eventNumber}`);
-  if (kind) parts.push(`kind:${kind}`);
-  return parts.join("|");
+  return buildUfcSource({
+    img: poster?.trim() || thumb?.trim() || null,
+    f1: fighters?.f1,
+    f2: fighters?.f2,
+    kind,
+    eventNumber,
+  });
+}
+
+async function lookupFighterImage(
+  name: string,
+  cache: Map<string, string | null>
+): Promise<string | null> {
+  const key = name.trim().toLowerCase();
+  if (!key) return null;
+  if (cache.has(key)) return cache.get(key) ?? null;
+
+  const surname = name.trim().split(/\s+/).pop() ?? name.trim();
+  const queries = [name.trim(), surname].filter(
+    (q, index, arr) => q && arr.indexOf(q) === index
+  );
+
+  for (const query of queries) {
+    const data = await fetchJson<{
+      player?: Array<{
+        strSport?: string;
+        strPlayer?: string;
+        strCutout?: string;
+        strThumb?: string;
+      }> | null;
+    }>(`/searchplayers.php?p=${encodeURIComponent(query.replace(/\s+/g, "_"))}`);
+
+    const candidates = (data?.player ?? []).filter(
+      (player) =>
+        player.strSport === "Fighting" ||
+        player.strSport === "MMA" ||
+        !player.strSport
+    );
+
+    const surnameLower = surname.toLowerCase();
+    const match =
+      candidates.find((player) =>
+        player.strPlayer?.toLowerCase().includes(surnameLower)
+      ) ?? candidates[0];
+
+    const image = match?.strCutout?.trim() || match?.strThumb?.trim();
+    if (image) {
+      cache.set(key, image);
+      return image;
+    }
+  }
+
+  cache.set(key, null);
+  return null;
+}
+
+async function enrichUfcFighters(
+  event: UfcCronEvent,
+  cache: Map<string, string | null>
+): Promise<UfcCronEvent> {
+  const matchup =
+    parseUfcMainEventFighters(event.competition, event.title) ??
+    (event.home_team && event.away_team
+      ? { n1: event.home_team, n2: event.away_team }
+      : null);
+
+  if (!matchup) return event;
+
+  const [f1, f2] = await Promise.all([
+    lookupFighterImage(matchup.n1, cache),
+    lookupFighterImage(matchup.n2, cache),
+  ]);
+
+  const kind = parseUfcKindFromSource(event.source);
+  const eventNumber = parseUfcEventNumberFromSource(event.source) ?? undefined;
+
+  return {
+    ...event,
+    home_team: matchup.n1,
+    away_team: matchup.n2,
+    source: encodeUfcSource(null, parseUfcImage(event.source), kind, eventNumber, {
+      f1,
+      f2,
+    }),
+  };
 }
 
 export function formatEventDateLabel(date: string): string {
@@ -217,6 +303,7 @@ export async function fetchUfcCronEvents(
 ): Promise<UfcCronEvent[]> {
   const weekDates = getMadridWeekDates(dayCount);
   const year = new Date().getFullYear();
+  const fighterCache = new Map<string, string | null>();
   const [nextData, seasonData] = await Promise.all([
     fetchJson<{ events?: RawEvent[] | null }>(
       `/eventsnextleague.php?id=${UFC_LEAGUE_ID}`
@@ -247,18 +334,22 @@ export async function fetchUfcCronEvents(
       a.date.localeCompare(b.date) || (a.time ?? "").localeCompare(b.time ?? "")
   );
 
+  let combined: UfcCronEvent[];
   if (mainEvents.length >= UFC_MAX_UPCOMING) {
-    return mainEvents.slice(0, UFC_MAX_UPCOMING);
+    combined = mainEvents.slice(0, UFC_MAX_UPCOMING);
+  } else {
+    const extras = roadEvents
+      .sort(
+        (a, b) =>
+          a.date.localeCompare(b.date) || (a.time ?? "").localeCompare(b.time ?? "")
+      )
+      .slice(0, UFC_MAX_UPCOMING - mainEvents.length);
+    combined = [...mainEvents, ...extras];
   }
 
-  const extras = roadEvents
-    .sort(
-      (a, b) =>
-        a.date.localeCompare(b.date) || (a.time ?? "").localeCompare(b.time ?? "")
-    )
-    .slice(0, UFC_MAX_UPCOMING - mainEvents.length);
-
-  return [...mainEvents, ...extras];
+  return Promise.all(
+    combined.map((event) => enrichUfcFighters(event, fighterCache))
+  );
 }
 
 /** @deprecated Usar fetchUfcCronEvents vía cron */

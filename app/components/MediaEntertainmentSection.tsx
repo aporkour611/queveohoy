@@ -9,12 +9,14 @@ type Props = {
 };
 
 function MediaRail({
-  kicker,
-  title,
+  label,
+  accent,
+  count,
   events,
 }: {
-  kicker: string;
-  title: string;
+  label: string;
+  accent: "cine" | "series";
+  count: number;
   events: EventRow[];
 }) {
   if (events.length === 0) return null;
@@ -22,8 +24,11 @@ function MediaRail({
   return (
     <div className="qvh-media-rail-block">
       <div className="qvh-media-rail-head">
-        <p className="qvh-media-rail-kicker">{kicker}</p>
-        <h4 className="qvh-media-rail-title">{title}</h4>
+        <div className={`qvh-media-rail-accent qvh-media-rail-accent-${accent}`} />
+        <div className="qvh-media-rail-copy">
+          <h4 className="qvh-media-rail-title">{label}</h4>
+          <span className="qvh-media-rail-count">{count}</span>
+        </div>
       </div>
       <div className="qvh-media-rail-scroll">
         <div className="qvh-media-rail-track">
@@ -41,13 +46,32 @@ export function MediaEntertainmentSection({ cine, series }: Props) {
 
   return (
     <section className="qvh-media-section" aria-label="Cine y series">
-      <div className="qvh-media-section-head">
-        <p className="qvh-media-section-kicker">Entretenimiento</p>
-        <h3 className="qvh-media-section-title">Cine y series</h3>
-      </div>
+      <header className="qvh-media-hero">
+        <div className="qvh-media-hero-glow" aria-hidden />
+        <div className="qvh-media-hero-inner">
+          <p className="qvh-media-hero-eyebrow">
+            <span className="qvh-media-hero-dot" aria-hidden />
+            Entretenimiento
+          </p>
+          <h3 className="qvh-media-hero-title">
+            Cine <span className="qvh-media-hero-amp">&</span> series
+          </h3>
+        </div>
+        <div className="qvh-media-hero-rule" aria-hidden />
+      </header>
 
-      <MediaRail kicker="Estrenos" title="En cines" events={cine} />
-      <MediaRail kicker="Televisión" title="Capítulos y series" events={series} />
+      <MediaRail
+        label="En cines"
+        accent="cine"
+        count={cine.length}
+        events={cine}
+      />
+      <MediaRail
+        label="Capítulos y series"
+        accent="series"
+        count={series.length}
+        events={series}
+      />
     </section>
   );
 }

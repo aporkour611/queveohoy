@@ -4,6 +4,7 @@ import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { useTimezone } from "../lib/timezone-context";
+import { UfcFightVisual } from "./UfcFightVisual";
 
 type Props = {
   event: EventRow;
@@ -21,16 +22,26 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
   return (
     <article className={rootClass}>
       <div
-        className={`qvh-spotlight-visual ${card.visualClass ?? ""}`}
+        className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
+          card.showUfcDuel ? " qvh-spotlight-visual-ufc-duel" : ""
+        }`}
         style={
-          card.poster && !card.showTeamDuel
+          card.poster && !card.showTeamDuel && !card.showUfcDuel
             ? { backgroundImage: `url(${card.poster})` }
             : undefined
         }
       >
         <div className="qvh-spotlight-overlay" />
 
-        {card.showTeamDuel && card.homeCrest && card.awayCrest ? (
+        {card.showUfcDuel ? (
+          <UfcFightVisual
+            f1Url={card.homeCrest}
+            f2Url={card.awayCrest}
+            f1Name={card.homeName}
+            f2Name={card.awayName}
+            size="spotlight"
+          />
+        ) : card.showTeamDuel && card.homeCrest && card.awayCrest ? (
           <div className="qvh-spotlight-duel" aria-hidden>
             <div className="qvh-spotlight-duel-team">
               {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -118,7 +118,64 @@
 }
 
 .qvh-spotlight-visual-ufc {
-  background: linear-gradient(135deg, #1a0505 0%, #3d0a0a 45%, #120606 100%);
+  background:
+    radial-gradient(circle at 18% 110%, rgba(212, 20, 20, 0.35), transparent 45%),
+    radial-gradient(circle at 82% 110%, rgba(212, 20, 20, 0.35), transparent 45%),
+    linear-gradient(180deg, #120606 0%, #1a0505 42%, #0a0303 100%);
+}
+
+.qvh-spotlight-visual-ufc-duel {
+  min-height: 148px;
+}
+
+.qvh-spotlight-visual-ufc-duel .qvh-spotlight-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    rgba(0, 0, 0, 0.82) 100%
+  );
+}
+
+.qvh-ufc-duel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px 38px;
+}
+
+.qvh-ufc-fighter {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+  max-width: 46%;
+}
+
+.qvh-ufc-fighter-img {
+  max-height: 118px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.55));
+}
+
+.qvh-ufc-vs {
+  flex-shrink: 0;
+  align-self: center;
+  padding-bottom: 32px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
 }
 
 .qvh-spotlight-visual-futbol {

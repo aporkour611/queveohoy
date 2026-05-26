@@ -7,10 +7,13 @@ import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/footba
 import { buildEventDetails } from "../lib/event-details";
 import { parseTmdbPoster, parseTmdbEpisodeMeta } from "../lib/tmdb-client";
 import {
+  parseUfcFighterImages,
   parseUfcImage,
   parseUfcKindFromSource,
+  parseUfcMainEventFighters,
   ufcKindLabel,
 } from "../lib/thesportsdb-ufc-client";
+import { UfcFightVisual } from "./UfcFightVisual";
 import { parseChannels, isFreeTvChannel } from "../lib/channels";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
@@ -32,6 +35,11 @@ type SpotlightCardContent = {
   dateLabel: string;
   time: string;
   channels: string[];
+  ufcF1Url?: string | null;
+  ufcF2Url?: string | null;
+  ufcF1Name?: string | null;
+  ufcF2Name?: string | null;
+  showUfcDuel?: boolean;
 };
 
 function SpotlightCardContent({
@@ -44,13 +52,35 @@ function SpotlightCardContent({
   dateLabel,
   time,
   channels,
+  ufcF1Url,
+  ufcF2Url,
+  ufcF1Name,
+  ufcF2Name,
+  showUfcDuel = false,
 }: SpotlightCardContent) {
+  const duelActive =
+    showUfcDuel || Boolean(ufcF1Url || ufcF2Url || (ufcF1Name && ufcF2Name));
+
   return (
     <>
       <div
-        className={`fh-media-spotlight-visual ${visualClass}`}
-        style={posterUrl ? { backgroundImage: `url(${posterUrl})` } : undefined}
+        className={`fh-media-spotlight-visual ${visualClass}${
+          duelActive ? " fh-media-spotlight-visual-ufc-duel" : ""
+        }`}
+        style={
+          posterUrl && !duelActive
+            ? { backgroundImage: `url(${posterUrl})` }
+            : undefined
+        }
       >
+        {duelActive ? (
+          <UfcFightVisual
+            f1Url={ufcF1Url}
+            f2Url={ufcF2Url}
+            f1Name={ufcF1Name}
+            f2Name={ufcF2Name}
+          />
+        ) : null}
         <div className="fh-media-spotlight-overlay" aria-hidden />
         <span className={`fh-media-spotlight-badge ${badgeClass}`}>
           {badgeLabel}
@@ -226,6 +256,11 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   if (isUfc) {
     const ufcBadgeLabel =
       mediaTitle.startsWith("UFC") ? mediaTitle : ufcKindLabel(ufcKind ?? "other");
+    const { f1, f2 } = parseUfcFighterImages(event.source);
+    const matchup = parseUfcMainEventFighters(event.competition, event.title);
+    const f1Name = event.home_team || matchup?.n1 || null;
+    const f2Name = event.away_team || matchup?.n2 || null;
+    const showUfcDuel = Boolean(f1 || f2 || (f1Name && f2Name));
 
     return cardShell(
       <SpotlightCardContent
@@ -234,7 +269,12 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         badgeLabel={ufcBadgeLabel}
         title={mediaTitle}
         subtitle={ufcSubtitle}
-        posterUrl={posterUrl}
+        posterUrl={showUfcDuel ? null : posterUrl}
+        ufcF1Url={f1}
+        ufcF2Url={f2}
+        ufcF1Name={f1Name}
+        ufcF2Name={f2Name}
+        showUfcDuel={showUfcDuel}
         dateLabel={dateLabel}
         time={time}
         channels={channels}

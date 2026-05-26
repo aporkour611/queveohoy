@@ -10,8 +10,9 @@ import {
 } from "./football";
 import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb-client";
 import {
-  parseUfcImage,
+  parseUfcFighterImages,
   parseUfcKindFromSource,
+  parseUfcMainEventFighters,
   ufcKindLabel,
 } from "./thesportsdb-ufc-client";
 import type { EventRow } from "../components/types";
@@ -43,6 +44,7 @@ export type SpotlightCardModel = {
   homeName?: string;
   awayName?: string;
   showTeamDuel?: boolean;
+  showUfcDuel?: boolean;
 };
 
 function teamTitle(event: EventRow): string | null {
@@ -70,6 +72,10 @@ export function getSpotlightCardModel(
       kind === "ppv" || /^UFC\s+\d+$/i.test(eventName)
         ? eventName
         : cardLine || ufcKindLabel(kind);
+    const { f1, f2 } = parseUfcFighterImages(event.source);
+    const matchup = parseUfcMainEventFighters(event.competition, event.title);
+    const homeName = event.home_team || matchup?.n1;
+    const awayName = event.away_team || matchup?.n2;
 
     return {
       headline: eventName,
@@ -79,7 +85,11 @@ export function getSpotlightCardModel(
       time,
       meta: cardLine && cardLine !== ufcKindLabel(kind) ? cardLine : event.platform?.trim() || "UFC",
       platform: "UFC Fight Pass",
-      poster: parseUfcImage(event.source) ?? undefined,
+      showUfcDuel: Boolean(f1 || f2 || (homeName && awayName)),
+      homeCrest: f1,
+      awayCrest: f2,
+      homeName: homeName ?? undefined,
+      awayName: awayName ?? undefined,
       visualClass: "qvh-spotlight-visual-ufc",
     };
   }
