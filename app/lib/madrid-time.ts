@@ -127,25 +127,6 @@ export function madridDayTitle(dateKey: string, offsetFromToday: number): string
   return `${weekday}, ${day} de ${month}`;
 }
 
-export function formatEventDayShort(dateKey: string): string {
-  const weekday = formatMadridWeekday(dateKey, "short");
-  const month = formatMadridMonthShort(dateKey);
-  const day = madridDayNumber(dateKey);
-  return `${weekday} ${day} ${month.toLowerCase()}`;
-}
-
-export function formatUpcomingBadge(
-  eventDate: string,
-  selectedDate: string,
-  todayDate: string
-): string {
-  const when = formatEventDayShort(eventDate);
-  if (selectedDate === todayDate) {
-    return `Próximo · ${when} · no es hoy`;
-  }
-  return `Próximo · ${when}`;
-}
-
 /** Normaliza hora guardada (HH:mm o HH:mm:ss) */
 export function displayTime(time?: string | null): string {
   if (!time?.trim()) return "—";

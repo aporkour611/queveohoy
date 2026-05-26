@@ -15,7 +15,6 @@ import { competitionAccentClass, sportAccentClass } from "./lib/sport-accent";
 import {
   formatMadridMonthShort,
   formatMadridWeekday,
-  formatUpcomingBadge,
   getMadridWeekDates,
   madridDayNumber,
   madridDayOffset,
@@ -72,10 +71,7 @@ function groupEventsByDate(events: EventRow[]): [string, EventRow[]][] {
   return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
 }
 
-function renderEventSections(
-  events: EventRow[],
-  upcomingBadgeFor: (eventDate: string | null | undefined) => string | null
-) {
+function renderEventSections(events: EventRow[]) {
   const sections = groupForDisplay(events);
 
   return (
@@ -88,11 +84,7 @@ function renderEventSections(
           </div>
           <div className="fh-match-grid">
             {evs.map((e) => (
-              <MatchCard
-                key={e.id}
-                event={e}
-                upcomingBadge={upcomingBadgeFor(e.date)}
-              />
+              <MatchCard key={e.id} event={e} />
             ))}
           </div>
         </div>
@@ -106,11 +98,7 @@ function renderEventSections(
           </div>
           <div className="fh-match-grid">
             {evs.map((e) => (
-              <MatchCard
-                key={e.id}
-                event={e}
-                upcomingBadge={upcomingBadgeFor(e.date)}
-              />
+              <MatchCard key={e.id} event={e} />
             ))}
           </div>
         </div>
@@ -192,11 +180,6 @@ export default function Home() {
         isFeaturedMode,
       ]
     );
-
-  const upcomingBadgeFor = (eventDate: string | null | undefined) =>
-    isUpcoming && eventDate
-      ? formatUpcomingBadge(eventDate, selectedDate, todayDate)
-      : null;
 
   const upcomingByDate = useMemo(
     () => (isUpcoming ? groupEventsByDate(visibleEvents) : []),
@@ -303,10 +286,10 @@ export default function Home() {
                             madridDayOffset(todayDate, date)
                           )}
                         </h3>
-                        {renderEventSections(dateEvents, upcomingBadgeFor)}
+                        {renderEventSections(dateEvents)}
                       </div>
                     ))
-                  : renderEventSections(visibleEvents, upcomingBadgeFor)}
+                  : renderEventSections(visibleEvents)}
               </>
             )}
           </div>

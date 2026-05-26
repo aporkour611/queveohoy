@@ -10,10 +10,9 @@ import type { EventRow } from "./types";
 
 type Props = {
   event: EventRow;
-  upcomingBadge?: string | null;
 };
 
-export function MatchCard({ event, upcomingBadge }: Props) {
+export function MatchCard({ event }: Props) {
   const esportsLogos = parseEsportsTeamLogos(event.source);
   const footballIds =
     event.sport === "futbol"
@@ -47,12 +46,6 @@ export function MatchCard({ event, upcomingBadge }: Props) {
     <div className="fh-cardcol">
       <div className={`fh-match ${matchClass}`}>
         <div className="fh-m-comp" />
-
-        {upcomingBadge && (
-          <div className="fh-m-upcoming">
-            <span>{upcomingBadge}</span>
-          </div>
-        )}
 
         {isFinal && (
           <div className="fh-m-phase">
