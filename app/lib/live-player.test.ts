@@ -1,7 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { livePath } from "./event-slug";
+import { channelSlug, channelWatchPath, findChannelBySlug } from "./channel-slug";
 import { resolveLivePlayerEmbed } from "./live-player";
-import type { EventRow } from "../components/types";
+
+describe("channelSlug", () => {
+  it("genera slug estable", () => {
+    expect(channelSlug("La 1")).toBe("la-1");
+    expect(channelSlug("Twitch · Ibai")).toBe("twitch-ibai");
+  });
+
+  it("ruta de retransmisión por canal", () => {
+    expect(channelWatchPath("La 1")).toBe("/directo/la-1");
+  });
+
+  it("resuelve canal desde slug", () => {
+    const names = ["La 1", "Movistar+", "Twitch · Ibai"];
+    expect(findChannelBySlug("la-1", names)).toBe("La 1");
+    expect(findChannelBySlug("twitch-ibai", names)).toBe("Twitch · Ibai");
+  });
+});
 
 describe("resolveLivePlayerEmbed", () => {
   it("genera embed de Twitch con parent del sitio", () => {
@@ -22,23 +38,5 @@ describe("resolveLivePlayerEmbed", () => {
     expect(player.kind).toBe("rtve");
     expect(player.embedSrc).toContain("rtve.es/play/embed");
     expect(player.embedSrc).toContain("la-1");
-  });
-});
-
-describe("livePath", () => {
-  it("ruta estable por evento", () => {
-    const event: EventRow = {
-      id: 1,
-      title: "Real Madrid vs Barcelona",
-      date: "2026-05-27",
-      time: "21:00",
-      sport: "futbol",
-      home_team: "Real Madrid",
-      away_team: "Barcelona",
-    };
-
-    expect(livePath(event)).toBe(
-      "/vivo/2026-05-27-real-madrid-vs-barcelona"
-    );
   });
 });

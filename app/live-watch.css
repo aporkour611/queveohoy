@@ -14,19 +14,6 @@
   margin-bottom: 20px;
 }
 
-.fh-live-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 10px;
-  font-family: var(--qvh-font-display);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #ffb4b0;
-}
-
 .fh-live-title {
   margin: 0 0 8px;
   font-family: var(--qvh-font-display);
@@ -36,11 +23,8 @@
   color: var(--qvh-text);
 }
 
-.fh-live-meta {
+.fh-channel-watch .fh-live-title {
   margin: 0;
-  font-size: 0.92rem;
-  color: var(--qvh-text-muted);
-  line-height: 1.45;
 }
 
 .fh-live-stage {
@@ -85,44 +69,6 @@
   display: inline-block;
 }
 
-.fh-live-ended {
-  margin: 14px 0 0;
-  text-align: center;
-  font-size: 0.88rem;
-  color: var(--qvh-text-muted);
-}
-
-.fh-live-ended a {
-  color: var(--qvh-purple-hover);
-}
-
-.qvh-spotlight-card-live {
-  cursor: pointer;
-}
-
-.qvh-spotlight-card-live:hover {
-  outline: 1px solid rgba(227, 6, 19, 0.4);
-}
-
-.fh-match-live {
-  cursor: pointer;
-}
-
-.fh-match-live:hover {
-  outline: 1px solid rgba(227, 6, 19, 0.45);
-}
-
-.fh-match-live-hint {
-  margin: 8px 0 0;
-  text-align: center;
-  font-family: var(--qvh-font-display);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #ffb4b0;
-}
-
-.fh-match-live .fh-m-expand-hint {
-  color: #ffb4b0;
+.fh-channel-watch .fh-live-stage {
+  margin-top: 8px;
 }

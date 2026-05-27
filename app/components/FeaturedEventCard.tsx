@@ -1,7 +1,6 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import type { SpotlightCover } from "../lib/spotlight-art";
@@ -12,9 +11,7 @@ import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { EventCardStamp } from "./EventCardStamp";
 import { ChannelBadges } from "./ChannelBadge";
-import { EventLiveBadge } from "./EventLiveBadge";
 import { getFreeLiveBroadcast } from "../lib/event-live";
-import { livePath } from "../lib/event-slug";
 import { useLiveClock } from "../lib/use-live-clock";
 
 type Props = {
@@ -71,37 +68,14 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
   const card = getSpotlightCardModel(event, MADRID_TZ);
   const stamp = getEventCardStamp(event);
   const now = useLiveClock();
-  const live = useMemo(() => getFreeLiveBroadcast(event, now), [event, now]);
-  const router = useRouter();
-  const rootClass = [
-    "qvh-spotlight-card",
-    live ? "qvh-spotlight-card-live" : "",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  function openLive() {
-    if (live) router.push(livePath(event));
-  }
+  const liveChannel = useMemo(() => {
+    const live = getFreeLiveBroadcast(event, now);
+    return live?.channel ?? null;
+  }, [event, now]);
+  const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (
-    <article
-      className={rootClass}
-      role={live ? "button" : undefined}
-      tabIndex={live ? 0 : undefined}
-      onClick={live ? openLive : undefined}
-      onKeyDown={
-        live
-          ? (e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                openLive();
-              }
-            }
-          : undefined
-      }
-    >
+    <article className={rootClass}>
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
           card.showUfcDuel ? " qvh-spotlight-visual-ufc-duel" : ""
@@ -170,13 +144,12 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
       <div className="qvh-spotlight-body">
         <h3 className="qvh-spotlight-headline">{card.headline}</h3>
         {card.meta ? <p className="qvh-spotlight-meta">{card.meta}</p> : null}
-        <EventLiveBadge
-          event={event}
-          variant="spotlight"
-          watchPath={livePath(event)}
-        />
         {card.channelList?.length ? (
-          <ChannelBadges channels={card.channelList} variant="spotlight" />
+          <ChannelBadges
+            channels={card.channelList}
+            variant="spotlight"
+            liveChannel={liveChannel}
+          />
         ) : card.platform && card.platform !== card.meta ? (
           <p
             className={`qvh-spotlight-platform ${

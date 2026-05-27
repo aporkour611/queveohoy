@@ -19,18 +19,16 @@ import {
 import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { ChannelBadges } from "./ChannelBadge";
-import { EventLiveBadge } from "./EventLiveBadge";
 import { resolveChannelsForEvent } from "../lib/channels";
 import { getFreeLiveBroadcast } from "../lib/event-live";
 import { useLiveClock } from "../lib/use-live-clock";
-import { partidoPath, livePath } from "../lib/event-slug";
+import { partidoPath } from "../lib/event-slug";
 import {
   eventDisplayTitle,
   eventVersusTeams,
   isTeamVersusEvent,
 } from "../lib/event-display";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { competitionMatchClass } from "../lib/competition-style";
 import { eventDisplayTime } from "../lib/madrid-time";
 import { getEventCardStamp, type EventCardStampKind } from "../lib/event-card-stamp";
@@ -121,7 +119,6 @@ function SpotlightCardContent({
       <div className="fh-media-spotlight-body">
         <h4 className="fh-media-spotlight-title">{title}</h4>
         {subtitle ? <p className="fh-media-spotlight-meta">{subtitle}</p> : null}
-        <EventLiveBadge event={event} variant="spotlight" watchPath={livePath(event)} />
         {channels.length > 0 ? (
           <ChannelBadges
             channels={channels}
@@ -238,39 +235,26 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     [event, now]
   );
   const liveChannel = liveBroadcast?.channel ?? null;
-  const isLiveCard = Boolean(liveBroadcast);
-  const router = useRouter();
-  const detailPath = isLiveCard ? livePath(event) : partidoPath(event);
-
-  function handleCardActivate() {
-    if (isLiveCard) {
-      router.push(livePath(event));
-      return;
-    }
-    toggleExpanded();
-  }
 
   function toggleExpanded() {
     if (!hasExtraDetails) return;
     setExpanded((open) => !open);
   }
 
-  const cardInteractive = isLiveCard || hasExtraDetails;
-
   const cardShell = (children: ReactNode, extraClass = "", stampOnCard = false) => (
     <div className={`fh-cardcol${expanded ? " fh-cardcol-expanded" : ""}`}>
       <div
-        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${cardInteractive ? (isLiveCard ? " fh-match-live fh-match-expandable" : " fh-match-expandable") : ""}${stampOnCard && stamp ? " fh-match-stamped" : ""}`}
-        role={cardInteractive ? "button" : undefined}
-        tabIndex={cardInteractive ? 0 : undefined}
-        aria-expanded={hasExtraDetails && !isLiveCard ? expanded : undefined}
-        onClick={cardInteractive ? handleCardActivate : undefined}
+        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${hasExtraDetails ? " fh-match-expandable" : ""}${stampOnCard && stamp ? " fh-match-stamped" : ""}`}
+        role={hasExtraDetails ? "button" : undefined}
+        tabIndex={hasExtraDetails ? 0 : undefined}
+        aria-expanded={hasExtraDetails ? expanded : undefined}
+        onClick={hasExtraDetails ? toggleExpanded : undefined}
         onKeyDown={
-          cardInteractive
+          hasExtraDetails
             ? (e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  handleCardActivate();
+                  toggleExpanded();
                 }
               }
             : undefined
@@ -278,12 +262,10 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
       >
         {stampOnCard && stamp ? <EventCardStamp kind={stamp} /> : null}
         {children}
-        {expanded && hasExtraDetails && !isLiveCard ? (
+        {expanded && hasExtraDetails ? (
           <EventDetailsPanel event={event} />
-        ) : hasExtraDetails && !isLiveCard ? (
+        ) : hasExtraDetails ? (
           <p className="fh-m-expand-hint">Toca para más info</p>
-        ) : isLiveCard ? (
-          <p className="fh-m-expand-hint fh-match-live-hint">Ver retransmisión en directo</p>
         ) : null}
       </div>
     </div>
@@ -371,7 +353,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
           <>
             <div className="fh-m-title">
               <Link
-                href={detailPath}
+                href={partidoPath(event)}
                 className="fh-m-title-link"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -401,7 +383,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
           <>
             <div className="fh-m-title">
               <Link
-                href={detailPath}
+                href={partidoPath(event)}
                 className="fh-m-title-link fh-m-title-solo"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -415,17 +397,12 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
           </>
         )}
 
-      {channels.length > 0 || liveChannel ? (
-        <>
-          <EventLiveBadge event={event} watchPath={livePath(event)} />
-          {channels.length > 0 ? (
-            <ChannelBadges
-              channels={channels}
-              prominent
-              liveChannel={liveChannel}
-            />
-          ) : null}
-        </>
+      {channels.length > 0 ? (
+        <ChannelBadges
+          channels={channels}
+          prominent
+          liveChannel={liveChannel}
+        />
       ) : null}
     </>,
     "",

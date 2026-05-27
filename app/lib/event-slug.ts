@@ -21,10 +21,6 @@ export function partidoPath(event: EventRow): string {
   return `/partido/${eventSlug(event)}`;
 }
 
-export function livePath(event: EventRow): string {
-  return `/vivo/${eventSlug(event)}`;
-}
-
 export function findEventBySlug(
   events: EventRow[],
   slug: string
