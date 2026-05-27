@@ -2,7 +2,10 @@
 
 import { useMemo } from "react";
 import type { EventRow } from "./types";
-import { pickCuratedDestacados, firstWeekAheadDestacadoIndex } from "../lib/destacados-config";
+import {
+  pickTodayDestacados,
+  pickWeekDestacados,
+} from "../lib/destacados-config";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { FeaturedEventCard } from "./FeaturedEventCard";
@@ -11,50 +14,83 @@ type Props = {
   events: EventRow[];
 };
 
-export function DestacadosSection({ events }: Props) {
-  const todayKey = useMemo(
-    () => buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "",
-    []
-  );
-  const featured = useMemo(
-    () => pickCuratedDestacados(events, { scope: "today", todayKey }),
-    [events, todayKey]
-  );
-  const firstWeekAheadIndex = useMemo(
-    () => firstWeekAheadDestacadoIndex(featured, todayKey),
-    [featured, todayKey]
-  );
-
-  if (featured.length === 0) return null;
+function DestacadosRow({
+  title,
+  subtitle,
+  items,
+  ariaLabel,
+  className,
+}: {
+  title: string;
+  subtitle: string;
+  items: EventRow[];
+  ariaLabel: string;
+  className?: string;
+}) {
+  if (items.length === 0) return null;
 
   return (
-    <section className="qvh-destacados" aria-label="Lo imprescindible">
+    <section
+      className={`qvh-destacados${className ? ` ${className}` : ""}`}
+      aria-label={ariaLabel}
+    >
       <div className="qvh-destacados-head">
         <div className="qvh-destacados-brand">
           <span className="qvh-destacados-dot" aria-hidden />
           <div>
-            <h2 className="qvh-destacados-title">Lo imprescindible</h2>
-            <p className="qvh-destacados-sub">
-              Hoy y lo que no te puedes perder esta semana
-            </p>
+            <h2 className="qvh-destacados-title">{title}</h2>
+            <p className="qvh-destacados-sub">{subtitle}</p>
           </div>
         </div>
       </div>
 
       <div className="qvh-destacados-scroll">
-        {featured.map((event, index) => (
+        {items.map((event, index) => (
           <FeaturedEventCard
             key={event.id}
             event={event}
             priority={index < 2}
-            className={
-              index === firstWeekAheadIndex && firstWeekAheadIndex > 0
-                ? "qvh-spotlight-card-week-ahead"
-                : undefined
-            }
           />
         ))}
       </div>
     </section>
+  );
+}
+
+export function DestacadosSection({ events }: Props) {
+  const todayKey = useMemo(
+    () => buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "",
+    []
+  );
+
+  const todayFeatured = useMemo(
+    () => pickTodayDestacados(events, { todayKey }),
+    [events, todayKey]
+  );
+
+  const weekFeatured = useMemo(() => {
+    const excludeIds = new Set(todayFeatured.map((event) => event.id));
+    return pickWeekDestacados(events, { todayKey, excludeIds });
+  }, [events, todayKey, todayFeatured]);
+
+  if (todayFeatured.length === 0 && weekFeatured.length === 0) return null;
+
+  return (
+    <div className="qvh-destacados-stack">
+      <DestacadosRow
+        title="Lo imprescindible"
+        subtitle="Lo mejor de hoy en TV, deporte y streaming"
+        items={todayFeatured}
+        ariaLabel="Lo imprescindible de hoy"
+        className="qvh-destacados-today"
+      />
+      <DestacadosRow
+        title="Esta semana"
+        subtitle="Final de Champions, estrenos y series que marcan"
+        items={weekFeatured}
+        ariaLabel="Destacados de la semana"
+        className="qvh-destacados-week"
+      />
+    </div>
   );
 }

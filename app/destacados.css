@@ -1,8 +1,29 @@
 /* ── Destacados (spotlight cards) ── */
-.qvh-destacados {
+.qvh-destacados-stack {
   margin: 0 0 16px;
-  padding: 0 0 16px;
+  padding: 0 0 4px;
   border-bottom: 1px solid var(--qvh-border);
+}
+
+.qvh-destacados {
+  margin: 0;
+  padding: 0 0 14px;
+  border-bottom: none;
+}
+
+.qvh-destacados-today {
+  padding-bottom: 12px;
+}
+
+.qvh-destacados-week {
+  padding-top: 4px;
+  padding-bottom: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.qvh-destacados-week .qvh-destacados-dot {
+  background: #c9a227;
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.22);
 }
 
 .qvh-destacados-head {
@@ -57,14 +78,8 @@
   display: none;
 }
 
-.qvh-spotlight-card-week-ahead {
-  margin-left: 12px;
-  padding-left: 16px;
-  border-left: 2px solid rgba(93, 95, 239, 0.45);
-}
-
 .qvh-spotlight-card {
-  flex: 0 0 min(280px, 82vw);
+  flex: 0 0 min(236px, 72vw);
   border-radius: 12px;
   overflow: hidden;
   background: var(--qvh-bg-panel);
@@ -80,7 +95,7 @@
 
 .qvh-spotlight-visual {
   position: relative;
-  height: 148px;
+  height: 132px;
   overflow: hidden;
   background-size: cover;
   background-position: center top;
@@ -143,7 +158,7 @@
 }
 
 .qvh-spotlight-visual-ufc-duel {
-  min-height: 148px;
+  min-height: 132px;
 }
 
 .qvh-spotlight-visual-ufc-duel .qvh-spotlight-overlay {
@@ -459,10 +474,10 @@
 
 @media (min-width: 768px) {
   .qvh-spotlight-card {
-    flex-basis: 300px;
+    flex-basis: 252px;
   }
 
   .qvh-spotlight-visual {
-    height: 160px;
+    height: 142px;
   }
 }

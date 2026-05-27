@@ -39,15 +39,17 @@ export const DESTACADOS_SERIES_PATTERNS: RegExp[] = [
 ];
 
 const MIN_DESTACADOS_TODAY = 3;
-const MAX_DESTACADOS = 10;
+const MAX_DESTACADOS_TODAY = 5;
+const MAX_DESTACADOS_WEEK = 10;
 
 export type DestacadosScope = "today" | "week";
 
 export type PickCuratedDestacadosOptions = {
-  /** Solo eventos de este día (YYYY-MM-DD en la zona del usuario). */
   todayKey?: string;
   scope?: DestacadosScope;
   windowDays?: number;
+  /** Evita duplicar en la fila de semana lo ya mostrado hoy. */
+  excludeIds?: Set<number>;
 };
 
 export { isChampionsFinal, isDestacadoFinal, isDestacadoPremiere } from "./event-card-stamp";
@@ -106,7 +108,7 @@ function sortTodayItems(a: EventRow, b: EventRow): number {
   );
 }
 
-function sortWeekAheadItems(a: EventRow, b: EventRow): number {
+function sortWeekItems(a: EventRow, b: EventRow): number {
   return (
     (a.date ?? "").localeCompare(b.date ?? "") ||
     eventPriority(b) - eventPriority(a) ||
@@ -114,101 +116,118 @@ function sortWeekAheadItems(a: EventRow, b: EventRow): number {
   );
 }
 
-/** Eventos curados: hoy a la izquierda; finales/estrenos de la semana siempre a la derecha. */
-export function pickCuratedDestacados(
+function weekPoolFor(
+  events: EventRow[],
+  todayKey: string,
+  windowDays: number,
+  excludeIds: Set<number>
+): EventRow[] {
+  const week = new Set(getMadridWeekDates(windowDays));
+  return events.filter(
+    (e) => e.date && week.has(e.date) && !excludeIds.has(e.id)
+  );
+}
+
+/** Lo imprescindible de hoy: TV, reality y relleno del día. */
+export function pickTodayDestacados(
   events: EventRow[],
   options: PickCuratedDestacadosOptions = {}
 ): EventRow[] {
+  const today = options.todayKey ?? toMadridDateKey(new Date());
   const windowDays = options.windowDays ?? 7;
-  const today =
-    options.todayKey ?? toMadridDateKey(new Date());
   const week = new Set(getMadridWeekDates(windowDays));
-  const weekPool = events.filter((e) => e.date && week.has(e.date));
-  const todayPool = weekPool.filter((e) => e.date === today);
+  const todayPool = events.filter(
+    (e) => e.date === today && e.date && week.has(e.date)
+  );
 
-  const todayItems: EventRow[] = [];
-  const weekAheadItems: EventRow[] = [];
+  const items: EventRow[] = [];
   const seen = new Set<number>();
 
-  const addToday = (event: EventRow) => {
+  const add = (event: EventRow) => {
     if (seen.has(event.id)) return;
     seen.add(event.id);
-    todayItems.push(event);
+    items.push(event);
   };
 
-  const addWeekAhead = (event: EventRow) => {
-    if (seen.has(event.id)) return;
-    seen.add(event.id);
-    weekAheadItems.push(event);
-  };
-
-  const routeHighlight = (event: EventRow) => {
-    if (!event.date || event.date <= today) addToday(event);
-    else addWeekAhead(event);
-  };
-
-  for (const rule of DESTACADOS_RULES) {
-    const match = weekPool.find((e) => matchesRule(e, rule));
-    if (match) routeHighlight(match);
-  }
-
-  for (const event of weekPool) {
-    if (isDestacadoFinal(event)) routeHighlight(event);
-  }
-
-  for (const event of weekPool) {
-    if (isDestacadoPremiere(event)) routeHighlight(event);
+  for (const event of todayPool) {
+    if (matchesFlagshipTv(event)) add(event);
   }
 
   for (const event of todayPool) {
     if (seen.has(event.id)) continue;
-    if (matchesFlagshipTv(event)) addToday(event);
+    if (isSpanishTvFlagship(event)) add(event);
   }
 
   for (const event of todayPool) {
     if (seen.has(event.id)) continue;
-    if (isSpanishTvFlagship(event)) addToday(event);
+    if (isSeasonPremiereEvent(event)) add(event);
   }
 
-  for (const event of todayPool) {
-    if (seen.has(event.id)) continue;
-    if (isSeasonPremiereEvent(event)) addToday(event);
-  }
-
-  for (const event of todayPool) {
-    if (seen.has(event.id)) continue;
-    if (matchesFollowedSeries(event)) addToday(event);
-  }
-
-  if (todayItems.length < MIN_DESTACADOS_TODAY) {
+  if (items.length < MIN_DESTACADOS_TODAY) {
     const candidates = todayPool
       .filter((event) => !seen.has(event.id))
       .sort(sortTodayItems);
 
     for (const event of candidates) {
-      if (todayItems.length >= MIN_DESTACADOS_TODAY) break;
-      addToday(event);
+      if (items.length >= MIN_DESTACADOS_TODAY) break;
+      add(event);
     }
   }
 
-  const todaySorted = todayItems.sort(sortTodayItems);
-  const weekAheadSorted = weekAheadItems.sort(sortWeekAheadItems);
-
-  const todayCap = Math.max(
-    MIN_DESTACADOS_TODAY,
-    MAX_DESTACADOS - weekAheadSorted.length
-  );
-  const todayFinal = todaySorted.slice(0, todayCap);
-
-  return [...todayFinal, ...weekAheadSorted];
+  return items.sort(sortTodayItems).slice(0, MAX_DESTACADOS_TODAY);
 }
 
-/** Primer índice de un destacado que no es hoy (para separador visual en el carrusel). */
-export function firstWeekAheadDestacadoIndex(
-  featured: EventRow[],
-  todayKey: string
-): number {
-  return featured.findIndex((event) => event.date && event.date > todayKey);
+/** Esta semana: Champions, estrenos, series seguidas y reglas editoriales. */
+export function pickWeekDestacados(
+  events: EventRow[],
+  options: PickCuratedDestacadosOptions = {}
+): EventRow[] {
+  const excludeIds = options.excludeIds ?? new Set<number>();
+  const pool = weekPoolFor(
+    events,
+    options.todayKey ?? toMadridDateKey(new Date()),
+    options.windowDays ?? 7,
+    excludeIds
+  );
+
+  const items: EventRow[] = [];
+  const seen = new Set<number>();
+
+  const add = (event: EventRow) => {
+    if (seen.has(event.id) || excludeIds.has(event.id)) return;
+    seen.add(event.id);
+    items.push(event);
+  };
+
+  for (const rule of DESTACADOS_RULES) {
+    const match = pool.find((e) => matchesRule(e, rule));
+    if (match) add(match);
+  }
+
+  for (const event of pool) {
+    if (isDestacadoFinal(event)) add(event);
+  }
+
+  for (const event of pool) {
+    if (isDestacadoPremiere(event)) add(event);
+  }
+
+  for (const event of pool) {
+    if (matchesFollowedSeries(event)) add(event);
+  }
+
+  return items.sort(sortWeekItems).slice(0, MAX_DESTACADOS_WEEK);
+}
+
+/** @deprecated Usar pickTodayDestacados + pickWeekDestacados */
+export function pickCuratedDestacados(
+  events: EventRow[],
+  options: PickCuratedDestacadosOptions = {}
+): EventRow[] {
+  const today = pickTodayDestacados(events, options);
+  const excludeIds = new Set(today.map((e) => e.id));
+  const week = pickWeekDestacados(events, { ...options, excludeIds });
+  return [...today, ...week];
 }
 
 export { isSeasonPremiereEvent };
