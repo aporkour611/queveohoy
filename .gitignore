@@ -38,6 +38,14 @@ build.log
 # vercel
 .vercel
 
+# local verification artifacts
+_hf.json
+hf.json
+hf-prod.json
+ff.json
+ff-prod.json
+_page.html
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

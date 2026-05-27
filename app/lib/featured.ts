@@ -5,7 +5,14 @@ import {
   HOME_DAILY_EVENT_CAP,
   HOME_SECTION_MAX_DEFAULT,
   HOME_SECTION_MAX_IMPORTANT,
+  HOME_SSR_DAY_COUNT,
 } from "./home-feed-config";
+import {
+  buildDisplayDays,
+  filterEventsInWeek,
+  mapEventsToTimezone,
+  MADRID_TZ,
+} from "./timezone";
 import { spanishTvPriorityBonus } from "./spanish-tv-curated";
 import { parseTmdbBuzzScore } from "./tmdb-client";
 
@@ -288,4 +295,23 @@ export function pickUpcomingFeaturedEvents(
 ): EventRow[] {
   const upcoming = events.filter((e) => e.date && e.date > selectedDate);
   return pickTopPerCategory(upcoming, true);
+}
+
+/** Recorte para SSR/RSC: solo lo visible en portada (hoy + mañana). */
+export function trimHomeSsrEvents(events: EventRow[]): EventRow[] {
+  const mapped = filterEventsInWeek(
+    mapEventsToTimezone(events, MADRID_TZ),
+    MADRID_TZ,
+    HOME_SSR_DAY_COUNT
+  );
+  const byId = new Map<number, EventRow>();
+
+  for (const day of buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)) {
+    const dayEvents = mapped.filter((event) => event.date === day.date);
+    for (const event of pickHomePageEvents(dayEvents)) {
+      byId.set(event.id, event);
+    }
+  }
+
+  return [...byId.values()];
 }

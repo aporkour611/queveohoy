@@ -5,7 +5,7 @@ import {
   mapEventsToTimezone,
   MADRID_TZ,
 } from "./timezone";
-import { FEED_DAY_COUNT } from "./events-feed";
+import { HOME_SSR_DAY_COUNT } from "./home-feed-config";
 import type { SeoHubConfig } from "./seo-hubs";
 import {
   buildDateMetadataDescription,
@@ -177,7 +177,7 @@ export function buildHomeJsonLd(events: EventRow[]) {
   const madridEvents = filterEventsInWeek(
     mapEventsToTimezone(events, MADRID_TZ),
     MADRID_TZ,
-    FEED_DAY_COUNT
+    HOME_SSR_DAY_COUNT
   ).slice(0, 12);
 
   const itemList = buildItemList(

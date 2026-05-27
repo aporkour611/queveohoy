@@ -12,7 +12,7 @@ import { dedupeEvents, findDuplicateIdsToRemove, type EventRecord } from "@/app/
 import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
 import { ensureEventsDateIndex } from "@/app/lib/ensure-db-index";
-import { shouldIngestPandascoreMatch } from "@/app/lib/esports-cron";
+import { shouldIngestPandascoreMatch, shouldPurgeStoredEsportsEvent } from "@/app/lib/esports-cron";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
 import { fetchJsonWithTimeout } from "@/app/lib/fetch-json";
 import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
@@ -510,6 +510,36 @@ async function purgeEventsWithoutCrests(): Promise<{
   return { purged: ids.length };
 }
 
+async function purgeMinorEsportsEvents(): Promise<{
+  purged: number;
+  error?: string;
+}> {
+  const { data, error } = await getSupabase()
+    .from("events")
+    .select("id, sport, competition")
+    .in("sport", ["csgo", "valorant", "lol"]);
+
+  if (error || !data?.length) {
+    return { purged: 0, error: error?.message };
+  }
+
+  const ids = data.filter(shouldPurgeStoredEsportsEvent).map((e) => e.id);
+  if (!ids.length) return { purged: 0 };
+
+  const { error: delError } = await getSupabase()
+    .from("events")
+    .delete()
+    .in("id", ids);
+
+  if (delError) {
+    console.error("Esports purge error:", delError);
+    return { purged: 0, error: delError.message };
+  }
+
+  console.log(`Esports menores eliminados: ${ids.length}`);
+  return { purged: ids.length };
+}
+
 export async function GET(request: Request) {
   if (!isCronAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -590,6 +620,14 @@ export async function GET(request: Request) {
     console.error("✗ Crest purge error:", e);
   }
 
+  let esportsPurge: { purged: number; error?: string } = { purged: 0 };
+  try {
+    esportsPurge = await purgeMinorEsportsEvents();
+    console.log("✓ Esports purge done");
+  } catch (e) {
+    console.error("✗ Esports purge error:", e);
+  }
+
   let dedupe: { removed: number; error?: string } = { removed: 0 };
   try {
     dedupe = await removeDuplicateRows();
@@ -659,6 +697,8 @@ export async function GET(request: Request) {
     crestEnrichError: enrich.error,
     crestsPurged: purge.purged,
     crestPurgeError: purge.error,
+    esportsPurged: esportsPurge.purged,
+    esportsPurgeError: esportsPurge.error,
     duplicatesRemoved: dedupe.removed,
     dedupeError: dedupe.error,
     hint:

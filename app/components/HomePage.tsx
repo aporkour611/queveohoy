@@ -14,15 +14,12 @@ import {
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
-import { DayTabs } from "./DayTabs";
 import { EventDaySections } from "./EventDaySections";
-import { EventFilters } from "./EventFilters";
 import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
 import { Logo } from "./Logo";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
 import { LazyMount } from "./LazyMount";
-import { EventSearch } from "./EventSearch";
 import { ScrollToTop } from "./ScrollToTop";
 import { SiteFooter } from "./SiteFooter";
 import type { EventRow } from "./types";
@@ -37,6 +34,21 @@ import { resolveDayEventsForFeed } from "../lib/upcoming-events";
 const DestacadosSection = dynamic(
   () =>
     import("./DestacadosSection").then((mod) => mod.DestacadosSection),
+  { loading: () => null }
+);
+
+const EventFilters = dynamic(
+  () => import("./EventFilters").then((mod) => mod.EventFilters),
+  { loading: () => null }
+);
+
+const EventSearch = dynamic(
+  () => import("./EventSearch").then((mod) => mod.EventSearch),
+  { loading: () => null }
+);
+
+const DayTabs = dynamic(
+  () => import("./DayTabs").then((mod) => mod.DayTabs),
   { loading: () => null }
 );
 

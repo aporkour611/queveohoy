@@ -42,3 +42,25 @@ export function shouldIngestPandascoreMatch(match: PandascoreMatchMeta): boolean
 
   return false;
 }
+
+const ESPORTS_SPORTS = new Set(["csgo", "valorant", "lol"]);
+
+/** Eventos esports ya en BD que deberían eliminarse (ligas menores). */
+export function shouldPurgeStoredEsportsEvent(event: {
+  sport?: string | null;
+  competition?: string | null;
+}): boolean {
+  const sport = event.sport ?? "";
+  if (!ESPORTS_SPORTS.has(sport)) return false;
+
+  const comp = event.competition ?? "";
+  if (!comp.trim()) return true;
+  if (ESPORTS_MAJOR.test(comp)) return false;
+  if (ESPORTS_MINOR.test(comp)) return true;
+
+  return !shouldIngestPandascoreMatch({
+    league: { name: comp },
+    serie: { full_name: comp },
+    tournament: { name: comp },
+  });
+}

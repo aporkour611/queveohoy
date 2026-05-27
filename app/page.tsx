@@ -10,6 +10,7 @@ import {
   buildHomeMetadataDescription,
   buildHomeMetadataTitle,
 } from "./lib/seo-jsonld";
+import { trimHomeSsrEvents } from "./lib/featured";
 import { pageMetadata, seoKeywords } from "./lib/seo";
 
 const HomeTrafficHubs = dynamic(
@@ -32,15 +33,16 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Page() {
   const { events, error } = await getHomeFeedEventsForPage();
+  const ssrEvents = trimHomeSsrEvents(events);
 
   return (
     <>
-      <HomeJsonLd events={events} />
-      <HomePage initialEvents={events} initialError={error}>
-        <HomeTrafficHubs events={events} />
+      <HomeJsonLd events={ssrEvents} />
+      <HomePage initialEvents={ssrEvents} initialError={error}>
+        <HomeTrafficHubs events={ssrEvents} />
         <ShareTodayBar />
         <HomeFaq />
-        <HomeEventOutline events={events} />
+        <HomeEventOutline events={ssrEvents} />
       </HomePage>
     </>
   );
