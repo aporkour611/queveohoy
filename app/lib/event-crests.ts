@@ -9,7 +9,6 @@ const TEAM_CREST_SPORTS = new Set([
   "csgo",
   "valorant",
   "lol",
-  "dota2",
 ]);
 
 export function isTeamCrestSport(sport?: string | null): boolean {

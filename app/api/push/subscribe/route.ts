@@ -5,6 +5,7 @@ import {
 } from "../../../lib/push-notify";
 import { isPushConfigured } from "../../../lib/push-vapid";
 import type { PushTopicId } from "../../../lib/push-preferences";
+import { checkRateLimit, clientIp } from "../../../lib/rate-limit";
 
 type SubscribeBody = {
   endpoint?: string;
@@ -14,6 +15,14 @@ type SubscribeBody = {
 };
 
 export async function POST(request: Request) {
+  const rate = checkRateLimit(`push:subscribe:${clientIp(request)}`, 20, 60_000);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: "Demasiadas solicitudes" },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
+    );
+  }
+
   if (!isPushConfigured()) {
     return NextResponse.json(
       { error: "Push no configurado en el servidor" },

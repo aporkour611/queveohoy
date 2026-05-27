@@ -611,10 +611,6 @@
   border-color: rgba(200, 155, 60, 0.35);
 }
 
-.fh-match-media-spotlight.fh-match_dota2 {
-  border-color: rgba(224, 75, 75, 0.35);
-}
-
 .fh-media-spotlight-visual-ufc {
   background:
     radial-gradient(circle at 20% 110%, rgba(212, 20, 20, 0.35), transparent 45%),

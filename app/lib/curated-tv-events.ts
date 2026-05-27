@@ -6,6 +6,7 @@ import {
   type SpanishTvShow,
 } from "./spanish-tv-curated";
 import { encodeTmdbSource } from "./tmdb";
+import { parseTmdbPoster } from "./tmdb-client";
 
 /** 1 = lunes … 7 = domingo (ISO). */
 export function isoWeekdayFromDateKey(dateKey: string): number {
@@ -21,6 +22,36 @@ function syntheticEventId(showId: string, dateKey: string): number {
   return hash > 0 ? -hash : hash;
 }
 
+function collectFlagshipPosterSources(events: Iterable<EventRow>): Map<string, string> {
+  const sources = new Map<string, string>();
+
+  for (const event of events) {
+    if (event.sport !== "tv" || !event.source) continue;
+
+    const show = matchesSpanishTvFlagship(event);
+    if (!show || sources.has(show.id)) continue;
+    if (!parseTmdbPoster(event.source, "thumb")) continue;
+
+    sources.set(show.id, event.source);
+  }
+
+  return sources;
+}
+
+function resolveShowSource(
+  show: SpanishTvShow,
+  posterSources: Map<string, string>
+): string {
+  const inherited = posterSources.get(show.id);
+  if (inherited) return inherited;
+
+  if (show.posterPath) {
+    return encodeTmdbSource(show.posterPath, show.priority);
+  }
+
+  return encodeTmdbSource(null, show.priority);
+}
+
 function findShowEventOnDate(
   events: Iterable<EventRow>,
   show: SpanishTvShow,
@@ -34,7 +65,11 @@ function findShowEventOnDate(
   return undefined;
 }
 
-function buildSyntheticTvEvent(show: SpanishTvShow, dateKey: string): EventRow {
+function buildSyntheticTvEvent(
+  show: SpanishTvShow,
+  dateKey: string,
+  posterSources: Map<string, string>
+): EventRow {
   const externalId = `curated_tv_${show.id}_${dateKey}`;
   return {
     id: syntheticEventId(show.id, dateKey),
@@ -45,17 +80,26 @@ function buildSyntheticTvEvent(show: SpanishTvShow, dateKey: string): EventRow {
     sport: "tv",
     competition: show.competition,
     platform: show.platform,
-    source: encodeTmdbSource(null, show.priority),
+    source: resolveShowSource(show, posterSources),
   };
 }
 
-function normalizeShowEvent(event: EventRow, show: SpanishTvShow): EventRow {
+function normalizeShowEvent(
+  event: EventRow,
+  show: SpanishTvShow,
+  posterSources: Map<string, string>
+): EventRow {
+  const source = parseTmdbPoster(event.source, "thumb")
+    ? event.source!
+    : resolveShowSource(show, posterSources);
+
   return {
     ...event,
     time: show.airTime ?? event.time ?? "22:00",
     sport: "tv",
     competition: event.competition?.trim() || show.competition,
     platform: event.platform?.trim() || show.platform,
+    source,
   };
 }
 
@@ -73,6 +117,7 @@ export function mergeCuratedSpanishTvEvents(
   }
 
   const weekEnd = addDaysToDateKey(todayKey, windowDays - 1);
+  const posterSources = collectFlagshipPosterSources(merged.values());
 
   for (const show of SPANISH_TV_FLAGSHIP) {
     if (!show.airWeekdays?.length) continue;
@@ -89,8 +134,8 @@ export function mergeCuratedSpanishTvEvents(
       merged.set(
         externalId,
         existing
-          ? normalizeShowEvent(existing, show)
-          : buildSyntheticTvEvent(show, dateKey)
+          ? normalizeShowEvent(existing, show, posterSources)
+          : buildSyntheticTvEvent(show, dateKey, posterSources)
       );
     }
   }

@@ -286,7 +286,6 @@ async function fetchEsports(): Promise<CountResult> {
     { slug: "cs-go", sport: "csgo" },
     { slug: "valorant", sport: "valorant" },
     { slug: "league-of-legends", sport: "lol" },
-    { slug: "dota-2", sport: "dota2" },
   ];
 
   const { dates, from: dateFrom, to: dateTo } = madridWeekUtcRange(7);

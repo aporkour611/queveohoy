@@ -60,9 +60,21 @@ export function PushSettingsPanel({ open, onClose }: PushSettingsPanelProps) {
 
   useEffect(() => {
     if (!open) return;
-    setTopics(readLocalPushTopics());
-    void isPushSubscribedLocally().then(setSubscribed);
-    setStatus("");
+
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setTopics(readLocalPushTopics());
+      setStatus("");
+    });
+
+    void isPushSubscribedLocally().then((value) => {
+      if (!cancelled) setSubscribed(value);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [open]);
 
   const toggleTopic = useCallback((topicId: PushTopicId) => {

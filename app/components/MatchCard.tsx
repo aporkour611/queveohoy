@@ -5,7 +5,7 @@ import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
-import { parseTmdbPoster } from "../lib/tmdb-client";
+import { matchCardEntertainmentVisualClass } from "../lib/entertainment-art";
 import { resolveEventPosterUrl } from "../lib/event-poster";
 import { resolveEventStreamingPlatform } from "../lib/media-platform";
 import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
@@ -261,14 +261,11 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
   if (isMedia) {
     const tvBadge = isTv ? mediaBadgeForEvent(event) : null;
-    const mediaVisualClass =
-      (isCine || isSeries) && posterUrl
-        ? "fh-media-spotlight-visual-series"
-        : isCine
-          ? "fh-media-spotlight-visual-cine"
-          : isSeries
-            ? "fh-media-spotlight-visual-series"
-            : "fh-media-spotlight-visual-premiere";
+    const mediaSport = isCine ? "cine" : isSeries ? "series" : "tv";
+    const mediaVisualClass = matchCardEntertainmentVisualClass(
+      mediaSport,
+      Boolean(posterUrl)
+    );
     const mediaBadgeClass = isCine
       ? "fh-media-spotlight-badge-cine"
       : isSeries

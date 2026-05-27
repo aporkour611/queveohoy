@@ -1,17 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
-import { getSupabasePublishableKey } from "./supabase-admin";
+import {
+  getSupabasePublishableKey,
+  getSupabaseUrl,
+  isSupabaseConfigured,
+} from "./supabase-config";
 
-const supabaseUrl =
-  process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
-  "https://ctfzprpghyuikucxiogj.supabase.co";
+export const supabaseConfigured = isSupabaseConfigured();
 
-const supabaseKey =
-  getSupabasePublishableKey() ||
-  "sb_publishable_9AQGxxhbul9pmhgGUb6cew_uoXtGsFu";
-
-export const supabaseConfigured = Boolean(
-  process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
-    getSupabasePublishableKey()
-);
-
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(getSupabaseUrl(), getSupabasePublishableKey());

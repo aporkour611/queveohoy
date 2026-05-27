@@ -58,7 +58,6 @@ export function isPublishableTeamEvent(event: TeamEventFields): boolean {
     "csgo",
     "valorant",
     "lol",
-    "dota2",
   ]);
 
   if (!teamSports.has(sport)) return true;

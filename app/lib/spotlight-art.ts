@@ -25,11 +25,6 @@ const ESPORTS_GAME_ART: Record<
     visualClass: "qvh-spotlight-visual-lol",
     label: "LoL",
   },
-  dota2: {
-    url: "/esports/dota2.svg",
-    visualClass: "qvh-spotlight-visual-dota2",
-    label: "Dota 2",
-  },
 };
 
 const MOTOR_ART: Record<string, { url: string; visualClass: string }> = {

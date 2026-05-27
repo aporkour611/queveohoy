@@ -52,6 +52,9 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/app-icon-192.png" />
       </head>
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
+        <a href="#main-content" className="qvh-skip-link">
+          Saltar al contenido
+        </a>
         <CookieConsentRoot>{children}</CookieConsentRoot>
         <Analytics />
         <SpeedInsights />

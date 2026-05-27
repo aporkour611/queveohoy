@@ -440,8 +440,7 @@
 .qvh-spotlight-visual-esports,
 .qvh-spotlight-visual-cs2,
 .qvh-spotlight-visual-valorant,
-.qvh-spotlight-visual-lol,
-.qvh-spotlight-visual-dota2 {
+.qvh-spotlight-visual-lol {
   background: #050505;
 }
 
@@ -460,21 +459,14 @@
     linear-gradient(180deg, #0a1428 0%, #050505 100%);
 }
 
-.qvh-spotlight-visual-dota2 {
-  background: radial-gradient(circle at 50% 0%, rgba(224, 75, 75, 0.22), transparent 55%),
-    linear-gradient(180deg, #180808 0%, #050505 100%);
-}
-
 .qvh-spotlight-cover-esports .qvh-spotlight-cover-img,
 .qvh-spotlight-cover-esports .qvh-remote-poster-img,
 .qvh-spotlight-visual-cs2 .qvh-spotlight-cover-img,
 .qvh-spotlight-visual-valorant .qvh-spotlight-cover-img,
 .qvh-spotlight-visual-lol .qvh-spotlight-cover-img,
-.qvh-spotlight-visual-dota2 .qvh-spotlight-cover-img,
 .qvh-spotlight-visual-cs2 .qvh-remote-poster-img,
 .qvh-spotlight-visual-valorant .qvh-remote-poster-img,
-.qvh-spotlight-visual-lol .qvh-remote-poster-img,
-.qvh-spotlight-visual-dota2 .qvh-remote-poster-img {
+.qvh-spotlight-visual-lol .qvh-remote-poster-img {
   object-fit: cover;
   object-position: center top;
 }
@@ -482,8 +474,7 @@
 .qvh-spotlight-visual-esports .qvh-spotlight-overlay,
 .qvh-spotlight-visual-cs2 .qvh-spotlight-overlay,
 .qvh-spotlight-visual-valorant .qvh-spotlight-overlay,
-.qvh-spotlight-visual-lol .qvh-spotlight-overlay,
-.qvh-spotlight-visual-dota2 .qvh-spotlight-overlay {
+.qvh-spotlight-visual-lol .qvh-spotlight-overlay {
   background: linear-gradient(
     180deg,
     rgba(0, 0, 0, 0.05) 0%,
@@ -505,11 +496,6 @@
 .qvh-spotlight-card:has(.qvh-spotlight-visual-lol) {
   border-color: rgba(200, 155, 60, 0.42);
   box-shadow: 0 8px 28px rgba(120, 53, 15, 0.2);
-}
-
-.qvh-spotlight-card:has(.qvh-spotlight-visual-dota2) {
-  border-color: rgba(224, 75, 75, 0.42);
-  box-shadow: 0 8px 28px rgba(127, 29, 29, 0.22);
 }
 
 .qvh-spotlight-visual-f1 {
@@ -573,16 +559,13 @@
   background: linear-gradient(135deg, #451a03 0%, #d97706 48%, #78350f 100%);
 }
 
-.qvh-spotlight-visual-cine:has(.qvh-spotlight-cover-poster) {
-  background: #101015;
-  animation: none;
-}
-
 .qvh-spotlight-visual-series {
   background: linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #4c1d95 100%);
 }
 
-.qvh-spotlight-visual-series:has(.qvh-spotlight-cover-poster) {
+.qvh-spotlight-visual-cine:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-series:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-premiere:has(.qvh-spotlight-cover-poster) {
   background: #101015;
   animation: none;
 }
@@ -596,9 +579,9 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .qvh-spotlight-visual-cine,
-  .qvh-spotlight-visual-series,
-  .qvh-spotlight-visual-premiere {
+  .qvh-spotlight-visual-cine:not(:has(.qvh-spotlight-cover-poster)),
+  .qvh-spotlight-visual-series:not(:has(.qvh-spotlight-cover-poster)),
+  .qvh-spotlight-visual-premiere:not(:has(.qvh-spotlight-cover-poster)) {
     background-size: 200% 200%;
     animation: qvh-media-spotlight-shift 6s ease-in-out infinite;
   }

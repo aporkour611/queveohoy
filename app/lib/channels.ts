@@ -62,7 +62,6 @@ const SPORT_CHANNEL_DEFAULTS: Record<string, string> = {
   csgo: "Twitch, YouTube",
   valorant: "Twitch, YouTube",
   lol: "Twitch, YouTube",
-  dota2: "Twitch, YouTube",
   tv: "RTVE, Telecinco, Antena 3",
   series: "Movistar+, HBO Max, Netflix",
   cine: "Movistar+, Filmin",

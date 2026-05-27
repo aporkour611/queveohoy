@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import {
   getMadridTodayKey,
   getRollingSeoDateKeys,
+  isPastSeoDate,
   partidosHoyDatePath,
 } from "./lib/seo-date";
 import { fetchFeedEvents } from "./lib/events-feed-server";
@@ -13,6 +14,9 @@ import { siteUrl } from "./lib/seo";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const { events } = await fetchFeedEvents();
+  const futureEvents = events.filter(
+    (event) => event.date && !isPastSeoDate(event.date)
+  );
 
   const hubEntries = SEO_HUBS.map((hub) => ({
     url: `${siteUrl}/${hub.slug}`,
@@ -36,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: guide.priority,
   }));
 
-  const partidoEntries = partidoSlugsForSitemap(events).map((slug) => ({
+  const partidoEntries = partidoSlugsForSitemap(futureEvents).map((slug) => ({
     url: `${siteUrl}/partido/${slug}`,
     lastModified: now,
     changeFrequency: "hourly" as const,

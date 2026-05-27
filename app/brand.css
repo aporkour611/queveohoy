@@ -108,19 +108,23 @@
 .qvh-logo-wordmark {
   display: flex;
   flex-direction: column;
+  gap: 1px;
   line-height: 0.95;
   font-family: var(--qvh-font-display), "Inter", sans-serif;
   font-weight: 800;
-  font-size: 1.35rem;
+  font-size: 1.05rem;
   letter-spacing: -0.02em;
+  overflow: visible;
 }
 
 .qvh-wm {
-  display: block;
+  display: inline-block;
+  transform-origin: left center;
 }
 
 .qvh-wm-q {
   color: var(--qvh-purple);
+  transform: rotate(-14deg) translateX(1px);
 }
 
 .qvh-wm-v {
@@ -129,6 +133,7 @@
 
 .qvh-wm-h {
   color: #3aab6e;
+  transform: rotate(14deg) translateX(1px);
 }
 
 @media (min-width: 480px) {
@@ -139,7 +144,7 @@
   }
 
   .qvh-logo-wordmark {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 }
 
@@ -948,4 +953,28 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
   body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
     bottom: calc(28px + 112px);
   }
+}
+
+.qvh-skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 9999;
+  padding: 12px 18px;
+  background: var(--qvh-purple);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+}
+
+.qvh-skip-link:focus {
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+  overflow: visible;
 }

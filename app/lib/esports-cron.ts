@@ -6,7 +6,7 @@ const ESPORTS_MINOR =
 
 /** Torneos de primer nivel que sí queremos. */
 const ESPORTS_MAJOR =
-  /lec|lck|lpl|lcs|vct|champions|masters|major|iem|blast|pgl|esl pro league|worlds|msi|emea|champions tour|cs2|counter-strike|the international|dota pro circuit|cdl|call of duty league/i;
+  /lec|lck|lpl|lcs|vct|champions|masters|major|iem|blast|pgl|esl pro league|worlds|msi|emea|champions tour|cs2|counter-strike|cdl|call of duty league/i;
 
 export type PandascoreMatchMeta = {
   league?: { name?: string | null; tier?: string | null } | null;

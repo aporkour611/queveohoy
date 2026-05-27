@@ -28,7 +28,12 @@ export function findEventBySlug(
   return events.find((event) => eventSlug(event) === slug);
 }
 
-export function partidoSlugsForSitemap(events: EventRow[], limit = 40): string[] {
+export const SITEMAP_PARTIDO_LIMIT = 200;
+
+export function partidoSlugsForSitemap(
+  events: EventRow[],
+  limit = SITEMAP_PARTIDO_LIMIT
+): string[] {
   const seen = new Set<string>();
   const slugs: string[] = [];
 

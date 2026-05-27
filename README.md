@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# queveohoy.es
 
-## Getting Started
+Agenda deportiva y entretenimiento en España: partidos, horarios TV/streaming, destacados y hubs SEO.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router), React 19, TypeScript
+- **Tailwind CSS 4**
+- **Supabase** (PostgreSQL + RLS)
+- **Vercel** (hosting, cron, analytics)
+- Deploy vía **GitHub Actions** + Vercel CLI
+
+## Desarrollo local
 
 ```bash
+cp .env.example .env.local
+# Rellena las variables en .env.local
+
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` | Build de producción |
+| `npm run lint` | ESLint |
+| `npm run ping-search` | IndexNow manual (requiere `CRON_SECRET`) |
+| `npm run vapid:keys` | Genera claves Web Push |
 
-## Learn More
+## Variables de entorno
 
-To learn more about Next.js, take a look at the following resources:
+Ver `.env.example`. En producción son obligatorias:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Supabase (`NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_SERVICE_ROLE_KEY`)
+- `ADMIN_SECRET` y `CRON_SECRET` (valores distintos)
+- `INDEXNOW_KEY` (con archivo verificador en `/public/`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Admin
 
-## Deploy on Vercel
+Acceso: `/?admin=TU_ADMIN_SECRET` (cookie firmada, HttpOnly). Panel en `/admin`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Las escrituras en `events` van por `/api/admin/events` con service role; la tabla tiene RLS de solo lectura para anon.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Cron
+
+`GET /api/cron` — protegido con `Authorization: Bearer CRON_SECRET`. Vercel Cron lo ejecuta cada hora (ver `vercel.json`).
+
+Ingesta: fútbol, F1, MotoGP, UFC, baloncesto, e-sports, TMDB, etc.
+
+## CI/CD
+
+- **PR → main:** lint (`.github/workflows/validate.yml`)
+- **Push → main:** lint + build Vercel + deploy (`.github/workflows/deploy.yml`)
+
+## SEO
+
+Sitemap dinámico, hubs `/agenda/*`, páginas de partido, JSON-LD, RSS, IndexNow tras cron.
+
+## Licencia
+
+Privado — queveohoy.es

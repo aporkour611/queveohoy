@@ -10,13 +10,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const result = await pingIndexNow(collectIndexNowUrls());
+  const urls = await collectIndexNowUrls();
+  const result = await pingIndexNow(urls);
 
   return NextResponse.json({
     ok: result.ok,
     skipped: result.skipped ?? false,
     status: result.status,
-    urlCount: collectIndexNowUrls().length,
+    urlCount: urls.length,
     error: result.error,
   });
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
   ADMIN_COOKIE,
+  createAdminSessionToken,
   getAdminSecret,
   isAdminCookieValid,
 } from "@/app/lib/admin-auth";
@@ -11,10 +12,15 @@ export async function proxy(request: NextRequest) {
   const adminKey = request.nextUrl.searchParams.get("admin");
 
   if (adminKey && secret && adminKey === secret) {
+    const token = createAdminSessionToken();
+    if (!token) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
     const url = request.nextUrl.clone();
     url.searchParams.delete("admin");
     const response = NextResponse.redirect(url);
-    response.cookies.set(ADMIN_COOKIE, secret, {
+    response.cookies.set(ADMIN_COOKIE, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

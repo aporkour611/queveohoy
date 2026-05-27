@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isCronAuthorized } from "@/app/lib/admin-auth";
-import { supabase } from "@/app/lib/supabase";
+import { isDebugRouteDisabled } from "@/app/lib/debug-routes";
+import { createSupabaseAdmin } from "@/app/lib/supabase-admin";
 
 type SportsDbEvent = {
   strEvent?: string;
@@ -9,11 +10,16 @@ type SportsDbEvent = {
 };
 
 export async function GET(request: Request) {
+  if (isDebugRouteDisabled()) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   if (!isCronAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const today = new Date().toISOString().split("T")[0];
+  const supabase = createSupabaseAdmin();
 
   try {
     const { data: existing } = await supabase
@@ -41,7 +47,7 @@ export async function GET(request: Request) {
     const events = rawEvents.slice(0, 8).map((e: SportsDbEvent, index: number) => ({
       title: e.strEvent,
       time: e.strTime || "Sin hora",
-      category: "Fútbol",
+      sport: "Fútbol",
       platform: e.strLeague || "TV",
       date: today,
       popularity: Math.max(1, 10 - index),
@@ -52,7 +58,7 @@ export async function GET(request: Request) {
       events.push({
         title: "Evento destacado del día",
         time: "20:00",
-        category: "General",
+        sport: "General",
         platform: "TV",
         date: today,
         popularity: 5,

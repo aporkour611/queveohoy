@@ -1,23 +1,31 @@
-import { SEO_GUIDE_SLUGS } from "./seo-guides";
-import { SEO_HUB_SLUGS } from "./seo-hubs";
+import type { EventRow } from "../components/types";
+import { fetchFeedEvents } from "./events-feed-server";
+import { partidoSlugsForSitemap } from "./event-slug";
 import {
   getRollingSeoDateKeys,
+  isPastSeoDate,
   partidosHoyDatePath,
 } from "./seo-date";
+import { SEO_GUIDE_SLUGS } from "./seo-guides";
+import { SEO_HUB_SLUGS } from "./seo-hubs";
 import { siteUrl } from "./seo";
 
-/** Clave pública IndexNow (también en /public/{key}.txt). */
-export const DEFAULT_INDEXNOW_KEY = "8f3c2e1d4b5a6978queveohoy";
-
 export function getIndexNowKey(): string {
-  return process.env.INDEXNOW_KEY?.trim() || DEFAULT_INDEXNOW_KEY;
+  const key = process.env.INDEXNOW_KEY?.trim();
+  if (key) return key;
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Falta INDEXNOW_KEY en producción.");
+  }
+
+  return "dev-indexnow-key";
 }
 
 export function getIndexNowKeyLocation(): string {
   return `${siteUrl}/${getIndexNowKey()}.txt`;
 }
 
-export function collectIndexNowUrls(): string[] {
+export async function collectIndexNowUrls(): Promise<string[]> {
   const urls = new Set<string>([siteUrl]);
 
   for (const slug of SEO_HUB_SLUGS) {
@@ -32,6 +40,16 @@ export function collectIndexNowUrls(): string[] {
     urls.add(`${siteUrl}${partidosHoyDatePath(dateKey)}`);
   }
 
+  const { events } = await fetchFeedEvents();
+  const futureEvents = events.filter(
+    (event): event is EventRow & { date: string } =>
+      Boolean(event.date && !isPastSeoDate(event.date))
+  );
+
+  for (const slug of partidoSlugsForSitemap(futureEvents)) {
+    urls.add(`${siteUrl}/partido/${slug}`);
+  }
+
   urls.add(`${siteUrl}/privacidad`);
   urls.add(`${siteUrl}/cookies`);
 
@@ -39,11 +57,12 @@ export function collectIndexNowUrls(): string[] {
 }
 
 export async function pingIndexNow(
-  urlList: string[] = collectIndexNowUrls()
+  urlList?: string[]
 ): Promise<{ ok: boolean; status?: number; skipped?: boolean; error?: string }> {
+  const list = urlList ?? (await collectIndexNowUrls());
   const key = getIndexNowKey();
 
-  if (!urlList.length) {
+  if (!list.length) {
     return { ok: false, skipped: true, error: "empty url list" };
   }
 
@@ -62,7 +81,7 @@ export async function pingIndexNow(
         host,
         key,
         keyLocation: getIndexNowKeyLocation(),
-        urlList: urlList.slice(0, 10_000),
+        urlList: list.slice(0, 10_000),
       }),
       signal: AbortSignal.timeout(12_000),
     });

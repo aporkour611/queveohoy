@@ -443,7 +443,7 @@ export function HomePage({
         </div>
       </nav>
 
-      <main className="fh-content">
+      <main id="main-content" className="fh-content">
         <div className="fh-container fh-main">
           <h1 className="sr-only">Qué ver hoy en TV</h1>
 

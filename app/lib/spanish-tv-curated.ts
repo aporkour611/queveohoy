@@ -18,6 +18,8 @@ export type SpanishTvShow = {
   category: "reality" | "concurso" | "directo";
   /** ID TMDB fijo (evita confundir con versiones extranjeras). */
   tmdbId?: number;
+  /** Poster TMDB (/path) para tarjetas si aún no hay fila en BD. */
+  posterPath?: string | null;
   /** Hora habitual de emisión en península (HH:MM). */
   airTime?: string;
   /** Días de emisión recurrentes: 1 = lunes … 7 = domingo (ISO). */
@@ -46,6 +48,7 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     platform: "Telecinco · Mitele",
     priority: 98,
     category: "reality",
+    posterPath: "/5UNSRQc1ZCVmkDxi9llNqrUudYt.jpg",
     airTime: "23:00",
     airWeekdays: [1, 2],
   },

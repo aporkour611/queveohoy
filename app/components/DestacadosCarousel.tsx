@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { EventRow } from "./types";
 import {
   DESTACADOS_SCROLL_STEP,
@@ -40,23 +40,21 @@ export function DestacadosCarousel({
   ariaLabel,
   layout = "paginated",
 }: Props) {
-  const [page, setPage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const pageSize = DESTACADOS_SCROLL_STEP;
   const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
+  const listKey = items.map((item) => item.id).join(",");
+  const [pageByList, setPageByList] = useState<Record<string, number>>({});
+  const page = Math.min(pageByList[listKey] ?? 0, pageCount - 1);
+  const setPage = (next: number) => {
+    setPageByList((current) => ({
+      ...current,
+      [listKey]: Math.max(0, Math.min(next, pageCount - 1)),
+    }));
+  };
   const showNav = items.length > DESTACADOS_VISIBLE_SLOTS;
   const start = page * pageSize;
   const visible = items.slice(start, start + pageSize);
-
-  useEffect(() => {
-    setPage(0);
-  }, [items]);
-
-  useEffect(() => {
-    if (page > pageCount - 1) {
-      setPage(Math.max(0, pageCount - 1));
-    }
-  }, [page, pageCount]);
 
   function scrollByDirection(direction: -1 | 1) {
     const el = scrollRef.current;
@@ -123,7 +121,7 @@ export function DestacadosCarousel({
           className="qvh-destacados-nav qvh-destacados-nav-prev"
           aria-label={`Ver destacados anteriores de ${ariaLabel}`}
           disabled={page === 0}
-          onClick={() => setPage((current) => Math.max(0, current - 1))}
+          onClick={() => setPage(page - 1)}
         >
           <ChevronIcon direction="left" />
         </button>
@@ -145,9 +143,7 @@ export function DestacadosCarousel({
           className="qvh-destacados-nav qvh-destacados-nav-next"
           aria-label={`Ver los siguientes ${pageSize} destacados de ${ariaLabel}`}
           disabled={page >= pageCount - 1}
-          onClick={() =>
-            setPage((current) => Math.min(pageCount - 1, current + 1))
-          }
+          onClick={() => setPage(page + 1)}
         >
           <ChevronIcon direction="right" />
         </button>

@@ -13,7 +13,10 @@ import { displaySeriesSubtitle, displaySeriesTitle } from "./series-display";
 import { resolveEventStreamingPlatform } from "./media-platform";
 import { isSeasonPremiereEvent } from "./tmdb-client";
 import { curatedMovieByExternalId } from "./movies-curated";
-import { resolveEventPosterUrl } from "./event-poster";
+import {
+  buildEntertainmentCover,
+  entertainmentSpotlightVisualClass,
+} from "./entertainment-art";
 import {
   parseUfcFighterImages,
   parseUfcKindFromSource,
@@ -28,7 +31,6 @@ import {
 import {
   getEsportsGameArt,
   getMotorArt,
-  hasSpotlightPosterCover,
   localSpotlightCover,
   mediaFallbackCover,
   remoteSpotlightCover,
@@ -71,10 +73,7 @@ export type SpotlightCardModel = {
 };
 
 function mediaCover(event: EventRow, sport: string): SpotlightCover {
-  const poster = resolveEventPosterUrl(event, "poster");
-  if (poster) return remoteSpotlightCover(poster, "poster");
-
-  return mediaFallbackCover(sport) ?? localSpotlightCover("/fallback/deportes.svg", "emblem");
+  return buildEntertainmentCover({ ...event, sport });
 }
 
 function teamTitle(event: EventRow): string | null {
@@ -129,7 +128,6 @@ export function getSpotlightCardModel(
     const curatedMovie = sport === "cine" ? curatedMovieByExternalId(event.external_id) : null;
     const competition = event.competition?.trim() || "";
     const coverImage = mediaCover(event, sport);
-    const posterBackground = hasSpotlightPosterCover(coverImage);
 
     return {
       headline:
@@ -159,19 +157,17 @@ export function getSpotlightCardModel(
         channels ||
         "TV y streaming",
       coverImage,
-      visualClass: premiere
-        ? "qvh-spotlight-visual-premiere"
-        : posterBackground
-          ? "qvh-spotlight-visual-series"
-          : sport === "cine"
-            ? "qvh-spotlight-visual-cine"
-            : "qvh-spotlight-visual-series",
+      visualClass: entertainmentSpotlightVisualClass(sport, coverImage, {
+        premiere,
+        curatedMovie: Boolean(curatedMovie),
+      }),
     };
   }
 
   if (sport === "tv") {
     const category = getTvShowCategory(event);
     const badge = category ? tvCategoryLabel(category) : "Reality";
+    const coverImage = mediaCover(event, sport);
 
     return {
       headline: event.title?.trim() || badge,
@@ -186,8 +182,8 @@ export function getSpotlightCardModel(
       time,
       meta: event.competition?.trim() || `${badge} · Nuevo episodio`,
       platform: event.platform?.trim() || channels || "TV y streaming",
-      coverImage: mediaCover(event, sport),
-      visualClass: "qvh-spotlight-visual-premiere",
+      coverImage,
+      visualClass: entertainmentSpotlightVisualClass(sport, coverImage),
     };
   }
 
