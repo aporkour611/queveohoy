@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { HomePage } from "./components/HomePage";
 import { HomeJsonLd } from "./components/HomeJsonLd";
-import { getHomeFeedEventsForPage, getWeekFeedEventsForPage } from "./lib/events-feed-server";
+import { getHomeFeedEventsForPage, getDestacadosFeedEventsForPage } from "./lib/events-feed-server";
 import {
   buildHomeMetadataDescription,
   buildHomeMetadataTitle,
@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Page() {
   const [{ events, error }, { events: weekEvents }] = await Promise.all([
     getHomeFeedEventsForPage(),
-    getWeekFeedEventsForPage(),
+    getDestacadosFeedEventsForPage(),
   ]);
   const ssrEvents = trimHomeSsrEvents(events);
 

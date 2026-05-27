@@ -5,7 +5,11 @@ import {
   isDestacadoFinal,
   isDestacadoPremiere,
 } from "./event-card-stamp";
-import { getMadridWeekDates, toMadridDateKey } from "./madrid-time";
+import { addDaysToDateKey, getMadridWeekDates, toMadridDateKey } from "./madrid-time";
+import {
+  curatedMovieByExternalId,
+  isCuratedMovieEvent,
+} from "./movies-curated";
 import {
   isSpanishTvFlagship,
   SPANISH_TV_TITLE_PATTERNS,
@@ -15,6 +19,7 @@ import { isSeasonPremiereEvent } from "./tmdb";
 export type DestacadoRule = {
   id: string;
   externalId?: string | RegExp;
+  titleMatch?: RegExp;
   /** IDs football-data.org; local/visitante indiferente */
   teamIds?: [string, string];
   teams?: { a: RegExp; b: RegExp };
@@ -29,6 +34,7 @@ export const DESTACADOS_RULES: DestacadoRule[] = [
   {
     id: "el-drama",
     externalId: "tmdb_movie_1325734",
+    titleMatch: /^(the\s+)?drama\b|^el\s+drama\b/i,
   },
 ];
 
@@ -39,8 +45,10 @@ export const DESTACADOS_SERIES_PATTERNS: RegExp[] = [
 ];
 
 const MIN_DESTACADOS_TODAY = 3;
-const MAX_DESTACADOS_TODAY = 9;
-const MAX_DESTACADOS_WEEK = 12;
+const MAX_DESTACADOS_TODAY = 12;
+const MAX_DESTACADOS_WEEK = 15;
+/** Estrenos editoriales visibles en Destacados tras la fecha de estreno. */
+const CURATED_MOVIE_GRACE_DAYS = 21;
 
 /** Cuántas tarjetas se ven antes de mostrar flechas de navegación. */
 export const DESTACADOS_VISIBLE_SLOTS = 3;
@@ -63,10 +71,19 @@ export { isChampionsFinal, isDestacadoFinal, isDestacadoPremiere } from "./event
 function matchesRule(event: EventRow, rule: DestacadoRule): boolean {
   if (rule.externalId) {
     const id = event.external_id ?? "";
-    return typeof rule.externalId === "string"
-      ? id === rule.externalId
-      : rule.externalId.test(id);
+    const externalMatch =
+      typeof rule.externalId === "string"
+        ? id === rule.externalId
+        : rule.externalId.test(id);
+    if (externalMatch) return true;
   }
+
+  if (rule.titleMatch) {
+    const title = event.title ?? "";
+    if (rule.titleMatch.test(title)) return true;
+  }
+
+  if (rule.externalId || rule.titleMatch) return false;
 
   if (rule.teamIds) {
     const ids = parseFootballTeamIds(
@@ -127,9 +144,34 @@ function weekPoolFor(
   windowDays: number,
   excludeIds: Set<number>
 ): EventRow[] {
-  const week = new Set(getMadridWeekDates(windowDays));
-  return events.filter(
-    (e) => e.date && week.has(e.date) && !excludeIds.has(e.id)
+  const weekEnd = addDaysToDateKey(todayKey, windowDays - 1);
+  const curatedGraceStart = addDaysToDateKey(
+    todayKey,
+    -CURATED_MOVIE_GRACE_DAYS
+  );
+
+  return events.filter((event) => {
+    if (!event.date || excludeIds.has(event.id)) return false;
+
+    if (event.date >= todayKey && event.date <= weekEnd) return true;
+
+    if (isCuratedMovieEvent(event)) {
+      const curated = curatedMovieByExternalId(event.external_id);
+      const releaseDate = curated?.releaseDate ?? event.date;
+      return releaseDate >= curatedGraceStart && releaseDate <= weekEnd;
+    }
+
+    return false;
+  });
+}
+
+function findEditorialMatch(
+  events: EventRow[],
+  rule: DestacadoRule,
+  excludeIds: Set<number>
+): EventRow | undefined {
+  return events.find(
+    (event) => !excludeIds.has(event.id) && matchesRule(event, rule)
   );
 }
 
@@ -174,7 +216,7 @@ export function pickTodayDestacados(
       .sort(sortTodayItems);
 
     for (const event of candidates) {
-      if (items.length >= MIN_DESTACADOS_TODAY) break;
+      if (items.length >= MAX_DESTACADOS_TODAY) break;
       add(event);
     }
   }
@@ -188,12 +230,9 @@ export function pickWeekDestacados(
   options: PickCuratedDestacadosOptions = {}
 ): EventRow[] {
   const excludeIds = options.excludeIds ?? new Set<number>();
-  const pool = weekPoolFor(
-    events,
-    options.todayKey ?? toMadridDateKey(new Date()),
-    options.windowDays ?? 7,
-    excludeIds
-  );
+  const todayKey = options.todayKey ?? toMadridDateKey(new Date());
+  const windowDays = options.windowDays ?? 7;
+  const pool = weekPoolFor(events, todayKey, windowDays, excludeIds);
 
   const items: EventRow[] = [];
   const seen = new Set<number>();
@@ -205,7 +244,9 @@ export function pickWeekDestacados(
   };
 
   for (const rule of DESTACADOS_RULES) {
-    const match = pool.find((e) => matchesRule(e, rule));
+    const match =
+      findEditorialMatch(pool, rule, excludeIds) ??
+      findEditorialMatch(events, rule, excludeIds);
     if (match) add(match);
   }
 

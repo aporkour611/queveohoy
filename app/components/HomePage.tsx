@@ -196,10 +196,16 @@ export function HomePage({
 
   const dayWindow = hasFullWeek ? FEED_DAY_COUNT : HOME_SSR_DAY_COUNT;
 
-  const destacadosEvents = useMemo(
-    () => (hasFullWeek ? events : initialDestacadosEvents.length ? initialDestacadosEvents : events),
-    [hasFullWeek, events, initialDestacadosEvents]
-  );
+  const destacadosEvents = useMemo(() => {
+    const merged = new Map<number, EventRow>();
+    for (const event of initialDestacadosEvents) {
+      merged.set(event.id, event);
+    }
+    for (const event of events) {
+      merged.set(event.id, event);
+    }
+    return [...merged.values()];
+  }, [events, initialDestacadosEvents]);
 
   const displayEvents = useMemo(
     () => filterEventsInWeek(events, MADRID_TZ, dayWindow),

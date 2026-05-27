@@ -1,4 +1,4 @@
-import { getMadridWeekDates } from "./madrid-time";
+import { addDaysToDateKey, getMadridWeekDates, toMadridDateKey } from "./madrid-time";
 import { CURATED_MOVIES } from "./movies-curated";
 import { formatSeriesEpisodeTitle } from "./series-display";
 import {
@@ -264,9 +264,17 @@ async function fetchEditorialMovies(
   trendingRank: Map<number, number>
 ): Promise<TmdbCronEvent[]> {
   const events: TmdbCronEvent[] = [];
+  const today = toMadridDateKey(new Date());
+  const curatedGraceStart = addDaysToDateKey(today, -21);
+  const curatedGraceEnd = addDaysToDateKey(today, 14);
 
   for (const curated of CURATED_MOVIES) {
-    if (curated.releaseDate < dateFrom || curated.releaseDate > dateTo) continue;
+    if (
+      curated.releaseDate < curatedGraceStart ||
+      curated.releaseDate > curatedGraceEnd
+    ) {
+      continue;
+    }
 
     const detail = await tmdbGet<TmdbItem>(`/movie/${curated.tmdbId}`);
     if (!detail) continue;

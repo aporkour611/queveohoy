@@ -8,7 +8,6 @@ import {
 } from "../lib/destacados-config";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
-import { FeaturedEventCard } from "./FeaturedEventCard";
 import { DestacadosCarousel } from "./DestacadosCarousel";
 
 type Props = {
@@ -45,15 +44,7 @@ function DestacadosRow({
         </div>
       </div>
 
-      <DestacadosCarousel itemCount={items.length} ariaLabel={ariaLabel}>
-        {items.map((event, index) => (
-          <FeaturedEventCard
-            key={event.id}
-            event={event}
-            priority={index < 2}
-          />
-        ))}
-      </DestacadosCarousel>
+      <DestacadosCarousel items={items} ariaLabel={ariaLabel} />
     </section>
   );
 }

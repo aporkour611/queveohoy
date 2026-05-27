@@ -72,8 +72,20 @@
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  scroll-snap-type: x proximity;
-  scroll-padding-inline: 4px;
+}
+
+.qvh-destacados-page {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.qvh-destacados-page .qvh-spotlight-card {
+  flex: unset;
+  width: 100%;
+  min-width: 0;
 }
 
 .qvh-destacados-carousel {
@@ -83,9 +95,8 @@
   gap: 8px;
 }
 
-.qvh-destacados-carousel .qvh-destacados-scroll {
-  flex: 1;
-  min-width: 0;
+.qvh-destacados-carousel .qvh-destacados-page {
+  overflow: hidden;
 }
 
 .qvh-destacados-nav {
@@ -163,7 +174,7 @@
     right: 4px;
   }
 
-  .qvh-destacados-carousel .qvh-destacados-scroll {
+  .qvh-destacados-carousel .qvh-destacados-page {
     padding-inline: 2px;
   }
 }
