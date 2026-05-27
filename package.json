@@ -9,7 +9,8 @@
     "lint": "eslint",
     "ping-search": "node scripts/ping-indexnow.mjs",
     "db:index": "node scripts/apply-index.mjs",
-    "vapid:keys": "node scripts/generate-vapid-keys.mjs"
+    "vapid:keys": "node scripts/generate-vapid-keys.mjs",
+    "icons:app": "node scripts/generate-app-icons.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.1",
@@ -30,6 +31,7 @@
     "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

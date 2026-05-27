@@ -25,7 +25,7 @@ const barlowCondensed = Barlow_Condensed({
 export const metadata: Metadata = rootMetadata;
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#1a1a2e",
   width: "device-width",
   initialScale: 1,
 };
@@ -48,6 +48,8 @@ export default function RootLayout({
           href={`${siteUrl}/feed.xml`}
         />
         <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icons/app-icon-192.png" />
       </head>
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
         <CookieConsentRoot>{children}</CookieConsentRoot>

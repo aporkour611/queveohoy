@@ -13,8 +13,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(payload.title, {
       body: payload.body,
-      icon: "/logo-queveohoy.png",
-      badge: "/logo-queveohoy.png",
+      icon: "/icons/app-icon-192.png",
+      badge: "/icons/app-icon-192.png",
       tag: payload.tag,
       data: { url: payload.url },
     })

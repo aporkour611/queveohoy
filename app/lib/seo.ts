@@ -108,8 +108,11 @@ export const rootMetadata: Metadata = {
     images: ["/logo-queveohoy.png"],
   },
   icons: {
-    icon: "/logo-queveohoy.png",
-    apple: "/logo-queveohoy.png",
+    icon: [
+      { url: "/icons/app-icon.svg", type: "image/svg+xml" },
+      { url: "/icons/app-icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/icons/app-icon-192.png",
   },
 };
 
