@@ -16,6 +16,7 @@ import {
 } from "./curated-movie-events";
 import {
   isFlagshipSpanishTvEvent,
+  isRecurringFlagshipSpanishTvEvent,
   mergeCuratedSpanishTvEvents,
 } from "./curated-tv-events";
 import {
@@ -158,6 +159,12 @@ function sortTodayItems(a: EventRow, b: EventRow): number {
   );
 }
 
+function isPinnedWeekDestacado(event: EventRow): boolean {
+  return (
+    isCuratedMovieEvent(event) || isRecurringFlagshipSpanishTvEvent(event)
+  );
+}
+
 function weekPoolFor(
   events: EventRow[],
   todayKey: string,
@@ -171,7 +178,8 @@ function weekPoolFor(
   );
 
   return events.filter((event) => {
-    if (!event.date || excludeIds.has(event.id)) return false;
+    if (!event.date) return false;
+    if (excludeIds.has(event.id) && !isPinnedWeekDestacado(event)) return false;
 
     if (event.date >= todayKey && event.date <= weekEnd) return true;
 
@@ -270,7 +278,7 @@ export function pickWeekDestacados(
 
   const addPinned = (event: EventRow) => {
     if (seen.has(event.id)) return;
-    if (excludeIds.has(event.id) && !isCuratedMovieEvent(event)) return;
+    if (excludeIds.has(event.id) && !isPinnedWeekDestacado(event)) return;
     seen.add(event.id);
     pinned.push(event);
   };
@@ -295,6 +303,10 @@ export function pickWeekDestacados(
   }
 
   for (const event of pool) {
+    if (isRecurringFlagshipSpanishTvEvent(event)) addPinned(event);
+  }
+
+  for (const event of pool) {
     if (isDestacadoFinal(event)) addRest(event);
   }
 
@@ -308,7 +320,12 @@ export function pickWeekDestacados(
 
   for (const event of pool) {
     if (event.date === todayKey) continue;
-    if (isFlagshipSpanishTvEvent(event)) addRest(event);
+    if (
+      isFlagshipSpanishTvEvent(event) &&
+      !isRecurringFlagshipSpanishTvEvent(event)
+    ) {
+      addRest(event);
+    }
   }
 
   return [

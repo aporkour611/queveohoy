@@ -101,3 +101,9 @@ export function mergeCuratedSpanishTvEvents(
 export function isFlagshipSpanishTvEvent(event: EventRow): boolean {
   return matchesSpanishTvFlagship(event) !== null;
 }
+
+/** Realities con emisión fija semanal (p. ej. La Isla, lun/mar). */
+export function isRecurringFlagshipSpanishTvEvent(event: EventRow): boolean {
+  const show = matchesSpanishTvFlagship(event);
+  return Boolean(show?.airWeekdays?.length);
+}
