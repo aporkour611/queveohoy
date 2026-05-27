@@ -97,7 +97,7 @@ export function HomePage({
     setLoadError(null);
 
     try {
-      const url = fullWeek ? "/api/events" : "/api/events?scope=home";
+      const url = fullWeek ? "/api/events" : "/api/events/home";
       const res = await fetch(url);
       const body = (await res.json()) as {
         events?: EventRow[];

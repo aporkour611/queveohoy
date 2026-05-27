@@ -11,7 +11,6 @@ import {
   buildHomeMetadataTitle,
 } from "./lib/seo-jsonld";
 import { pageMetadata, seoKeywords } from "./lib/seo";
-import { FEED_REVALIDATE_SECONDS } from "./lib/cache-config";
 
 const HomeTrafficHubs = dynamic(
   () =>
@@ -19,7 +18,7 @@ const HomeTrafficHubs = dynamic(
   { loading: () => null }
 );
 
-export const revalidate = FEED_REVALIDATE_SECONDS;
+export const revalidate = 900;
 
 export async function generateMetadata(): Promise<Metadata> {
   const { events } = await fetchHomeFeedEvents();

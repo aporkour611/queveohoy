@@ -36,8 +36,8 @@ async function queryFeedEvents(dayCount: number, tight: boolean): Promise<{
 }
 
 async function loadFeedEvents(
-  dayCount = FEED_DAY_COUNT,
-  tight = false
+  dayCount: number,
+  tight: boolean
 ): Promise<{
   events: EventRow[];
   error: string | null;
@@ -71,24 +71,19 @@ async function loadFeedEvents(
   }
 }
 
-const getCachedFullFeed = unstable_cache(
-  () => loadFeedEvents(FEED_DAY_COUNT, false),
-  ["feed-events", "full"],
-  { revalidate: FEED_REVALIDATE_SECONDS, tags: ["feed"] }
-);
-
-const getCachedHomeFeed = unstable_cache(
-  () => loadFeedEvents(HOME_SSR_DAY_COUNT, true),
-  ["feed-events", "home", String(HOME_SSR_DAY_COUNT)],
+/** dayCount + tight forman parte de la clave de cache (evita colisión home/full). */
+const getCachedFeed = unstable_cache(
+  (dayCount: number, tight: boolean) => loadFeedEvents(dayCount, tight),
+  ["feed-events"],
   { revalidate: FEED_REVALIDATE_SECONDS, tags: ["feed"] }
 );
 
 /** Feed completo (7 días) — hubs, sitemap, semana completa. */
 export async function fetchFeedEvents() {
-  return getCachedFullFeed();
+  return getCachedFeed(FEED_DAY_COUNT, false);
 }
 
 /** Feed ligero para la home (hoy + mañana). */
 export async function fetchHomeFeedEvents() {
-  return getCachedHomeFeed();
+  return getCachedFeed(HOME_SSR_DAY_COUNT, true);
 }

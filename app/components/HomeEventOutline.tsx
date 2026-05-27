@@ -6,7 +6,7 @@ import {
   mapEventsToTimezone,
   MADRID_TZ,
 } from "../lib/timezone";
-import { FEED_DAY_COUNT } from "../lib/events-feed";
+import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { pickHomePageEvents } from "../lib/featured";
 import { displayTime } from "../lib/madrid-time";
 import { eventLabel } from "../lib/seo-events";
@@ -31,10 +31,10 @@ export function HomeEventOutline({ events }: Props) {
   const displayEvents = filterEventsInWeek(
     mapEventsToTimezone(events, MADRID_TZ),
     MADRID_TZ,
-    FEED_DAY_COUNT
+    HOME_SSR_DAY_COUNT
   );
 
-  const days = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)
+  const days = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)
     .map((day) => ({
       ...day,
       events: pickHomePageEvents(
