@@ -22,10 +22,38 @@
   padding-bottom: 12px;
 }
 
+.qvh-destacados-live {
+  padding-bottom: 12px;
+}
+
+.qvh-destacados-live .qvh-destacados-dot {
+  background: #ff3b30;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.55);
+  animation: qvh-destacados-live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes qvh-destacados-live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 59, 48, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
+  }
+}
+
 .qvh-destacados-week {
   padding-top: 4px;
   padding-bottom: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.qvh-destacados-week-first {
+  padding-top: 0;
+  border-top: none;
 }
 
 .qvh-destacados-week .qvh-destacados-dot {

@@ -3,11 +3,12 @@
 import { useMemo } from "react";
 import type { EventRow } from "./types";
 import {
-  pickTodayDestacados,
+  pickLiveNowDestacados,
   pickWeekDestacados,
 } from "../lib/destacados-config";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
+import { useLiveClock } from "../lib/use-live-clock";
 import { DestacadosCarousel } from "./DestacadosCarousel";
 
 type Props = {
@@ -52,38 +53,45 @@ function DestacadosRow({
 }
 
 export function DestacadosSection({ events }: Props) {
+  const now = useLiveClock(30_000);
   const todayKey = useMemo(
     () => buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "",
     []
   );
 
-  const todayFeatured = useMemo(
-    () => pickTodayDestacados(events, { todayKey }),
-    [events, todayKey]
+  const liveFeatured = useMemo(
+    () => pickLiveNowDestacados(events, { todayKey, now }),
+    [events, todayKey, now]
   );
 
   const weekFeatured = useMemo(() => {
-    const excludeIds = new Set(todayFeatured.map((event) => event.id));
+    const excludeIds = new Set(liveFeatured.map((event) => event.id));
     return pickWeekDestacados(events, { todayKey, excludeIds });
-  }, [events, todayKey, todayFeatured]);
+  }, [events, todayKey, liveFeatured]);
 
-  if (todayFeatured.length === 0 && weekFeatured.length === 0) return null;
+  if (liveFeatured.length === 0 && weekFeatured.length === 0) return null;
+
+  const hasLive = liveFeatured.length > 0;
 
   return (
     <div className="qvh-destacados-stack">
-      <DestacadosRow
-        title="Qué veo hoy"
-        subtitle="Lo mejor de hoy en TV, deporte y streaming"
-        items={todayFeatured}
-        ariaLabel="Qué veo hoy"
-        className="qvh-destacados-today"
-      />
+      {hasLive ? (
+        <DestacadosRow
+          title="En vivo ahora"
+          subtitle="Retransmisión en directo en TV y streaming gratis"
+          items={liveFeatured}
+          ariaLabel="En vivo ahora"
+          className="qvh-destacados-live"
+        />
+      ) : null}
       <DestacadosRow
         title="Esta semana"
         subtitle="Final de Champions, estrenos y series que marcan"
         items={weekFeatured}
         ariaLabel="Destacados de la semana"
-        className="qvh-destacados-week"
+        className={
+          hasLive ? "qvh-destacados-week" : "qvh-destacados-week qvh-destacados-week-first"
+        }
       />
     </div>
   );
