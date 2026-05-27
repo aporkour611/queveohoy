@@ -1,8 +1,13 @@
 import type { EventRow } from "../components/types";
 import { sportFilterGroupId } from "./filter-config";
 import { eventCanDisplay, filterEventsForDisplay } from "./event-crests";
+import {
+  HOME_DAILY_EVENT_CAP,
+  HOME_SECTION_MAX_DEFAULT,
+  HOME_SECTION_MAX_IMPORTANT,
+} from "./home-feed-config";
 import { spanishTvPriorityBonus } from "./spanish-tv-curated";
-import { capTopMediaEvents, parseTmdbBuzzScore } from "./tmdb";
+import { parseTmdbBuzzScore } from "./tmdb-client";
 
 const COMPETITION_PRIORITY: { match: RegExp; score: number }[] = [
   { match: /champions|mundial|world cup/i, score: 100 },
@@ -48,8 +53,6 @@ export const FEATURED_PER_CATEGORY = 1;
 
 /** Home sin filtros: tope por categoría/deporte dentro de cada día */
 export const HOME_SECTION_MAX = 5;
-
-/** Umbral para considerar un evento "importante" (reintento de escudos en cron) */
 export const IMPORTANT_EVENT_MIN_SCORE = 75;
 
 const KNOCKOUT_BONUS: { match: RegExp; score: number }[] = [
@@ -141,7 +144,55 @@ export function displaySectionKey(e: EventRow): string {
   return `sport:${e.sport ?? "otros"}`;
 }
 
-/** Home sin filtros: hasta 5 eventos top por categoría (Valorant, CS2, Champions…) */
+const SUPER_RELEVANT_COMP =
+  /champions|europa league|conference league|libertadores|sudamericana|world cup|mundial|copa del rey|supercopa|grand prix|motogp.*race|ufc \d+|vct|major|worlds|iem|blast|eurovisi[oó]n|operaci[oó]n triunfo|gran hermano|isla de las tentaciones/i;
+
+/** Finales, eliminatorias o torneos de primer nivel → más cupo en la home. */
+export function isSuperRelevantEvent(e: EventRow): boolean {
+  const comp = e.competition ?? "";
+  const title = e.title ?? "";
+  const blob = `${comp} ${title}`;
+
+  if (comp.includes("· Final")) return true;
+
+  if (
+    /\bfinal\b|semifinal|semi-final|semi final|octavos|cuartos|quarter.?final|playoff|eliminatoria|round of 16|round of 8|last.?16/i.test(
+      blob
+    )
+  ) {
+    return true;
+  }
+
+  if (SUPER_RELEVANT_COMP.test(comp) || SUPER_RELEVANT_COMP.test(title)) {
+    return true;
+  }
+
+  if (e.sport === "futbol") {
+    const home = e.home_team ?? "";
+    const away = e.away_team ?? "";
+    if (IMPORTANT_FOOTBALL_TEAMS.test(home) && IMPORTANT_FOOTBALL_TEAMS.test(away)) {
+      return true;
+    }
+  }
+
+  if (e.sport === "csgo" || e.sport === "valorant" || e.sport === "lol") {
+    const esportsBlob = `${comp} ${title} ${e.home_team ?? ""} ${e.away_team ?? ""}`;
+    if (IMPORTANT_ESPORTS_EVENTS.test(esportsBlob)) return true;
+  }
+
+  if (e.sport === "tv" && spanishTvPriorityBonus(e) >= 90) return true;
+
+  return false;
+}
+
+function homeSectionLimit(events: EventRow[]): number {
+  if (events.some(isSuperRelevantEvent)) {
+    return HOME_SECTION_MAX_IMPORTANT;
+  }
+  return HOME_SECTION_MAX_DEFAULT;
+}
+
+/** Home sin filtros: top por competición/deporte, estilo futbolhoy (pocos, relevantes). */
 export function pickHomePageEvents(dayEvents: EventRow[]): EventRow[] {
   const eligible = dayEvents.filter(eventCanDisplay);
   const bySection = new Map<string, EventRow[]>();
@@ -155,10 +206,20 @@ export function pickHomePageEvents(dayEvents: EventRow[]): EventRow[] {
 
   const picked: EventRow[] = [];
   for (const list of bySection.values()) {
-    picked.push(...sortByPriority(list).slice(0, HOME_SECTION_MAX));
+    const limit = homeSectionLimit(list);
+    picked.push(...sortByPriority(list).slice(0, limit));
   }
 
-  return sortByPriority(picked);
+  return sortByPriority(picked).slice(0, HOME_DAILY_EVENT_CAP);
+}
+
+/** Cuántos eventos del día quedaron fuera del recorte de portada. */
+export function countHiddenHomeEvents(
+  dayEvents: EventRow[],
+  visible: EventRow[]
+): number {
+  const eligible = dayEvents.filter(eventCanDisplay).length;
+  return Math.max(0, eligible - visible.length);
 }
 
 function groupByCategory(events: EventRow[]): Map<string, EventRow[]> {
@@ -209,14 +270,9 @@ export function pickFeaturedEvents(dayEvents: EventRow[]): EventRow[] {
   return pickTopPerCategory(dayEvents, true);
 }
 
-/** Al filtrar: solo eventos con escudo en deportes de equipo; cine/series top por día */
+/** Al filtrar: mismos topes por bloque que en vista destacada. */
 export function pickFilteredEvents(events: EventRow[]): EventRow[] {
-  const sorted = filterEventsForDisplay(events).sort(
-    (a, b) =>
-      eventPriority(b) - eventPriority(a) ||
-      (a.time ?? "").localeCompare(b.time ?? "")
-  );
-  return capTopMediaEvents(sorted) as EventRow[];
+  return pickHomePageEvents(events);
 }
 
 /** Próximos al filtrar: ordenados por importancia, sin exigir escudo */
