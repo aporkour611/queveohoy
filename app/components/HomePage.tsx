@@ -13,7 +13,6 @@ import {
   COOKIE_CONSENT_EVENT,
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
-import { statsFromFeedDay } from "../lib/home-stats";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { DayTabs } from "./DayTabs";
 import { EventDaySections } from "./EventDaySections";
@@ -21,7 +20,6 @@ import { EventFilters } from "./EventFilters";
 import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
 import { Logo } from "./Logo";
-import { HomeCalendarHero } from "./HomeCalendarHero";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
 import { LazyMount } from "./LazyMount";
 import { EventSearch } from "./EventSearch";
@@ -45,7 +43,6 @@ const DestacadosSection = dynamic(
 type Props = {
   initialEvents?: EventRow[];
   initialError?: string | null;
-  initialFetchedAt?: string | null;
   children?: ReactNode;
 };
 
@@ -68,7 +65,6 @@ function scrollToDaySection(date: string) {
 export function HomePage({
   initialEvents = [],
   initialError = null,
-  initialFetchedAt = null,
   children,
 }: Props = {}) {
   const [events, setEvents] = useState(initialEvents);
@@ -206,14 +202,6 @@ export function HomePage({
     () => daySections.flatMap((section) => section.events),
     [daySections]
   );
-
-  const todayStats = useMemo(() => {
-    const today = daySections[0];
-    if (!today) {
-      return statsFromFeedDay([], "Hoy", "");
-    }
-    return statsFromFeedDay(today.events, today.title, today.date);
-  }, [daySections]);
 
   const activeSection = daySections[activeDay];
 
@@ -355,7 +343,7 @@ export function HomePage({
 
       <main className="fh-content">
         <div className="fh-container fh-main">
-          <HomeCalendarHero fetchedAt={initialFetchedAt} stats={todayStats} />
+          <h1 className="sr-only">Qué ver hoy en TV</h1>
 
           <EventFilters
             selected={selectedSports}

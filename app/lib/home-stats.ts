@@ -40,21 +40,3 @@ export function countTodayStats(
     date: today?.date ?? "",
   };
 }
-
-/** Stats a partir de eventos ya recortados para el feed (respeta filtros activos). */
-export function statsFromFeedDay(
-  events: EventRow[],
-  dayTitle: string,
-  date: string
-): TodayStats {
-  const freeCount = events.filter((event) =>
-    parseChannels(event.platform).some(isFreeTvChannel)
-  ).length;
-
-  return {
-    total: events.length,
-    freeCount,
-    dayTitle,
-    date,
-  };
-}

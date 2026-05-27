@@ -39,7 +39,6 @@ export default async function Page() {
       <HomePage
         initialEvents={events}
         initialError={error}
-        initialFetchedAt={new Date().toISOString()}
       >
         <HomeTrafficHubs events={events} />
         <ShareTodayBar />
