@@ -5,6 +5,7 @@ import {
 } from "./event-crests";
 import { enrichEventCrests } from "./event-enrich";
 import { isImportantEvent } from "./featured";
+import { eventHasPlaceholderTeams, isPublishableTeamEvent } from "./event-quality";
 
 const ENRICH_RETRIES = 3;
 
@@ -33,6 +34,8 @@ export async function prepareEventsForImport<T extends CronEventInput>(
   const out: T[] = [];
 
   for (const raw of events) {
+    if (!isPublishableTeamEvent(raw)) continue;
+
     const e = asScorable(raw);
     const sport = e.sport ?? "";
 
@@ -65,6 +68,7 @@ export async function prepareEventsForImport<T extends CronEventInput>(
 }
 
 export function shouldPurgeEvent(e: EventRow): boolean {
+  if (eventHasPlaceholderTeams(e)) return true;
   if (!isTeamCrestSport(e.sport ?? "")) return false;
   if (eventHasTeamCrests(e)) return false;
   return !isImportantEvent(e);

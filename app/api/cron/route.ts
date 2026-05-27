@@ -8,6 +8,7 @@ import {
   shouldPurgeEvent,
   type CronEventInput,
 } from "@/app/lib/cron-events";
+import { isPlaceholderTeamName } from "@/app/lib/event-quality";
 import { dedupeEvents, findDuplicateIdsToRemove, type EventRecord } from "@/app/lib/dedupe-events";
 import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
@@ -93,11 +94,22 @@ async function fetchFootball() {
       }
 
       for (const match of result.data.matches) {
+        const homeName = match.homeTeam.shortName || match.homeTeam.name;
+        const awayName = match.awayTeam.shortName || match.awayTeam.name;
+        if (
+          isPlaceholderTeamName(match.homeTeam.name) ||
+          isPlaceholderTeamName(match.awayTeam.name) ||
+          isPlaceholderTeamName(homeName) ||
+          isPlaceholderTeamName(awayName)
+        ) {
+          continue;
+        }
+
         const utcDate = parseUtcIso(match.utcDate);
         const { date, time } = splitToMadrid(utcDate);
         events.push({
           external_id: `football_${match.id}`,
-          title: `${match.homeTeam.shortName || match.homeTeam.name} vs ${match.awayTeam.shortName || match.awayTeam.name}`,
+          title: `${homeName} vs ${awayName}`,
           home_team: match.homeTeam.name,
           away_team: match.awayTeam.name,
           date,
@@ -308,8 +320,17 @@ async function fetchEsports(): Promise<CountResult> {
         const { date, time } = splitToMadrid(parseUtcIso(String(match.begin_at)));
         if (!dates.includes(date)) continue;
 
-        const team1 = match.opponents?.[0]?.opponent?.name || "TBD";
-        const team2 = match.opponents?.[1]?.opponent?.name || "TBD";
+        const team1 = match.opponents?.[0]?.opponent?.name?.trim();
+        const team2 = match.opponents?.[1]?.opponent?.name?.trim();
+        if (
+          !team1 ||
+          !team2 ||
+          isPlaceholderTeamName(team1) ||
+          isPlaceholderTeamName(team2)
+        ) {
+          continue;
+        }
+
         const homeLogo = pandascoreTeamLogo(match.opponents?.[0]?.opponent);
         const awayLogo = pandascoreTeamLogo(match.opponents?.[1]?.opponent);
 
@@ -506,7 +527,7 @@ async function purgeEventsWithoutCrests(): Promise<{
     return { purged: 0, error: delError.message };
   }
 
-  console.log(`Eventos sin escudo descartados: ${ids.length}`);
+  console.log(`Eventos inválidos o sin escudo descartados: ${ids.length}`);
   return { purged: ids.length };
 }
 
@@ -516,7 +537,7 @@ async function purgeMinorEsportsEvents(): Promise<{
 }> {
   const { data, error } = await getSupabase()
     .from("events")
-    .select("id, sport, competition")
+    .select("id, sport, competition, title, home_team, away_team")
     .in("sport", ["csgo", "valorant", "lol"]);
 
   if (error || !data?.length) {

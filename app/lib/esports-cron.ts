@@ -1,3 +1,5 @@
+import { eventHasPlaceholderTeams, isPlaceholderTeamName } from "./event-quality";
+
 /** Ligas / torneos menores que no queremos en BD (ruido en home y cron lento). */
 const ESPORTS_MINOR =
   /challenger|open qualifier|qualifier|academy|regional|circuit\s*x|division\s*[234]|div\s*[234]|emea\s*open|nacl|university|cbLOL|open\s*qual|road\s*of|prime\s*league\s*2|lidl|nexus|\bsplit\s*(?:[2-9]|\d{2,})\b/i;
@@ -13,7 +15,18 @@ export type PandascoreMatchMeta = {
   opponents?: Array<{ opponent?: { name?: string | null } | null }> | null;
 };
 
+function opponentsConfirmed(match: PandascoreMatchMeta): boolean {
+  const names = (match.opponents ?? [])
+    .map((o) => o.opponent?.name?.trim())
+    .filter(Boolean) as string[];
+
+  if (names.length < 2) return false;
+  return names.every((name) => !isPlaceholderTeamName(name));
+}
+
 export function shouldIngestPandascoreMatch(match: PandascoreMatchMeta): boolean {
+  if (!opponentsConfirmed(match)) return false;
+
   const comp = [
     match.league?.name,
     match.serie?.full_name,
@@ -49,9 +62,13 @@ const ESPORTS_SPORTS = new Set(["csgo", "valorant", "lol"]);
 export function shouldPurgeStoredEsportsEvent(event: {
   sport?: string | null;
   competition?: string | null;
+  title?: string | null;
+  home_team?: string | null;
+  away_team?: string | null;
 }): boolean {
   const sport = event.sport ?? "";
   if (!ESPORTS_SPORTS.has(sport)) return false;
+  if (eventHasPlaceholderTeams(event)) return true;
 
   const comp = event.competition ?? "";
   if (!comp.trim()) return true;

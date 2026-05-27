@@ -4,6 +4,7 @@ import {
   splitToMadrid,
   toMadridDateKey,
 } from "./madrid-time";
+import { isPlaceholderTeamName } from "./event-quality";
 
 const API_BASE = "https://www.thesportsdb.com/api/v1/json/3";
 
@@ -126,6 +127,16 @@ function normalizeLeagueEvent(
   const home = raw.strHomeTeam?.trim() || null;
   const away = raw.strAwayTeam?.trim() || null;
   const parsed = parseVersusTitle(raw.strEvent);
+
+  if (
+    isPlaceholderTeamName(home) ||
+    isPlaceholderTeamName(away) ||
+    isPlaceholderTeamName(parsed.home) ||
+    isPlaceholderTeamName(parsed.away)
+  ) {
+    return null;
+  }
+
   const title =
     home && away
       ? `${home} vs ${away}`

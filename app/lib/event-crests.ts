@@ -1,5 +1,6 @@
 import type { EventRow } from "../components/types";
 import { isImportantEvent } from "./featured";
+import { eventHasPlaceholderTeams } from "./event-quality";
 import { parseEsportsTeamLogos, isEsportsSport } from "./esports";
 import { parseFootballTeamIds } from "./football";
 
@@ -40,8 +41,9 @@ export function eventHasTeamCrests(e: EventRow): boolean {
   return true;
 }
 
-/** Visible en la app: con escudos completos o evento importante (placeholder alineado) */
+/** Visible en la app: equipos confirmados, escudos completos o evento importante */
 export function eventCanDisplay(e: EventRow): boolean {
+  if (eventHasPlaceholderTeams(e)) return false;
   if (!isTeamCrestSport(e.sport ?? "")) return true;
   if (eventHasTeamCrests(e)) return true;
   return isImportantEvent(e);
