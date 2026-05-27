@@ -18,6 +18,19 @@ import {
   parseUfcMainEventFighters,
   ufcKindLabel,
 } from "./thesportsdb-ufc-client";
+import {
+  esportsLogoFallbackUrls,
+  isEsportsSport,
+  parseEsportsTeamLogos,
+} from "./esports";
+import {
+  getEsportsGameArt,
+  getMotorArt,
+  localSpotlightCover,
+  mediaFallbackCover,
+  remoteSpotlightCover,
+  type SpotlightCover,
+} from "./spotlight-art";
 import type { EventRow } from "../components/types";
 
 export type SpotlightBadgeVariant =
@@ -40,15 +53,23 @@ export type SpotlightCardModel = {
   time: string;
   meta: string;
   platform: string;
-  poster?: string;
+  coverImage?: SpotlightCover;
   visualClass?: string;
   homeCrest?: string;
   awayCrest?: string;
+  homeCrestList?: string[];
+  awayCrestList?: string[];
   homeName?: string;
   awayName?: string;
   showTeamDuel?: boolean;
   showUfcDuel?: boolean;
 };
+
+function mediaCover(event: EventRow, sport: string): SpotlightCover {
+  const poster = parseTmdbPoster(event.source, "poster");
+  if (poster) return remoteSpotlightCover(poster, "poster");
+  return mediaFallbackCover(sport) ?? localSpotlightCover("/fallback/deportes.svg", "emblem");
+}
 
 function teamTitle(event: EventRow): string | null {
   const home = event.home_team?.trim();
@@ -123,7 +144,7 @@ export function getSpotlightCardModel(
         event.platform?.trim() ||
         channels ||
         "TV y streaming",
-      poster: parseTmdbPoster(event.source, "poster") ?? undefined,
+      coverImage: mediaCover(event, sport),
       visualClass: premiere
         ? "qvh-spotlight-visual-premiere"
         : sport === "cine"
@@ -149,12 +170,13 @@ export function getSpotlightCardModel(
       time,
       meta: event.competition?.trim() || `${badge} · Nuevo episodio`,
       platform: event.platform?.trim() || channels || "TV y streaming",
-      poster: parseTmdbPoster(event.source) ?? undefined,
+      coverImage: mediaCover(event, sport),
       visualClass: "qvh-spotlight-visual-premiere",
     };
   }
 
   if (sport === "formula1" || sport === "motos") {
+    const motorArt = getMotorArt(sport);
     return {
       headline: event.title?.trim() || sportLabel(sport),
       badge: sportLabel(sport),
@@ -163,20 +185,42 @@ export function getSpotlightCardModel(
       time,
       meta: event.competition?.trim() || "Motor",
       platform: event.platform?.trim() || channels || "TV",
-      visualClass: "qvh-spotlight-visual-motor",
+      coverImage: localSpotlightCover(motorArt.url, "emblem"),
+      visualClass: motorArt.visualClass,
     };
   }
 
-  if (["csgo", "valorant", "lol"].includes(sport)) {
+  if (isEsportsSport(sport)) {
+    const gameArt = getEsportsGameArt(sport);
+    const logos = parseEsportsTeamLogos(event.source);
+    const homeName = shortTeamName(event.home_team);
+    const awayName = shortTeamName(event.away_team);
+    const hasDuel = Boolean(logos?.homeUrl || logos?.awayUrl);
+
     return {
-      headline: teamTitle(event) || event.title?.trim() || sportLabel(sport),
-      badge: event.competition?.split(" · ")[0]?.trim() || sportLabel(sport),
+      headline: teamTitle(event) || event.title?.trim() || gameArt.label,
+      badge: event.competition?.split(" · ")[0]?.trim() || gameArt.label,
       badgeVariant: "esports",
       dateLabel,
       time,
-      meta: channels || event.competition?.trim() || sportLabel(sport),
+      meta: channels || event.competition?.trim() || gameArt.label,
       platform: event.platform?.trim() || "Streaming",
-      visualClass: "qvh-spotlight-visual-esports",
+      coverImage: localSpotlightCover(
+        gameArt.url,
+        hasDuel ? "emblem-duel" : "emblem"
+      ),
+      visualClass: gameArt.visualClass,
+      homeCrest: logos?.homeUrl ?? undefined,
+      awayCrest: logos?.awayUrl ?? undefined,
+      homeCrestList: logos?.homeUrl
+        ? esportsLogoFallbackUrls(logos.homeUrl)
+        : undefined,
+      awayCrestList: logos?.awayUrl
+        ? esportsLogoFallbackUrls(logos.awayUrl)
+        : undefined,
+      homeName,
+      awayName,
+      showTeamDuel: hasDuel,
     };
   }
 
@@ -219,6 +263,9 @@ export function getSpotlightCardModel(
     time,
     meta: channels || event.competition?.trim() || sportLabel(sport),
     platform: event.platform?.trim() || channels || "TV",
+    coverImage:
+      mediaFallbackCover(sport) ??
+      localSpotlightCover("/fallback/deportes.svg", "emblem"),
     visualClass: "qvh-spotlight-visual-default",
   };
 }

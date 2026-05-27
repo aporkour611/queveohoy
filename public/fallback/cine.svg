@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Cine">
+  <defs>
+    <linearGradient id="cineg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="240" rx="28" fill="#1a1208"/>
+  <rect x="48" y="72" width="144" height="96" rx="8" fill="none" stroke="url(#cineg)" stroke-width="10"/>
+  <polygon points="108,96 108,144 152,120" fill="url(#cineg)"/>
+  <text x="120" y="210" text-anchor="middle" fill="#fbbf24" font-family="Arial Black, sans-serif" font-size="24" font-weight="700">CINE</text>
+</svg>

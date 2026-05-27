@@ -79,10 +79,10 @@ export function DestacadosSection({ events }: Props) {
   return (
     <div className="qvh-destacados-stack">
       <DestacadosRow
-        title="Lo imprescindible"
+        title="Qué veo hoy"
         subtitle="Lo mejor de hoy en TV, deporte y streaming"
         items={todayFeatured}
-        ariaLabel="Lo imprescindible de hoy"
+        ariaLabel="Qué veo hoy"
         className="qvh-destacados-today"
       />
       <DestacadosRow

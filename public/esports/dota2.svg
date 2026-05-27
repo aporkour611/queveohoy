@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Dota 2">
+  <rect width="240" height="240" rx="28" fill="#120c0c"/>
+  <path d="M56 176 L120 56 L184 176 Z" fill="#a51f1f"/>
+  <path d="M88 176 L120 112 L152 176 Z" fill="#7a1212"/>
+  <rect x="108" y="176" width="24" height="20" fill="#a51f1f"/>
+  <text x="120" y="228" text-anchor="middle" fill="#e04b4b" font-family="Arial Black, sans-serif" font-size="20" font-weight="700">DOTA 2</text>
+</svg>

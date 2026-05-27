@@ -133,7 +133,7 @@ function weekPoolFor(
   );
 }
 
-/** Lo imprescindible de hoy: TV, reality y relleno del día. */
+/** Qué veo hoy: TV, reality y relleno del día. */
 export function pickTodayDestacados(
   events: EventRow[],
   options: PickCuratedDestacadosOptions = {}

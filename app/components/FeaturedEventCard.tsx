@@ -3,6 +3,7 @@
 import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
+import type { SpotlightCover } from "../lib/spotlight-art";
 import { getEventCardStamp } from "../lib/event-card-stamp";
 import { MADRID_TZ } from "../lib/timezone";
 import { RemotePoster } from "./RemotePoster";
@@ -15,6 +16,42 @@ type Props = {
   className?: string;
   priority?: boolean;
 };
+
+function SpotlightCoverArt({
+  cover,
+  priority = false,
+}: {
+  cover: SpotlightCover;
+  priority?: boolean;
+}) {
+  const layoutClass = `qvh-spotlight-cover-${cover.layout}`;
+
+  if (cover.local) {
+    return (
+      <div
+        className={`qvh-spotlight-cover ${layoutClass}`}
+        aria-hidden
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={cover.url}
+          alt=""
+          className="qvh-spotlight-cover-img"
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <RemotePoster
+      src={cover.url}
+      className={`qvh-spotlight-cover ${layoutClass}`}
+      priority={priority}
+    />
+  );
+}
 
 export const FeaturedEventCard = memo(function FeaturedEventCard({
   event,
@@ -33,8 +70,8 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
         }${stamp ? " qvh-spotlight-visual-stamped" : ""}`}
       >
         {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
-        {card.poster && !card.showTeamDuel && !card.showUfcDuel ? (
-          <RemotePoster src={card.poster} priority={priority} />
+        {card.coverImage && !card.showUfcDuel ? (
+          <SpotlightCoverArt cover={card.coverImage} priority={priority} />
         ) : null}
         <div className="qvh-spotlight-overlay" />
 
@@ -52,6 +89,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
             <div className="qvh-spotlight-duel-team">
               <TeamCrest
                 src={card.homeCrest}
+                srcList={card.homeCrestList}
                 name={card.homeName}
                 size={48}
                 className="qvh-spotlight-crest"
@@ -63,6 +101,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
             <div className="qvh-spotlight-duel-team">
               <TeamCrest
                 src={card.awayCrest}
+                srcList={card.awayCrestList}
                 name={card.awayName}
                 size={48}
                 className="qvh-spotlight-crest"

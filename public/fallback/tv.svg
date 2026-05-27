@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="TV">
+  <defs>
+    <linearGradient id="tvg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="240" rx="28" fill="#180f1f"/>
+  <rect x="44" y="72" width="152" height="96" rx="12" fill="none" stroke="url(#tvg)" stroke-width="10"/>
+  <rect x="108" y="168" width="24" height="16" fill="url(#tvg)"/>
+  <rect x="88" y="184" width="64" height="10" rx="5" fill="url(#tvg)" opacity="0.55"/>
+  <text x="120" y="210" text-anchor="middle" fill="#f9a8d4" font-family="Arial Black, sans-serif" font-size="24" font-weight="700">TV</text>
+</svg>
