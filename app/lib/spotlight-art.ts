@@ -79,3 +79,7 @@ export function mediaFallbackCover(sport: string): SpotlightCover | undefined {
   if (!url) return undefined;
   return localSpotlightCover(url, "emblem");
 }
+
+export function hasSpotlightPosterCover(cover: SpotlightCover): boolean {
+  return cover.layout === "poster" && !cover.local;
+}

@@ -11,9 +11,9 @@ import {
 import { getTvShowCategory, tvCategoryLabel } from "./tv-show-category";
 import { displaySeriesSubtitle, displaySeriesTitle } from "./series-display";
 import { resolveEventStreamingPlatform } from "./media-platform";
-import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb-client";
+import { isSeasonPremiereEvent } from "./tmdb-client";
 import { curatedMovieByExternalId } from "./movies-curated";
-import { encodeTmdbSource } from "./tmdb";
+import { resolveEventPosterUrl } from "./event-poster";
 import {
   parseUfcFighterImages,
   parseUfcKindFromSource,
@@ -28,6 +28,7 @@ import {
 import {
   getEsportsGameArt,
   getMotorArt,
+  hasSpotlightPosterCover,
   localSpotlightCover,
   mediaFallbackCover,
   remoteSpotlightCover,
@@ -70,17 +71,8 @@ export type SpotlightCardModel = {
 };
 
 function mediaCover(event: EventRow, sport: string): SpotlightCover {
-  const poster = parseTmdbPoster(event.source, "poster");
+  const poster = resolveEventPosterUrl(event, "poster");
   if (poster) return remoteSpotlightCover(poster, "poster");
-
-  const curated = curatedMovieByExternalId(event.external_id);
-  if (curated?.posterPath) {
-    const curatedPoster = parseTmdbPoster(
-      encodeTmdbSource(curated.posterPath, curated.priority),
-      "poster"
-    );
-    if (curatedPoster) return remoteSpotlightCover(curatedPoster, "poster");
-  }
 
   return mediaFallbackCover(sport) ?? localSpotlightCover("/fallback/deportes.svg", "emblem");
 }
@@ -134,15 +126,23 @@ export function getSpotlightCardModel(
 
   if (sport === "cine" || sport === "series") {
     const premiere = sport === "series" && isSeasonPremiereEvent(event);
+    const curatedMovie = sport === "cine" ? curatedMovieByExternalId(event.external_id) : null;
     const competition = event.competition?.trim() || "";
+    const coverImage = mediaCover(event, sport);
+    const posterBackground = hasSpotlightPosterCover(coverImage);
 
     return {
       headline:
         sport === "series"
           ? displaySeriesTitle(event)
           : event.title?.trim() || "Sin título",
-      badge: premiere ? "Estreno" : sport === "cine" ? "Cine" : "Series",
-      badgeVariant: premiere ? "premiere" : "media",
+      badge:
+        premiere || curatedMovie
+          ? "Estreno"
+          : sport === "cine"
+            ? "Cine"
+            : "Series",
+      badgeVariant: premiere || curatedMovie ? "premiere" : "media",
       dateLabel,
       time,
       meta:
@@ -158,12 +158,14 @@ export function getSpotlightCardModel(
         event.platform?.trim() ||
         channels ||
         "TV y streaming",
-      coverImage: mediaCover(event, sport),
+      coverImage,
       visualClass: premiere
         ? "qvh-spotlight-visual-premiere"
-        : sport === "cine"
-          ? "qvh-spotlight-visual-cine"
-          : "qvh-spotlight-visual-series",
+        : posterBackground
+          ? "qvh-spotlight-visual-series"
+          : sport === "cine"
+            ? "qvh-spotlight-visual-cine"
+            : "qvh-spotlight-visual-series",
     };
   }
 

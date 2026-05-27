@@ -9,10 +9,8 @@ import {
   mediaBadgeForEvent,
   resolveEventStreamingPlatform,
 } from "../lib/media-platform";
-import {
-  isSeasonPremiereEvent,
-  parseTmdbPoster,
-} from "../lib/tmdb-client";
+import { isSeasonPremiereEvent } from "../lib/tmdb-client";
+import { resolveEventPosterUrl } from "../lib/event-poster";
 import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
 import { getEventCardStamp } from "../lib/event-card-stamp";
 import type { EventRow } from "./types";
@@ -49,7 +47,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
     sport === "series"
       ? displaySeriesTitle(event)
       : event.title?.trim() || "Sin título";
-  const posterUrl = parseTmdbPoster(event.source, "poster");
+  const posterUrl = resolveEventPosterUrl(event, "poster");
   const platform = resolveEventStreamingPlatform(event);
   const subtitle =
     sport === "series"

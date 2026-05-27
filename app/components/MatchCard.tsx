@@ -6,8 +6,7 @@ import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
 import { parseTmdbPoster } from "../lib/tmdb-client";
-import { curatedMovieByExternalId } from "../lib/movies-curated";
-import { encodeTmdbSource } from "../lib/tmdb";
+import { resolveEventPosterUrl } from "../lib/event-poster";
 import { resolveEventStreamingPlatform } from "../lib/media-platform";
 import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
 import {
@@ -172,15 +171,10 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         : event.competition?.trim() || null;
   const posterUrl = isUfc
     ? parseUfcImage(event.source)
-    : parseTmdbPoster(event.source, isSeries || isCine || isTv ? "poster" : "thumb") ??
-      (isCine
-        ? (() => {
-            const curated = curatedMovieByExternalId(event.external_id);
-            return curated?.posterPath
-              ? parseTmdbPoster(encodeTmdbSource(curated.posterPath), "poster")
-              : null;
-          })()
-        : null);
+    : resolveEventPosterUrl(
+        event,
+        isSeries || isCine || isTv ? "poster" : "thumb"
+      );
 
   const esportsLogos = parseEsportsTeamLogos(event.source);
   const footballIds =
@@ -267,11 +261,14 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
   if (isMedia) {
     const tvBadge = isTv ? mediaBadgeForEvent(event) : null;
-    const mediaVisualClass = isCine
-      ? "fh-media-spotlight-visual-cine"
-      : isSeries
+    const mediaVisualClass =
+      (isCine || isSeries) && posterUrl
         ? "fh-media-spotlight-visual-series"
-        : "fh-media-spotlight-visual-premiere";
+        : isCine
+          ? "fh-media-spotlight-visual-cine"
+          : isSeries
+            ? "fh-media-spotlight-visual-series"
+            : "fh-media-spotlight-visual-premiere";
     const mediaBadgeClass = isCine
       ? "fh-media-spotlight-badge-cine"
       : isSeries

@@ -565,8 +565,18 @@
   background: linear-gradient(135deg, #451a03 0%, #d97706 48%, #78350f 100%);
 }
 
+.qvh-spotlight-visual-cine:has(.qvh-spotlight-cover-poster) {
+  background: #101015;
+  animation: none;
+}
+
 .qvh-spotlight-visual-series {
   background: linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #4c1d95 100%);
+}
+
+.qvh-spotlight-visual-series:has(.qvh-spotlight-cover-poster) {
+  background: #101015;
+  animation: none;
 }
 
 .qvh-spotlight-visual-media {
