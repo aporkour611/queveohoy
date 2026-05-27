@@ -46,6 +46,7 @@ hf-prod.json
 ff.json
 ff-prod.json
 _page.html
+verify-home-*.html
 
 # typescript
 *.tsbuildinfo
