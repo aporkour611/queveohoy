@@ -91,3 +91,6 @@ export async function fetchHomeFeedEvents() {
 
 /** Dedup en la misma petición (generateMetadata + Page). */
 export const getHomeFeedEventsForPage = cache(fetchHomeFeedEvents);
+
+/** Semana completa para Destacados (cache compartido con fetchFeedEvents). */
+export const getWeekFeedEventsForPage = cache(fetchFeedEvents);

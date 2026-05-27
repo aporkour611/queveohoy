@@ -22,6 +22,10 @@ export const DESTACADOS_RULES: DestacadoRule[] = [
     id: "psg-arsenal",
     teamIds: ["524", "57"],
   },
+  {
+    id: "el-drama",
+    externalId: "tmdb_movie_1325734",
+  },
 ];
 
 /** Cada nuevo episodio de estas series va a Destacados */
@@ -42,6 +46,12 @@ export type PickCuratedDestacadosOptions = {
   scope?: DestacadosScope;
   windowDays?: number;
 };
+
+export function isChampionsFinal(event: EventRow): boolean {
+  if (event.sport !== "futbol") return false;
+  const comp = `${event.competition ?? ""} ${event.title ?? ""}`;
+  return /champions/i.test(comp) && /\bfinal\b/i.test(comp);
+}
 
 function matchesRule(event: EventRow, rule: DestacadoRule): boolean {
   if (rule.externalId) {
@@ -100,15 +110,21 @@ export function pickCuratedDestacados(
   const today =
     options.todayKey ?? toMadridDateKey(new Date());
   const week = new Set(getMadridWeekDates(windowDays));
-  const inWindow = events.filter((e) => e.date && week.has(e.date));
-  const pool =
-    scope === "today"
-      ? inWindow.filter((e) => e.date === today)
-      : inWindow;
+  const weekPool = events.filter((e) => e.date && week.has(e.date));
+  const todayPool = weekPool.filter((e) => e.date === today);
+  const pool = scope === "today" ? todayPool : weekPool;
   const minDestacados =
     scope === "today" ? MIN_DESTACADOS_TODAY : MIN_DESTACADOS_WEEK;
+
+  const pinned: EventRow[] = [];
   const picked: EventRow[] = [];
   const seen = new Set<number>();
+
+  const addPinned = (event: EventRow) => {
+    if (seen.has(event.id)) return;
+    seen.add(event.id);
+    pinned.push(event);
+  };
 
   const add = (event: EventRow) => {
     if (seen.has(event.id)) return;
@@ -117,8 +133,12 @@ export function pickCuratedDestacados(
   };
 
   for (const rule of DESTACADOS_RULES) {
-    const match = pool.find((e) => matchesRule(e, rule));
-    if (match) add(match);
+    const match = weekPool.find((e) => matchesRule(e, rule));
+    if (match) addPinned(match);
+  }
+
+  for (const event of weekPool) {
+    if (isChampionsFinal(event)) addPinned(event);
   }
 
   for (const event of pool.filter(matchesFlagshipTv)) {
@@ -137,7 +157,7 @@ export function pickCuratedDestacados(
     add(event);
   }
 
-  if (picked.length < minDestacados) {
+  if (pinned.length + picked.length < minDestacados) {
     const candidates = pool
       .filter((event) => !seen.has(event.id))
       .sort((a, b) => {
@@ -151,17 +171,19 @@ export function pickCuratedDestacados(
       });
 
     for (const event of candidates) {
-      if (picked.length >= MAX_DESTACADOS) break;
+      if (pinned.length + picked.length >= MAX_DESTACADOS) break;
       add(event);
     }
   }
 
-  return picked.sort(
+  const sortedPicked = picked.sort(
     (a, b) =>
       eventPriority(b) - eventPriority(a) ||
       (a.date ?? "").localeCompare(b.date ?? "") ||
       (a.time ?? "").localeCompare(b.time ?? "")
   );
+
+  return [...pinned, ...sortedPicked].slice(0, MAX_DESTACADOS);
 }
 
 export { isSeasonPremiereEvent };

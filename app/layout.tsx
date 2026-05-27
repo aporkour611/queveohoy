@@ -5,6 +5,7 @@ import "./brand.css";
 import "./futbolhoy.css";
 import "./destacados.css";
 import "./media.css";
+import "./event-stamp.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { Analytics } from "./components/Analytics";
 import { SpeedInsights } from "./components/SpeedInsights";

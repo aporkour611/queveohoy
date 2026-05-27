@@ -144,13 +144,24 @@ export function dayTitleInZone(
 }
 
 export function formatDisplayDateLabel(dateKey: string, timeZone: string): string {
-  const week = getWeekDatesInZone(timeZone, 2);
-  if (dateKey === week[0]) return "Hoy";
-  if (dateKey === week[1]) return "Mañana";
+  const today = getWeekDatesInZone(timeZone, 1)[0];
+  const days = daysUntilDateKey(today, dateKey);
+  if (days === 0) return "Hoy";
+  if (days === 1) return "Mañana";
+  if (days >= 2 && days <= 6) {
+    const weekday = formatWeekdayInZone(dateKey, timeZone, "long");
+    return `Este ${weekday}`;
+  }
 
   const weekday = formatWeekdayInZone(dateKey, timeZone, "short");
   const month = formatMonthShortInZone(dateKey, timeZone);
   return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1, 3)} ${dayNumber(dateKey)} ${month}`;
+}
+
+function daysUntilDateKey(fromKey: string, toKey: string): number {
+  const from = Date.parse(`${fromKey}T12:00:00Z`);
+  const to = Date.parse(`${toKey}T12:00:00Z`);
+  return Math.round((to - from) / 86_400_000);
 }
 
 export function mapEventsToTimezone(

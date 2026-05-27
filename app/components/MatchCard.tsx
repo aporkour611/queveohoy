@@ -20,8 +20,10 @@ import { partidoPath } from "../lib/event-slug";
 import Link from "next/link";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
+import { getEventCardStamp, type EventCardStampKind } from "../lib/event-card-stamp";
 import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 import type { EventRow } from "./types";
+import { EventCardStamp } from "./EventCardStamp";
 
 type Props = {
   event: EventRow;
@@ -42,6 +44,7 @@ type SpotlightCardContent = {
   ufcF1Name?: string | null;
   ufcF2Name?: string | null;
   showUfcDuel?: boolean;
+  stampKind?: EventCardStampKind | null;
 };
 
 function SpotlightCardContent({
@@ -59,6 +62,7 @@ function SpotlightCardContent({
   ufcF1Name,
   ufcF2Name,
   showUfcDuel = false,
+  stampKind = null,
 }: SpotlightCardContent) {
   const duelActive =
     showUfcDuel || Boolean(ufcF1Url || ufcF2Url || (ufcF1Name && ufcF2Name));
@@ -68,8 +72,9 @@ function SpotlightCardContent({
       <div
         className={`fh-media-spotlight-visual ${visualClass}${
           duelActive ? " fh-media-spotlight-visual-ufc-duel" : ""
-        }`}
+        }${stampKind ? " fh-media-spotlight-visual-stamped" : ""}`}
       >
+        {stampKind ? <EventCardStamp kind={stampKind} size="compact" /> : null}
         {posterUrl && !duelActive ? <RemotePoster src={posterUrl} /> : null}
         {duelActive ? (
           <UfcFightVisual
@@ -195,19 +200,19 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     : "";
   const channels = resolveChannelsForEvent(event);
   const compFull = event.competition ?? "";
-  const isFinal = compFull.includes("· Final");
   const compDisplay = compFull.split(" · ")[0] || compFull;
   const matchClass = competitionMatchClass(compDisplay, event.sport);
+  const stamp = getEventCardStamp(event);
 
   function toggleExpanded() {
     if (!hasExtraDetails) return;
     setExpanded((open) => !open);
   }
 
-  const cardShell = (children: ReactNode, extraClass = "") => (
+  const cardShell = (children: ReactNode, extraClass = "", stampOnCard = false) => (
     <div className={`fh-cardcol${expanded ? " fh-cardcol-expanded" : ""}`}>
       <div
-        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${hasExtraDetails ? " fh-match-expandable" : ""}`}
+        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${hasExtraDetails ? " fh-match-expandable" : ""}${stampOnCard && stamp ? " fh-match-stamped" : ""}`}
         role={hasExtraDetails ? "button" : undefined}
         tabIndex={hasExtraDetails ? 0 : undefined}
         aria-expanded={hasExtraDetails ? expanded : undefined}
@@ -223,6 +228,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
             : undefined
         }
       >
+        {stampOnCard && stamp ? <EventCardStamp kind={stamp} /> : null}
         {children}
         {expanded && hasExtraDetails ? (
           <EventDetailsPanel event={event} />
@@ -257,6 +263,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         dateLabel={dateLabel}
         time={time}
         channels={channels}
+        stampKind={stamp}
       />,
       "fh-match-media-spotlight"
     );
@@ -287,6 +294,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         dateLabel={dateLabel}
         time={time}
         channels={channels}
+        stampKind={stamp}
       />,
       "fh-match-media-spotlight"
     );
@@ -294,12 +302,6 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   return cardShell(
     <>
         <div className="fh-m-comp" />
-
-        {isFinal && (
-          <div className="fh-m-phase">
-            <span>Final</span>
-          </div>
-        )}
 
         <div className="fh-m-title">
           <Link
@@ -342,6 +344,8 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
           ))}
         </div>
       )}
-    </>
+    </>,
+    "",
+    true
   );
 });

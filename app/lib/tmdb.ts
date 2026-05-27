@@ -1,4 +1,5 @@
 import { getMadridWeekDates } from "./madrid-time";
+import { CURATED_MOVIES } from "./movies-curated";
 import {
   BUZZ_SUFFIX,
   LOGO_PREFIX,
@@ -256,6 +257,58 @@ async function fetchTopMovies(
   return pickTopScored(scored, TMDB_MAX_MOVIES_WEEK);
 }
 
+async function fetchEditorialMovies(
+  dateFrom: string,
+  dateTo: string,
+  trendingRank: Map<number, number>
+): Promise<TmdbCronEvent[]> {
+  const events: TmdbCronEvent[] = [];
+
+  for (const curated of CURATED_MOVIES) {
+    if (curated.releaseDate < dateFrom || curated.releaseDate > dateTo) continue;
+
+    const detail = await tmdbGet<TmdbItem>(`/movie/${curated.tmdbId}`);
+    if (!detail) continue;
+
+    const title = detail.title?.trim() || detail.original_title?.trim();
+    if (!title) continue;
+
+    const score =
+      tmdbBuzzScore({
+        popularity: detail.popularity,
+        vote_count: detail.vote_count,
+        vote_average: detail.vote_average,
+        trendingRank: trendingRank.get(curated.tmdbId),
+      }) + curated.priority;
+
+    events.push({
+      external_id: `tmdb_movie_${curated.tmdbId}`,
+      title,
+      date: curated.releaseDate,
+      time: "21:00",
+      sport: "cine",
+      category: "cine",
+      competition:
+        curated.competition ??
+        (trendingRank.has(curated.tmdbId)
+          ? "Estreno top · Cines"
+          : "Estreno en cines"),
+      platform: defaultPlatformForMovie(),
+      source: encodeTmdbSource(detail.poster_path, score),
+    });
+  }
+
+  return events;
+}
+
+function mergeMoviesByExternalId(...lists: TmdbCronEvent[][]): TmdbCronEvent[] {
+  const byId = new Map<string, TmdbCronEvent>();
+  for (const list of lists) {
+    for (const event of list) byId.set(event.external_id, event);
+  }
+  return [...byId.values()];
+}
+
 async function buildSeriesEvent(
   showId: number,
   dateFrom: string,
@@ -383,12 +436,15 @@ export async function fetchTmdbEventsForWeek(
     fetchTrendingRank("tv"),
   ]);
 
-  const [movies, trendingSeries, editorialSeries] = await Promise.all([
-    fetchTopMovies(dateFrom, dateTo, movieTrending),
-    fetchTopSeries(dateFrom, dateTo, tvTrending),
-    fetchEditorialSeries(dateFrom, dateTo, tvTrending),
-  ]);
+  const [discoveredMovies, editorialMovies, trendingSeries, editorialSeries] =
+    await Promise.all([
+      fetchTopMovies(dateFrom, dateTo, movieTrending),
+      fetchEditorialMovies(dateFrom, dateTo, movieTrending),
+      fetchTopSeries(dateFrom, dateTo, tvTrending),
+      fetchEditorialSeries(dateFrom, dateTo, tvTrending),
+    ]);
 
+  const movies = mergeMoviesByExternalId(editorialMovies, discoveredMovies);
   const series = mergeSeriesByExternalId(trendingSeries, editorialSeries);
 
   return { movies, series };

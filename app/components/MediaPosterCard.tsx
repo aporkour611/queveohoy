@@ -15,7 +15,9 @@ import {
   parseTmdbEpisodeMeta,
   parseTmdbPoster,
 } from "../lib/tmdb-client";
+import { getEventCardStamp } from "../lib/event-card-stamp";
 import type { EventRow } from "./types";
+import { EventCardStamp } from "./EventCardStamp";
 
 type Props = {
   event: EventRow;
@@ -59,6 +61,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   const time = displayTime(event.time);
   const badge = mediaBadgeForEvent(sport, isSeasonPremiereEvent(event));
   const whenLabel = [dateLabel, time].filter(Boolean).join(" · ");
+  const stamp = getEventCardStamp(event);
 
   return (
     <div
@@ -78,7 +81,10 @@ export const MediaPosterCard = memo(function MediaPosterCard({
           }
         }}
       >
-        <div className="qvh-media-card-poster">
+        <div
+          className={`qvh-media-card-poster${stamp ? " qvh-media-card-poster-stamped" : ""}`}
+        >
+          {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
           {posterUrl ? (
             <RemotePoster
               src={posterUrl}

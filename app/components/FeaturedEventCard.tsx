@@ -3,10 +3,12 @@
 import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
+import { getEventCardStamp } from "../lib/event-card-stamp";
 import { MADRID_TZ } from "../lib/timezone";
 import { RemotePoster } from "./RemotePoster";
 import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
+import { EventCardStamp } from "./EventCardStamp";
 
 type Props = {
   event: EventRow;
@@ -20,6 +22,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
   priority = false,
 }: Props) {
   const card = getSpotlightCardModel(event, MADRID_TZ);
+  const stamp = getEventCardStamp(event);
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (
@@ -27,8 +30,9 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
           card.showUfcDuel ? " qvh-spotlight-visual-ufc-duel" : ""
-        }`}
+        }${stamp ? " qvh-spotlight-visual-stamped" : ""}`}
       >
+        {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
         {card.poster && !card.showTeamDuel && !card.showUfcDuel ? (
           <RemotePoster src={card.poster} priority={priority} />
         ) : null}

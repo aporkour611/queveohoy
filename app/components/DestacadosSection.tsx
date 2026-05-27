@@ -31,7 +31,7 @@ export function DestacadosSection({ events }: Props) {
           <div>
             <h2 className="qvh-destacados-title">Lo imprescindible</h2>
             <p className="qvh-destacados-sub">
-              Solo lo de hoy en España — deportes, realities y estrenos
+              Hoy y lo que no te puedes perder esta semana
             </p>
           </div>
         </div>

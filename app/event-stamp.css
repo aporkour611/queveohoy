@@ -1,0 +1,75 @@
+/* Precinto diagonal FINAL / ESTRENO en tarjetas de evento */
+
+.qvh-event-stamp {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.qvh-event-stamp-band {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 220%;
+  transform: translate(-50%, -50%) rotate(-32deg);
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.qvh-event-stamp-track {
+  display: block;
+  width: 100%;
+  padding: 0.42rem 0;
+  font-family: var(--qvh-font-display);
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.qvh-event-stamp-compact .qvh-event-stamp-track {
+  padding: 0.34rem 0;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+}
+
+.qvh-event-stamp-final .qvh-event-stamp-track {
+  color: #1a1200;
+  background: repeating-linear-gradient(
+    90deg,
+    #d4af37 0,
+    #d4af37 12px,
+    #f5e6a8 12px,
+    #f5e6a8 24px
+  );
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.qvh-event-stamp-premiere .qvh-event-stamp-track {
+  color: #fff;
+  background: repeating-linear-gradient(
+    90deg,
+    #5d5fef 0,
+    #5d5fef 12px,
+    #7b7dff 12px,
+    #7b7dff 24px
+  );
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.fh-match-stamped {
+  position: relative;
+  overflow: hidden;
+}
+
+.qvh-spotlight-visual-stamped,
+.qvh-media-card-poster-stamped,
+.fh-media-spotlight-visual-stamped {
+  position: relative;
+}

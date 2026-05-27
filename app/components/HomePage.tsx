@@ -49,6 +49,7 @@ const EventSearch = dynamic(
 
 type Props = {
   initialEvents?: EventRow[];
+  initialDestacadosEvents?: EventRow[];
   initialError?: string | null;
   children?: ReactNode;
 };
@@ -71,6 +72,7 @@ function scrollToDaySection(date: string) {
 
 export function HomePage({
   initialEvents = [],
+  initialDestacadosEvents = [],
   initialError = null,
   children,
 }: Props = {}) {
@@ -187,6 +189,11 @@ export function HomePage({
   }, []);
 
   const dayWindow = hasFullWeek ? FEED_DAY_COUNT : HOME_SSR_DAY_COUNT;
+
+  const destacadosEvents = useMemo(
+    () => (hasFullWeek ? events : initialDestacadosEvents.length ? initialDestacadosEvents : events),
+    [hasFullWeek, events, initialDestacadosEvents]
+  );
 
   const displayEvents = useMemo(
     () => filterEventsInWeek(events, MADRID_TZ, dayWindow),
@@ -384,7 +391,7 @@ export function HomePage({
 
           {isFeaturedMode && (
             <FeedErrorBoundary>
-              <DestacadosSection events={displayEvents} />
+              <DestacadosSection events={destacadosEvents} />
             </FeedErrorBoundary>
           )}
 
