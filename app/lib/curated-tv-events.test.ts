@@ -12,4 +12,14 @@ describe("mergeCuratedSpanishTvEvents", () => {
     expect(masterChef?.platform).toContain("La 1");
     expect(masterChef?.source).toContain("9p3sgMqNulDMsHbk2ZdOsWoJqTq");
   });
+
+  it("inserta Mask Singer los miércoles a las 23:00 con póster editorial", () => {
+    const events = mergeCuratedSpanishTvEvents([], "2026-05-27", 7);
+    const maskSinger = events.find((event) => /mask singer/i.test(event.title ?? ""));
+
+    expect(maskSinger).toBeDefined();
+    expect(maskSinger?.date).toBe("2026-05-27");
+    expect(maskSinger?.time).toBe("23:00");
+    expect(maskSinger?.platform).toContain("Antena 3");
+  });
 });

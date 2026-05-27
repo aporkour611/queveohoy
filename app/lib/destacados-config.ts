@@ -29,6 +29,7 @@ import {
 } from "./spanish-tv-curated";
 import { isSeasonPremiereEvent } from "./tmdb";
 import { getFreeLiveBroadcast } from "./event-live";
+import { isRolandGarrosWeekDestacado } from "./roland-garros";
 
 export type DestacadoRule = {
   id: string;
@@ -97,6 +98,11 @@ function mergeDestacadosEvents(
 }
 
 export { isChampionsFinal, isDestacadoFinal, isDestacadoPremiere } from "./event-card-stamp";
+export {
+  isRolandGarrosEvent,
+  isRolandGarrosKnockout,
+  isRolandGarrosWeekDestacado,
+} from "./roland-garros";
 
 /** Partidos de Champions en eliminatorias/final (no jornadas de fase de grupos). */
 export function isChampionsWeekDestacado(event: EventRow): boolean {
@@ -270,6 +276,11 @@ export function pickTodayDestacados(
     if (isSeasonPremiereEvent(event)) add(event);
   }
 
+  for (const event of todayPool) {
+    if (seen.has(event.id)) continue;
+    if (isRolandGarrosWeekDestacado(event)) add(event);
+  }
+
   if (items.length < MIN_DESTACADOS_TODAY) {
     const candidates = todayPool
       .filter((event) => !seen.has(event.id))
@@ -354,6 +365,10 @@ export function pickWeekDestacados(
 
   for (const event of pool) {
     if (isChampionsWeekDestacado(event)) addPinned(event);
+  }
+
+  for (const event of pool) {
+    if (isRolandGarrosWeekDestacado(event)) addPinned(event);
   }
 
   for (const event of pool) {

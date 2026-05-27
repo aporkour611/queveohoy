@@ -4,6 +4,7 @@ export type SpotlightCover = {
   url: string;
   local: boolean;
   layout: SpotlightCoverLayout;
+  objectPosition?: string;
 };
 
 const ESPORTS_GAME_ART: Record<
@@ -57,16 +58,18 @@ export function getMotorArt(sport: string) {
 
 export function localSpotlightCover(
   url: string,
-  layout: SpotlightCoverLayout
+  layout: SpotlightCoverLayout,
+  objectPosition?: string
 ): SpotlightCover {
-  return { url, local: true, layout };
+  return { url, local: true, layout, objectPosition };
 }
 
 export function remoteSpotlightCover(
   url: string,
-  layout: SpotlightCoverLayout = "poster"
+  layout: SpotlightCoverLayout = "poster",
+  objectPosition?: string
 ): SpotlightCover {
-  return { url, local: false, layout };
+  return { url, local: false, layout, objectPosition };
 }
 
 export function mediaFallbackCover(sport: string): SpotlightCover | undefined {
@@ -76,5 +79,5 @@ export function mediaFallbackCover(sport: string): SpotlightCover | undefined {
 }
 
 export function hasSpotlightPosterCover(cover: SpotlightCover): boolean {
-  return cover.layout === "poster" && !cover.local;
+  return cover.layout === "poster";
 }

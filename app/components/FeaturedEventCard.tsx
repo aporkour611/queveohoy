@@ -45,6 +45,7 @@ function SpotlightCoverArt({
           src={cover.url}
           alt=""
           className="qvh-spotlight-cover-img"
+          style={cover.objectPosition ? { objectPosition: cover.objectPosition } : undefined}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
         />
@@ -57,6 +58,7 @@ function SpotlightCoverArt({
       src={cover.url}
       className={`qvh-spotlight-cover ${layoutClass}`}
       priority={priority}
+      objectPosition={cover.objectPosition}
     />
   );
 }

@@ -10,7 +10,7 @@ import {
   resolveEventStreamingPlatform,
 } from "../lib/media-platform";
 import { isSeasonPremiereEvent } from "../lib/tmdb-client";
-import { resolveEventPosterUrl } from "../lib/event-poster";
+import { resolveEventPosterObjectPosition, resolveEventPosterUrl } from "../lib/event-poster";
 import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
 import { getEventCardStamp } from "../lib/event-card-stamp";
 import type { EventRow } from "./types";
@@ -48,6 +48,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
       ? displaySeriesTitle(event)
       : event.title?.trim() || "Sin título";
   const posterUrl = resolveEventPosterUrl(event, "poster");
+  const posterObjectPosition = resolveEventPosterObjectPosition(event);
   const platform = resolveEventStreamingPlatform(event);
   const subtitle =
     sport === "series"
@@ -117,6 +118,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
             <RemotePoster
               src={posterUrl}
               className="qvh-media-card-image qvh-remote-poster"
+              objectPosition={posterObjectPosition}
             />
           ) : (
             <div className="qvh-media-card-fallback" aria-hidden />

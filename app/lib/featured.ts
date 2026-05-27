@@ -16,6 +16,10 @@ import {
 import { spanishTvPriorityBonus } from "./spanish-tv-curated";
 import { curatedMovieByExternalId } from "./movies-curated";
 import { parseTmdbBuzzScore } from "./tmdb-client";
+import {
+  isRolandGarrosEvent,
+  isRolandGarrosKnockout,
+} from "./roland-garros";
 
 const COMPETITION_PRIORITY: { match: RegExp; score: number }[] = [
   { match: /champions|mundial|world cup/i, score: 100 },
@@ -87,8 +91,10 @@ export function eventPriority(e: EventRow): number {
   let score = SPORT_BASE[e.sport ?? ""] ?? 40;
 
   const comp = e.competition ?? "";
+  const title = e.title ?? "";
+  const compBlob = `${comp} ${title}`;
   for (const { match, score: s } of COMPETITION_PRIORITY) {
-    if (match.test(comp)) {
+    if (match.test(comp) || (e.sport === "tenis" && match.test(compBlob))) {
       score = Math.max(score, s);
       break;
     }
@@ -97,15 +103,16 @@ export function eventPriority(e: EventRow): number {
   if (comp.includes("· Final")) score += 15;
 
   for (const { match, score: s } of KNOCKOUT_BONUS) {
-    if (match.test(comp) || match.test(e.title ?? "")) {
+    if (match.test(comp) || match.test(title)) {
       score += s;
       break;
     }
   }
 
-  if (e.sport === "tenis") {
-    const blob = `${comp} ${e.title ?? ""}`;
-    if (/roland garros|french open|grand slam/i.test(blob)) score += 20;
+  if (isRolandGarrosEvent(e)) {
+    score = Math.max(score, 88);
+    if (isRolandGarrosKnockout(e)) score += 18;
+    else score += 8;
   }
 
   if (e.sport === "futbol") {
@@ -163,7 +170,7 @@ export function displaySectionKey(e: EventRow): string {
 }
 
 const SUPER_RELEVANT_COMP =
-  /champions|europa league|conference league|libertadores|sudamericana|world cup|mundial|copa del rey|supercopa|grand prix|motogp.*race|ufc \d+|vct|major|worlds|iem|blast|eurovisi[oó]n|operaci[oó]n triunfo|gran hermano|isla de las tentaciones|master\s*chef|velada del a[nñ]o/i;
+  /champions|europa league|conference league|libertadores|sudamericana|world cup|mundial|copa del rey|supercopa|roland garros|french open|grand prix|motogp.*race|ufc \d+|vct|major|worlds|iem|blast|eurovisi[oó]n|operaci[oó]n triunfo|gran hermano|isla de las tentaciones|master\s*chef|velada del a[nñ]o/i;
 
 /** Finales, eliminatorias o torneos de primer nivel → más cupo en la home. */
 export function isSuperRelevantEvent(e: EventRow): boolean {
@@ -184,6 +191,8 @@ export function isSuperRelevantEvent(e: EventRow): boolean {
   if (SUPER_RELEVANT_COMP.test(comp) || SUPER_RELEVANT_COMP.test(title)) {
     return true;
   }
+
+  if (isRolandGarrosEvent(e)) return true;
 
   if (e.sport === "futbol") {
     const home = e.home_team ?? "";

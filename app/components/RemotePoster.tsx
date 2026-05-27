@@ -8,6 +8,7 @@ type Props = {
   src: string;
   className?: string;
   priority?: boolean;
+  objectPosition?: string;
 };
 
 /** Poster remoto: img nativa lazy, solo cuando entra en pantalla (sin /_next/image). */
@@ -15,6 +16,7 @@ export function RemotePoster({
   src,
   className = "qvh-remote-poster",
   priority = false,
+  objectPosition,
 }: Props) {
   const safeSrc = safeRemoteImageUrl(src);
   const { ref, inView } = useLazyInView({
@@ -35,6 +37,7 @@ export function RemotePoster({
           src={safeSrc}
           alt=""
           className="qvh-remote-poster-img"
+          style={objectPosition ? { objectPosition } : undefined}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
           onError={() => setFailed(true)}

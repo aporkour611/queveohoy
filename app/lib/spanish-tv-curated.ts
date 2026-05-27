@@ -20,6 +20,10 @@ export type SpanishTvShow = {
   tmdbId?: number;
   /** Poster TMDB (/path) para tarjetas si aún no hay fila en BD. */
   posterPath?: string | null;
+  /** Póster editorial en /public (p. ej. /posters/mask-singer.png). */
+  localPosterPath?: string;
+  /** object-position CSS para recortar el encuadre del póster. */
+  posterObjectPosition?: string;
   /** Hora habitual de emisión en península (HH:MM). */
   airTime?: string;
   /** Días de emisión recurrentes: 1 = lunes … 7 = domingo (ISO). */
@@ -118,6 +122,10 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     platform: "Antena 3 · Atresplayer",
     priority: 85,
     category: "concurso",
+    localPosterPath: "/posters/mask-singer.png",
+    posterObjectPosition: "center 32%",
+    airTime: "23:00",
+    airWeekdays: [3],
   },
 ];
 

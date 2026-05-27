@@ -1,5 +1,6 @@
 import type { EventRow } from "../components/types";
 import { resolveEventPosterUrl } from "./event-poster";
+import { matchesSpanishTvFlagship } from "./spanish-tv-curated";
 import {
   hasSpotlightPosterCover,
   localSpotlightCover,
@@ -24,6 +25,14 @@ export type EntertainmentVisualOptions = {
 /** Portada TMDB remota cuando existe; fallback local si no. */
 export function buildEntertainmentCover(event: EventRow): SpotlightCover {
   const sport = isEntertainmentSport(event.sport) ? event.sport : "tv";
+  const flagship = matchesSpanishTvFlagship(event);
+  if (flagship?.localPosterPath) {
+    return localSpotlightCover(
+      flagship.localPosterPath,
+      "poster",
+      flagship.posterObjectPosition
+    );
+  }
   const poster = resolveEventPosterUrl(event, "poster");
   if (poster) return remoteSpotlightCover(poster, "poster");
 

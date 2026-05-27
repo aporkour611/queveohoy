@@ -6,7 +6,7 @@ import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
 import { matchCardEntertainmentVisualClass } from "../lib/entertainment-art";
-import { resolveEventPosterUrl } from "../lib/event-poster";
+import { resolveEventPosterObjectPosition, resolveEventPosterUrl } from "../lib/event-poster";
 import { resolveEventStreamingPlatform } from "../lib/media-platform";
 import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
 import {
@@ -49,6 +49,7 @@ type SpotlightCardContent = {
   title: string;
   subtitle?: string | null;
   posterUrl?: string | null;
+  posterObjectPosition?: string;
   dateLabel: string;
   time: string;
   channels: string[];
@@ -68,6 +69,7 @@ function SpotlightCardContent({
   title,
   subtitle,
   posterUrl,
+  posterObjectPosition,
   dateLabel,
   time,
   channels,
@@ -91,7 +93,11 @@ function SpotlightCardContent({
       >
         {stampKind ? <EventCardStamp kind={stampKind} size="compact" /> : null}
         {posterUrl && !ufcDuelActive ? (
-          <RemotePoster src={posterUrl} className="fh-media-spotlight-banner" />
+          <RemotePoster
+            src={posterUrl}
+            className="fh-media-spotlight-banner"
+            objectPosition={posterObjectPosition}
+          />
         ) : null}
         {ufcDuelActive ? (
           <UfcFightVisual
@@ -301,6 +307,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         title={mediaTitle}
         subtitle={mediaSubtitle}
         posterUrl={posterUrl}
+        posterObjectPosition={resolveEventPosterObjectPosition(event)}
         dateLabel={dateLabel}
         time={time}
         channels={channels}
