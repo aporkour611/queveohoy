@@ -1,5 +1,6 @@
 import type { EventRow } from "./types";
 import { buildDateJsonLd } from "../lib/seo-jsonld";
+import { serializeJsonLd } from "../lib/safe-json-ld";
 
 type Props = {
   dateKey: string;
@@ -12,7 +13,7 @@ export function DateJsonLd({ dateKey, events }: Props) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
     />
   );
 }

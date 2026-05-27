@@ -1,6 +1,7 @@
 import type { EventRow } from "./types";
 import type { SeoHubConfig } from "../lib/seo-hubs";
 import { buildHubJsonLd } from "../lib/seo-jsonld";
+import { serializeJsonLd } from "../lib/safe-json-ld";
 
 type Props = {
   hub: SeoHubConfig;
@@ -13,7 +14,7 @@ export function HubJsonLd({ hub, events }: Props) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
     />
   );
 }

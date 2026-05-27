@@ -92,7 +92,6 @@ export function TeamCrest({
           className="fh-team-crest-img"
           loading={eager ? "eager" : "lazy"}
           decoding="async"
-          fetchPriority={eager ? "high" : "low"}
           onError={handleError}
         />
       ) : (

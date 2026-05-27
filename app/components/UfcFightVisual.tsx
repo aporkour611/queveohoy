@@ -50,7 +50,6 @@ function FighterImage({
           className={imgClass}
           loading={eager ? "eager" : "lazy"}
           decoding="async"
-          fetchPriority={eager ? "high" : "low"}
           onError={() => setFailed(true)}
         />
       ) : (

@@ -10,6 +10,7 @@ import {
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
 import { countTodayStats } from "../lib/home-stats";
+import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { DayTabs } from "./DayTabs";
 import { EventDaySections } from "./EventDaySections";
 import { EventFilters } from "./EventFilters";
@@ -18,6 +19,7 @@ import { AdminNavLink } from "./AdminNavLink";
 import { Logo } from "./Logo";
 import { RegionTimezoneBar } from "./RegionTimezoneBar";
 import { HomeCalendarHero } from "./HomeCalendarHero";
+import { FeedErrorBoundary } from "./FeedErrorBoundary";
 import { LazyMount } from "./LazyMount";
 import { EventSearch } from "./EventSearch";
 import { ScrollToTop } from "./ScrollToTop";
@@ -138,26 +140,31 @@ function HomePageContent({
   }, []);
 
   useEffect(() => {
-    if (hasPreferenceConsent()) {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed)) {
-            setSelectedSports(
-              parsed.filter(
-                (id): id is string =>
-                  typeof id === "string" && ALL_SPORT_IDS.includes(id)
-              )
-            );
+    deferClientStateUpdate(() => {
+      if (hasPreferenceConsent()) {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed)) {
+              setSelectedSports(
+                parsed.filter(
+                  (id): id is string =>
+                    typeof id === "string" && ALL_SPORT_IDS.includes(id)
+                )
+              );
+            }
           }
-        }
-      } catch {}
-    }
+        } catch {}
+      }
+    });
+  }, []);
 
-    if (!hasInitialData) {
+  useEffect(() => {
+    if (hasInitialData) return;
+    queueMicrotask(() => {
       void loadEvents();
-    }
+    });
   }, [hasInitialData, loadEvents]);
 
   useEffect(() => {
@@ -231,12 +238,19 @@ function HomePageContent({
     }, ms);
   }, []);
 
-  useEffect(() => {
-    setActiveDay(0);
-  }, [timeZone, selectedSports.join(",")]);
+  const sportsFilterKey = useMemo(
+    () => selectedSports.join(","),
+    [selectedSports]
+  );
 
   useEffect(() => {
-    setActiveDay((prev) => Math.min(prev, Math.max(daySections.length - 1, 0)));
+    deferClientStateUpdate(() => setActiveDay(0));
+  }, [timeZone, sportsFilterKey]);
+
+  useEffect(() => {
+    deferClientStateUpdate(() =>
+      setActiveDay((prev) => Math.min(prev, Math.max(daySections.length - 1, 0)))
+    );
   }, [daySections.length]);
 
   const showInitialLoading = loading && events.length === 0;
@@ -351,7 +365,11 @@ function HomePageContent({
             }}
           />
 
-          {isFeaturedMode && <DestacadosSection events={displayEvents} />}
+          {isFeaturedMode && (
+            <FeedErrorBoundary>
+              <DestacadosSection events={displayEvents} />
+            </FeedErrorBoundary>
+          )}
 
           <DayTabs
             days={daySections}
@@ -408,82 +426,86 @@ function HomePageContent({
             <div className="fh-empty">
               <p>No hay eventos en los próximos 7 días.</p>
             </div>
-          ) : showSearch ? (
-            <div className="fh-day-feed" id="day-feed">
-              <section className="fh-day-section fh-matchday">
-                <h2 className="fh-matchday-header">
-                  Resultados de búsqueda
-                </h2>
-                <EventDaySections
-                  events={searchResults}
-                  emptyMessage="Sin eventos para esta búsqueda."
-                />
-              </section>
-            </div>
-          ) : weekView ? (
-            <div className="fh-day-feed" id="day-feed">
-              {daySections.map((section, i) => (
-                <section
-                  key={section.date}
-                  id={`day-${section.date}`}
-                  className="fh-day-section fh-matchday"
-                  aria-labelledby={`day-title-${section.date}`}
-                >
-                  <h2
-                    id={`day-title-${section.date}`}
-                    className="fh-matchday-header"
-                  >
-                    {section.title}
-                    {isFeaturedMode && i === activeDay && (
-                      <span className="fh-featured-badge">Destacados</span>
-                    )}
-                  </h2>
-
-                  <LazyMount
-                    eager={i === 0 || Math.abs(i - activeDay) <= 1}
-                    minHeight={Math.max(180, section.events.length * 28)}
-                  >
-                    <EventDaySections
-                      events={section.events}
-                      emptyMessage={
-                        isFeaturedMode
-                          ? "Sin eventos este día."
-                          : "Sin eventos para estos filtros."
-                      }
-                    />
-                  </LazyMount>
-                </section>
-              ))}
-            </div>
           ) : (
-            <div className="fh-day-feed" id="day-feed">
-              {activeSection ? (
-                <section
-                  id={`day-${activeSection.date}`}
-                  className="fh-day-section fh-matchday"
-                  aria-labelledby={`day-title-${activeSection.date}`}
-                >
-                  <h2
-                    id={`day-title-${activeSection.date}`}
-                    className="fh-matchday-header"
-                  >
-                    {activeSection.title}
-                    {isFeaturedMode && activeDay === 0 && (
-                      <span className="fh-featured-badge">Destacados</span>
-                    )}
-                  </h2>
+            <FeedErrorBoundary>
+              {showSearch ? (
+                <div className="fh-day-feed" id="day-feed">
+                  <section className="fh-day-section fh-matchday">
+                    <h2 className="fh-matchday-header">
+                      Resultados de búsqueda
+                    </h2>
+                    <EventDaySections
+                      events={searchResults}
+                      emptyMessage="Sin eventos para esta búsqueda."
+                    />
+                  </section>
+                </div>
+              ) : weekView ? (
+                <div className="fh-day-feed" id="day-feed">
+                  {daySections.map((section, i) => (
+                    <section
+                      key={section.date}
+                      id={`day-${section.date}`}
+                      className="fh-day-section fh-matchday"
+                      aria-labelledby={`day-title-${section.date}`}
+                    >
+                      <h2
+                        id={`day-title-${section.date}`}
+                        className="fh-matchday-header"
+                      >
+                        {section.title}
+                        {isFeaturedMode && i === activeDay && (
+                          <span className="fh-featured-badge">Destacados</span>
+                        )}
+                      </h2>
 
-                  <EventDaySections
-                    events={activeSection.events}
-                    emptyMessage={
-                      isFeaturedMode
-                        ? "Sin eventos este día."
-                        : "Sin eventos para estos filtros."
-                    }
-                  />
-                </section>
-              ) : null}
-            </div>
+                      <LazyMount
+                        eager={i === 0 || Math.abs(i - activeDay) <= 1}
+                        minHeight={Math.max(180, section.events.length * 28)}
+                      >
+                        <EventDaySections
+                          events={section.events}
+                          emptyMessage={
+                            isFeaturedMode
+                              ? "Sin eventos este día."
+                              : "Sin eventos para estos filtros."
+                          }
+                        />
+                      </LazyMount>
+                    </section>
+                  ))}
+                </div>
+              ) : (
+                <div className="fh-day-feed" id="day-feed">
+                  {activeSection ? (
+                    <section
+                      id={`day-${activeSection.date}`}
+                      className="fh-day-section fh-matchday"
+                      aria-labelledby={`day-title-${activeSection.date}`}
+                    >
+                      <h2
+                        id={`day-title-${activeSection.date}`}
+                        className="fh-matchday-header"
+                      >
+                        {activeSection.title}
+                        {isFeaturedMode && activeDay === 0 && (
+                          <span className="fh-featured-badge">Destacados</span>
+                        )}
+                      </h2>
+
+                      <EventDaySections
+                        events={activeSection.events}
+                        emptyMessage={
+                          isFeaturedMode
+                            ? "Sin eventos este día."
+                            : "Sin eventos para estos filtros."
+                        }
+                      />
+                    </section>
+                  ) : null}
+                </div>
+              )}
+            </FeedErrorBoundary>
           )}
 
           <SiteFooter />

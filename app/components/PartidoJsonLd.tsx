@@ -1,5 +1,6 @@
 import type { EventRow } from "./types";
 import { buildPartidoJsonLd } from "../lib/seo-jsonld";
+import { serializeJsonLd } from "../lib/safe-json-ld";
 
 type Props = {
   event: EventRow;
@@ -11,7 +12,7 @@ export function PartidoJsonLd({ event }: Props) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
     />
   );
 }

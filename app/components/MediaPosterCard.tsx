@@ -83,7 +83,6 @@ export const MediaPosterCard = memo(function MediaPosterCard({
             <RemotePoster
               src={posterUrl}
               className="qvh-media-card-image qvh-remote-poster"
-              sizes="(max-width: 768px) 45vw, 160px"
             />
           ) : (
             <div className="qvh-media-card-fallback" aria-hidden />
