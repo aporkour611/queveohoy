@@ -6,7 +6,7 @@ import {
   isAdminCookieValid,
 } from "@/app/lib/admin-auth";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const secret = getAdminSecret();
   const adminKey = request.nextUrl.searchParams.get("admin");
 
