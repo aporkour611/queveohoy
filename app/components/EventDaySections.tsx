@@ -6,6 +6,7 @@ import { MatchCard } from "./MatchCard";
 import { MediaEntertainmentSection } from "./MediaEntertainmentSection";
 import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
 import { sportLabel } from "../lib/filter-config";
+import { getTvShowCategory } from "../lib/tv-show-category";
 
 function groupForDisplay(events: EventRow[]) {
   const football: Record<string, EventRow[]> = {};
@@ -13,7 +14,9 @@ function groupForDisplay(events: EventRow[]) {
     {};
   const cine: EventRow[] = [];
   const series: EventRow[] = [];
-  const tv: EventRow[] = [];
+  const tvReality: EventRow[] = [];
+  const tvConcurso: EventRow[] = [];
+  const tvEvento: EventRow[] = [];
 
   for (const e of events) {
     if (e.sport === "futbol") {
@@ -25,7 +28,10 @@ function groupForDisplay(events: EventRow[]) {
     } else if (e.sport === "series") {
       series.push(e);
     } else if (e.sport === "tv") {
-      tv.push(e);
+      const category = getTvShowCategory(e);
+      if (category === "concurso") tvConcurso.push(e);
+      else if (category === "evento") tvEvento.push(e);
+      else tvReality.push(e);
     } else {
       const sportId = e.sport ?? "otros";
       if (!bySport[sportId]) {
@@ -39,7 +45,7 @@ function groupForDisplay(events: EventRow[]) {
     }
   }
 
-  return { football, bySport, cine, series, tv };
+  return { football, bySport, cine, series, tvReality, tvConcurso, tvEvento };
 }
 
 type Props = {
@@ -94,7 +100,9 @@ export const EventDaySections = memo(function EventDaySections({
       <MediaEntertainmentSection
         cine={sections.cine}
         series={sections.series}
-        tv={sections.tv}
+        tvReality={sections.tvReality}
+        tvConcurso={sections.tvConcurso}
+        tvEvento={sections.tvEvento}
       />
     </>
   );

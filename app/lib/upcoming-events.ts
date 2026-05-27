@@ -1,5 +1,6 @@
 import type { EventRow } from "../components/types";
 import { filterEventsForDisplay } from "./event-crests";
+import { eventMatchesSportFilters } from "./tv-show-category";
 import {
   pickFeaturedEvents,
   pickFilteredEvents,
@@ -51,7 +52,7 @@ export function resolveVisibleEvents(
   }
 
   const forDay = pickFilteredEvents(
-    crestedDay.filter((e) => selectedSports.includes(e.sport ?? ""))
+    crestedDay.filter((e) => eventMatchesSportFilters(e, selectedSports))
   );
 
   if (forDay.length > 0) {
@@ -61,7 +62,7 @@ export function resolveVisibleEvents(
   const upcoming = pickUpcomingFilteredEvents(
     crestedAll.filter(
       (e) =>
-        selectedSports.includes(e.sport ?? "") &&
+        eventMatchesSportFilters(e, selectedSports) &&
         e.date &&
         e.date > selectedDate
     )
@@ -96,7 +97,7 @@ export function resolveDayEventsForFeed(
   }
 
   return pickFilteredEvents(
-    dayEvents.filter((e) => selectedSports.includes(e.sport ?? ""))
+    dayEvents.filter((e) => eventMatchesSportFilters(e, selectedSports))
   );
 }
 
@@ -133,6 +134,6 @@ export function resolveDayEventsFromIndex(
   }
 
   return pickFilteredEvents(
-    dayEvents.filter((e) => selectedSports.has(e.sport ?? ""))
+    dayEvents.filter((e) => eventMatchesSportFilters(e, selectedSports))
   );
 }

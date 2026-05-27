@@ -128,6 +128,17 @@
   box-shadow: 0 0 14px rgba(217, 70, 239, 0.35);
 }
 
+.qvh-media-rail-accent-tv-concurso {
+  background: linear-gradient(180deg, #fcd34d, #f59e0b);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+}
+
+.qvh-media-type-badge-concurso {
+  background: rgba(245, 158, 11, 0.92);
+  border-color: rgba(255, 220, 140, 0.45);
+  color: #1a1200;
+}
+
 .qvh-media-rail-copy {
   display: flex;
   align-items: baseline;
@@ -631,6 +642,12 @@
 .fh-media-spotlight-badge-ufc {
   background: rgba(212, 20, 20, 0.92);
   border-color: rgba(255, 120, 120, 0.45);
+}
+
+.fh-media-spotlight-badge-concurso {
+  background: rgba(245, 158, 11, 0.94);
+  border-color: rgba(255, 220, 140, 0.45);
+  color: #1a1200;
 }
 
 .fh-media-spotlight-when {

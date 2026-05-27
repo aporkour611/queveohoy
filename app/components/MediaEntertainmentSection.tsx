@@ -6,7 +6,9 @@ import { MediaPosterCard } from "./MediaPosterCard";
 type Props = {
   cine: EventRow[];
   series: EventRow[];
-  tv?: EventRow[];
+  tvReality?: EventRow[];
+  tvConcurso?: EventRow[];
+  tvEvento?: EventRow[];
 };
 
 function MediaRail({
@@ -16,7 +18,7 @@ function MediaRail({
   events,
 }: {
   label: string;
-  accent: "cine" | "series" | "tv";
+  accent: "cine" | "series" | "tv" | "tv-concurso";
   count: number;
   events: EventRow[];
 }) {
@@ -42,8 +44,22 @@ function MediaRail({
   );
 }
 
-export function MediaEntertainmentSection({ cine, series, tv = [] }: Props) {
-  if (cine.length === 0 && series.length === 0 && tv.length === 0) return null;
+export function MediaEntertainmentSection({
+  cine,
+  series,
+  tvReality = [],
+  tvConcurso = [],
+  tvEvento = [],
+}: Props) {
+  if (
+    cine.length === 0 &&
+    series.length === 0 &&
+    tvReality.length === 0 &&
+    tvConcurso.length === 0 &&
+    tvEvento.length === 0
+  ) {
+    return null;
+  }
 
   return (
     <section className="qvh-media-section" aria-label="Entretenimiento">
@@ -62,11 +78,25 @@ export function MediaEntertainmentSection({ cine, series, tv = [] }: Props) {
       </header>
 
       <MediaRail
-        label="Reality, OT y Eurovisión"
+        label="Reality"
         accent="tv"
-        count={tv.length}
-        events={tv}
+        count={tvReality.length}
+        events={tvReality}
       />
+      <MediaRail
+        label="Concursos"
+        accent="tv-concurso"
+        count={tvConcurso.length}
+        events={tvConcurso}
+      />
+      {tvEvento.length > 0 ? (
+        <MediaRail
+          label="Eventos"
+          accent="tv"
+          count={tvEvento.length}
+          events={tvEvento}
+        />
+      ) : null}
       <MediaRail
         label="En cines"
         accent="cine"

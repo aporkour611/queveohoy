@@ -141,10 +141,15 @@ export function HomePage({
             const parsed = JSON.parse(saved);
             if (Array.isArray(parsed)) {
               setSelectedSports(
-                parsed.filter(
-                  (id): id is string =>
-                    typeof id === "string" && ALL_SPORT_IDS.includes(id)
-                )
+                [
+                  ...new Set(
+                    parsed.flatMap((id): string[] => {
+                      if (typeof id !== "string") return [];
+                      if (id === "tv") return ["tv-reality", "tv-concurso"];
+                      return ALL_SPORT_IDS.includes(id) ? [id] : [];
+                    })
+                  ),
+                ]
               );
             }
           }

@@ -59,7 +59,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
     ? formatDisplayDateLabel(event.date, MADRID_TZ)
     : "";
   const time = displayTime(event.time);
-  const badge = mediaBadgeForEvent(sport, isSeasonPremiereEvent(event));
+  const badge = mediaBadgeForEvent(event, isSeasonPremiereEvent(event));
   const whenLabel = [dateLabel, time].filter(Boolean).join(" · ");
   const stamp = getEventCardStamp(event);
 
@@ -108,7 +108,11 @@ export const MediaPosterCard = memo(function MediaPosterCard({
             ) : (
               <span />
             )}
-            <span className={`qvh-media-type-badge qvh-media-type-badge-${badge.tone}`}>
+            <span
+              className={`qvh-media-type-badge qvh-media-type-badge-${
+                badge.label === "Concurso" ? "concurso" : badge.tone
+              }`}
+            >
               {badge.label}
             </span>
           </div>

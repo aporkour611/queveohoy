@@ -1,3 +1,6 @@
+import type { EventRow } from "../components/types";
+import { getTvShowCategory } from "./tv-show-category";
+
 export type MediaPlatformStyle = {
   name: string;
   initials?: string;
@@ -26,11 +29,19 @@ export function resolveMediaPlatform(channel?: string | null): MediaPlatformStyl
 export type MediaBadgeTone = "release" | "trending" | "heat" | "news";
 
 export function mediaBadgeForEvent(
-  sport: "cine" | "series" | "tv",
-  isPremiere: boolean
+  event: Pick<EventRow, "sport" | "title" | "competition">,
+  isPremiere = false
 ): { label: string; tone: MediaBadgeTone } {
-  if (sport === "tv") return { label: "TV", tone: "trending" };
-  if (sport === "cine") return { label: "Cine", tone: "heat" };
-  if (isPremiere) return { label: "Estreno", tone: "release" };
+  if (event.sport === "tv") {
+    const category = getTvShowCategory(event as EventRow);
+    if (category === "concurso") return { label: "Concurso", tone: "heat" };
+    if (category === "evento") return { label: "Evento", tone: "trending" };
+    return { label: "Reality", tone: "trending" };
+  }
+  if (event.sport === "cine") return { label: "Cine", tone: "heat" };
+  if (event.sport === "series" && isPremiere) {
+    return { label: "Estreno", tone: "release" };
+  }
+  if (event.sport === "series") return { label: "Serie", tone: "news" };
   return { label: "Serie", tone: "news" };
 }

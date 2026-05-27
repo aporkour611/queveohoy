@@ -15,6 +15,7 @@ export type SpanishTvShow = {
   competition: string;
   platform: string;
   priority: number;
+  category: "reality" | "concurso" | "evento";
   /** ID TMDB fijo (evita confundir con versiones extranjeras). */
   tmdbId?: number;
   /** Hora habitual de emisión en península (HH:MM). */
@@ -29,9 +30,10 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     id: "eurovision",
     search: "Eurovisión",
     patterns: [/eurovisi[oó]n|eurovision song contest/i],
-    competition: "Eurovisión",
+    competition: "Concurso · Eurovisión",
     platform: "RTVE · RTVE Play · PepeTV",
     priority: 98,
+    category: "concurso",
   },
   {
     id: "isla-tentaciones",
@@ -41,6 +43,7 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     competition: "Reality · La Isla de las Tentaciones",
     platform: "Telecinco · Mitele",
     priority: 98,
+    category: "reality",
     airTime: "22:00",
   },
   {
@@ -50,6 +53,7 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     competition: "Evento · La Velada del Año",
     platform: "Twitch · Ibai",
     priority: 99,
+    category: "evento",
     airTime: "19:30",
     manualSlots: [
       {
@@ -65,18 +69,20 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     tmdbId: 49982,
     search: "MasterChef España",
     patterns: [/master\s*chef/i],
-    competition: "Reality · MasterChef",
+    competition: "Concurso · MasterChef",
     platform: "La 1 · RTVE Play",
     priority: 94,
+    category: "concurso",
     airTime: "22:00",
   },
   {
     id: "operacion-triunfo",
     search: "Operación Triunfo",
     patterns: [/operaci[oó]n triunfo|\bOT\b/i],
-    competition: "Reality · Operación Triunfo",
+    competition: "Concurso · Operación Triunfo",
     platform: "RTVE · RTVE Play",
     priority: 95,
+    category: "concurso",
   },
   {
     id: "gran-hermano",
@@ -85,6 +91,7 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     competition: "Reality · Gran Hermano",
     platform: "Telecinco · Mitele",
     priority: 90,
+    category: "reality",
   },
   {
     id: "supervivientes",
@@ -93,14 +100,16 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     competition: "Reality · Supervivientes",
     platform: "Telecinco · Mitele",
     priority: 88,
+    category: "reality",
   },
   {
     id: "mask-singer",
     search: "Mask Singer",
     patterns: [/mask singer|the masked singer/i],
-    competition: "Reality · Mask Singer",
+    competition: "Concurso · Mask Singer",
     platform: "Antena 3 · Atresplayer",
     priority: 85,
+    category: "concurso",
   },
 ];
 

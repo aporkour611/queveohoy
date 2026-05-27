@@ -21,6 +21,7 @@ import Link from "next/link";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
 import { getEventCardStamp, type EventCardStampKind } from "../lib/event-card-stamp";
+import { mediaBadgeForEvent } from "../lib/media-platform";
 import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 import type { EventRow } from "./types";
 import { EventCardStamp } from "./EventCardStamp";
@@ -240,6 +241,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   );
 
   if (isMedia) {
+    const tvBadge = isTv ? mediaBadgeForEvent(event) : null;
     const mediaVisualClass = isCine
       ? "fh-media-spotlight-visual-cine"
       : isSeries
@@ -249,8 +251,14 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
       ? "fh-media-spotlight-badge-cine"
       : isSeries
         ? "fh-media-spotlight-badge-series"
-        : "fh-media-spotlight-badge-premiere";
-    const mediaBadgeLabel = isSeries ? "Serie" : isTv ? "Reality" : "Cine";
+        : tvBadge?.label === "Concurso"
+          ? "fh-media-spotlight-badge-concurso"
+          : "fh-media-spotlight-badge-premiere";
+    const mediaBadgeLabel = isCine
+      ? "Cine"
+      : isSeries
+        ? "Serie"
+        : tvBadge?.label ?? "Reality";
 
     return cardShell(
       <SpotlightCardContent

@@ -8,6 +8,7 @@ import {
   teamCrestUrl,
   footballSpotlightMeta,
 } from "./football";
+import { getTvShowCategory, tvCategoryLabel } from "./tv-show-category";
 import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb-client";
 import {
   parseUfcFighterImages,
@@ -118,13 +119,16 @@ export function getSpotlightCardModel(
   }
 
   if (sport === "tv") {
+    const category = getTvShowCategory(event);
+    const badge = category ? tvCategoryLabel(category) : "Reality";
+
     return {
-      headline: event.title?.trim() || "Reality",
-      badge: "Reality",
-      badgeVariant: "premiere",
+      headline: event.title?.trim() || badge,
+      badge,
+      badgeVariant: category === "concurso" ? "media" : "premiere",
       dateLabel,
       time,
-      meta: event.competition?.trim() || "Reality · Nuevo episodio",
+      meta: event.competition?.trim() || `${badge} · Nuevo episodio`,
       platform: event.platform?.trim() || channels || "TV y streaming",
       poster: parseTmdbPoster(event.source) ?? undefined,
       visualClass: "qvh-spotlight-visual-premiere",
