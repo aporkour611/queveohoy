@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SeoHubPage } from "../../components/SeoHubPage";
-import { fetchFeedEvents } from "../../lib/events-feed-server";
-import {
-  buildHubMetadataDescription,
-  buildHubMetadataTitle,
-  getSeoHub,
-} from "../../lib/seo-hubs";
+import { getFeedEventsForPage } from "../../lib/events-feed-server";
+import { buildHubMetadataTitle, getSeoHub } from "../../lib/seo-hubs";
 import { pageMetadata } from "../../lib/seo";
 
 export const revalidate = 600;
@@ -21,11 +17,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const hub = getSeoHub(slug);
   if (!hub) return {};
 
-  const { events } = await fetchFeedEvents();
-  const title = buildHubMetadataTitle(hub);
-  const description = buildHubMetadataDescription(hub, events);
-
-  return pageMetadata(`/${hub.slug}`, title, description, hub.keywords);
+  return pageMetadata(
+    `/${hub.slug}`,
+    buildHubMetadataTitle(hub),
+    hub.description,
+    hub.keywords
+  );
 }
 
 export default async function HubRoute({ params }: PageProps) {
@@ -33,7 +30,7 @@ export default async function HubRoute({ params }: PageProps) {
   const hub = getSeoHub(slug);
   if (!hub) notFound();
 
-  const { events } = await fetchFeedEvents();
+  const { events } = await getFeedEventsForPage();
 
   return <SeoHubPage hub={hub} events={events} />;
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SeoDatePage } from "../../../components/SeoDatePage";
-import { fetchFeedEvents } from "../../../lib/events-feed-server";
+import { getFeedEventsForPage } from "../../../lib/events-feed-server";
 import {
   buildDateMetadataDescription,
   buildDateMetadataTitle,
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { fecha } = await params;
   if (!isIsoDateParam(fecha) || isBeyondRollingWindow(fecha)) return {};
 
-  const { events } = await fetchFeedEvents();
+  const { events } = await getFeedEventsForPage();
   const path = partidosHoyDatePath(fecha);
   const base = pageMetadata(
     path,
@@ -56,7 +56,7 @@ export default async function PartidosHoyDateRoute({ params }: PageProps) {
     notFound();
   }
 
-  const { events } = await fetchFeedEvents();
+  const { events } = await getFeedEventsForPage();
 
   return <SeoDatePage dateKey={fecha} events={events} />;
 }

@@ -2,21 +2,17 @@ import type { Metadata } from "next";
 import { HomePage } from "./components/HomePage";
 import { HomeJsonLd } from "./components/HomeJsonLd";
 import { getHomeFeedEventsForPage, getDestacadosFeedEventsForPage } from "./lib/events-feed-server";
-import {
-  buildHomeMetadataDescription,
-  buildHomeMetadataTitle,
-} from "./lib/seo-jsonld";
+import { buildHomeMetadataTitle } from "./lib/seo-jsonld";
 import { trimHomeSsrEvents } from "./lib/featured";
-import { pageMetadata, seoKeywords } from "./lib/seo";
+import { defaultDescription, pageMetadata, seoKeywords } from "./lib/seo";
 
 export const revalidate = 900;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { events } = await getHomeFeedEventsForPage();
+export function generateMetadata(): Metadata {
   return pageMetadata(
     "/",
     buildHomeMetadataTitle(),
-    buildHomeMetadataDescription(events),
+    defaultDescription,
     seoKeywords
   );
 }

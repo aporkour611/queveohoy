@@ -1,10 +1,14 @@
 import type { EventRow } from "../components/types";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
-import { FEED_REVALIDATE_SECONDS } from "./cache-config";
+import {
+  FEED_QUERY_TIMEOUT_MS,
+  FEED_REVALIDATE_SECONDS,
+} from "./cache-config";
 import { FEED_DAY_COUNT, FEED_EVENT_SELECT, normalizeFeedEvents } from "./events-feed";
 import { HOME_SSR_DAY_COUNT } from "./home-feed-config";
 import { CURATED_MOVIES } from "./movies-curated";
+import { isSupabaseConfigured } from "./supabase-config";
 import { createClient } from "./supabase/server";
 import {
   getEventsQueryDateRange,
@@ -13,8 +17,6 @@ import {
   addDaysToDateKeyInZone,
   MADRID_TZ,
 } from "./timezone";
-
-const FEED_QUERY_TIMEOUT_MS = 25_000;
 
 const CURATED_DESTACADOS_EXTERNAL_IDS = CURATED_MOVIES.map(
   (movie) => `tmdb_movie_${movie.tmdbId}`
@@ -36,6 +38,10 @@ async function queryDestacadosEvents(): Promise<{
   events: EventRow[];
   error: string | null;
 }> {
+  if (!isSupabaseConfigured()) {
+    return { events: [], error: null };
+  }
+
   const { from, to } = getDestacadosQueryDateRange();
   const supabase = createClient();
 
@@ -114,6 +120,10 @@ async function queryFeedEvents(dayCount: number, tight: boolean): Promise<{
   events: EventRow[];
   error: string | null;
 }> {
+  if (!isSupabaseConfigured()) {
+    return { events: [], error: null };
+  }
+
   const { from, to } = tight
     ? getEventsQueryDateRangeTight(dayCount)
     : getEventsQueryDateRange(dayCount);
@@ -196,6 +206,8 @@ export async function fetchDestacadosFeedEvents() {
 export const getHomeFeedEventsForPage = cache(fetchHomeFeedEvents);
 
 export const getDestacadosFeedEventsForPage = cache(fetchDestacadosFeedEvents);
+
+export const getFeedEventsForPage = cache(fetchFeedEvents);
 
 /** @deprecated Usar getDestacadosFeedEventsForPage */
 export const getWeekFeedEventsForPage = getDestacadosFeedEventsForPage;
