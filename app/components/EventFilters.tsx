@@ -7,6 +7,7 @@ type Props = {
   selected: string[];
   onChange: (ids: string[]) => void;
   isFeaturedMode: boolean;
+  variant?: "panel" | "toolbar";
 };
 
 function filterSummary(selected: string[]): string {
@@ -21,9 +22,11 @@ export const EventFilters = memo(function EventFilters({
   selected,
   onChange,
   isFeaturedMode,
+  variant = "panel",
 }: Props) {
   const [open, setOpen] = useState(false);
   const selectedSet = useMemo(() => new Set(selected), [selected]);
+  const isToolbar = variant === "toolbar";
 
   function toggle(id: string) {
     if (selectedSet.has(id)) {
@@ -46,26 +49,129 @@ export const EventFilters = memo(function EventFilters({
     return sportIds.every((id) => selectedSet.has(id));
   }
 
+  const quickFilters = (
+    <div
+      className={`fh-quick-filters${isToolbar ? " fh-quick-filters-toolbar" : ""}`}
+      role="group"
+      aria-label="Filtros rápidos"
+    >
+      {QUICK_FILTERS.map((quick) => (
+        <button
+          key={quick.id}
+          type="button"
+          className={`fh-quick-filter ${
+            isQuickFilterActive(quick.sportIds) ? "active" : ""
+          }`}
+          aria-pressed={isQuickFilterActive(quick.sportIds)}
+          onClick={() => {
+            onChange(quick.sportIds);
+            setOpen(false);
+          }}
+        >
+          {quick.label}
+        </button>
+      ))}
+      <button
+        type="button"
+        className={`fh-quick-filter fh-quick-filter-more${open ? " active" : ""}`}
+        aria-expanded={open}
+        aria-controls="fh-filters-body"
+        onClick={() => setOpen((v) => !v)}
+      >
+        Más
+        {selected.length > 0 && !isFeaturedMode ? (
+          <span className="fh-quick-filter-count">{selected.length}</span>
+        ) : null}
+      </button>
+    </div>
+  );
+
+  const activeFilters =
+    !isFeaturedMode && selected.length > 0 ? (
+      <div className="fh-active-filters">
+        <div className="fh-active-filters-pills">
+          {selected.map((id) => (
+            <button
+              key={id}
+              type="button"
+              className="fh-active-pill"
+              data-sport={id}
+              onClick={() => toggle(id)}
+              title="Quitar filtro"
+            >
+              {sportLabel(id)} ×
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          className="fh-filters-clear fh-filters-clear-inline"
+          onClick={clearAll}
+        >
+          Limpiar
+        </button>
+      </div>
+    ) : null;
+
+  const filterBody = (
+    <div
+      id="fh-filters-body"
+      className="fh-filters-body"
+      hidden={!open}
+    >
+      {isFeaturedMode && (
+        <p className="fh-filters-hint">
+          Ajusta el calendario por deporte o sección. Sin filtros, ves lo más
+          relevante del día.
+        </p>
+      )}
+
+      {FILTER_GROUPS.map((group) => (
+        <div key={group.id} className="fh-filter-group">
+          <span className="fh-filter-group-label" data-group={group.id}>
+            {group.label}
+          </span>
+          <div className="fh-filter-chips">
+            {group.options.map((opt) => {
+              const on = selectedSet.has(opt.id);
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  data-sport={opt.id}
+                  className={`fh-filter-chip ${on ? "active" : ""}`}
+                  onClick={() => toggle(opt.id)}
+                  aria-pressed={on}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      {selected.length > 0 && (
+        <button type="button" className="fh-filters-clear" onClick={clearAll}>
+          Eliminar filtros
+        </button>
+      )}
+    </div>
+  );
+
+  if (isToolbar) {
+    return (
+      <div className={`qvh-feed-filters ${open ? "is-open" : ""}`}>
+        {quickFilters}
+        {activeFilters}
+        {filterBody}
+      </div>
+    );
+  }
+
   return (
     <div className={`fh-filters-panel ${open ? "is-open" : ""}`}>
-      <div className="fh-quick-filters" role="group" aria-label="Filtros rápidos">
-        {QUICK_FILTERS.map((quick) => (
-          <button
-            key={quick.id}
-            type="button"
-            className={`fh-quick-filter ${
-              isQuickFilterActive(quick.sportIds) ? "active" : ""
-            }`}
-            aria-pressed={isQuickFilterActive(quick.sportIds)}
-            onClick={() => {
-              onChange(quick.sportIds);
-              setOpen(false);
-            }}
-          >
-            {quick.label}
-          </button>
-        ))}
-      </div>
+      {quickFilters}
 
       <button
         type="button"
@@ -104,75 +210,8 @@ export const EventFilters = memo(function EventFilters({
         </span>
       </button>
 
-      {!isFeaturedMode && selected.length > 0 && (
-        <div className="fh-active-filters">
-          <div className="fh-active-filters-pills">
-            {selected.map((id) => (
-              <button
-                key={id}
-                type="button"
-                className="fh-active-pill"
-                data-sport={id}
-                onClick={() => toggle(id)}
-                title="Quitar filtro"
-              >
-                {sportLabel(id)} ×
-              </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            className="fh-filters-clear fh-filters-clear-inline"
-            onClick={clearAll}
-          >
-            Eliminar filtros
-          </button>
-        </div>
-      )}
-
-      <div
-        id="fh-filters-body"
-        className="fh-filters-body"
-        hidden={!open}
-      >
-        {isFeaturedMode && (
-          <p className="fh-filters-hint">
-            Calendario con lo esencial. Abre el desplegable solo si quieres
-            filtrar un deporte o sección concreta.
-          </p>
-        )}
-
-        {FILTER_GROUPS.map((group) => (
-          <div key={group.id} className="fh-filter-group">
-            <span className="fh-filter-group-label" data-group={group.id}>
-              {group.label}
-            </span>
-            <div className="fh-filter-chips">
-              {group.options.map((opt) => {
-                const on = selectedSet.has(opt.id);
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    data-sport={opt.id}
-                    className={`fh-filter-chip ${on ? "active" : ""}`}
-                    onClick={() => toggle(opt.id)}
-                    aria-pressed={on}
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-
-        {selected.length > 0 && (
-          <button type="button" className="fh-filters-clear" onClick={clearAll}>
-            Eliminar filtros
-          </button>
-        )}
-      </div>
+      {activeFilters}
+      {filterBody}
     </div>
   );
 });

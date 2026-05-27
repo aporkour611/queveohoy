@@ -570,6 +570,125 @@
   color: #fff;
 }
 
+/* ── Calendario unificado: días + vista + filtros ── */
+.qvh-feed-controls {
+  margin: 20px 0 16px;
+  padding: 12px 12px 10px;
+  border-radius: 12px;
+  background: var(--qvh-bg-panel);
+  border: 1px solid var(--qvh-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+}
+
+.qvh-feed-controls .qvh-day-tabs {
+  padding: 2px 0 12px;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.qvh-feed-controls-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--qvh-border);
+}
+
+.qvh-feed-view-toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--qvh-border);
+}
+
+.qvh-feed-view-toggle-btn {
+  min-width: 0;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--qvh-text-muted);
+  font-family: var(--qvh-font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.qvh-feed-view-toggle-btn:hover {
+  color: var(--qvh-text);
+}
+
+.qvh-feed-view-toggle-btn-active {
+  background: var(--qvh-purple);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(93, 95, 239, 0.35);
+}
+
+.qvh-feed-controls-divider {
+  display: none;
+  width: 1px;
+  align-self: stretch;
+  min-height: 32px;
+  background: var(--qvh-border);
+}
+
+.qvh-feed-filters {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.qvh-feed-filters .fh-quick-filters-toolbar {
+  padding: 0;
+  gap: 6px;
+}
+
+.qvh-feed-filters .fh-filters-body {
+  margin-top: 10px;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--qvh-border);
+}
+
+.qvh-feed-filters .fh-active-filters {
+  margin-top: 8px;
+}
+
+.fh-quick-filter-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fh-quick-filter-count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 18px;
+}
+
+.fh-quick-filter-more.active .fh-quick-filter-count {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+@media (min-width: 720px) {
+  .qvh-feed-controls-toolbar {
+    align-items: center;
+  }
+
+  .qvh-feed-controls-divider {
+    display: block;
+  }
+}
+
 .qvh-home-faq {
   margin: 32px 0 24px;
   padding: 20px 16px;

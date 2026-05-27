@@ -15,9 +15,8 @@ import {
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
-import { DayTabs } from "./DayTabs";
 import { EventDaySections } from "./EventDaySections";
-import { EventFilters } from "./EventFilters";
+import { FeedControls } from "./FeedControls";
 import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
 import { PushNavButton } from "./PushNotifications";
@@ -32,7 +31,6 @@ import {
   filterEventsInWeek,
   MADRID_TZ,
 } from "../lib/timezone";
-import { filterEventsByQuery } from "../lib/event-search";
 import {
   indexDisplayEventsByDate,
   resolveDayEventsFromIndex,
@@ -41,11 +39,6 @@ import {
 const DestacadosSection = dynamic(
   () =>
     import("./DestacadosSection").then((mod) => mod.DestacadosSection),
-  { loading: () => null }
-);
-
-const EventSearch = dynamic(
-  () => import("./EventSearch").then((mod) => mod.EventSearch),
   { loading: () => null }
 );
 
@@ -84,7 +77,6 @@ export function HomePage({
   const [loadError, setLoadError] = useState<string | null>(initialError);
   const [activeDay, setActiveDay] = useState(0);
   const [weekView, setWeekView] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const [hasFullWeek, setHasFullWeek] = useState(false);
   const scrollLockRef = useRef(false);
@@ -242,11 +234,6 @@ export function HomePage({
     [displayDays, eventsByDate, deferredSportSet, deferredFeaturedMode]
   );
 
-  const feedEvents = useMemo(
-    () => daySections.flatMap((section) => section.events),
-    [daySections]
-  );
-
   const activeSection = daySections[activeDay];
 
   const hiddenOnActiveDay = useMemo(() => {
@@ -254,12 +241,6 @@ export function HomePage({
     const rawDay = displayEvents.filter((e) => e.date === activeSection.date);
     return countHiddenHomeEvents(rawDay, activeSection.events);
   }, [deferredFeaturedMode, activeSection, displayEvents]);
-
-  const searchResults = useMemo(
-    () => filterEventsByQuery(feedEvents, searchQuery),
-    [feedEvents, searchQuery]
-  );
-  const showSearch = searchQuery.trim().length >= 2;
 
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
@@ -370,6 +351,21 @@ export function HomePage({
     };
   }, [showInitialLoading, daySections, weekView]);
 
+  const openWeekView = useCallback(() => {
+    const openWeek = () => {
+      setWeekView(true);
+      requestAnimationFrame(() => {
+        const day = daySections[activeDay];
+        if (day) scrollToDaySection(day.date);
+      });
+    };
+    if (!hasFullWeek) {
+      void loadEvents({ silent: true, fullWeek: true }).then(openWeek);
+    } else {
+      openWeek();
+    }
+  }, [activeDay, daySections, hasFullWeek, loadEvents]);
+
   return (
     <div className="fh-body">
       <nav className="fh-navbar">
@@ -386,22 +382,7 @@ export function HomePage({
         <div className="fh-container fh-main">
           <h1 className="sr-only">Qué ver hoy en TV</h1>
 
-          <EventFilters
-            selected={selectedSports}
-            onChange={handleFilterChange}
-            isFeaturedMode={isFeaturedMode}
-          />
-
           {isFeaturedMode ? children : null}
-
-          <EventSearch
-            events={feedEvents}
-            onQueryChange={setSearchQuery}
-            onPickDay={(date) => {
-              const index = daySections.findIndex((d) => d.date === date);
-              if (index >= 0) goToDay(index);
-            }}
-          />
 
           {isFeaturedMode && (
             <FeedErrorBoundary>
@@ -409,43 +390,17 @@ export function HomePage({
             </FeedErrorBoundary>
           )}
 
-          <DayTabs
+          <FeedControls
             days={daySections}
-            activeIndex={activeDay}
-            onChange={goToDay}
+            activeDayIndex={activeDay}
+            onDayChange={goToDay}
+            weekView={weekView}
+            onSelectTodayView={() => setWeekView(false)}
+            onSelectWeekView={openWeekView}
+            selectedSports={selectedSports}
+            onFilterChange={handleFilterChange}
+            isFeaturedMode={isFeaturedMode}
           />
-
-          <div className="qvh-view-toggle">
-            <button
-              type="button"
-              className={`qvh-view-toggle-btn${!weekView ? " qvh-view-toggle-btn-active" : ""}`}
-              onClick={() => setWeekView(false)}
-              aria-pressed={!weekView}
-            >
-              Hoy
-            </button>
-            <button
-              type="button"
-              className={`qvh-view-toggle-btn${weekView ? " qvh-view-toggle-btn-active" : ""}`}
-              onClick={() => {
-                const openWeek = () => {
-                  setWeekView(true);
-                  requestAnimationFrame(() => {
-                    const day = daySections[activeDay];
-                    if (day) scrollToDaySection(day.date);
-                  });
-                };
-                if (!hasFullWeek) {
-                  void loadEvents({ silent: true, fullWeek: true }).then(openWeek);
-                } else {
-                  openWeek();
-                }
-              }}
-              aria-pressed={weekView}
-            >
-              Semana completa
-            </button>
-          </div>
 
           {refreshing && !showInitialLoading && (
             <p className="fh-feed-refresh" aria-live="polite">
@@ -473,19 +428,7 @@ export function HomePage({
             </div>
           ) : (
             <FeedErrorBoundary>
-              {showSearch ? (
-                <div className="fh-day-feed" id="day-feed">
-                  <section className="fh-day-section fh-matchday">
-                    <h2 className="fh-matchday-header">
-                      Resultados de búsqueda
-                    </h2>
-                    <EventDaySections
-                      events={searchResults}
-                      emptyMessage="Sin eventos para esta búsqueda."
-                    />
-                  </section>
-                </div>
-              ) : weekView ? (
+              {weekView ? (
                 <div className="fh-day-feed" id="day-feed">
                   {daySections.map((section, i) => (
                     <section
