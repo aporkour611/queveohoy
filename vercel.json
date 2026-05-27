@@ -36,7 +36,7 @@
     },
     {
       "path": "/api/indexnow/ping",
-      "schedule": "30 6,12,18 * * *"
+      "schedule": "30 12 * * *"
     }
   ]
 }
