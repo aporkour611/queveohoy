@@ -25,4 +25,41 @@ describe("mergeFeedEvents", () => {
     expect(merged.map((event) => event.id)).toEqual([1, 2, 3]);
     expect(merged.find((event) => event.id === 1)?.title).toBe("Actualizado");
   });
+
+  it("fusiona por external_id evitando duplicados al recargar", () => {
+    const previous: EventRow[] = [
+      {
+        id: 10,
+        external_id: "football_1",
+        title: "Partido SSR",
+        date: "2026-05-27",
+        time: "21:00",
+      },
+    ];
+    const incoming: EventRow[] = [
+      {
+        id: 99,
+        external_id: "football_1",
+        title: "Partido API",
+        date: "2026-05-27",
+        time: "21:00",
+      },
+      {
+        id: 11,
+        external_id: "football_2",
+        title: "Otro partido",
+        date: "2026-05-28",
+        time: "18:00",
+      },
+    ];
+
+    const merged = mergeFeedEvents(previous, incoming);
+    expect(merged).toHaveLength(2);
+    expect(merged.find((event) => event.external_id === "football_1")?.id).toBe(
+      99
+    );
+    expect(merged.find((event) => event.external_id === "football_1")?.title).toBe(
+      "Partido API"
+    );
+  });
 });

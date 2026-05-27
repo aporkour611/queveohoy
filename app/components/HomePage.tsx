@@ -34,6 +34,7 @@ import {
   indexDisplayEventsByDate,
   resolveDayEventsFromIndex,
   resolveHomeDayEvents,
+  resolveDayEventsAllFromIndex,
 } from "../lib/upcoming-events";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { EventDaySections } from "./EventDaySections";
@@ -270,20 +271,16 @@ export function HomePage({
       ? FEED_DAY_COUNT
       : HOME_SSR_DAY_COUNT;
 
-  const destacadosEvents = useMemo(() => {
-    const merged = new Map<number, EventRow>();
-    for (const event of initialDestacadosEvents) {
-      merged.set(event.id, event);
-    }
-    for (const event of events) {
-      merged.set(event.id, event);
-    }
-    return [...merged.values()];
-  }, [events, initialDestacadosEvents]);
+  const feedEvents = useMemo(
+    () => mergeFeedEvents(initialDestacadosEvents, events),
+    [events, initialDestacadosEvents]
+  );
+
+  const destacadosEvents = feedEvents;
 
   const displayEvents = useMemo(
-    () => filterEventsInWeek(events, MADRID_TZ, dayWindow),
-    [events, dayWindow]
+    () => filterEventsInWeek(feedEvents, MADRID_TZ, dayWindow),
+    [feedEvents, dayWindow]
   );
 
   const displayDays = useMemo(
@@ -305,14 +302,21 @@ export function HomePage({
     () =>
       displayDays.map((day) => ({
         ...day,
-        events: resolveDayEventsFromIndex(
-          eventsByDate,
-          day.date,
-          deferredSportSet,
-          deferredFeaturedMode
-        ),
+        events: weekView
+            ? resolveDayEventsAllFromIndex(
+                eventsByDate,
+                day.date,
+                deferredSportSet,
+                deferredFeaturedMode
+              )
+            : resolveDayEventsFromIndex(
+                eventsByDate,
+                day.date,
+                deferredSportSet,
+                deferredFeaturedMode
+              ),
       })),
-    [displayDays, eventsByDate, deferredSportSet, deferredFeaturedMode]
+    [displayDays, eventsByDate, deferredSportSet, deferredFeaturedMode, weekView]
   );
 
   const activeSection = daySections[activeDay];

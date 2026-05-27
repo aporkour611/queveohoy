@@ -68,10 +68,8 @@ export async function prepareEventsForImport<T extends CronEventInput>(
 }
 
 export function shouldPurgeEvent(e: EventRow): boolean {
-  if (eventHasPlaceholderTeams(e)) return true;
-  if (!isTeamCrestSport(e.sport ?? "")) return false;
-  if (eventHasTeamCrests(e)) return false;
-  return !isImportantEvent(e);
+  /** Solo placeholders; no borrar partidos por falta de escudo (se enriquecen en cron). */
+  return eventHasPlaceholderTeams(e);
 }
 
 export function needsCrestEnrichment(e: EventRow): boolean {

@@ -5,7 +5,6 @@ import { defaultChannelsForCompetition } from "@/app/lib/channels";
 import {
   needsCrestEnrichment,
   prepareEventsForImport,
-  shouldPurgeEvent,
   type CronEventInput,
 } from "@/app/lib/cron-events";
 import { isPlaceholderTeamName } from "@/app/lib/event-quality";
@@ -13,7 +12,7 @@ import { dedupeEvents, findDuplicateIdsToRemove, type EventRecord } from "@/app/
 import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
 import { ensureEventsDateIndex } from "@/app/lib/ensure-db-index";
-import { shouldIngestPandascoreMatch, shouldPurgeStoredEsportsEvent } from "@/app/lib/esports-cron";
+import { shouldIngestPandascoreMatch } from "@/app/lib/esports-cron";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
 import { fetchJsonWithTimeout } from "@/app/lib/fetch-json";
 import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
@@ -26,6 +25,7 @@ import { pingIndexNow } from "@/app/lib/indexnow";
 import { warmFeedCacheAfterCron } from "@/app/lib/revalidate-feed";
 import {
   ergastToMadrid,
+  addDaysToDateKey,
   getMadridWeekDates,
   madridWeekUtcRange,
   parseUtcIso,
@@ -381,10 +381,18 @@ async function fetchUfc(): Promise<{ count: number; error?: string }> {
   }
 }
 
-async function purgeStaleTmdbEvents(): Promise<{ purged: number; error?: string }> {
+/** Solo borra TMDB fuera de ventana; no toca fútbol, e-sports ni tenis. */
+async function purgeOutOfWindowTmdbEvents(
+  dateFrom: string,
+  dateTo: string
+): Promise<{ purged: number; error?: string }> {
+  const graceStart = addDaysToDateKey(dateFrom, -21);
+  const graceEnd = addDaysToDateKey(dateTo, 21);
+
   const { data, error } = await getSupabase()
     .from("events")
-    .select("id, external_id");
+    .select("id, external_id, date")
+    .like("external_id", "tmdb_%");
 
   if (error) {
     return { purged: 0, error: error.message };
@@ -392,7 +400,10 @@ async function purgeStaleTmdbEvents(): Promise<{ purged: number; error?: string 
 
   const ids =
     data
-      ?.filter((row) => row.external_id?.startsWith("tmdb_"))
+      ?.filter((row) => {
+        if (!row.date) return false;
+        return row.date < graceStart || row.date > graceEnd;
+      })
       .map((row) => row.id) ?? [];
 
   if (!ids.length) return { purged: 0 };
@@ -406,7 +417,7 @@ async function purgeStaleTmdbEvents(): Promise<{ purged: number; error?: string 
     return { purged: 0, error: delError.message };
   }
 
-  console.log(`TMDB antiguos eliminados: ${ids.length}`);
+  console.log(`TMDB fuera de ventana eliminados: ${ids.length}`);
   return { purged: ids.length };
 }
 
@@ -423,20 +434,25 @@ async function fetchTmdb(): Promise<{
       return { movies: 0, series: 0, purged: 0, error };
     }
 
-    const purge = await purgeStaleTmdbEvents();
     const events = [...movies, ...series];
     const upsertError = await upsertEvents(events);
     if (upsertError) {
       return {
         movies: movies.length,
         series: series.length,
-        purged: purge.purged,
+        purged: 0,
         error: upsertError,
       };
     }
 
+    const dates = getWeekDates();
+    const purge = await purgeOutOfWindowTmdbEvents(
+      dates[0],
+      dates[dates.length - 1]
+    );
+
     console.log(
-      `TMDB: ${movies.length} cine, ${series.length} series (${purge.purged} antiguos borrados)`
+      `TMDB: ${movies.length} cine, ${series.length} series (${purge.purged} fuera de ventana)`
     );
     return { movies: movies.length, series: series.length, purged: purge.purged };
   } catch (e) {
@@ -502,62 +518,6 @@ async function enrichImportantEventsMissingCrests(): Promise<{
   }
 
   return { enriched };
-}
-
-async function purgeEventsWithoutCrests(): Promise<{
-  purged: number;
-  error?: string;
-}> {
-  const { data, error } = await getSupabase().from("events").select(CRON_ROW_SELECT);
-  if (error || !data?.length) {
-    return { purged: 0, error: error?.message };
-  }
-
-  const ids = data.filter(shouldPurgeEvent).map((e) => e.id);
-  if (!ids.length) return { purged: 0 };
-
-  const { error: delError } = await getSupabase()
-    .from("events")
-    .delete()
-    .in("id", ids);
-
-  if (delError) {
-    console.error("Purge error:", delError);
-    return { purged: 0, error: delError.message };
-  }
-
-  console.log(`Eventos inválidos o sin escudo descartados: ${ids.length}`);
-  return { purged: ids.length };
-}
-
-async function purgeMinorEsportsEvents(): Promise<{
-  purged: number;
-  error?: string;
-}> {
-  const { data, error } = await getSupabase()
-    .from("events")
-    .select("id, sport, competition, title, home_team, away_team")
-    .in("sport", ["csgo", "valorant", "lol"]);
-
-  if (error || !data?.length) {
-    return { purged: 0, error: error?.message };
-  }
-
-  const ids = data.filter(shouldPurgeStoredEsportsEvent).map((e) => e.id);
-  if (!ids.length) return { purged: 0 };
-
-  const { error: delError } = await getSupabase()
-    .from("events")
-    .delete()
-    .in("id", ids);
-
-  if (delError) {
-    console.error("Esports purge error:", delError);
-    return { purged: 0, error: delError.message };
-  }
-
-  console.log(`Esports menores eliminados: ${ids.length}`);
-  return { purged: ids.length };
 }
 
 export async function GET(request: Request) {
@@ -632,22 +592,6 @@ export async function GET(request: Request) {
     console.error("✗ Crest enrich error:", e);
   }
 
-  let purge: { purged: number; error?: string } = { purged: 0 };
-  try {
-    purge = await purgeEventsWithoutCrests();
-    console.log("✓ Crest purge done");
-  } catch (e) {
-    console.error("✗ Crest purge error:", e);
-  }
-
-  let esportsPurge: { purged: number; error?: string } = { purged: 0 };
-  try {
-    esportsPurge = await purgeMinorEsportsEvents();
-    console.log("✓ Esports purge done");
-  } catch (e) {
-    console.error("✗ Esports purge error:", e);
-  }
-
   let dedupe: { removed: number; error?: string } = { removed: 0 };
   try {
     dedupe = await removeDuplicateRows();
@@ -715,10 +659,8 @@ export async function GET(request: Request) {
     ufcError: ufc.error,
     crestsEnriched: enrich.enriched,
     crestEnrichError: enrich.error,
-    crestsPurged: purge.purged,
-    crestPurgeError: purge.error,
-    esportsPurged: esportsPurge.purged,
-    esportsPurgeError: esportsPurge.error,
+    crestsPurged: 0,
+    esportsPurged: 0,
     duplicatesRemoved: dedupe.removed,
     dedupeError: dedupe.error,
     hint:

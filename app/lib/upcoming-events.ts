@@ -11,6 +11,7 @@ import {
   pickHomePageEvents,
   pickUpcomingFeaturedEvents,
   pickUpcomingFilteredEvents,
+  eventPriority,
 } from "./featured";
 
 type UpcomingResult = {
@@ -85,6 +86,32 @@ export function resolveVisibleEvents(
       ? "No hay eventos de esta categoría hoy. Estos son los próximos:"
       : `No hay eventos este día. Próximos en calendario:`,
   };
+}
+
+function sortDayEvents(events: EventRow[]): EventRow[] {
+  return [...events].sort(
+    (a, b) =>
+      (a.time ?? "").localeCompare(b.time ?? "") ||
+      eventPriority(b) - eventPriority(a)
+  );
+}
+
+/** Semana completa: todos los eventos del día (sin recorte de portada). */
+export function resolveDayEventsAllFromIndex(
+  byDate: Map<string, EventRow[]>,
+  date: string,
+  selectedSports: Set<string>,
+  isFeaturedMode: boolean
+): EventRow[] {
+  let dayEvents = byDate.get(date) ?? [];
+
+  if (!isFeaturedMode && selectedSports.size > 0) {
+    dayEvents = dayEvents.filter((event) =>
+      eventMatchesSportFilters(event, selectedSports)
+    );
+  }
+
+  return sortDayEvents(dayEvents);
 }
 
 /** Un día en el feed continuo (sin saltar a días futuros dentro del mismo bloque) */
