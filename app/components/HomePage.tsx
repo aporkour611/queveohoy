@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { countHiddenHomeEvents } from "../lib/featured";
@@ -22,7 +22,6 @@ import { AdminNavLink } from "./AdminNavLink";
 import { PushNavButton } from "./PushNotifications";
 import { Logo } from "./Logo";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
-import { LazyMount } from "./LazyMount";
 import { ScrollToTop } from "./ScrollToTop";
 import { SiteFooter } from "./SiteFooter";
 import type { EventRow } from "./types";
@@ -81,6 +80,7 @@ export function HomePage({
   const [hasFullWeek, setHasFullWeek] = useState(false);
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
+  const scrollRestoreRef = useRef<number | null>(null);
 
   const isFeaturedMode = selectedSports.length === 0;
   const deferredSports = useDeferredValue(selectedSports);
@@ -352,19 +352,30 @@ export function HomePage({
   }, [showInitialLoading, daySections, weekView]);
 
   const openWeekView = useCallback(() => {
+    scrollRestoreRef.current = window.scrollY;
+    lockScrollSpy(1200);
     const openWeek = () => {
       setWeekView(true);
-      requestAnimationFrame(() => {
-        const day = daySections[activeDay];
-        if (day) scrollToDaySection(day.date);
-      });
     };
     if (!hasFullWeek) {
       void loadEvents({ silent: true, fullWeek: true }).then(openWeek);
     } else {
       openWeek();
     }
-  }, [activeDay, daySections, hasFullWeek, loadEvents]);
+  }, [hasFullWeek, loadEvents, lockScrollSpy]);
+
+  const closeWeekView = useCallback(() => {
+    scrollRestoreRef.current = window.scrollY;
+    lockScrollSpy(1200);
+    setWeekView(false);
+  }, [lockScrollSpy]);
+
+  useLayoutEffect(() => {
+    if (scrollRestoreRef.current === null) return;
+    const y = scrollRestoreRef.current;
+    scrollRestoreRef.current = null;
+    window.scrollTo(0, y);
+  }, [weekView, daySections.length, hasFullWeek]);
 
   return (
     <div className="fh-body">
@@ -395,7 +406,7 @@ export function HomePage({
             activeDayIndex={activeDay}
             onDayChange={goToDay}
             weekView={weekView}
-            onSelectTodayView={() => setWeekView(false)}
+            onSelectTodayView={closeWeekView}
             onSelectWeekView={openWeekView}
             selectedSports={selectedSports}
             onFilterChange={handleFilterChange}
@@ -447,19 +458,14 @@ export function HomePage({
                         )}
                       </h2>
 
-                      <LazyMount
-                        eager={i === 0 || Math.abs(i - activeDay) <= 1}
-                        minHeight={Math.max(180, section.events.length * 28)}
-                      >
-                        <EventDaySections
-                          events={section.events}
-                          emptyMessage={
-                            isFeaturedMode
-                              ? "Sin eventos este día."
-                              : "Sin eventos para estos filtros."
-                          }
-                        />
-                      </LazyMount>
+                      <EventDaySections
+                        events={section.events}
+                        emptyMessage={
+                          isFeaturedMode
+                            ? "Sin eventos este día."
+                            : "Sin eventos para estos filtros."
+                        }
+                      />
                     </section>
                   ))}
                 </div>
