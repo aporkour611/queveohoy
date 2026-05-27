@@ -11,7 +11,7 @@ export async function warmFeedCacheAfterCron(): Promise<{
     await Promise.all([fetchHomeFeedEvents(), fetchFeedEvents()]);
     revalidatePath("/");
     revalidatePath("/api/events");
-    revalidatePath("/api/events/home");
+    revalidatePath("/api/home-feed");
     return { ok: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
