@@ -1,6 +1,10 @@
 import type { EventRow } from "../components/types";
 import { parseFootballTeamIds } from "./football";
 import { eventPriority } from "./featured";
+import {
+  isDestacadoFinal,
+  isDestacadoPremiere,
+} from "./event-card-stamp";
 import { getMadridWeekDates, toMadridDateKey } from "./madrid-time";
 import {
   isSpanishTvFlagship,
@@ -34,7 +38,6 @@ export const DESTACADOS_SERIES_PATTERNS: RegExp[] = [
   /^Euphoria\b/i,
 ];
 
-const MIN_DESTACADOS_WEEK = 5;
 const MIN_DESTACADOS_TODAY = 3;
 const MAX_DESTACADOS = 10;
 
@@ -47,11 +50,7 @@ export type PickCuratedDestacadosOptions = {
   windowDays?: number;
 };
 
-export function isChampionsFinal(event: EventRow): boolean {
-  if (event.sport !== "futbol") return false;
-  const comp = `${event.competition ?? ""} ${event.title ?? ""}`;
-  return /champions/i.test(comp) && /\bfinal\b/i.test(comp);
-}
+export { isChampionsFinal, isDestacadoFinal, isDestacadoPremiere } from "./event-card-stamp";
 
 function matchesRule(event: EventRow, rule: DestacadoRule): boolean {
   if (rule.externalId) {
@@ -100,90 +99,116 @@ function matchesFlagshipTv(event: EventRow): boolean {
   return SPANISH_TV_TITLE_PATTERNS.some((pattern) => pattern.test(blob));
 }
 
-/** Eventos curados para la franja Destacados (orden = reglas + TV + estrenos + autocompletado) */
+function sortTodayItems(a: EventRow, b: EventRow): number {
+  return (
+    eventPriority(b) - eventPriority(a) ||
+    (a.time ?? "").localeCompare(b.time ?? "")
+  );
+}
+
+function sortWeekAheadItems(a: EventRow, b: EventRow): number {
+  return (
+    (a.date ?? "").localeCompare(b.date ?? "") ||
+    eventPriority(b) - eventPriority(a) ||
+    (a.time ?? "").localeCompare(b.time ?? "")
+  );
+}
+
+/** Eventos curados: hoy a la izquierda; finales/estrenos de la semana siempre a la derecha. */
 export function pickCuratedDestacados(
   events: EventRow[],
   options: PickCuratedDestacadosOptions = {}
 ): EventRow[] {
-  const scope = options.scope ?? "today";
   const windowDays = options.windowDays ?? 7;
   const today =
     options.todayKey ?? toMadridDateKey(new Date());
   const week = new Set(getMadridWeekDates(windowDays));
   const weekPool = events.filter((e) => e.date && week.has(e.date));
   const todayPool = weekPool.filter((e) => e.date === today);
-  const pool = scope === "today" ? todayPool : weekPool;
-  const minDestacados =
-    scope === "today" ? MIN_DESTACADOS_TODAY : MIN_DESTACADOS_WEEK;
 
-  const pinned: EventRow[] = [];
-  const picked: EventRow[] = [];
+  const todayItems: EventRow[] = [];
+  const weekAheadItems: EventRow[] = [];
   const seen = new Set<number>();
 
-  const addPinned = (event: EventRow) => {
+  const addToday = (event: EventRow) => {
     if (seen.has(event.id)) return;
     seen.add(event.id);
-    pinned.push(event);
+    todayItems.push(event);
   };
 
-  const add = (event: EventRow) => {
+  const addWeekAhead = (event: EventRow) => {
     if (seen.has(event.id)) return;
     seen.add(event.id);
-    picked.push(event);
+    weekAheadItems.push(event);
+  };
+
+  const routeHighlight = (event: EventRow) => {
+    if (!event.date || event.date <= today) addToday(event);
+    else addWeekAhead(event);
   };
 
   for (const rule of DESTACADOS_RULES) {
     const match = weekPool.find((e) => matchesRule(e, rule));
-    if (match) addPinned(match);
+    if (match) routeHighlight(match);
   }
 
   for (const event of weekPool) {
-    if (isChampionsFinal(event)) addPinned(event);
+    if (isDestacadoFinal(event)) routeHighlight(event);
   }
 
-  for (const event of pool.filter(matchesFlagshipTv)) {
-    add(event);
+  for (const event of weekPool) {
+    if (isDestacadoPremiere(event)) routeHighlight(event);
   }
 
-  for (const event of pool.filter(isSpanishTvFlagship)) {
-    add(event);
+  for (const event of todayPool) {
+    if (seen.has(event.id)) continue;
+    if (matchesFlagshipTv(event)) addToday(event);
   }
 
-  for (const event of pool.filter(isSeasonPremiereEvent)) {
-    add(event);
+  for (const event of todayPool) {
+    if (seen.has(event.id)) continue;
+    if (isSpanishTvFlagship(event)) addToday(event);
   }
 
-  for (const event of pool.filter(matchesFollowedSeries)) {
-    add(event);
+  for (const event of todayPool) {
+    if (seen.has(event.id)) continue;
+    if (isSeasonPremiereEvent(event)) addToday(event);
   }
 
-  if (pinned.length + picked.length < minDestacados) {
-    const candidates = pool
+  for (const event of todayPool) {
+    if (seen.has(event.id)) continue;
+    if (matchesFollowedSeries(event)) addToday(event);
+  }
+
+  if (todayItems.length < MIN_DESTACADOS_TODAY) {
+    const candidates = todayPool
       .filter((event) => !seen.has(event.id))
-      .sort((a, b) => {
-        const scoreA =
-          eventPriority(a) + (scope === "week" && a.date === today ? 20 : 0);
-        const scoreB =
-          eventPriority(b) + (scope === "week" && b.date === today ? 20 : 0);
-        return (
-          scoreB - scoreA || (a.time ?? "").localeCompare(b.time ?? "")
-        );
-      });
+      .sort(sortTodayItems);
 
     for (const event of candidates) {
-      if (pinned.length + picked.length >= MAX_DESTACADOS) break;
-      add(event);
+      if (todayItems.length >= MIN_DESTACADOS_TODAY) break;
+      addToday(event);
     }
   }
 
-  const sortedPicked = picked.sort(
-    (a, b) =>
-      eventPriority(b) - eventPriority(a) ||
-      (a.date ?? "").localeCompare(b.date ?? "") ||
-      (a.time ?? "").localeCompare(b.time ?? "")
-  );
+  const todaySorted = todayItems.sort(sortTodayItems);
+  const weekAheadSorted = weekAheadItems.sort(sortWeekAheadItems);
 
-  return [...pinned, ...sortedPicked].slice(0, MAX_DESTACADOS);
+  const todayCap = Math.max(
+    MIN_DESTACADOS_TODAY,
+    MAX_DESTACADOS - weekAheadSorted.length
+  );
+  const todayFinal = todaySorted.slice(0, todayCap);
+
+  return [...todayFinal, ...weekAheadSorted];
+}
+
+/** Primer índice de un destacado que no es hoy (para separador visual en el carrusel). */
+export function firstWeekAheadDestacadoIndex(
+  featured: EventRow[],
+  todayKey: string
+): number {
+  return featured.findIndex((event) => event.date && event.date > todayKey);
 }
 
 export { isSeasonPremiereEvent };

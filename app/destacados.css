@@ -57,6 +57,12 @@
   display: none;
 }
 
+.qvh-spotlight-card-week-ahead {
+  margin-left: 12px;
+  padding-left: 16px;
+  border-left: 2px solid rgba(93, 95, 239, 0.45);
+}
+
 .qvh-spotlight-card {
   flex: 0 0 min(280px, 82vw);
   border-radius: 12px;

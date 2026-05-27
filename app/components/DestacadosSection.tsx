@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import type { EventRow } from "./types";
-import { pickCuratedDestacados } from "../lib/destacados-config";
+import { pickCuratedDestacados, firstWeekAheadDestacadoIndex } from "../lib/destacados-config";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { FeaturedEventCard } from "./FeaturedEventCard";
@@ -19,6 +19,10 @@ export function DestacadosSection({ events }: Props) {
   const featured = useMemo(
     () => pickCuratedDestacados(events, { scope: "today", todayKey }),
     [events, todayKey]
+  );
+  const firstWeekAheadIndex = useMemo(
+    () => firstWeekAheadDestacadoIndex(featured, todayKey),
+    [featured, todayKey]
   );
 
   if (featured.length === 0) return null;
@@ -43,6 +47,11 @@ export function DestacadosSection({ events }: Props) {
             key={event.id}
             event={event}
             priority={index < 2}
+            className={
+              index === firstWeekAheadIndex && firstWeekAheadIndex > 0
+                ? "qvh-spotlight-card-week-ahead"
+                : undefined
+            }
           />
         ))}
       </div>
