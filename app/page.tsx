@@ -3,8 +3,6 @@ import dynamic from "next/dynamic";
 import { HomePage } from "./components/HomePage";
 import { ShareTodayBar } from "./components/ShareTodayBar";
 import { HomeJsonLd } from "./components/HomeJsonLd";
-import { HomeFaq } from "./components/HomeFaq";
-import { HomeEventOutline } from "./components/HomeEventOutline";
 import { getHomeFeedEventsForPage } from "./lib/events-feed-server";
 import {
   buildHomeMetadataDescription,
@@ -41,8 +39,6 @@ export default async function Page() {
       <HomePage initialEvents={ssrEvents} initialError={error}>
         <HomeTrafficHubs events={ssrEvents} />
         <ShareTodayBar />
-        <HomeFaq />
-        <HomeEventOutline events={ssrEvents} />
       </HomePage>
     </>
   );
