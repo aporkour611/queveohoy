@@ -50,6 +50,7 @@ export function FeedControls({
           <button
             type="button"
             className={`qvh-feed-view-toggle-btn${!weekView ? " qvh-feed-view-toggle-btn-active" : ""}`}
+            onMouseDown={(event) => event.preventDefault()}
             onClick={onSelectTodayView}
             aria-pressed={!weekView}
           >
@@ -58,6 +59,7 @@ export function FeedControls({
           <button
             type="button"
             className={`qvh-feed-view-toggle-btn${weekView ? " qvh-feed-view-toggle-btn-active" : ""}`}
+            onMouseDown={(event) => event.preventDefault()}
             onClick={onSelectWeekView}
             aria-pressed={weekView}
           >

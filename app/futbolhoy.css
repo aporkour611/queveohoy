@@ -1,5 +1,9 @@
 /* Layout de partidos — paleta queveohoy.es */
 
+html {
+  overflow-anchor: none;
+}
+
 .fh-body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
@@ -7,12 +11,14 @@
   color: var(--qvh-text);
   margin: 0;
   min-height: 100vh;
+  overflow-anchor: none;
 }
 
 .fh-content {
   background-color: var(--qvh-bg-elevated);
   padding: var(--qvh-navbar-h) 0 40px;
   min-height: 100vh;
+  overflow-anchor: none;
 }
 
 .fh-container {
@@ -351,6 +357,7 @@
 
 .fh-main {
   padding-top: 12px;
+  overflow-anchor: none;
 }
 
 @media (min-width: 768px) {
@@ -393,6 +400,7 @@
 
 .fh-feed-area {
   position: relative;
+  overflow-anchor: none;
 }
 
 @media (max-width: 640px) {
@@ -443,18 +451,8 @@
     background: rgba(255, 255, 255, 0.04);
   }
 
-  .qvh-logo-tiles .qvh-tile {
-    width: 32px;
-    height: 32px;
-    font-size: 1rem;
-  }
-
-  .qvh-logo-wordmark {
-    font-size: 0.95rem;
-  }
-
-  .qvh-logo-link {
-    gap: 8px;
+  .qvh-logo-svg {
+    height: 34px;
   }
 }
 

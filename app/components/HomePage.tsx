@@ -64,30 +64,12 @@ function scrollToDaySection(date: string) {
   window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
 }
 
-type ScrollSnapshot = {
-  y: number;
-  anchorTop: number;
-};
-
-const FEED_CONTROLS_ID = "feed-controls";
-
-function captureScrollSnapshot(): ScrollSnapshot {
-  const anchor = document.getElementById(FEED_CONTROLS_ID);
-  return {
-    y: window.scrollY,
-    anchorTop: anchor?.getBoundingClientRect().top ?? 0,
-  };
+function captureScrollY(): number {
+  return window.scrollY;
 }
 
-function restoreScrollSnapshot(snapshot: ScrollSnapshot) {
-  const anchor = document.getElementById(FEED_CONTROLS_ID);
-  if (!anchor) {
-    window.scrollTo(0, snapshot.y);
-    return;
-  }
-
-  const delta = anchor.getBoundingClientRect().top - snapshot.anchorTop;
-  window.scrollTo(0, snapshot.y + delta);
+function restoreScrollY(y: number) {
+  window.scrollTo({ left: 0, top: y, behavior: "instant" });
 }
 
 export function HomePage({
@@ -106,8 +88,8 @@ export function HomePage({
   const [hasFullWeek, setHasFullWeek] = useState(false);
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
-  const scrollSnapshotRef = useRef<ScrollSnapshot | null>(null);
-  const scrollRestoreTimerRef = useRef<number | null>(null);
+  const pinnedScrollYRef = useRef<number | null>(null);
+  const scrollRestoreFrameRef = useRef<number | null>(null);
 
   const isFeaturedMode = selectedSports.length === 0;
   const deferredSports = useDeferredValue(selectedSports);
@@ -273,24 +255,36 @@ export function HomePage({
     }, ms);
   }, []);
 
-  const beginViewScrollPreservation = useCallback(() => {
-    scrollSnapshotRef.current = captureScrollSnapshot();
-    lockScrollSpy(2000);
+  const pinScrollForViewToggle = useCallback((ms = 1200) => {
+    pinnedScrollYRef.current = captureScrollY();
+    scrollLockRef.current = true;
 
-    if (scrollRestoreTimerRef.current !== null) {
-      window.clearTimeout(scrollRestoreTimerRef.current);
+    if (scrollLockTimerRef.current !== null) {
+      window.clearTimeout(scrollLockTimerRef.current);
     }
-    scrollRestoreTimerRef.current = window.setTimeout(() => {
-      scrollSnapshotRef.current = null;
-      scrollRestoreTimerRef.current = null;
-    }, 1200);
-  }, [lockScrollSpy]);
-
-  const flushScrollPreservation = useCallback(() => {
-    const snapshot = scrollSnapshotRef.current;
-    if (!snapshot) return;
-    restoreScrollSnapshot(snapshot);
+    scrollLockTimerRef.current = window.setTimeout(() => {
+      scrollLockRef.current = false;
+      scrollLockTimerRef.current = null;
+      pinnedScrollYRef.current = null;
+    }, ms);
   }, []);
+
+  const flushPinnedScroll = useCallback(() => {
+    const y = pinnedScrollYRef.current;
+    if (y === null) return;
+    restoreScrollY(y);
+  }, []);
+
+  const schedulePinnedScrollRestore = useCallback(() => {
+    flushPinnedScroll();
+    if (scrollRestoreFrameRef.current !== null) {
+      window.cancelAnimationFrame(scrollRestoreFrameRef.current);
+    }
+    scrollRestoreFrameRef.current = window.requestAnimationFrame(() => {
+      flushPinnedScroll();
+      scrollRestoreFrameRef.current = window.requestAnimationFrame(flushPinnedScroll);
+    });
+  }, [flushPinnedScroll]);
 
   const handleFilterChange = useCallback((ids: string[]) => {
     setSelectedSports(ids);
@@ -379,7 +373,9 @@ export function HomePage({
       });
     }
 
-    syncActiveDay();
+    if (!scrollLockRef.current) {
+      syncActiveDay();
+    }
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
 
@@ -391,45 +387,35 @@ export function HomePage({
   }, [showInitialLoading, daySections, weekView]);
 
   const openWeekView = useCallback(() => {
-    beginViewScrollPreservation();
-    const openWeek = () => {
-      setWeekView(true);
-    };
+    pinScrollForViewToggle();
+    setWeekView(true);
     if (!hasFullWeek) {
-      void loadEvents({ silent: true, fullWeek: true }).then(openWeek);
-    } else {
-      openWeek();
+      void loadEvents({ silent: true, fullWeek: true });
     }
-  }, [beginViewScrollPreservation, hasFullWeek, loadEvents]);
+  }, [pinScrollForViewToggle, hasFullWeek, loadEvents]);
 
   const closeWeekView = useCallback(() => {
-    beginViewScrollPreservation();
+    pinScrollForViewToggle();
     setWeekView(false);
-  }, [beginViewScrollPreservation]);
+  }, [pinScrollForViewToggle]);
 
   useLayoutEffect(() => {
-    flushScrollPreservation();
-  });
+    if (pinnedScrollYRef.current === null) return;
+    schedulePinnedScrollRestore();
+  }, [weekView, events.length, refreshing, schedulePinnedScrollRestore]);
 
   useEffect(() => {
-    if (!scrollSnapshotRef.current) return;
+    if (pinnedScrollYRef.current === null) return;
 
-    flushScrollPreservation();
-    const timers = [0, 16, 48, 120, 240, 480, 960].map((delay) =>
-      window.setTimeout(flushScrollPreservation, delay)
+    schedulePinnedScrollRestore();
+    const timers = [32, 96, 200, 400].map((delay) =>
+      window.setTimeout(schedulePinnedScrollRestore, delay)
     );
 
     return () => {
       for (const timer of timers) window.clearTimeout(timer);
     };
-  }, [
-    weekView,
-    hasFullWeek,
-    daySections.length,
-    refreshing,
-    events.length,
-    flushScrollPreservation,
-  ]);
+  }, [weekView, events.length, refreshing, schedulePinnedScrollRestore]);
 
   return (
     <div className="fh-body">

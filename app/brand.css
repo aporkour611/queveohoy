@@ -26,7 +26,7 @@
   --qvh-border-light: #e0e0e8;
   --qvh-navbar-accent-h: 3px;
   --qvh-navbar-padding-y: 12px;
-  --qvh-navbar-content-h: 68px;
+  --qvh-navbar-content-h: 62px;
   --qvh-navbar-h: calc(
     var(--qvh-navbar-accent-h) + var(--qvh-navbar-padding-y) * 2 +
       var(--qvh-navbar-content-h)
@@ -57,94 +57,69 @@
 .qvh-logo-link {
   display: flex;
   align-items: center;
-  gap: 10px;
   text-decoration: none;
   flex-shrink: 0;
+  line-height: 0;
 }
 
 .qvh-logo-link--full {
-  display: block;
+  justify-content: center;
   margin: 0 auto 8px;
   max-width: 100%;
 }
 
-.qvh-logo-img-full {
-  width: 100%;
-  max-width: 640px;
-  height: auto;
+.qvh-logo-svg {
+  display: block;
+  height: 38px;
+  width: auto;
 }
 
-.qvh-logo-tiles {
-  display: flex;
-  gap: 4px;
+.qvh-logo-svg--full {
+  height: clamp(40px, 8vw, 56px);
+  max-width: min(100%, 420px);
 }
 
-.qvh-tile {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.qvh-logo-tile-q {
+  fill: var(--qvh-purple);
+}
+
+.qvh-logo-tile-v {
+  fill: var(--qvh-orange);
+}
+
+.qvh-logo-tile-h {
+  fill: var(--qvh-green);
+}
+
+.qvh-logo-tile-letter {
+  fill: #fff;
   font-family: var(--qvh-font-display), "Inter", sans-serif;
+  font-size: 14px;
   font-weight: 800;
-  font-size: 1.15rem;
-  color: #fff;
-  line-height: 1;
 }
 
-.qvh-tile-q {
-  background: var(--qvh-purple);
-}
-
-.qvh-tile-v {
-  background: var(--qvh-orange);
-}
-
-.qvh-tile-h {
-  background: var(--qvh-green);
-}
-
-.qvh-logo-wordmark {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  line-height: 0.95;
+.qvh-logo-text {
   font-family: var(--qvh-font-display), "Inter", sans-serif;
+  font-size: 10.5px;
   font-weight: 800;
-  font-size: 1.05rem;
   letter-spacing: -0.02em;
-  overflow: visible;
 }
 
-.qvh-wm {
-  display: inline-block;
-  transform-origin: left center;
+.qvh-logo-text-q {
+  fill: var(--qvh-purple);
 }
 
-.qvh-wm-q {
-  color: var(--qvh-purple);
-  transform: rotate(-14deg) translateX(1px);
+.qvh-logo-text-v {
+  fill: #d4845a;
 }
 
-.qvh-wm-v {
-  color: #d4845a;
-}
-
-.qvh-wm-h {
-  color: #3aab6e;
-  transform: rotate(14deg) translateX(1px);
+.qvh-logo-text-h {
+  fill: #3aab6e;
 }
 
 @media (min-width: 480px) {
-  .qvh-tile {
-    width: 40px;
+  .qvh-logo-svg {
     height: 40px;
-    font-size: 1.25rem;
-  }
-
-  .qvh-logo-wordmark {
-    font-size: 1.2rem;
   }
 }
 
@@ -590,6 +565,7 @@
   background: var(--qvh-bg-panel);
   border: 1px solid var(--qvh-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+  overflow-anchor: none;
 }
 
 .qvh-feed-controls .qvh-day-tabs {
