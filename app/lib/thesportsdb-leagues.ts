@@ -5,6 +5,7 @@ import {
   toMadridDateKey,
 } from "./madrid-time";
 import { isPlaceholderTeamName } from "./event-quality";
+import { formatRolandGarrosCompetition } from "./roland-garros";
 
 const API_BASE = "https://www.thesportsdb.com/api/v1/json/3";
 
@@ -168,6 +169,10 @@ function normalizeLeagueEvent(
         ? `${parsed.home} vs ${parsed.away}`
         : parsed.title;
 
+  const rgCompetition = formatRolandGarrosCompetition(raw.strEvent ?? title);
+  const competition =
+    rgCompetition ?? (raw.strLeague?.trim() || config.competition);
+
   return {
     external_id: `tsdb_${config.sport}_${raw.idEvent}`,
     title,
@@ -177,7 +182,7 @@ function normalizeLeagueEvent(
     time,
     sport: config.sport,
     category: "deportes",
-    competition: raw.strLeague?.trim() || config.competition,
+    competition,
     platform: config.platform,
     source: encodeLeagueSource(raw.strPoster, raw.strThumb, config.leagueId),
   };

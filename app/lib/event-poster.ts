@@ -10,6 +10,9 @@ export function resolveEventPosterUrl(
   event: EventRow,
   size: "thumb" | "card" | "poster" = "poster"
 ): string | null {
+  const flagship = matchesSpanishTvFlagship(event);
+  if (flagship?.localPosterPath) return flagship.localPosterPath;
+
   const fromSource = parseTmdbPoster(event.source, size);
   if (fromSource) return fromSource;
 
@@ -29,7 +32,6 @@ export function resolveEventPosterUrl(
     );
   }
 
-  const flagship = matchesSpanishTvFlagship(event);
   if (flagship?.posterPath) {
     return parseTmdbPoster(
       encodeTmdbSource(flagship.posterPath, flagship.priority),
@@ -38,4 +40,10 @@ export function resolveEventPosterUrl(
   }
 
   return null;
+}
+
+export function resolveEventPosterObjectPosition(
+  event: EventRow
+): string | undefined {
+  return matchesSpanishTvFlagship(event)?.posterObjectPosition;
 }
