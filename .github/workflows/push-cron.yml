@@ -1,0 +1,26 @@
+name: Push notifications cron
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: push-notifications-cron
+  cancel-in-progress: false
+
+jobs:
+  push-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar /api/push/cron
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "Falta CRON_SECRET en GitHub Secrets"
+            exit 1
+          fi
+          curl -fsS --retry 2 --retry-delay 5 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "https://queveohoy.es/api/push/cron"
