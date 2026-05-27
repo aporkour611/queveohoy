@@ -21,7 +21,6 @@ import { EventFilters } from "./EventFilters";
 import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
 import { Logo } from "./Logo";
-import { RegionTimezoneBar } from "./RegionTimezoneBar";
 import { HomeCalendarHero } from "./HomeCalendarHero";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
 import { LazyMount } from "./LazyMount";
@@ -29,11 +28,10 @@ import { EventSearch } from "./EventSearch";
 import { ScrollToTop } from "./ScrollToTop";
 import { SiteFooter } from "./SiteFooter";
 import type { EventRow } from "./types";
-import { TimezoneProvider, useTimezone } from "../lib/timezone-context";
 import {
   buildDisplayDays,
   filterEventsInWeek,
-  mapEventsToTimezone,
+  MADRID_TZ,
 } from "../lib/timezone";
 import { filterEventsByQuery } from "../lib/event-search";
 import { resolveDayEventsForFeed } from "../lib/upcoming-events";
@@ -73,26 +71,6 @@ export function HomePage({
   initialFetchedAt = null,
   children,
 }: Props = {}) {
-  return (
-    <TimezoneProvider>
-      <HomePageContent
-        initialEvents={initialEvents}
-        initialError={initialError}
-        initialFetchedAt={initialFetchedAt}
-      >
-        {children}
-      </HomePageContent>
-    </TimezoneProvider>
-  );
-}
-
-function HomePageContent({
-  initialEvents = [],
-  initialError = null,
-  initialFetchedAt = null,
-  children,
-}: Props = {}) {
-  const { timeZone } = useTimezone();
   const [events, setEvents] = useState(initialEvents);
   const [loading, setLoading] = useState(initialEvents.length === 0);
   const [refreshing, setRefreshing] = useState(false);
@@ -201,18 +179,13 @@ function HomePageContent({
   }, []);
 
   const displayEvents = useMemo(
-    () =>
-      filterEventsInWeek(
-        mapEventsToTimezone(events, timeZone),
-        timeZone,
-        FEED_DAY_COUNT
-      ),
-    [events, timeZone]
+    () => filterEventsInWeek(events, MADRID_TZ, FEED_DAY_COUNT),
+    [events]
   );
 
   const displayDays = useMemo(
-    () => buildDisplayDays(timeZone, FEED_DAY_COUNT),
-    [timeZone]
+    () => buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT),
+    []
   );
 
   const daySections = useMemo(
@@ -229,10 +202,7 @@ function HomePageContent({
     [displayDays, displayEvents, selectedSports, isFeaturedMode]
   );
 
-  const todayStats = useMemo(
-    () => countTodayStats(events, timeZone),
-    [events, timeZone]
-  );
+  const todayStats = useMemo(() => countTodayStats(events, MADRID_TZ), [events]);
 
   const activeSection = daySections[activeDay];
 
@@ -266,7 +236,7 @@ function HomePageContent({
 
   useEffect(() => {
     deferClientStateUpdate(() => setActiveDay(0));
-  }, [timeZone, sportsFilterKey]);
+  }, [sportsFilterKey]);
 
   useEffect(() => {
     deferClientStateUpdate(() =>
@@ -367,7 +337,6 @@ function HomePageContent({
         <div className="fh-navbar-inner">
           <Logo onHomeClick={resetHome} />
           <div className="fh-nav-links">
-            <RegionTimezoneBar />
             <AdminNavLink />
           </div>
         </div>

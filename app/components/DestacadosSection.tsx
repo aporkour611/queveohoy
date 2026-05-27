@@ -4,8 +4,7 @@ import { useMemo } from "react";
 import type { EventRow } from "./types";
 import { pickCuratedDestacados } from "../lib/destacados-config";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
-import { buildDisplayDays } from "../lib/timezone";
-import { useTimezone } from "../lib/timezone-context";
+import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { FeaturedEventCard } from "./FeaturedEventCard";
 
 type Props = {
@@ -13,10 +12,9 @@ type Props = {
 };
 
 export function DestacadosSection({ events }: Props) {
-  const { timeZone } = useTimezone();
   const todayKey = useMemo(
-    () => buildDisplayDays(timeZone, FEED_DAY_COUNT)[0]?.date ?? "",
-    [timeZone]
+    () => buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "",
+    []
   );
   const featured = useMemo(
     () => pickCuratedDestacados(events, { scope: "today", todayKey }),

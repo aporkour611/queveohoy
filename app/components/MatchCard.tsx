@@ -20,8 +20,7 @@ import { partidoPath } from "../lib/event-slug";
 import Link from "next/link";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
-import { formatDisplayDateLabel } from "../lib/timezone";
-import { useTimezone } from "../lib/timezone-context";
+import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 import type { EventRow } from "./types";
 
 type Props = {
@@ -134,7 +133,6 @@ function EventDetailsPanel({ event }: { event: EventRow }) {
 
 export const MatchCard = memo(function MatchCard({ event }: Props) {
   const [expanded, setExpanded] = useState(false);
-  const { timeZone } = useTimezone();
   const details = useMemo(() => buildEventDetails(event), [event]);
   const hasExtraDetails = details.length > 0;
   const isCine = event.sport === "cine";
@@ -192,7 +190,9 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     event.away_team || event.title?.split(" vs ").slice(1).join(" vs ")
   );
   const time = displayTime(event.time);
-  const dateLabel = event.date ? formatDisplayDateLabel(event.date, timeZone) : "";
+  const dateLabel = event.date
+    ? formatDisplayDateLabel(event.date, MADRID_TZ)
+    : "";
   const channels = resolveChannelsForEvent(event);
   const compFull = event.competition ?? "";
   const isFinal = compFull.includes("· Final");

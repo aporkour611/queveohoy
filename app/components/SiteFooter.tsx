@@ -10,8 +10,7 @@ export function SiteFooter() {
     <footer className="qvh-site-footer">
       <div className="qvh-site-footer-inner">
         <p className="qvh-site-footer-copy">
-          © {new Date().getFullYear()} queveohoy.es · Horario por defecto: península
-          y Baleares · Cambia región arriba (ES / LATAM)
+          © {new Date().getFullYear()} queveohoy.es · Horario: península y Baleares
         </p>
         <p className="qvh-site-footer-note">
           ¿Qué ver hoy en la tele? Agenda de partidos, deportes y estrenos en

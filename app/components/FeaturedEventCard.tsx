@@ -3,7 +3,7 @@
 import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
-import { useTimezone } from "../lib/timezone-context";
+import { MADRID_TZ } from "../lib/timezone";
 import { RemotePoster } from "./RemotePoster";
 import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
@@ -19,8 +19,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
   className,
   priority = false,
 }: Props) {
-  const { timeZone } = useTimezone();
-  const card = getSpotlightCardModel(event, timeZone);
+  const card = getSpotlightCardModel(event, MADRID_TZ);
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (

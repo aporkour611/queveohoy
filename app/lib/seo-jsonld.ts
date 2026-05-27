@@ -96,7 +96,7 @@ export const HOME_FAQ_ITEMS = [
   {
     question: "¿A qué hora son los partidos de hoy?",
     answer:
-      "Los horarios están en península y Baleares (Europe/Madrid). Puedes cambiar la zona horaria para LATAM desde la barra superior.",
+      "Los horarios están en península y Baleares (Europe/Madrid).",
   },
   {
     question: "¿Dónde ver la Champions League hoy?",

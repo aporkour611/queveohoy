@@ -39,7 +39,7 @@ export default function PrivacidadPage() {
               Podemos tratar datos técnicos habituales (dirección IP, tipo de
               dispositivo, páginas visitadas) a través del proveedor de
               alojamiento con fines de seguridad y estadísticas agregadas. Las
-              preferencias de filtros y zona horaria se guardan en tu navegador;
+              preferencias de filtros se guardan en tu navegador;
               no identifican por sí solas a una persona concreta.
             </p>
           </section>
@@ -48,7 +48,7 @@ export default function PrivacidadPage() {
             <h2>Finalidad y base legal</h2>
             <ul>
               <li>
-                <strong>Recordar preferencias</strong> — filtros y horario en tu
+                <strong>Recordar preferencias</strong> — filtros en tu
                 navegador. Base: interés legítimo en ofrecer una experiencia
                 cómoda.
               </li>

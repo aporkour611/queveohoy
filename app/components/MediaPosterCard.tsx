@@ -5,8 +5,7 @@ import { RemotePoster } from "./RemotePoster";
 import { buildEventDetails } from "../lib/event-details";
 import { parseChannels } from "../lib/channels";
 import { displayTime } from "../lib/madrid-time";
-import { formatDisplayDateLabel } from "../lib/timezone";
-import { useTimezone } from "../lib/timezone-context";
+import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 import {
   mediaBadgeForEvent,
   resolveMediaPlatform,
@@ -43,7 +42,6 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   index = 0,
 }: Props) {
   const [expanded, setExpanded] = useState(false);
-  const { timeZone } = useTimezone();
   const sport =
     event.sport === "cine" ? "cine" : event.sport === "tv" ? "tv" : "series";
   const title = event.title?.trim() || "Sin título";
@@ -55,7 +53,9 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   const subtitle =
     event.competition?.trim() ||
     (episodeMeta ? `T${episodeMeta.season} · E${episodeMeta.episode}` : "");
-  const dateLabel = event.date ? formatDisplayDateLabel(event.date, timeZone) : "";
+  const dateLabel = event.date
+    ? formatDisplayDateLabel(event.date, MADRID_TZ)
+    : "";
   const time = displayTime(event.time);
   const badge = mediaBadgeForEvent(sport, isSeasonPremiereEvent(event));
   const whenLabel = [dateLabel, time].filter(Boolean).join(" · ");

@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { partidosHoyDatePath } from "../lib/seo-date";
-import { useTimezone } from "../lib/timezone-context";
-import { buildDisplayDays } from "../lib/timezone";
+import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import type { TodayStats } from "../lib/home-stats";
 
@@ -29,10 +28,8 @@ function formatUpdatedLabel(iso: string): string {
 }
 
 export function HomeCalendarHero({ fetchedAt, stats }: Props) {
-  const { timeZone } = useTimezone();
   const [, setTick] = useState(0);
-
-  const today = buildDisplayDays(timeZone, FEED_DAY_COUNT)[0];
+  const today = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0];
 
   useEffect(() => {
     if (!fetchedAt) return;

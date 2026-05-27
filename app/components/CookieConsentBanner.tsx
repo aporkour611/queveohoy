@@ -48,8 +48,8 @@ export function CookieConsentBanner() {
         <div className="qvh-cookie-banner-copy">
           <p className="qvh-cookie-banner-title">Usamos cookies</p>
           <p className="qvh-cookie-banner-text">
-            Utilizamos cookies y almacenamiento local para recordar tus filtros,
-            zona horaria y medición técnica del sitio. Puedes aceptarlas o
+            Utilizamos cookies y almacenamiento local para recordar tus filtros
+            y medición técnica del sitio. Puedes aceptarlas o
             rechazarlas. Más info en la{" "}
             <Link href="/cookies">política de cookies</Link>.
           </p>

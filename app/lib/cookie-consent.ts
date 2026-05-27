@@ -1,5 +1,4 @@
 import { STORAGE_KEY } from "./filter-config";
-import { TIMEZONE_STORAGE_KEY } from "./timezone-config";
 
 export const COOKIE_CONSENT_KEY = "qvh-cookie-consent";
 
@@ -33,7 +32,6 @@ export function clearPreferenceStorage(): void {
 
   try {
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(TIMEZONE_STORAGE_KEY);
   } catch {}
 }
 

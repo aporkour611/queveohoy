@@ -40,11 +40,6 @@ export default function CookiesPage() {
                 entretenimiento que has seleccionado en la home.
               </li>
               <li>
-                <strong>Preferencias de horario</strong> — almacenamiento local
-                para recordar si consultas horarios de España o LATAM y la zona
-                horaria elegida.
-              </li>
-              <li>
                 <strong>Acceso de administración</strong> — cookie técnica
                 opcional, solo si activas el panel de administración mediante la
                 URL autorizada.
@@ -65,7 +60,7 @@ export default function CookiesPage() {
               en la parte inferior de la pantalla. Puedes aceptar o rechazar el
               uso de preferencias y medición. También puedes eliminar o bloquear
               cookies desde la configuración de tu navegador. Si desactivas el
-              almacenamiento local, los filtros y la zona horaria volverán a su
+              almacenamiento local, los filtros volverán a su
               estado predeterminado en cada visita.
             </p>
           </section>

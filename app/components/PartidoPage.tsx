@@ -5,22 +5,19 @@ import type { EventRow } from "./types";
 import { MatchCard } from "./MatchCard";
 import { SiteFooter } from "./SiteFooter";
 import { Logo } from "./Logo";
-import { TimezoneProvider } from "../lib/timezone-context";
 import { eventLabel } from "../lib/seo-events";
 import { displayTime } from "../lib/madrid-time";
 import { resolveChannelsForEvent } from "../lib/channels";
-import { formatDisplayDateLabel } from "../lib/timezone";
-import { useTimezone } from "../lib/timezone-context";
+import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 
 type Props = {
   event: EventRow;
 };
 
-function PartidoDetail({ event }: Props) {
-  const { timeZone } = useTimezone();
+export function PartidoPage({ event }: Props) {
   const channels = resolveChannelsForEvent(event);
   const dateLabel = event.date
-    ? formatDisplayDateLabel(event.date, timeZone)
+    ? formatDisplayDateLabel(event.date, MADRID_TZ)
     : "";
 
   return (
@@ -68,13 +65,5 @@ function PartidoDetail({ event }: Props) {
         </div>
       </main>
     </div>
-  );
-}
-
-export function PartidoPage({ event }: Props) {
-  return (
-    <TimezoneProvider>
-      <PartidoDetail event={event} />
-    </TimezoneProvider>
   );
 }
