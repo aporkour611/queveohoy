@@ -79,7 +79,9 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     platform: "La 1 · RTVE Play",
     priority: 94,
     category: "concurso",
-    airTime: "22:00",
+    posterPath: "/9p3sgMqNulDMsHbk2ZdOsWoJqTq.jpg",
+    airTime: "22:50",
+    airWeekdays: [1],
   },
   {
     id: "operacion-triunfo",
