@@ -8,6 +8,10 @@ export function getAdminSecret(): string {
   return process.env.ADMIN_SECRET?.trim() ?? "";
 }
 
+export function isAdminConfigured(): boolean {
+  return Boolean(getAdminSecret());
+}
+
 export function getCronSecret(): string {
   return process.env.CRON_SECRET?.trim() ?? "";
 }
@@ -38,11 +42,18 @@ export function isAdminCookieValid(cookieValue?: string | null): boolean {
   const secret = getAdminSecret();
   if (!secret || !cookieValue) return false;
 
-  const dot = cookieValue.lastIndexOf(".");
+  let raw = cookieValue;
+  try {
+    raw = decodeURIComponent(cookieValue);
+  } catch {
+    raw = cookieValue;
+  }
+
+  const dot = raw.lastIndexOf(".");
   if (dot <= 0) return false;
 
-  const payload = cookieValue.slice(0, dot);
-  const signature = cookieValue.slice(dot + 1);
+  const payload = raw.slice(0, dot);
+  const signature = raw.slice(dot + 1);
   if (!payload.startsWith(`${ADMIN_SESSION_VERSION}:`)) return false;
 
   const issued = Number(payload.split(":")[1]);

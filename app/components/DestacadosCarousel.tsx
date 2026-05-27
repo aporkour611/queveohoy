@@ -43,17 +43,14 @@ export function DestacadosCarousel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const pageSize = DESTACADOS_SCROLL_STEP;
   const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
-  const listKey = items.map((item) => item.id).join(",");
-  const [pageByList, setPageByList] = useState<Record<string, number>>({});
-  const page = Math.min(pageByList[listKey] ?? 0, pageCount - 1);
+  const [page, setPageState] = useState(0);
+  const clampedPage = Math.min(page, pageCount - 1);
+
   const setPage = (next: number) => {
-    setPageByList((current) => ({
-      ...current,
-      [listKey]: Math.max(0, Math.min(next, pageCount - 1)),
-    }));
+    setPageState(Math.max(0, Math.min(next, pageCount - 1)));
   };
   const showNav = items.length > DESTACADOS_VISIBLE_SLOTS;
-  const start = page * pageSize;
+  const start = clampedPage * pageSize;
   const visible = items.slice(start, start + pageSize);
 
   function scrollByDirection(direction: -1 | 1) {
@@ -120,8 +117,8 @@ export function DestacadosCarousel({
           type="button"
           className="qvh-destacados-nav qvh-destacados-nav-prev"
           aria-label={`Ver destacados anteriores de ${ariaLabel}`}
-          disabled={page === 0}
-          onClick={() => setPage(page - 1)}
+          disabled={clampedPage === 0}
+          onClick={() => setPage(clampedPage - 1)}
         >
           <ChevronIcon direction="left" />
         </button>
@@ -132,7 +129,7 @@ export function DestacadosCarousel({
           <FeaturedEventCard
             key={event.id}
             event={event}
-            priority={page === 0 && index < 2}
+            priority={clampedPage === 0 && index < 2}
           />
         ))}
       </div>
@@ -142,8 +139,8 @@ export function DestacadosCarousel({
           type="button"
           className="qvh-destacados-nav qvh-destacados-nav-next"
           aria-label={`Ver los siguientes ${pageSize} destacados de ${ariaLabel}`}
-          disabled={page >= pageCount - 1}
-          onClick={() => setPage(page + 1)}
+          disabled={clampedPage >= pageCount - 1}
+          onClick={() => setPage(clampedPage + 1)}
         >
           <ChevronIcon direction="right" />
         </button>

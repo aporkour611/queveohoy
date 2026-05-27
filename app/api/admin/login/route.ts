@@ -3,6 +3,7 @@ import {
   ADMIN_COOKIE,
   adminSessionCookieOptions,
   createAdminSessionToken,
+  isAdminConfigured,
   verifyAdminSecret,
 } from "@/app/lib/admin-auth";
 import { checkRateLimit, clientIp } from "@/app/lib/rate-limit";
@@ -28,12 +29,17 @@ async function readSecret(request: Request): Promise<string> {
 }
 
 export async function POST(request: Request) {
+  if (!isAdminConfigured()) {
+    const loginUrl = new URL("/admin/login", request.url);
+    loginUrl.searchParams.set("error", "2");
+    return NextResponse.redirect(loginUrl, { status: 303 });
+  }
+
   const rate = checkRateLimit(`admin:login:${clientIp(request)}`, 8, 15 * 60_000);
   if (!rate.ok) {
-    return NextResponse.json(
-      { error: "Demasiados intentos. Prueba más tarde." },
-      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
-    );
+    const loginUrl = new URL("/admin/login", request.url);
+    loginUrl.searchParams.set("error", "3");
+    return NextResponse.redirect(loginUrl, { status: 303 });
   }
 
   const secret = await readSecret(request);
@@ -45,10 +51,9 @@ export async function POST(request: Request) {
 
   const token = createAdminSessionToken();
   if (!token) {
-    return NextResponse.json(
-      { error: "Admin no configurado en el servidor" },
-      { status: 503 }
-    );
+    const loginUrl = new URL("/admin/login", request.url);
+    loginUrl.searchParams.set("error", "2");
+    return NextResponse.redirect(loginUrl, { status: 303 });
   }
 
   const response = NextResponse.redirect(new URL("/admin", request.url), {
