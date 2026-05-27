@@ -1,5 +1,13 @@
 import type { EventRow } from "../components/types";
 
+export type SpanishTvManualSlot = {
+  /** YYYY-MM-DD en Europe/Madrid */
+  date: string;
+  time?: string;
+  title?: string;
+  edition?: string;
+};
+
 export type SpanishTvShow = {
   id: string;
   search: string;
@@ -11,6 +19,8 @@ export type SpanishTvShow = {
   tmdbId?: number;
   /** Hora habitual de emisión en península (HH:MM). */
   airTime?: string;
+  /** Fechas fijas cuando no hay TMDB (eventos puntuales). */
+  manualSlots?: SpanishTvManualSlot[];
 };
 
 /** Programas de máxima audiencia en España — prioridad editorial y cron TMDB */
@@ -31,6 +41,33 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     competition: "Reality · La Isla de las Tentaciones",
     platform: "Telecinco · Mitele",
     priority: 98,
+    airTime: "22:00",
+  },
+  {
+    id: "velada-ibai",
+    search: "La Velada del Año",
+    patterns: [/velada del a[nñ]o|la velada\b/i],
+    competition: "Evento · La Velada del Año",
+    platform: "Twitch · Ibai",
+    priority: 99,
+    airTime: "19:30",
+    manualSlots: [
+      {
+        date: "2026-07-25",
+        time: "19:30",
+        edition: "VI",
+        title: "La Velada del Año VI",
+      },
+    ],
+  },
+  {
+    id: "masterchef",
+    tmdbId: 49982,
+    search: "MasterChef España",
+    patterns: [/master\s*chef/i],
+    competition: "Reality · MasterChef",
+    platform: "La 1 · RTVE Play",
+    priority: 94,
     airTime: "22:00",
   },
   {

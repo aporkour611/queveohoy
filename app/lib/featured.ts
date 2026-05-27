@@ -152,7 +152,7 @@ export function displaySectionKey(e: EventRow): string {
 }
 
 const SUPER_RELEVANT_COMP =
-  /champions|europa league|conference league|libertadores|sudamericana|world cup|mundial|copa del rey|supercopa|grand prix|motogp.*race|ufc \d+|vct|major|worlds|iem|blast|eurovisi[oó]n|operaci[oó]n triunfo|gran hermano|isla de las tentaciones/i;
+  /champions|europa league|conference league|libertadores|sudamericana|world cup|mundial|copa del rey|supercopa|grand prix|motogp.*race|ufc \d+|vct|major|worlds|iem|blast|eurovisi[oó]n|operaci[oó]n triunfo|gran hermano|isla de las tentaciones|master\s*chef|velada del a[nñ]o/i;
 
 /** Finales, eliminatorias o torneos de primer nivel → más cupo en la home. */
 export function isSuperRelevantEvent(e: EventRow): boolean {

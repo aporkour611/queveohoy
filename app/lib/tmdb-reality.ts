@@ -226,6 +226,32 @@ async function resolveShowId(
   return { id: match.id, item: match };
 }
 
+function buildManualEvents(
+  curated: SpanishTvShow,
+  dateFrom: string,
+  dateTo: string
+): RealityCronEvent[] {
+  if (!curated.manualSlots?.length) return [];
+
+  return curated.manualSlots
+    .filter((slot) => slot.date >= dateFrom && slot.date <= dateTo)
+    .map((slot) => ({
+      external_id: `manual_tv_${curated.id}_${slot.date}${
+        slot.edition ? `_e${slot.edition}` : ""
+      }`,
+      title: slot.title ?? curated.search,
+      date: slot.date,
+      time: slot.time ?? curated.airTime ?? DEFAULT_REALITY_AIR_TIME,
+      sport: "tv" as const,
+      category: "tv" as const,
+      competition: slot.edition
+        ? `${curated.competition} · Edición ${slot.edition}`
+        : curated.competition,
+      platform: curated.platform,
+      source: `manual|curated:${curated.id}|buzz:${curated.priority}`,
+    }));
+}
+
 async function fetchCuratedShowEvents(
   curated: SpanishTvShow,
   showId: number,
@@ -267,6 +293,27 @@ async function fetchCuratedSpanishTvEvents(
   const seenShows = new Set<number>();
 
   for (const curated of SPANISH_TV_FLAGSHIP) {
+    if (curated.manualSlots?.length) {
+      events.push(...buildManualEvents(curated, dateFrom, dateTo));
+    }
+
+    if (curated.tmdbId) {
+      if (seenShows.has(curated.tmdbId)) continue;
+      seenShows.add(curated.tmdbId);
+
+      const showEvents = await fetchCuratedShowEvents(
+        curated,
+        curated.tmdbId,
+        { id: curated.tmdbId },
+        dateFrom,
+        dateTo
+      );
+      events.push(...showEvents);
+      continue;
+    }
+
+    if (curated.manualSlots?.length) continue;
+
     const resolved = await resolveShowId(curated);
     if (!resolved || seenShows.has(resolved.id)) continue;
     seenShows.add(resolved.id);
