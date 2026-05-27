@@ -34,6 +34,7 @@ import {
 import {
   indexDisplayEventsByDate,
   resolveDayEventsFromIndex,
+  resolveHomeDayEvents,
 } from "../lib/upcoming-events";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 
@@ -147,7 +148,10 @@ export function HomePage({
           setFullWeekReady(true);
           if (expandTabs) setHasFullWeek(true);
         } else {
-          setEvents(incoming);
+          setEvents((prev) => {
+            if (incoming.length === 0 && prev.length > 0) return prev;
+            return mergeFeedEvents(prev, incoming);
+          });
         }
       }
     } catch (err) {
@@ -268,7 +272,9 @@ export function HomePage({
   }, []);
 
   const dayWindow =
-    weekView || hasFullWeek ? FEED_DAY_COUNT : HOME_SSR_DAY_COUNT;
+    weekView || hasFullWeek || fullWeekReady
+      ? FEED_DAY_COUNT
+      : HOME_SSR_DAY_COUNT;
 
   const destacadosEvents = useMemo(() => {
     const merged = new Map<number, EventRow>();
@@ -316,6 +322,32 @@ export function HomePage({
   );
 
   const activeSection = daySections[activeDay];
+  const todayKey = displayDays[0]?.date ?? "";
+
+  const activeHomeDay = useMemo(() => {
+    if (!activeSection || weekView) {
+      return {
+        todayEvents: activeSection?.events ?? [],
+        upcomingEvents: [],
+        upcomingMessage: null,
+      };
+    }
+
+    return resolveHomeDayEvents(
+      eventsByDate,
+      activeSection.date,
+      todayKey,
+      deferredSportSet,
+      deferredFeaturedMode
+    );
+  }, [
+    activeSection,
+    weekView,
+    eventsByDate,
+    todayKey,
+    deferredSportSet,
+    deferredFeaturedMode,
+  ]);
 
   const hiddenOnActiveDay = useMemo(() => {
     if (!deferredFeaturedMode || !activeSection) return 0;
@@ -627,13 +659,19 @@ export function HomePage({
                         </h2>
 
                         <EventDaySections
-                          events={activeSection.events}
+                          events={activeHomeDay.todayEvents}
                           emptyMessage={
                             isFeaturedMode
                               ? "Sin eventos este día."
                               : "Sin eventos para estos filtros."
                           }
                         />
+                        {activeHomeDay.upcomingMessage ? (
+                          <p className="fh-upcoming-notice">{activeHomeDay.upcomingMessage}</p>
+                        ) : null}
+                        {activeHomeDay.upcomingEvents.length > 0 ? (
+                          <EventDaySections events={activeHomeDay.upcomingEvents} />
+                        ) : null}
                         {hiddenOnActiveDay > 0 ? (
                           <p className="fh-home-more-link">
                             <Link href={partidosHoyDatePath(activeSection.date)}>

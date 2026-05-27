@@ -9,3 +9,6 @@ export const HOME_SECTION_MAX_DEFAULT = 2;
 
 /** Tope total de tarjetas por día en vista destacada. */
 export const HOME_DAILY_EVENT_CAP = 20;
+
+/** Si hoy hay menos de esto, rellenar con próximos eventos de la semana. */
+export const HOME_UPCOMING_MIN = 3;

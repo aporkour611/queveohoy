@@ -2,6 +2,10 @@ import type { EventRow } from "../components/types";
 import { filterEventsForDisplay } from "./event-crests";
 import { eventMatchesSportFilters } from "./tv-show-category";
 import {
+  HOME_DAILY_EVENT_CAP,
+  HOME_UPCOMING_MIN,
+} from "./home-feed-config";
+import {
   pickFeaturedEvents,
   pickFilteredEvents,
   pickHomePageEvents,
@@ -136,4 +140,72 @@ export function resolveDayEventsFromIndex(
   return pickFilteredEvents(
     dayEvents.filter((e) => eventMatchesSportFilters(e, selectedSports))
   );
+}
+
+export type HomeDayEventsResult = {
+  todayEvents: EventRow[];
+  upcomingEvents: EventRow[];
+  upcomingMessage: string | null;
+};
+
+/** Vista Hoy: si el día tiene pocos eventos, añade los próximos de la semana. */
+export function resolveHomeDayEvents(
+  byDate: Map<string, EventRow[]>,
+  date: string,
+  todayKey: string,
+  selectedSports: Set<string>,
+  isFeaturedMode: boolean
+): HomeDayEventsResult {
+  const todayEvents = resolveDayEventsFromIndex(
+    byDate,
+    date,
+    selectedSports,
+    isFeaturedMode
+  );
+
+  if (
+    !isFeaturedMode ||
+    selectedSports.size > 0 ||
+    date !== todayKey ||
+    todayEvents.length >= HOME_UPCOMING_MIN
+  ) {
+    return {
+      todayEvents,
+      upcomingEvents: [],
+      upcomingMessage: null,
+    };
+  }
+
+  const seen = new Set(todayEvents.map((event) => event.id));
+  const upcomingEvents: EventRow[] = [];
+  const futureDates = [...byDate.keys()].filter((d) => d > date).sort();
+
+  for (const futureDate of futureDates) {
+    for (const event of resolveDayEventsFromIndex(
+      byDate,
+      futureDate,
+      selectedSports,
+      true
+    )) {
+      if (seen.has(event.id)) continue;
+      seen.add(event.id);
+      upcomingEvents.push(event);
+      if (todayEvents.length + upcomingEvents.length >= HOME_UPCOMING_MIN) break;
+    }
+    if (todayEvents.length + upcomingEvents.length >= HOME_DAILY_EVENT_CAP) break;
+  }
+
+  if (upcomingEvents.length === 0) {
+    return {
+      todayEvents,
+      upcomingEvents: [],
+      upcomingMessage: null,
+    };
+  }
+
+  return {
+    todayEvents,
+    upcomingEvents,
+    upcomingMessage: "Próximos eventos destacados:",
+  };
 }
