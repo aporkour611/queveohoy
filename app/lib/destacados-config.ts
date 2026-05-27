@@ -39,8 +39,14 @@ export const DESTACADOS_SERIES_PATTERNS: RegExp[] = [
 ];
 
 const MIN_DESTACADOS_TODAY = 3;
-const MAX_DESTACADOS_TODAY = 5;
-const MAX_DESTACADOS_WEEK = 10;
+const MAX_DESTACADOS_TODAY = 9;
+const MAX_DESTACADOS_WEEK = 12;
+
+/** Cuántas tarjetas se ven antes de mostrar flechas de navegación. */
+export const DESTACADOS_VISIBLE_SLOTS = 3;
+
+/** Cuántas tarjetas avanza cada clic en las flechas. */
+export const DESTACADOS_SCROLL_STEP = 3;
 
 export type DestacadosScope = "today" | "week";
 
@@ -101,18 +107,17 @@ function matchesFlagshipTv(event: EventRow): boolean {
   return SPANISH_TV_TITLE_PATTERNS.some((pattern) => pattern.test(blob));
 }
 
+/** Orden cronológico: izquierda = menos tiempo restante, derecha = más. */
+export function sortDestacadosBySoonest(a: EventRow, b: EventRow): number {
+  const dateCmp = (a.date ?? "").localeCompare(b.date ?? "");
+  if (dateCmp !== 0) return dateCmp;
+  return (a.time ?? "").localeCompare(b.time ?? "");
+}
+
 function sortTodayItems(a: EventRow, b: EventRow): number {
   return (
     eventPriority(b) - eventPriority(a) ||
-    (a.time ?? "").localeCompare(b.time ?? "")
-  );
-}
-
-function sortWeekItems(a: EventRow, b: EventRow): number {
-  return (
-    (a.date ?? "").localeCompare(b.date ?? "") ||
-    eventPriority(b) - eventPriority(a) ||
-    (a.time ?? "").localeCompare(b.time ?? "")
+    sortDestacadosBySoonest(a, b)
   );
 }
 
@@ -174,7 +179,7 @@ export function pickTodayDestacados(
     }
   }
 
-  return items.sort(sortTodayItems).slice(0, MAX_DESTACADOS_TODAY);
+  return items.sort(sortDestacadosBySoonest).slice(0, MAX_DESTACADOS_TODAY);
 }
 
 /** Esta semana: Champions, estrenos, series seguidas y reglas editoriales. */
@@ -216,7 +221,7 @@ export function pickWeekDestacados(
     if (matchesFollowedSeries(event)) add(event);
   }
 
-  return items.sort(sortWeekItems).slice(0, MAX_DESTACADOS_WEEK);
+  return items.sort(sortDestacadosBySoonest).slice(0, MAX_DESTACADOS_WEEK);
 }
 
 /** @deprecated Usar pickTodayDestacados + pickWeekDestacados */

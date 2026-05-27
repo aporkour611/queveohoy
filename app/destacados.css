@@ -72,6 +72,100 @@
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 4px;
+}
+
+.qvh-destacados-carousel {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.qvh-destacados-carousel .qvh-destacados-scroll {
+  flex: 1;
+  min-width: 0;
+}
+
+.qvh-destacados-nav {
+  flex-shrink: 0;
+  align-self: center;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--qvh-border);
+  border-radius: 999px;
+  background: var(--qvh-bg-panel);
+  color: var(--qvh-text);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.qvh-destacados-nav:hover:not(:disabled) {
+  transform: scale(1.05);
+  border-color: rgba(93, 95, 239, 0.55);
+  background: rgba(93, 95, 239, 0.12);
+}
+
+.qvh-destacados-nav:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.qvh-destacados-nav-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.qvh-destacados-nav-prev {
+  margin-right: -4px;
+}
+
+.qvh-destacados-nav-next {
+  margin-left: -4px;
+}
+
+@media (max-width: 520px) {
+  .qvh-destacados-carousel {
+    position: relative;
+  }
+
+  .qvh-destacados-nav {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    background: rgba(16, 16, 21, 0.88);
+    backdrop-filter: blur(6px);
+  }
+
+  .qvh-destacados-nav:hover:not(:disabled) {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .qvh-destacados-nav-prev {
+    left: 4px;
+  }
+
+  .qvh-destacados-nav-next {
+    right: 4px;
+  }
+
+  .qvh-destacados-carousel .qvh-destacados-scroll {
+    padding-inline: 2px;
+  }
 }
 
 .qvh-destacados-scroll::-webkit-scrollbar {
@@ -80,6 +174,7 @@
 
 .qvh-spotlight-card {
   flex: 0 0 min(236px, 72vw);
+  scroll-snap-align: start;
   border-radius: 12px;
   overflow: hidden;
   background: var(--qvh-bg-panel);

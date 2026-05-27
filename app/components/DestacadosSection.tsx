@@ -9,6 +9,7 @@ import {
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { FeaturedEventCard } from "./FeaturedEventCard";
+import { DestacadosCarousel } from "./DestacadosCarousel";
 
 type Props = {
   events: EventRow[];
@@ -44,7 +45,7 @@ function DestacadosRow({
         </div>
       </div>
 
-      <div className="qvh-destacados-scroll">
+      <DestacadosCarousel itemCount={items.length} ariaLabel={ariaLabel}>
         {items.map((event, index) => (
           <FeaturedEventCard
             key={event.id}
@@ -52,7 +53,7 @@ function DestacadosRow({
             priority={index < 2}
           />
         ))}
-      </div>
+      </DestacadosCarousel>
     </section>
   );
 }
