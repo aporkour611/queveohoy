@@ -5,13 +5,6 @@ type Props = {
   size?: "default" | "compact";
 };
 
-const REPEAT = 12;
-
-function stampText(kind: EventCardStampKind): string {
-  const word = kind === "final" ? "FINAL" : "ESTRENO";
-  return Array.from({ length: REPEAT }, () => word).join(" ");
-}
-
 export function EventCardStamp({ kind, size = "default" }: Props) {
   const label = kind === "final" ? "Final" : "Estreno";
 
@@ -21,9 +14,7 @@ export function EventCardStamp({ kind, size = "default" }: Props) {
       aria-label={label}
       role="img"
     >
-      <div className="qvh-event-stamp-band">
-        <span className="qvh-event-stamp-track">{stampText(kind)}</span>
-      </div>
+      <span className="qvh-event-stamp-label">{label}</span>
     </div>
   );
 }
