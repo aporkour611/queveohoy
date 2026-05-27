@@ -1,8 +1,15 @@
 /* ── Destacados (spotlight cards) ── */
 .qvh-destacados-stack {
-  margin: 0 0 16px;
-  padding: 0 0 4px;
+  margin: 8px 0 16px;
+  padding: 4px 0 4px;
   border-bottom: 1px solid var(--qvh-border);
+}
+
+@media (min-width: 768px) {
+  .qvh-destacados-stack {
+    margin-top: 12px;
+    padding-top: 8px;
+  }
 }
 
 .qvh-destacados {
@@ -32,6 +39,7 @@
   justify-content: space-between;
   margin-bottom: 14px;
   gap: 12px;
+  scroll-margin-top: calc(var(--qvh-navbar-h) + 12px);
 }
 
 .qvh-destacados-brand {
@@ -124,17 +132,17 @@
 }
 
 .qvh-destacados-page {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
   gap: 12px;
   flex: 1;
   min-width: 0;
 }
 
 .qvh-destacados-page .qvh-spotlight-card {
-  flex: unset;
-  width: 100%;
-  min-width: 0;
+  flex: 1 1 0;
+  min-width: min(200px, 30%);
+  max-width: 100%;
+  width: auto;
 }
 
 .qvh-destacados-carousel {

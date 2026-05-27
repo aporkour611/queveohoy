@@ -24,13 +24,20 @@
   --qvh-text-on-light: #14141c;
   --qvh-border: #2a2a38;
   --qvh-border-light: #e0e0e8;
-  --qvh-navbar-h: 60px;
+  --qvh-navbar-accent-h: 3px;
+  --qvh-navbar-padding-y: 12px;
+  --qvh-navbar-content-h: 68px;
+  --qvh-navbar-h: calc(
+    var(--qvh-navbar-accent-h) + var(--qvh-navbar-padding-y) * 2 +
+      var(--qvh-navbar-content-h)
+  );
   --qvh-font-display: var(--font-barlow-condensed), var(--qvh-font-display);
 }
 
 @media (max-width: 640px) {
   :root {
-    --qvh-navbar-h: 64px;
+    --qvh-navbar-padding-y: 10px;
+    --qvh-navbar-content-h: 52px;
   }
 }
 
