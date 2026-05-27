@@ -6,12 +6,13 @@ import {
   COOKIE_CONSENT_EVENT,
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
+import { deferClientStateUpdate } from "../lib/defer-client-state";
 
 export function Analytics() {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    setEnabled(hasPreferenceConsent());
+    deferClientStateUpdate(() => setEnabled(hasPreferenceConsent()));
 
     function sync() {
       setEnabled(hasPreferenceConsent());

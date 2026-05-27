@@ -30,18 +30,19 @@ function formatUpdatedLabel(iso: string): string {
 
 export function HomeCalendarHero({ fetchedAt, stats }: Props) {
   const { timeZone } = useTimezone();
-  const [updatedLabel, setUpdatedLabel] = useState<string | null>(null);
+  const [, setTick] = useState(0);
 
   const today = buildDisplayDays(timeZone, FEED_DAY_COUNT)[0];
 
   useEffect(() => {
     if (!fetchedAt) return;
-    setUpdatedLabel(formatUpdatedLabel(fetchedAt));
     const timer = window.setInterval(() => {
-      setUpdatedLabel(formatUpdatedLabel(fetchedAt));
+      setTick((value) => value + 1);
     }, 60_000);
     return () => window.clearInterval(timer);
   }, [fetchedAt]);
+
+  const updatedLabel = fetchedAt ? formatUpdatedLabel(fetchedAt) : null;
 
   const eventLabel =
     stats.total === 0

@@ -13,6 +13,7 @@ import {
   COOKIE_CONSENT_EVENT,
   hasPreferenceConsent,
 } from "./cookie-consent";
+import { deferClientStateUpdate } from "./defer-client-state";
 import {
   DEFAULT_TIMEZONE_PREFS,
   LATAM_COUNTRIES,
@@ -43,13 +44,15 @@ export function TimezoneProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (hasPreferenceConsent()) {
-      try {
-        const saved = localStorage.getItem(TIMEZONE_STORAGE_KEY);
-        if (saved) setPrefs(parseTimezonePrefs(JSON.parse(saved)));
-      } catch {}
-    }
-    setReady(true);
+    deferClientStateUpdate(() => {
+      if (hasPreferenceConsent()) {
+        try {
+          const saved = localStorage.getItem(TIMEZONE_STORAGE_KEY);
+          if (saved) setPrefs(parseTimezonePrefs(JSON.parse(saved)));
+        } catch {}
+      }
+      setReady(true);
+    });
   }, []);
 
   useEffect(() => {

@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { isCronAuthorized } from "@/app/lib/admin-auth";
 import { supabase } from "@/app/lib/supabase";
 
+type SportsDbEvent = {
+  strEvent?: string;
+  strTime?: string;
+  strLeague?: string;
+};
+
 export async function GET(request: Request) {
   if (!isCronAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -29,10 +35,10 @@ export async function GET(request: Request) {
         "&s=Soccer"
     );
 
-    const json = await res.json();
+    const json = (await res.json()) as { events?: SportsDbEvent[] };
     const rawEvents = json?.events || [];
 
-    const events = rawEvents.slice(0, 8).map((e: any, index: number) => ({
+    const events = rawEvents.slice(0, 8).map((e: SportsDbEvent, index: number) => ({
       title: e.strEvent,
       time: e.strTime || "Sin hora",
       category: "Fútbol",
@@ -70,10 +76,10 @@ export async function GET(request: Request) {
       message: "Engine v2 OK",
       count: events.length,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return Response.json({
       ok: false,
-      error: err.message,
+      error: err instanceof Error ? err.message : String(err),
     });
   }
 }

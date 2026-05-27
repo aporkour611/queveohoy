@@ -2,10 +2,7 @@ import { getMadridWeekDates } from "./madrid-time";
 import {
   BUZZ_SUFFIX,
   LOGO_PREFIX,
-  isSeasonPremiereEvent,
   parseTmdbBuzzScore,
-  parseTmdbEpisodeMeta,
-  parseTmdbPoster,
 } from "./tmdb-client";
 
 export {

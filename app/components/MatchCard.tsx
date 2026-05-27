@@ -15,7 +15,7 @@ import {
 } from "../lib/thesportsdb-ufc-client";
 import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
-import { parseChannels, isFreeTvChannel, resolveChannelsForEvent } from "../lib/channels";
+import { isFreeTvChannel, resolveChannelsForEvent } from "../lib/channels";
 import { partidoPath } from "../lib/event-slug";
 import Link from "next/link";
 import { competitionMatchClass } from "../lib/competition-style";

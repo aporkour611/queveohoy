@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useLazyInView } from "../lib/use-lazy-in-view";
+import type { ReactNode } from "react";
 
 type Props = {
   children: ReactNode;
@@ -18,41 +19,15 @@ export function LazyMount({
   rootMargin = "480px 0px",
   eager = false,
 }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(eager);
-
-  useEffect(() => {
-    if (eager || visible) return;
-
-    const el = ref.current;
-    if (!el) return;
-
-    if (typeof IntersectionObserver === "undefined") {
-      setVisible(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [eager, visible]);
+  const { ref, inView } = useLazyInView({ eager, rootMargin });
 
   return (
     <div
       ref={ref}
-      className={visible ? undefined : "fh-lazy-mount"}
-      style={visible ? undefined : { minHeight }}
+      className={inView ? undefined : "fh-lazy-mount"}
+      style={inView ? undefined : { minHeight }}
     >
-      {visible ? children : null}
+      {inView ? children : null}
     </div>
   );
 }

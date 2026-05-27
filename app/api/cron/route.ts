@@ -6,8 +6,9 @@ import {
   needsCrestEnrichment,
   prepareEventsForImport,
   shouldPurgeEvent,
+  type CronEventInput,
 } from "@/app/lib/cron-events";
-import { dedupeEvents, findDuplicateIdsToRemove } from "@/app/lib/dedupe-events";
+import { dedupeEvents, findDuplicateIdsToRemove, type EventRecord } from "@/app/lib/dedupe-events";
 import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
@@ -42,7 +43,16 @@ const CRON_ROW_SELECT =
   "id, title, date, time, sport, home_team, away_team, external_id, source, platform, competition";
 const MAX_CREST_ENRICH = 20;
 
-async function upsertEvents(events: any[]) {
+type FootballMatch = {
+  id: number;
+  utcDate: string;
+  stage?: string;
+  homeTeam: { id: number; name: string; shortName?: string };
+  awayTeam: { id: number; name: string; shortName?: string };
+  competition: { name: string };
+};
+
+async function upsertEvents(events: CronEventInput[]) {
   if (!events.length) return null;
   const { error } = await getSupabase()
     .from("events")
@@ -58,7 +68,7 @@ async function fetchFootball() {
   const dates = getWeekDates();
   const dateFrom = dates[0];
   const dateTo = dates[6];
-  const events: any[] = [];
+  const events: CronEventInput[] = [];
   const errors: string[] = [];
   const token = process.env.FOOTBALL_DATA_API_KEY?.trim();
 
@@ -68,7 +78,7 @@ async function fetchFootball() {
 
   const results = await Promise.allSettled(
     FOOTBALL_COMPETITIONS.map(async (comp) => {
-      const result = await fetchJsonWithTimeout<{ matches?: any[]; message?: string }>(
+      const result = await fetchJsonWithTimeout<{ matches?: FootballMatch[]; message?: string }>(
         `https://api.football-data.org/v4/competitions/${comp}/matches?dateFrom=${dateFrom}&dateTo=${dateTo}`,
         { headers: { "X-Auth-Token": token } },
         18_000
@@ -108,7 +118,7 @@ async function fetchFootball() {
     }
   }
 
-  const unique = dedupeEvents(events);
+  const unique = dedupeEvents(events as EventRecord[]);
   const prepared = await prepareEventsForImport(unique);
   const upsertError = await upsertEvents(prepared);
   if (upsertError) errors.push(`upsert: ${upsertError}`);
@@ -118,7 +128,7 @@ async function fetchFootball() {
 
 async function fetchF1(): Promise<CountResult> {
   try {
-    const result = await fetchJsonWithTimeout<{ MRData?: { RaceTable?: { Races?: any[] } } }>(
+    const result = await fetchJsonWithTimeout<{ MRData?: { RaceTable?: { Races?: ErgastRace[] } } }>(
       "https://api.jolpi.ca/ergast/f1/2026/races.json",
       undefined,
       15_000
@@ -129,7 +139,7 @@ async function fetchF1(): Promise<CountResult> {
 
     const races = result.data.MRData?.RaceTable?.Races || [];
     const dates = getWeekDates();
-    const events: any[] = [];
+    const events: CronEventInput[] = [];
 
     for (const race of races) {
       const raceMadrid = ergastToMadrid(race.date, race.time);
@@ -232,6 +242,27 @@ async function fetchRealityTv(): Promise<CountResult> {
   }
 }
 
+type ErgastRace = {
+  season: string;
+  round: string;
+  raceName: string;
+  date: string;
+  time?: string;
+  Qualifying?: { date: string; time?: string };
+};
+
+type PandaScoreOpponent = Parameters<typeof pandascoreTeamLogo>[0] & {
+  name?: string;
+};
+
+type PandaScoreMatch = {
+  id: number;
+  begin_at?: string;
+  opponents?: Array<{ opponent?: PandaScoreOpponent }>;
+  league?: { name?: string };
+  serie?: { full_name?: string };
+};
+
 async function fetchEsports(): Promise<CountResult> {
   const games = [
     { slug: "cs-go", sport: "csgo" },
@@ -241,7 +272,7 @@ async function fetchEsports(): Promise<CountResult> {
   ];
 
   const { dates, from: dateFrom, to: dateTo } = madridWeekUtcRange(7);
-  const events: any[] = [];
+  const events: CronEventInput[] = [];
   const errors: string[] = [];
   const token = process.env.PANDASCORE_API_KEY?.trim();
 
@@ -251,7 +282,7 @@ async function fetchEsports(): Promise<CountResult> {
 
   const results = await Promise.allSettled(
     games.map(async (game) => {
-      const result = await fetchJsonWithTimeout<any[]>(
+      const result = await fetchJsonWithTimeout<PandaScoreMatch[]>(
         `https://api.pandascore.co/matches?filter[videogame]=${game.slug}&range[begin_at]=${dateFrom},${dateTo}&per_page=50`,
         { headers: { Authorization: `Bearer ${token}` } },
         18_000
@@ -264,7 +295,7 @@ async function fetchEsports(): Promise<CountResult> {
 
       for (const match of result.data) {
         if (!match.begin_at) continue;
-        const { date, time } = splitToMadrid(parseUtcIso(match.begin_at));
+        const { date, time } = splitToMadrid(parseUtcIso(String(match.begin_at)));
         if (!dates.includes(date)) continue;
 
         const team1 = match.opponents?.[0]?.opponent?.name || "TBD";
@@ -295,7 +326,7 @@ async function fetchEsports(): Promise<CountResult> {
     }
   }
 
-  const unique = dedupeEvents(events);
+  const unique = dedupeEvents(events as EventRecord[]);
   const prepared = await prepareEventsForImport(unique);
   const upsertError = await upsertEvents(prepared);
   if (upsertError) errors.push(`upsert: ${upsertError}`);

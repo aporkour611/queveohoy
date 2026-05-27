@@ -15,12 +15,9 @@ export function CookieConsentBanner() {
   const [choice, setChoice] = useState<CookieConsentChoice | null>(() =>
     typeof window === "undefined" ? null : readCookieConsent()
   );
-  const [ready, setReady] = useState(false);
+  const [ready] = useState(() => typeof window !== "undefined");
 
   useEffect(() => {
-    setChoice(readCookieConsent());
-    setReady(true);
-
     function sync() {
       setChoice(readCookieConsent());
     }
