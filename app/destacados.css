@@ -81,6 +81,12 @@
 }
 
 .qvh-remote-poster {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.qvh-remote-poster-img {
   object-fit: cover;
   object-position: center top;
 }

@@ -42,6 +42,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
             f1Name={card.homeName}
             f2Name={card.awayName}
             size="spotlight"
+            eager={priority}
           />
         ) : card.showTeamDuel ? (
           <div className="qvh-spotlight-duel" aria-hidden>
@@ -51,6 +52,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
                 name={card.homeName}
                 size={48}
                 className="qvh-spotlight-crest"
+                eager={priority}
               />
               <span className="qvh-spotlight-duel-name">{card.homeName}</span>
             </div>
@@ -61,6 +63,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
                 name={card.awayName}
                 size={48}
                 className="qvh-spotlight-crest"
+                eager={priority}
               />
               <span className="qvh-spotlight-duel-name">{card.awayName}</span>
             </div>

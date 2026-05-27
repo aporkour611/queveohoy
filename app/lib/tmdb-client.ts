@@ -1,13 +1,17 @@
 const LOGO_PREFIX = "tmdb:poster:";
 const BUZZ_SUFFIX = "|buzz:";
 
-export function parseTmdbPoster(source?: string | null): string | null {
+export function parseTmdbPoster(
+  source?: string | null,
+  size: "thumb" | "card" = "card"
+): string | null {
   const raw = source?.split("|")[0];
   if (!raw?.startsWith(LOGO_PREFIX)) return null;
   const path = raw.slice(LOGO_PREFIX.length).trim();
   if (!path) return null;
   if (path.startsWith("http")) return path;
-  return `https://image.tmdb.org/t/p/w185${path.startsWith("/") ? path : `/${path}`}`;
+  const width = size === "thumb" ? "w92" : "w185";
+  return `https://image.tmdb.org/t/p/${width}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
 export function parseTmdbEpisodeMeta(externalId?: string | null) {

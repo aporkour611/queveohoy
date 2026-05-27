@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useMemo, useState } from "react";
 import { teamInitials } from "../lib/football";
 import { normalizeRemoteImageUrl, safeRemoteImageUrl } from "../lib/remote-image";
+import { useLazyInView } from "../lib/use-lazy-in-view";
 
 type Props = {
   src?: string | null;
@@ -11,6 +11,8 @@ type Props = {
   name?: string | null;
   size?: number;
   className?: string;
+  /** Escudos above-the-fold (destacados). */
+  eager?: boolean;
 };
 
 function crestSrc(src: string, attempt: number): string {
@@ -25,6 +27,7 @@ export function TeamCrest({
   name,
   size = 50,
   className,
+  eager = false,
 }: Props) {
   const urls = useMemo(() => {
     const list = srcList?.length ? srcList : src ? [src] : [];
@@ -37,6 +40,11 @@ export function TeamCrest({
     ];
   }, [src, srcList]);
 
+  const { ref, inView } = useLazyInView({
+    eager,
+    rootMargin: eager ? "0px" : "160px 0px",
+  });
+
   const [urlIndex, setUrlIndex] = useState(0);
   const [retry, setRetry] = useState(0);
   const [failed, setFailed] = useState(false);
@@ -47,7 +55,7 @@ export function TeamCrest({
 
   const currentUrl = urls[urlIndex];
   const safeUrl = safeRemoteImageUrl(currentUrl);
-  const showPlaceholder = !safeUrl || failed;
+  const canLoadImage = Boolean(safeUrl && !failed && (eager || inView));
   const wrapperClass = ["fh-team-crest", className].filter(Boolean).join(" ");
 
   function handleError() {
@@ -67,11 +75,27 @@ export function TeamCrest({
 
   return (
     <div
+      ref={ref}
       className={wrapperClass}
       style={{ width: size, height: size }}
       title={name ?? undefined}
     >
-      {showPlaceholder ? (
+      {canLoadImage ? (
+        // Escudos pequeños: img nativa lazy (sin pasar por /_next/image).
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={`${urlIndex}-${retry}`}
+          src={crestSrc(safeUrl!, retry)}
+          alt=""
+          width={size}
+          height={size}
+          className="fh-team-crest-img"
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={eager ? "high" : "low"}
+          onError={handleError}
+        />
+      ) : (
         <div
           className="fh-team-crest-placeholder"
           style={{
@@ -81,18 +105,6 @@ export function TeamCrest({
         >
           {initials}
         </div>
-      ) : (
-        <Image
-          key={`${urlIndex}-${retry}`}
-          src={crestSrc(safeUrl, retry)}
-          alt=""
-          width={size}
-          height={size}
-          className="fh-team-crest-img"
-          sizes={`${size}px`}
-          loading="lazy"
-          onError={handleError}
-        />
       )}
     </div>
   );

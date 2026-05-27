@@ -156,7 +156,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         : null;
   const posterUrl = isUfc
     ? parseUfcImage(event.source)
-    : parseTmdbPoster(event.source);
+    : parseTmdbPoster(event.source, "thumb");
 
   const esportsLogos = parseEsportsTeamLogos(event.source);
   const footballIds =

@@ -223,16 +223,22 @@
 }
 
 .qvh-media-card-image,
-.qvh-remote-poster {
+.qvh-remote-poster-img {
   object-fit: cover;
   object-position: center top;
+}
+
+.qvh-remote-poster {
+  position: absolute;
+  inset: 0;
 }
 
 .qvh-media-card-image {
   transition: transform 0.7s ease;
 }
 
-.qvh-media-card-tilt:hover .qvh-media-card-image {
+.qvh-media-card-tilt:hover .qvh-media-card-image,
+.qvh-media-card-tilt:hover .qvh-remote-poster-img {
   transform: scale(1.07);
 }
 

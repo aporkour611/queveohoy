@@ -47,7 +47,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   const sport =
     event.sport === "cine" ? "cine" : event.sport === "tv" ? "tv" : "series";
   const title = event.title?.trim() || "Sin título";
-  const posterUrl = parseTmdbPoster(event.source);
+  const posterUrl = parseTmdbPoster(event.source, "thumb");
   const channels = parseChannels(event.platform);
   const platform = resolveMediaPlatform(channels[0]);
   const episodeMeta =
@@ -83,7 +83,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
             <RemotePoster
               src={posterUrl}
               className="qvh-media-card-image qvh-remote-poster"
-              sizes="(max-width: 768px) 45vw, 180px"
+              sizes="(max-width: 768px) 45vw, 160px"
             />
           ) : (
             <div className="qvh-media-card-fallback" aria-hidden />
