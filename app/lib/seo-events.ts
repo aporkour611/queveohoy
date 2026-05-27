@@ -21,6 +21,12 @@ export function eventStartIso(date?: string, time?: string): string | undefined 
   return `${date}T${t}:00`;
 }
 
+export function eventStartIsoForEvent(event: EventRow): string | undefined {
+  if (!event.date) return undefined;
+  if (event.sport === "cine") return event.date;
+  return eventStartIso(event.date, event.time);
+}
+
 export function eventMetaParts(event: EventRow): string[] {
   return [
     event.competition?.split(" · ")[0] ?? null,

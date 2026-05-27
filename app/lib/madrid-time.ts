@@ -132,3 +132,16 @@ export function displayTime(time?: string | null): string {
   if (!time?.trim()) return "—";
   return time.slice(0, 5);
 }
+
+/** Estrenos en cines no tienen hora concreta; series y deportes sí. */
+export function showEventTime(sport?: string | null): boolean {
+  return sport !== "cine";
+}
+
+export function eventDisplayTime(event: {
+  sport?: string | null;
+  time?: string | null;
+}): string {
+  if (!showEventTime(event.sport)) return "";
+  return displayTime(event.time);
+}

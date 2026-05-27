@@ -6,7 +6,7 @@ import type { EventRow } from "./types";
 import { filterEventsByQuery } from "../lib/event-search";
 import { partidoPath } from "../lib/event-slug";
 import { eventLabel } from "../lib/seo-events";
-import { displayTime } from "../lib/madrid-time";
+import { eventDisplayTime } from "../lib/madrid-time";
 import { resolveChannelsForEvent } from "../lib/channels";
 
 type Props = {
@@ -53,6 +53,7 @@ export function EventSearch({ events, onPickDay, onQueryChange }: Props) {
           {results.slice(0, 12).map((event) => {
             const channels = resolveChannelsForEvent(event);
             const channel = channels[0];
+            const timeLabel = eventDisplayTime(event);
             return (
               <li key={event.id}>
                 <Link
@@ -67,7 +68,7 @@ export function EventSearch({ events, onPickDay, onQueryChange }: Props) {
                   </span>
                   <span className="qvh-event-search-hit-meta">
                     {event.competition?.split(" · ")[0]}
-                    {event.time ? ` · ${displayTime(event.time)}` : ""}
+                    {timeLabel ? ` · ${timeLabel}` : ""}
                     {channel ? ` · ${channel}` : ""}
                   </span>
                 </Link>

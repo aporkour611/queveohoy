@@ -127,7 +127,9 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
         </span>
         <div className="qvh-spotlight-when">
           <span className="qvh-spotlight-date">{card.dateLabel}</span>
-          <span className="qvh-spotlight-time">{card.time}</span>
+          {card.time ? (
+            <span className="qvh-spotlight-time">{card.time}</span>
+          ) : null}
         </div>
       </div>
 

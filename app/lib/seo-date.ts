@@ -1,5 +1,5 @@
 import type { EventRow } from "../components/types";
-import { displayTime } from "./madrid-time";
+import { eventDisplayTime } from "./madrid-time";
 import { eventLabel } from "./seo-events";
 import {
   dayTitleInZone,
@@ -103,7 +103,7 @@ export function buildDateMetadataDescription(
     .map((event) => {
       const parts = [
         eventLabel(event),
-        event.time ? displayTime(event.time) : null,
+        eventDisplayTime(event) || null,
         event.platform?.split(",")[0]?.trim(),
       ].filter(Boolean);
       return parts.join(" ");

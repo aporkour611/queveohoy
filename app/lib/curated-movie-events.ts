@@ -1,7 +1,22 @@
 import type { EventRow } from "../components/types";
 import { addDaysToDateKey } from "./madrid-time";
-import { CURATED_MOVIES } from "./movies-curated";
+import { CURATED_MOVIES, type CuratedMovie } from "./movies-curated";
 import { encodeTmdbSource } from "./tmdb";
+import { parseTmdbBuzzScore, parseTmdbPoster } from "./tmdb-client";
+
+function curatedMovieSource(movie: CuratedMovie, existing?: EventRow): string {
+  const buzz = parseTmdbBuzzScore(existing?.source) || movie.priority;
+
+  if (movie.posterPath) {
+    return encodeTmdbSource(movie.posterPath, buzz);
+  }
+
+  if (existing?.source?.trim() && parseTmdbPoster(existing.source, "poster")) {
+    return existing.source.trim();
+  }
+
+  return encodeTmdbSource(null, buzz);
+}
 
 const CURATED_VISIBLE_AHEAD_DAYS = 14;
 const CURATED_VISIBLE_BEHIND_DAYS = 21;
@@ -23,7 +38,21 @@ export function mergeCuratedMovieEvents(
 
   for (const movie of CURATED_MOVIES) {
     const externalId = `tmdb_movie_${movie.tmdbId}`;
-    if (merged.has(externalId)) continue;
+    const existing = merged.get(externalId);
+
+    if (existing) {
+      merged.set(externalId, {
+        ...existing,
+        title: movie.title,
+        date: movie.releaseDate,
+        time: undefined,
+        sport: "cine",
+        competition: movie.competition ?? existing.competition ?? "Estreno top · Cines",
+        platform: existing.platform?.trim() || "Cines",
+        source: curatedMovieSource(movie, existing),
+      });
+      continue;
+    }
 
     if (movie.releaseDate < graceStart || movie.releaseDate > visibleUntil) {
       continue;
@@ -34,13 +63,10 @@ export function mergeCuratedMovieEvents(
       external_id: externalId,
       title: movie.title,
       date: movie.releaseDate,
-      time: "21:00",
       sport: "cine",
       competition: movie.competition ?? "Estreno top · Cines",
       platform: "Cines",
-      source: movie.posterPath
-        ? encodeTmdbSource(movie.posterPath, movie.priority)
-        : encodeTmdbSource(null, movie.priority),
+      source: curatedMovieSource(movie),
     });
   }
 

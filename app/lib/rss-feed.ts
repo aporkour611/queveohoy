@@ -1,5 +1,5 @@
 import type { EventRow } from "../components/types";
-import { displayTime } from "./madrid-time";
+import { eventDisplayTime } from "./madrid-time";
 import { eventLabel } from "./seo-events";
 import {
   buildDisplayDays,
@@ -22,7 +22,7 @@ function escapeXml(value: string): string {
 function eventDescription(event: EventRow): string {
   const parts = [
     event.competition,
-    event.time ? displayTime(event.time) : null,
+    eventDisplayTime(event) || null,
     event.platform,
   ].filter(Boolean);
   return parts.join(" · ");

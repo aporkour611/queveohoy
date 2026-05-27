@@ -1,5 +1,5 @@
 import type { EventRow } from "../components/types";
-import { displayTime } from "./madrid-time";
+import { eventDisplayTime } from "./madrid-time";
 import {
   filterEventsInWeek,
   mapEventsToTimezone,
@@ -15,7 +15,7 @@ import {
 } from "./seo-date";
 import {
   eventLabel,
-  eventStartIso,
+  eventStartIsoForEvent,
   schemaEventType,
 } from "./seo-events";
 import { eventSlug } from "./event-slug";
@@ -29,7 +29,7 @@ import {
 
 function buildSchemaEvent(event: EventRow, index: number) {
   const name = eventLabel(event);
-  const startDate = eventStartIso(event.date, event.time);
+  const startDate = eventStartIsoForEvent(event);
   const type = schemaEventType(event.sport);
   const channel = event.platform?.split(",")[0]?.trim();
 
@@ -368,7 +368,7 @@ export function buildHomeMetadataDescription(events: EventRow[]): string {
   const samples = todayEvents
     .map((event) => {
       const label = eventLabel(event);
-      const time = event.time ? displayTime(event.time) : "";
+      const time = eventDisplayTime(event);
       const channel = event.platform?.split(",")[0]?.trim();
       return [label, time, channel].filter(Boolean).join(" ");
     })
@@ -407,7 +407,7 @@ export function buildPartidoJsonLd(event: EventRow) {
   const slug = eventSlug(event);
   const pageUrl = `${siteUrl}/partido/${slug}`;
   const name = eventLabel(event);
-  const startDate = eventStartIso(event.date, event.time);
+  const startDate = eventStartIsoForEvent(event);
   const channel = event.platform?.split(",")[0]?.trim();
 
   return {

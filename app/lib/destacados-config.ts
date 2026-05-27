@@ -15,6 +15,10 @@ import {
   mergeCuratedMovieEvents,
 } from "./curated-movie-events";
 import {
+  isFlagshipSpanishTvEvent,
+  mergeCuratedSpanishTvEvents,
+} from "./curated-tv-events";
+import {
   isSpanishTvFlagship,
   SPANISH_TV_TITLE_PATTERNS,
 } from "./spanish-tv-curated";
@@ -34,7 +38,7 @@ export const DESTACADOS_RULES: DestacadoRule[] = [
   {
     id: "el-drama",
     externalId: "tmdb_movie_1325734",
-    titleMatch: /\bdrama\b/i,
+    titleMatch: /^(the\s+)?drama\b|^el\s+drama\b/i,
   },
   {
     id: "psg-arsenal",
@@ -69,6 +73,18 @@ export type PickCuratedDestacadosOptions = {
   /** Evita duplicar en la fila de semana lo ya mostrado hoy. */
   excludeIds?: Set<number>;
 };
+
+function mergeDestacadosEvents(
+  events: EventRow[],
+  todayKey: string,
+  windowDays: number
+): EventRow[] {
+  return mergeCuratedSpanishTvEvents(
+    mergeCuratedMovieEvents(events, todayKey),
+    todayKey,
+    windowDays
+  );
+}
 
 export { isChampionsFinal, isDestacadoFinal, isDestacadoPremiere } from "./event-card-stamp";
 
@@ -174,9 +190,10 @@ function findEditorialMatch(
   rule: DestacadoRule,
   excludeIds: Set<number>
 ): EventRow | undefined {
-  return events.find(
-    (event) => !excludeIds.has(event.id) && matchesRule(event, rule)
-  );
+  return events.find((event) => {
+    if (excludeIds.has(event.id) && !isCuratedMovieEvent(event)) return false;
+    return matchesRule(event, rule);
+  });
 }
 
 /** Qué veo hoy: TV, reality y relleno del día. */
@@ -185,8 +202,8 @@ export function pickTodayDestacados(
   options: PickCuratedDestacadosOptions = {}
 ): EventRow[] {
   const today = options.todayKey ?? toMadridDateKey(new Date());
-  const mergedEvents = mergeCuratedMovieEvents(events, today);
   const windowDays = options.windowDays ?? 7;
+  const mergedEvents = mergeDestacadosEvents(events, today, windowDays);
   const week = new Set(getMadridWeekDates(windowDays));
   const todayPool = mergedEvents.filter(
     (e) => e.date === today && e.date && week.has(e.date)
@@ -242,44 +259,62 @@ export function pickWeekDestacados(
   const excludeIds = options.excludeIds ?? new Set<number>();
   const todayKey = options.todayKey ?? toMadridDateKey(new Date());
   const windowDays = options.windowDays ?? 7;
-  const mergedEvents = mergeCuratedMovieEvents(events, todayKey);
+  const mergedEvents = mergeDestacadosEvents(events, todayKey, windowDays);
   const pool = weekPoolFor(mergedEvents, todayKey, windowDays, excludeIds);
 
   const items: EventRow[] = [];
   const seen = new Set<number>();
 
-  const add = (event: EventRow) => {
+  const pinned: EventRow[] = [];
+  const rest: EventRow[] = [];
+
+  const addPinned = (event: EventRow) => {
+    if (seen.has(event.id)) return;
+    if (excludeIds.has(event.id) && !isCuratedMovieEvent(event)) return;
+    seen.add(event.id);
+    pinned.push(event);
+  };
+
+  const addRest = (event: EventRow) => {
     if (seen.has(event.id) || excludeIds.has(event.id)) return;
     seen.add(event.id);
-    items.push(event);
+    rest.push(event);
   };
 
   for (const rule of DESTACADOS_RULES) {
     const match =
       findEditorialMatch(pool, rule, excludeIds) ??
       findEditorialMatch(mergedEvents, rule, excludeIds);
-    if (match) add(match);
+    if (match) addPinned(match);
   }
 
   for (const event of pool) {
     if (isCuratedMovieEvent(event) && isUpcomingCuratedMovie(event, todayKey)) {
-      add(event);
+      addPinned(event);
     }
   }
 
   for (const event of pool) {
-    if (isDestacadoFinal(event)) add(event);
+    if (isDestacadoFinal(event)) addRest(event);
   }
 
   for (const event of pool) {
-    if (isDestacadoPremiere(event)) add(event);
+    if (isDestacadoPremiere(event)) addRest(event);
   }
 
   for (const event of pool) {
-    if (matchesFollowedSeries(event)) add(event);
+    if (matchesFollowedSeries(event)) addRest(event);
   }
 
-  return items.sort(sortDestacadosBySoonest).slice(0, MAX_DESTACADOS_WEEK);
+  for (const event of pool) {
+    if (event.date === todayKey) continue;
+    if (isFlagshipSpanishTvEvent(event)) addRest(event);
+  }
+
+  return [
+    ...pinned,
+    ...rest.sort(sortDestacadosBySoonest),
+  ].slice(0, MAX_DESTACADOS_WEEK);
 }
 
 /** @deprecated Usar pickTodayDestacados + pickWeekDestacados */

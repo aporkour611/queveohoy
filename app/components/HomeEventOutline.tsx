@@ -8,7 +8,7 @@ import {
 } from "../lib/timezone";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { pickHomePageEvents } from "../lib/featured";
-import { displayTime } from "../lib/madrid-time";
+import { eventDisplayTime } from "../lib/madrid-time";
 import { eventLabel } from "../lib/seo-events";
 import { partidosHoyDatePath } from "../lib/seo-date";
 import { hubLinkForEvent } from "./SeoHubLinks";
@@ -16,7 +16,7 @@ import { hubLinkForEvent } from "./SeoHubLinks";
 function eventMeta(event: EventRow): string {
   const parts = [
     event.competition?.split(" · ")[0],
-    event.time ? displayTime(event.time) : null,
+    eventDisplayTime(event) || null,
     event.platform?.split(",")[0]?.trim(),
   ].filter(Boolean);
   return parts.join(" · ");

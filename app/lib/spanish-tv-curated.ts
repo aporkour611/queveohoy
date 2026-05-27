@@ -20,6 +20,8 @@ export type SpanishTvShow = {
   tmdbId?: number;
   /** Hora habitual de emisión en península (HH:MM). */
   airTime?: string;
+  /** Días de emisión recurrentes: 1 = lunes … 7 = domingo (ISO). */
+  airWeekdays?: number[];
   /** Fechas fijas cuando no hay TMDB (eventos puntuales). */
   manualSlots?: SpanishTvManualSlot[];
 };
@@ -44,7 +46,8 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     platform: "Telecinco · Mitele",
     priority: 98,
     category: "reality",
-    airTime: "22:00",
+    airTime: "23:00",
+    airWeekdays: [1, 2],
   },
   {
     id: "velada-ibai",

@@ -32,7 +32,7 @@ export type TmdbCronEvent = {
   external_id: string;
   title: string;
   date: string;
-  time: string;
+  time?: string;
   sport: "cine" | "series";
   category: "cine";
   competition: string;
@@ -243,7 +243,6 @@ async function fetchTopMovies(
         external_id: `tmdb_movie_${movie.id}`,
         title,
         date: movie.release_date,
-        time: "21:00",
         sport: "cine",
         category: "cine",
         competition: trendingRank.has(movie.id)
@@ -294,7 +293,6 @@ async function fetchEditorialMovies(
       external_id: `tmdb_movie_${curated.tmdbId}`,
       title,
       date: curated.releaseDate,
-      time: "21:00",
       sport: "cine",
       category: "cine",
       competition:

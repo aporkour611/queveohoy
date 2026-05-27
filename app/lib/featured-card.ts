@@ -1,6 +1,6 @@
 import { sportLabel } from "./filter-config";
 import { parseChannels } from "./channels";
-import { displayTime, MADRID_TZ } from "./madrid-time";
+import { eventDisplayTime, MADRID_TZ } from "./madrid-time";
 import { formatDisplayDateLabel } from "./timezone";
 import {
   parseFootballTeamIds,
@@ -12,6 +12,8 @@ import { getTvShowCategory, tvCategoryLabel } from "./tv-show-category";
 import { displaySeriesSubtitle, displaySeriesTitle } from "./series-display";
 import { resolveEventStreamingPlatform } from "./media-platform";
 import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb-client";
+import { curatedMovieByExternalId } from "./movies-curated";
+import { encodeTmdbSource } from "./tmdb";
 import {
   parseUfcFighterImages,
   parseUfcKindFromSource,
@@ -70,6 +72,16 @@ export type SpotlightCardModel = {
 function mediaCover(event: EventRow, sport: string): SpotlightCover {
   const poster = parseTmdbPoster(event.source, "poster");
   if (poster) return remoteSpotlightCover(poster, "poster");
+
+  const curated = curatedMovieByExternalId(event.external_id);
+  if (curated?.posterPath) {
+    const curatedPoster = parseTmdbPoster(
+      encodeTmdbSource(curated.posterPath, curated.priority),
+      "poster"
+    );
+    if (curatedPoster) return remoteSpotlightCover(curatedPoster, "poster");
+  }
+
   return mediaFallbackCover(sport) ?? localSpotlightCover("/fallback/deportes.svg", "emblem");
 }
 
@@ -87,7 +99,7 @@ export function getSpotlightCardModel(
   const sport = event.sport ?? "";
   const date = event.date ?? "";
   const dateLabel = date ? formatDisplayDateLabel(date, timeZone) : "";
-  const time = displayTime(event.time);
+  const time = eventDisplayTime(event);
   const channels = parseChannels(event.platform).join(" · ");
 
   if (sport === "ufc") {

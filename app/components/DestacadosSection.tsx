@@ -84,7 +84,6 @@ export function DestacadosSection({ events }: Props) {
         items={weekFeatured}
         ariaLabel="Destacados de la semana"
         className="qvh-destacados-week"
-        layout="scroll"
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import type { EventRow } from "../components/types";
-import { displayTime } from "./madrid-time";
+import { eventDisplayTime } from "./madrid-time";
 import {
   buildDisplayDays,
   filterEventsInWeek,
@@ -248,7 +248,7 @@ export function buildHubMetadataDescription(
   const filtered = filterEventsForHub(events, hub);
   const samples = filtered.slice(0, 3).map((event) => {
     const label = eventLabel(event);
-    const time = event.time ? displayTime(event.time) : "";
+    const time = eventDisplayTime(event);
     const channel = event.platform?.split(",")[0]?.trim();
     return [label, time, channel].filter(Boolean).join(" ");
   });

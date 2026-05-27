@@ -1,6 +1,7 @@
-import { getMadridWeekDates } from "./madrid-time";
+import { getMadridWeekDates, addDaysToDateKey } from "./madrid-time";
 import type { SpanishTvShow } from "./spanish-tv-curated";
 import { SPANISH_TV_FLAGSHIP } from "./spanish-tv-curated";
+import { isoWeekdayFromDateKey } from "./curated-tv-events";
 import { encodeTmdbSource, getTmdbApiKey, tmdbBuzzScore } from "./tmdb";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
@@ -252,6 +253,58 @@ function buildManualEvents(
     }));
 }
 
+function fillWeekdayAirSlots(
+  curated: SpanishTvShow,
+  showId: number,
+  detail: ShowDetail,
+  item: DiscoverItem | SearchItem,
+  dateFrom: string,
+  dateTo: string,
+  existing: RealityCronEvent[]
+): RealityCronEvent[] {
+  if (!curated.airWeekdays?.length) return existing;
+
+  const byDate = new Map(existing.map((event) => [event.date, event]));
+  const filled = [...existing];
+
+  const season =
+    detail.next_episode_to_air?.season_number ??
+    detail.last_episode_to_air?.season_number ??
+    0;
+  const baseEpisode =
+    detail.next_episode_to_air?.episode_number ??
+    detail.last_episode_to_air?.episode_number ??
+    0;
+
+  let date = dateFrom;
+  let slotIndex = 0;
+
+  while (date <= dateTo) {
+    if (
+      curated.airWeekdays.includes(isoWeekdayFromDateKey(date)) &&
+      !byDate.has(date)
+    ) {
+      const episode = baseEpisode > 0 ? baseEpisode + slotIndex : 0;
+      filled.push(
+        buildRealityEvent(
+          showId,
+          detail,
+          item,
+          curated,
+          date,
+          season,
+          episode,
+          null
+        )
+      );
+      slotIndex += 1;
+    }
+    date = addDaysToDateKey(date, 1);
+  }
+
+  return filled;
+}
+
 async function fetchCuratedShowEvents(
   curated: SpanishTvShow,
   showId: number,
@@ -276,13 +329,31 @@ async function fetchCuratedShowEvents(
       item,
       curated
     );
-    if (weekEpisodes.length > 0) return weekEpisodes;
+    if (weekEpisodes.length > 0) {
+      return fillWeekdayAirSlots(
+        curated,
+        showId,
+        detail,
+        item,
+        dateFrom,
+        dateTo,
+        weekEpisodes
+      );
+    }
   }
 
   const next = eventFromNextEpisode(showId, detail, item, curated);
-  if (!next) return [];
-  if (next.date < dateFrom || next.date > dateTo) return [];
-  return [next];
+  const fallback =
+    !next || next.date < dateFrom || next.date > dateTo ? [] : [next];
+  return fillWeekdayAirSlots(
+    curated,
+    showId,
+    detail,
+    item,
+    dateFrom,
+    dateTo,
+    fallback
+  );
 }
 
 async function fetchCuratedSpanishTvEvents(

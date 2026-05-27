@@ -3,7 +3,7 @@
 import { memo, useMemo, useState } from "react";
 import { RemotePoster } from "./RemotePoster";
 import { buildEventDetails } from "../lib/event-details";
-import { displayTime } from "../lib/madrid-time";
+import { eventDisplayTime } from "../lib/madrid-time";
 import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 import {
   mediaBadgeForEvent,
@@ -58,7 +58,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   const dateLabel = event.date
     ? formatDisplayDateLabel(event.date, MADRID_TZ)
     : "";
-  const time = displayTime(event.time);
+  const time = eventDisplayTime(event);
   const badge = mediaBadgeForEvent(event, isSeasonPremiereEvent(event));
   const whenLabel = [dateLabel, time].filter(Boolean).join(" · ");
   const stamp = getEventCardStamp(event);
