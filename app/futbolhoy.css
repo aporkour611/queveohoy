@@ -638,6 +638,22 @@
   margin: 0;
 }
 
+.fh-home-more-link {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.fh-home-more-link a {
+  color: var(--qvh-accent, #7c3aed);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.fh-home-more-link a:hover {
+  text-decoration: underline;
+}
+
 .fh-matchday {
   margin-bottom: 30px;
 }

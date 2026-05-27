@@ -4,7 +4,7 @@ import { HomeTrafficHubs } from "./components/HomeTrafficHubs";
 import { HomePage } from "./components/HomePage";
 import { ShareTodayBar } from "./components/ShareTodayBar";
 import { HomeJsonLd } from "./components/HomeJsonLd";
-import { fetchFeedEvents } from "./lib/events-feed-server";
+import { fetchHomeFeedEvents } from "./lib/events-feed-server";
 import {
   buildHomeMetadataDescription,
   buildHomeMetadataTitle,
@@ -22,10 +22,10 @@ const HomeFaq = dynamic(
   { loading: () => null }
 );
 
-export const revalidate = 600;
+export const revalidate = 900;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { events } = await fetchFeedEvents();
+  const { events } = await fetchHomeFeedEvents();
   return pageMetadata(
     "/",
     buildHomeMetadataTitle(),
@@ -35,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const { events, error } = await fetchFeedEvents();
+  const { events, error } = await fetchHomeFeedEvents();
 
   return (
     <>

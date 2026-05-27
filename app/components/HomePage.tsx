@@ -4,6 +4,10 @@ import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
+import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
+import { countHiddenHomeEvents } from "../lib/featured";
+import { partidosHoyDatePath } from "../lib/seo-date";
+import Link from "next/link";
 import { STORAGE_KEY, ALL_SPORT_IDS } from "../lib/filter-config";
 import {
   COOKIE_CONSENT_EVENT,
@@ -97,6 +101,7 @@ function HomePageContent({
   const [weekView, setWeekView] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
+  const [hasFullWeek, setHasFullWeek] = useState(false);
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
 
@@ -124,6 +129,7 @@ function HomePageContent({
         if (!silent) setEvents([]);
       } else {
         setEvents(body.events ?? []);
+        setHasFullWeek(true);
       }
     } catch (err) {
       setLoadError(
@@ -166,6 +172,25 @@ function HomePageContent({
       void loadEvents();
     });
   }, [hasInitialData, loadEvents]);
+
+  useEffect(() => {
+    if (hasFullWeek || loading) return;
+    const needsFullWeek =
+      weekView ||
+      activeDay >= HOME_SSR_DAY_COUNT ||
+      selectedSports.length > 0;
+    if (!needsFullWeek) return;
+    queueMicrotask(() => {
+      void loadEvents({ silent: true });
+    });
+  }, [
+    hasFullWeek,
+    loading,
+    weekView,
+    activeDay,
+    selectedSports.length,
+    loadEvents,
+  ]);
 
   useEffect(() => {
     if (!hasPreferenceConsent()) return;
@@ -220,6 +245,12 @@ function HomePageContent({
   );
 
   const activeSection = daySections[activeDay];
+
+  const hiddenOnActiveDay = useMemo(() => {
+    if (!isFeaturedMode || !activeSection) return 0;
+    const rawDay = displayEvents.filter((e) => e.date === activeSection.date);
+    return countHiddenHomeEvents(rawDay, activeSection.events);
+  }, [isFeaturedMode, activeSection, displayEvents]);
 
   const searchResults = useMemo(
     () => filterEventsByQuery(displayEvents, searchQuery),
@@ -501,6 +532,13 @@ function HomePageContent({
                             : "Sin eventos para estos filtros."
                         }
                       />
+                      {hiddenOnActiveDay > 0 ? (
+                        <p className="fh-home-more-link">
+                          <Link href={partidosHoyDatePath(activeSection.date)}>
+                            Ver todos los eventos ({hiddenOnActiveDay} más) →
+                          </Link>
+                        </p>
+                      ) : null}
                     </section>
                   ) : null}
                 </div>

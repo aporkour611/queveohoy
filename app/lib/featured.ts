@@ -1,6 +1,6 @@
 import type { EventRow } from "../components/types";
 import { sportFilterGroupId } from "./filter-config";
-import { eventCanDisplay, filterEventsForDisplay } from "./event-crests";
+import { eventCanDisplay } from "./event-crests";
 import {
   HOME_DAILY_EVENT_CAP,
   HOME_SECTION_MAX_DEFAULT,

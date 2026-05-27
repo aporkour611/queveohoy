@@ -85,6 +85,18 @@ export function getWeekDatesInZone(timeZone: string, count = 7): string[] {
   );
 }
 
+/** Rango exacto de fechas en BD (sin colchón) para la home rápida. */
+export function getEventsQueryDateRangeTight(dayCount: number): {
+  from: string;
+  to: string;
+} {
+  const madridToday = getWeekDatesInZone(MADRID_TZ, 1)[0];
+  return {
+    from: madridToday,
+    to: addDaysToDateKeyInZone(madridToday, Math.max(dayCount - 1, 0), MADRID_TZ),
+  };
+}
+
 /** Rango de fechas en BD (Europe/Madrid) para la ventana del feed sin traer todo el histórico */
 export function getEventsQueryDateRange(dayCount = 7): { from: string; to: string } {
   const madridToday = getWeekDatesInZone(MADRID_TZ, 1)[0];

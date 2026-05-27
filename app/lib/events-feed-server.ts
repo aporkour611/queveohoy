@@ -1,17 +1,23 @@
 import type { EventRow } from "../components/types";
 import { unstable_cache } from "next/cache";
 import { FEED_REVALIDATE_SECONDS } from "./cache-config";
-import { createClient } from "./supabase/server";
 import { FEED_DAY_COUNT, FEED_EVENT_SELECT, normalizeFeedEvents } from "./events-feed";
-import { getEventsQueryDateRange } from "./timezone";
+import { HOME_SSR_DAY_COUNT } from "./home-feed-config";
+import { createClient } from "./supabase/server";
+import {
+  getEventsQueryDateRange,
+  getEventsQueryDateRangeTight,
+} from "./timezone";
 
 const FEED_QUERY_TIMEOUT_MS = 25_000;
 
-async function queryFeedEvents(): Promise<{
+async function queryFeedEvents(dayCount: number, tight: boolean): Promise<{
   events: EventRow[];
   error: string | null;
 }> {
-  const { from, to } = getEventsQueryDateRange(FEED_DAY_COUNT);
+  const { from, to } = tight
+    ? getEventsQueryDateRangeTight(dayCount)
+    : getEventsQueryDateRange(dayCount);
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -29,7 +35,10 @@ async function queryFeedEvents(): Promise<{
   return { events: normalizeFeedEvents(data as EventRow[]), error: null };
 }
 
-async function loadFeedEvents(): Promise<{
+async function loadFeedEvents(
+  dayCount = FEED_DAY_COUNT,
+  tight = false
+): Promise<{
   events: EventRow[];
   error: string | null;
 }> {
@@ -49,7 +58,10 @@ async function loadFeedEvents(): Promise<{
       }
     );
 
-    const result = await Promise.race([queryFeedEvents(), timeoutPromise]);
+    const result = await Promise.race([
+      queryFeedEvents(dayCount, tight),
+      timeoutPromise,
+    ]);
     if (timeoutId) clearTimeout(timeoutId);
     return result;
   } catch (err) {
@@ -59,12 +71,24 @@ async function loadFeedEvents(): Promise<{
   }
 }
 
-const getCachedFeedEvents = unstable_cache(
-  loadFeedEvents,
-  ["feed-events"],
+const getCachedFullFeed = unstable_cache(
+  () => loadFeedEvents(FEED_DAY_COUNT, false),
+  ["feed-events", "full"],
   { revalidate: FEED_REVALIDATE_SECONDS, tags: ["feed"] }
 );
 
+const getCachedHomeFeed = unstable_cache(
+  () => loadFeedEvents(HOME_SSR_DAY_COUNT, true),
+  ["feed-events", "home", String(HOME_SSR_DAY_COUNT)],
+  { revalidate: FEED_REVALIDATE_SECONDS, tags: ["feed"] }
+);
+
+/** Feed completo (7 días) — hubs, sitemap, semana completa. */
 export async function fetchFeedEvents() {
-  return getCachedFeedEvents();
+  return getCachedFullFeed();
+}
+
+/** Feed ligero para la home (hoy + mañana). */
+export async function fetchHomeFeedEvents() {
+  return getCachedHomeFeed();
 }

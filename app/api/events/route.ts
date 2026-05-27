@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { FEED_REVALIDATE_SECONDS } from "@/app/lib/cache-config";
 import { fetchFeedEvents } from "@/app/lib/events-feed-server";
 
-export const revalidate = 600;
+export const revalidate = 900;
 
 export async function GET() {
   const { events, error } = await fetchFeedEvents();

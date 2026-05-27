@@ -20,6 +20,7 @@ import { fetchMotogpCronEvents } from "@/app/lib/motogp";
 import { fetchTheSportsDbLeagueEvents } from "@/app/lib/thesportsdb-leagues";
 import { fetchUfcCronEvents } from "@/app/lib/thesportsdb-ufc";
 import { pingIndexNow } from "@/app/lib/indexnow";
+import { warmFeedCacheAfterCron } from "@/app/lib/revalidate-feed";
 import {
   ergastToMadrid,
   getMadridWeekDates,
@@ -592,10 +593,26 @@ export async function GET(request: Request) {
     console.warn("IndexNow error:", e);
   }
 
+  let feedCache: Awaited<ReturnType<typeof warmFeedCacheAfterCron>> = {
+    ok: false,
+    error: "skipped",
+  };
+  try {
+    feedCache = await warmFeedCacheAfterCron();
+    if (feedCache.ok) {
+      console.log("✓ Feed cache warmed");
+    } else {
+      console.warn("Feed cache warm:", feedCache.error);
+    }
+  } catch (e) {
+    console.warn("Feed cache warm error:", e);
+  }
+
   return NextResponse.json({
     ok: true,
     timestamp: new Date().toISOString(),
     indexNow,
+    feedCache,
     football,
     esports: esports.count,
     esportsError: esports.error,
