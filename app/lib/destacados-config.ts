@@ -299,7 +299,6 @@ export function pickWeekDestacados(
   const mergedEvents = mergeDestacadosEvents(events, todayKey, windowDays);
   const pool = weekPoolFor(mergedEvents, todayKey, windowDays, excludeIds);
 
-  const items: EventRow[] = [];
   const seen = new Set<number>();
 
   const pinned: EventRow[] = [];

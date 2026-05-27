@@ -1,14 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
-/** Evita mismatch SSR/client en UI que depende de la hora actual. */
+const emptySubscribe = () => () => {};
+
+/** true solo en cliente (evita mismatch SSR con hora / en directo). */
 export function useClientMounted(): boolean {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  return mounted;
+  return useSyncExternalStore(emptySubscribe, () => true, () => false);
 }

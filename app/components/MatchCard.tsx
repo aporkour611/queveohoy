@@ -43,7 +43,6 @@ type Props = {
 };
 
 type SpotlightCardContent = {
-  event: EventRow;
   visualClass: string;
   badgeClass: string;
   badgeLabel: string;
@@ -63,7 +62,6 @@ type SpotlightCardContent = {
 };
 
 function SpotlightCardContent({
-  event,
   visualClass,
   badgeClass,
   badgeLabel,
@@ -297,7 +295,6 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
     return cardShell(
       <SpotlightCardContent
-        event={event}
         visualClass={mediaVisualClass}
         badgeClass={mediaBadgeClass}
         badgeLabel={mediaBadgeLabel}
@@ -325,7 +322,6 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
     return cardShell(
       <SpotlightCardContent
-        event={event}
         visualClass="fh-media-spotlight-visual-ufc"
         badgeClass="fh-media-spotlight-badge-ufc"
         badgeLabel={ufcBadgeLabel}
