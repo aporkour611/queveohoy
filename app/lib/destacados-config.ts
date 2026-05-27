@@ -11,6 +11,10 @@ import {
   isCuratedMovieEvent,
 } from "./movies-curated";
 import {
+  isUpcomingCuratedMovie,
+  mergeCuratedMovieEvents,
+} from "./curated-movie-events";
+import {
   isSpanishTvFlagship,
   SPANISH_TV_TITLE_PATTERNS,
 } from "./spanish-tv-curated";
@@ -28,13 +32,13 @@ export type DestacadoRule = {
 /** Destacados editoriales — añade entradas aquí en el orden deseado */
 export const DESTACADOS_RULES: DestacadoRule[] = [
   {
-    id: "psg-arsenal",
-    teamIds: ["524", "57"],
-  },
-  {
     id: "el-drama",
     externalId: "tmdb_movie_1325734",
-    titleMatch: /^(the\s+)?drama\b|^el\s+drama\b/i,
+    titleMatch: /\bdrama\b/i,
+  },
+  {
+    id: "psg-arsenal",
+    teamIds: ["524", "57"],
   },
 ];
 
@@ -181,9 +185,10 @@ export function pickTodayDestacados(
   options: PickCuratedDestacadosOptions = {}
 ): EventRow[] {
   const today = options.todayKey ?? toMadridDateKey(new Date());
+  const mergedEvents = mergeCuratedMovieEvents(events, today);
   const windowDays = options.windowDays ?? 7;
   const week = new Set(getMadridWeekDates(windowDays));
-  const todayPool = events.filter(
+  const todayPool = mergedEvents.filter(
     (e) => e.date === today && e.date && week.has(e.date)
   );
 
@@ -195,6 +200,11 @@ export function pickTodayDestacados(
     seen.add(event.id);
     items.push(event);
   };
+
+  for (const event of mergedEvents) {
+    if (event.date !== today) continue;
+    if (isCuratedMovieEvent(event)) add(event);
+  }
 
   for (const event of todayPool) {
     if (matchesFlagshipTv(event)) add(event);
@@ -232,7 +242,8 @@ export function pickWeekDestacados(
   const excludeIds = options.excludeIds ?? new Set<number>();
   const todayKey = options.todayKey ?? toMadridDateKey(new Date());
   const windowDays = options.windowDays ?? 7;
-  const pool = weekPoolFor(events, todayKey, windowDays, excludeIds);
+  const mergedEvents = mergeCuratedMovieEvents(events, todayKey);
+  const pool = weekPoolFor(mergedEvents, todayKey, windowDays, excludeIds);
 
   const items: EventRow[] = [];
   const seen = new Set<number>();
@@ -246,8 +257,14 @@ export function pickWeekDestacados(
   for (const rule of DESTACADOS_RULES) {
     const match =
       findEditorialMatch(pool, rule, excludeIds) ??
-      findEditorialMatch(events, rule, excludeIds);
+      findEditorialMatch(mergedEvents, rule, excludeIds);
     if (match) add(match);
+  }
+
+  for (const event of pool) {
+    if (isCuratedMovieEvent(event) && isUpcomingCuratedMovie(event, todayKey)) {
+      add(event);
+    }
   }
 
   for (const event of pool) {

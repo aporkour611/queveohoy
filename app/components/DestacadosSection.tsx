@@ -20,12 +20,14 @@ function DestacadosRow({
   items,
   ariaLabel,
   className,
+  layout = "paginated",
 }: {
   title: string;
   subtitle: string;
   items: EventRow[];
   ariaLabel: string;
   className?: string;
+  layout?: "paginated" | "scroll";
 }) {
   if (items.length === 0) return null;
 
@@ -44,7 +46,7 @@ function DestacadosRow({
         </div>
       </div>
 
-      <DestacadosCarousel items={items} ariaLabel={ariaLabel} />
+      <DestacadosCarousel items={items} ariaLabel={ariaLabel} layout={layout} />
     </section>
   );
 }
@@ -82,6 +84,7 @@ export function DestacadosSection({ events }: Props) {
         items={weekFeatured}
         ariaLabel="Destacados de la semana"
         className="qvh-destacados-week"
+        layout="scroll"
       />
     </div>
   );

@@ -3,10 +3,14 @@ import type { EventRow } from "../components/types";
 export type CuratedMovie = {
   id: string;
   tmdbId: number;
+  /** Título visible en Destacados y feed. */
+  title: string;
   /** Fecha de estreno en cines (España), YYYY-MM-DD. */
   releaseDate: string;
   competition?: string;
   priority: number;
+  /** Poster TMDB (/path) para tarjetas si aún no hay fila en BD. */
+  posterPath?: string | null;
 };
 
 /** Estrenos de cine que el cron siempre vigila (fecha España, no la de TMDB US). */
@@ -14,6 +18,7 @@ export const CURATED_MOVIES: CuratedMovie[] = [
   {
     id: "el-drama",
     tmdbId: 1325734,
+    title: "El drama",
     releaseDate: "2026-05-29",
     competition: "Estreno top · Cines",
     priority: 95,

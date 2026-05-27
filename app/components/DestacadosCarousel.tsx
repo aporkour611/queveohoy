@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { EventRow } from "./types";
 import {
   DESTACADOS_SCROLL_STEP,
@@ -11,6 +11,7 @@ import { FeaturedEventCard } from "./FeaturedEventCard";
 type Props = {
   items: EventRow[];
   ariaLabel: string;
+  layout?: "paginated" | "scroll";
 };
 
 function ChevronIcon({ direction }: { direction: "left" | "right" }) {
@@ -34,8 +35,13 @@ function ChevronIcon({ direction }: { direction: "left" | "right" }) {
   );
 }
 
-export function DestacadosCarousel({ items, ariaLabel }: Props) {
+export function DestacadosCarousel({
+  items,
+  ariaLabel,
+  layout = "paginated",
+}: Props) {
   const [page, setPage] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const pageSize = DESTACADOS_SCROLL_STEP;
   const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
   const showNav = items.length > DESTACADOS_VISIBLE_SLOTS;
@@ -51,6 +57,63 @@ export function DestacadosCarousel({ items, ariaLabel }: Props) {
       setPage(Math.max(0, pageCount - 1));
     }
   }, [page, pageCount]);
+
+  function scrollByDirection(direction: -1 | 1) {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const card = el.querySelector(".qvh-spotlight-card") as HTMLElement | null;
+    const gap = 12;
+    const cardWidth = card?.offsetWidth ?? 236;
+    const step = (cardWidth + gap) * DESTACADOS_SCROLL_STEP;
+
+    el.scrollBy({
+      left: direction * step,
+      behavior: "smooth",
+    });
+  }
+
+  if (layout === "scroll") {
+    return (
+      <div className="qvh-destacados-carousel qvh-destacados-carousel-scroll">
+        {showNav ? (
+          <button
+            type="button"
+            className="qvh-destacados-nav qvh-destacados-nav-prev"
+            aria-label={`Desplazar destacados anteriores de ${ariaLabel}`}
+            onClick={() => scrollByDirection(-1)}
+          >
+            <ChevronIcon direction="left" />
+          </button>
+        ) : null}
+
+        <div
+          ref={scrollRef}
+          className="qvh-destacados-scroll"
+          aria-label={ariaLabel}
+        >
+          {items.map((event, index) => (
+            <FeaturedEventCard
+              key={event.id}
+              event={event}
+              priority={index < 2}
+            />
+          ))}
+        </div>
+
+        {showNav ? (
+          <button
+            type="button"
+            className="qvh-destacados-nav qvh-destacados-nav-next"
+            aria-label={`Desplazar los siguientes destacados de ${ariaLabel}`}
+            onClick={() => scrollByDirection(1)}
+          >
+            <ChevronIcon direction="right" />
+          </button>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div className="qvh-destacados-carousel">

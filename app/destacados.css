@@ -72,6 +72,55 @@
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  flex: 1;
+  min-width: 0;
+}
+
+.qvh-destacados-carousel-scroll {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.qvh-destacados-carousel-scroll .qvh-destacados-scroll {
+  padding-inline: 2px;
+}
+
+.qvh-destacados-carousel-scroll .qvh-spotlight-card {
+  flex: 0 0 min(236px, 72vw);
+  scroll-snap-align: start;
+}
+
+@media (max-width: 520px) {
+  .qvh-destacados-carousel-scroll {
+    position: relative;
+  }
+
+  .qvh-destacados-carousel-scroll .qvh-destacados-nav {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    background: rgba(16, 16, 21, 0.88);
+    backdrop-filter: blur(6px);
+  }
+
+  .qvh-destacados-carousel-scroll .qvh-destacados-nav:hover:not(:disabled) {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .qvh-destacados-carousel-scroll .qvh-destacados-nav-prev {
+    left: 4px;
+  }
+
+  .qvh-destacados-carousel-scroll .qvh-destacados-nav-next {
+    right: 4px;
+  }
 }
 
 .qvh-destacados-page {

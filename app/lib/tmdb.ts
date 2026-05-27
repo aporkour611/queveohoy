@@ -279,8 +279,8 @@ async function fetchEditorialMovies(
     const detail = await tmdbGet<TmdbItem>(`/movie/${curated.tmdbId}`);
     if (!detail) continue;
 
-    const title = detail.title?.trim() || detail.original_title?.trim();
-    if (!title) continue;
+    const title =
+      detail.title?.trim() || detail.original_title?.trim() || curated.title;
 
     const score =
       tmdbBuzzScore({
