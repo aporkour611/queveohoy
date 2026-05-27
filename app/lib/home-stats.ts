@@ -1,6 +1,7 @@
 import type { EventRow } from "../components/types";
 import { isFreeTvChannel, parseChannels } from "./channels";
 import { FEED_DAY_COUNT } from "./events-feed";
+import { pickHomePageEvents } from "./featured";
 import {
   buildDisplayDays,
   filterEventsInWeek,
@@ -26,15 +27,34 @@ export function countTodayStats(
     FEED_DAY_COUNT
   );
   const todayEvents = weekEvents.filter((e) => e.date === today?.date);
+  const visibleToday = pickHomePageEvents(todayEvents);
 
-  const freeCount = todayEvents.filter((event) =>
+  const freeCount = visibleToday.filter((event) =>
     parseChannels(event.platform).some(isFreeTvChannel)
   ).length;
 
   return {
-    total: todayEvents.length,
+    total: visibleToday.length,
     freeCount,
     dayTitle: today?.title ?? "Hoy",
     date: today?.date ?? "",
+  };
+}
+
+/** Stats a partir de eventos ya recortados para el feed (respeta filtros activos). */
+export function statsFromFeedDay(
+  events: EventRow[],
+  dayTitle: string,
+  date: string
+): TodayStats {
+  const freeCount = events.filter((event) =>
+    parseChannels(event.platform).some(isFreeTvChannel)
+  ).length;
+
+  return {
+    total: events.length,
+    freeCount,
+    dayTitle,
+    date,
   };
 }

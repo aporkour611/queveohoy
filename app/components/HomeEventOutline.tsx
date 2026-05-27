@@ -7,6 +7,7 @@ import {
   MADRID_TZ,
 } from "../lib/timezone";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
+import { pickHomePageEvents } from "../lib/featured";
 import { displayTime } from "../lib/madrid-time";
 import { eventLabel } from "../lib/seo-events";
 import { partidosHoyDatePath } from "../lib/seo-date";
@@ -31,12 +32,14 @@ export function HomeEventOutline({ events }: Props) {
     mapEventsToTimezone(events, MADRID_TZ),
     MADRID_TZ,
     FEED_DAY_COUNT
-  ).slice(0, 40);
+  );
 
   const days = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)
     .map((day) => ({
       ...day,
-      events: displayEvents.filter((event) => event.date === day.date),
+      events: pickHomePageEvents(
+        displayEvents.filter((event) => event.date === day.date)
+      ),
     }))
     .filter((day) => day.events.length > 0);
 

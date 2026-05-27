@@ -272,6 +272,7 @@ export function pickFeaturedEvents(dayEvents: EventRow[]): EventRow[] {
 
 /** Al filtrar: mismos topes por bloque que en vista destacada. */
 export function pickFilteredEvents(events: EventRow[]): EventRow[] {
+  if (events.length === 0) return [];
   return pickHomePageEvents(events);
 }
 

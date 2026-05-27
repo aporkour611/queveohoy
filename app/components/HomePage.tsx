@@ -13,7 +13,7 @@ import {
   COOKIE_CONSENT_EVENT,
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
-import { countTodayStats } from "../lib/home-stats";
+import { statsFromFeedDay } from "../lib/home-stats";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { DayTabs } from "./DayTabs";
 import { EventDaySections } from "./EventDaySections";
@@ -202,7 +202,18 @@ export function HomePage({
     [displayDays, displayEvents, selectedSports, isFeaturedMode]
   );
 
-  const todayStats = useMemo(() => countTodayStats(events, MADRID_TZ), [events]);
+  const feedEvents = useMemo(
+    () => daySections.flatMap((section) => section.events),
+    [daySections]
+  );
+
+  const todayStats = useMemo(() => {
+    const today = daySections[0];
+    if (!today) {
+      return statsFromFeedDay([], "Hoy", "");
+    }
+    return statsFromFeedDay(today.events, today.title, today.date);
+  }, [daySections]);
 
   const activeSection = daySections[activeDay];
 
@@ -213,8 +224,8 @@ export function HomePage({
   }, [isFeaturedMode, activeSection, displayEvents]);
 
   const searchResults = useMemo(
-    () => filterEventsByQuery(displayEvents, searchQuery),
-    [displayEvents, searchQuery]
+    () => filterEventsByQuery(feedEvents, searchQuery),
+    [feedEvents, searchQuery]
   );
   const showSearch = searchQuery.trim().length >= 2;
 
@@ -346,16 +357,16 @@ export function HomePage({
         <div className="fh-container fh-main">
           <HomeCalendarHero fetchedAt={initialFetchedAt} stats={todayStats} />
 
-          {children}
-
           <EventFilters
             selected={selectedSports}
             onChange={setSelectedSports}
             isFeaturedMode={isFeaturedMode}
           />
 
+          {isFeaturedMode ? children : null}
+
           <EventSearch
-            events={displayEvents}
+            events={feedEvents}
             onQueryChange={setSearchQuery}
             onPickDay={(date) => {
               const index = daySections.findIndex((d) => d.date === date);
