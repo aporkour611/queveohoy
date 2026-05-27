@@ -64,6 +64,32 @@ function scrollToDaySection(date: string) {
   window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
 }
 
+type ScrollSnapshot = {
+  y: number;
+  anchorTop: number;
+};
+
+const FEED_CONTROLS_ID = "feed-controls";
+
+function captureScrollSnapshot(): ScrollSnapshot {
+  const anchor = document.getElementById(FEED_CONTROLS_ID);
+  return {
+    y: window.scrollY,
+    anchorTop: anchor?.getBoundingClientRect().top ?? 0,
+  };
+}
+
+function restoreScrollSnapshot(snapshot: ScrollSnapshot) {
+  const anchor = document.getElementById(FEED_CONTROLS_ID);
+  if (!anchor) {
+    window.scrollTo(0, snapshot.y);
+    return;
+  }
+
+  const delta = anchor.getBoundingClientRect().top - snapshot.anchorTop;
+  window.scrollTo(0, snapshot.y + delta);
+}
+
 export function HomePage({
   initialEvents = [],
   initialDestacadosEvents = [],
@@ -80,7 +106,8 @@ export function HomePage({
   const [hasFullWeek, setHasFullWeek] = useState(false);
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
-  const scrollRestoreRef = useRef<number | null>(null);
+  const scrollSnapshotRef = useRef<ScrollSnapshot | null>(null);
+  const scrollRestoreTimerRef = useRef<number | null>(null);
 
   const isFeaturedMode = selectedSports.length === 0;
   const deferredSports = useDeferredValue(selectedSports);
@@ -158,13 +185,6 @@ export function HomePage({
       void loadEvents();
     });
   }, [hasInitialData, loadEvents]);
-
-  useEffect(() => {
-    if (!weekView || hasFullWeek || loading) return;
-    queueMicrotask(() => {
-      void loadEvents({ silent: true, fullWeek: true });
-    });
-  }, [weekView, hasFullWeek, loading, loadEvents]);
 
   useEffect(() => {
     if (!hasPreferenceConsent()) return;
@@ -251,6 +271,25 @@ export function HomePage({
       scrollLockRef.current = false;
       scrollLockTimerRef.current = null;
     }, ms);
+  }, []);
+
+  const beginViewScrollPreservation = useCallback(() => {
+    scrollSnapshotRef.current = captureScrollSnapshot();
+    lockScrollSpy(2000);
+
+    if (scrollRestoreTimerRef.current !== null) {
+      window.clearTimeout(scrollRestoreTimerRef.current);
+    }
+    scrollRestoreTimerRef.current = window.setTimeout(() => {
+      scrollSnapshotRef.current = null;
+      scrollRestoreTimerRef.current = null;
+    }, 1200);
+  }, [lockScrollSpy]);
+
+  const flushScrollPreservation = useCallback(() => {
+    const snapshot = scrollSnapshotRef.current;
+    if (!snapshot) return;
+    restoreScrollSnapshot(snapshot);
   }, []);
 
   const handleFilterChange = useCallback((ids: string[]) => {
@@ -352,8 +391,7 @@ export function HomePage({
   }, [showInitialLoading, daySections, weekView]);
 
   const openWeekView = useCallback(() => {
-    scrollRestoreRef.current = window.scrollY;
-    lockScrollSpy(1200);
+    beginViewScrollPreservation();
     const openWeek = () => {
       setWeekView(true);
     };
@@ -362,20 +400,36 @@ export function HomePage({
     } else {
       openWeek();
     }
-  }, [hasFullWeek, loadEvents, lockScrollSpy]);
+  }, [beginViewScrollPreservation, hasFullWeek, loadEvents]);
 
   const closeWeekView = useCallback(() => {
-    scrollRestoreRef.current = window.scrollY;
-    lockScrollSpy(1200);
+    beginViewScrollPreservation();
     setWeekView(false);
-  }, [lockScrollSpy]);
+  }, [beginViewScrollPreservation]);
 
   useLayoutEffect(() => {
-    if (scrollRestoreRef.current === null) return;
-    const y = scrollRestoreRef.current;
-    scrollRestoreRef.current = null;
-    window.scrollTo(0, y);
-  }, [weekView, daySections.length, hasFullWeek]);
+    flushScrollPreservation();
+  });
+
+  useEffect(() => {
+    if (!scrollSnapshotRef.current) return;
+
+    flushScrollPreservation();
+    const timers = [0, 16, 48, 120, 240, 480, 960].map((delay) =>
+      window.setTimeout(flushScrollPreservation, delay)
+    );
+
+    return () => {
+      for (const timer of timers) window.clearTimeout(timer);
+    };
+  }, [
+    weekView,
+    hasFullWeek,
+    daySections.length,
+    refreshing,
+    events.length,
+    flushScrollPreservation,
+  ]);
 
   return (
     <div className="fh-body">
@@ -413,34 +467,35 @@ export function HomePage({
             isFeaturedMode={isFeaturedMode}
           />
 
-          {refreshing && !showInitialLoading && (
-            <p className="fh-feed-refresh" aria-live="polite">
-              Actualizando eventos…
-            </p>
-          )}
+          <div className="fh-feed-area">
+            {refreshing && !showInitialLoading ? (
+              <p className="fh-feed-refresh" aria-live="polite">
+                Actualizando eventos…
+              </p>
+            ) : null}
 
-          {showInitialLoading ? (
-            <LoadingState />
-          ) : loadError && events.length === 0 ? (
-            <div className="fh-empty">
-              <p>No se pudieron cargar los eventos.</p>
-              <p style={{ fontSize: "0.85em" }}>{loadError}</p>
-              <button
-                type="button"
-                className="fh-btn fh-btn-primary"
-                onClick={() => void loadEvents()}
-              >
-                Reintentar
-              </button>
-            </div>
-          ) : events.length === 0 ? (
-            <div className="fh-empty">
-              <p>No hay eventos en los próximos 7 días.</p>
-            </div>
-          ) : (
-            <FeedErrorBoundary>
-              {weekView ? (
-                <div className="fh-day-feed" id="day-feed">
+            {showInitialLoading ? (
+              <LoadingState />
+            ) : loadError && events.length === 0 ? (
+              <div className="fh-empty">
+                <p>No se pudieron cargar los eventos.</p>
+                <p style={{ fontSize: "0.85em" }}>{loadError}</p>
+                <button
+                  type="button"
+                  className="fh-btn fh-btn-primary"
+                  onClick={() => void loadEvents()}
+                >
+                  Reintentar
+                </button>
+              </div>
+            ) : events.length === 0 ? (
+              <div className="fh-empty">
+                <p>No hay eventos en los próximos 7 días.</p>
+              </div>
+            ) : (
+              <FeedErrorBoundary>
+                {weekView ? (
+                  <div className="fh-day-feed" id="day-feed">
                   {daySections.map((section, i) => (
                     <section
                       key={section.date}
@@ -508,6 +563,7 @@ export function HomePage({
               )}
             </FeedErrorBoundary>
           )}
+          </div>
 
           <SiteFooter />
         </div>

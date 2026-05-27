@@ -34,7 +34,11 @@ export function FeedControls({
   isFeaturedMode,
 }: Props) {
   return (
-    <section className="qvh-feed-controls" aria-label="Calendario y filtros">
+    <section
+      id="feed-controls"
+      className="qvh-feed-controls"
+      aria-label="Calendario y filtros"
+    >
       <DayTabs days={days} activeIndex={activeDayIndex} onChange={onDayChange} />
 
       <div className="qvh-feed-controls-toolbar">
