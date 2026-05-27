@@ -1,12 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="League of Legends">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450" role="img" aria-label="League of Legends">
   <defs>
-    <linearGradient id="lolg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#c8aa6e"/>
-      <stop offset="100%" stop-color="#785a28"/>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c1d95"/>
+      <stop offset="45%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0a0818"/>
     </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="58%">
+      <stop offset="0%" stop-color="#c8aa6e" stop-opacity="0.34"/>
+      <stop offset="100%" stop-color="#c8aa6e" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <rect width="240" height="240" rx="28" fill="#091428"/>
-  <path d="M72 176 V64 L120 44 L168 64 V176 L120 196 Z" fill="none" stroke="url(#lolg)" stroke-width="12"/>
-  <path d="M96 152 V88 L120 76 L144 88 V152 L120 164 Z" fill="url(#lolg)"/>
-  <text x="120" y="228" text-anchor="middle" fill="#c8aa6e" font-family="Arial Black, sans-serif" font-size="22" font-weight="700">LoL</text>
+  <rect width="300" height="450" fill="url(#bg)"/>
+  <rect width="300" height="450" fill="url(#glow)"/>
+  <path d="M95 310 V150 L150 125 L205 150 V310 L150 335 Z" fill="none" stroke="#c8aa6e" stroke-width="12"/>
+  <path d="M125 275 V185 L150 172 L175 185 V275 L150 288 Z" fill="#c8aa6e"/>
+  <text x="150" y="365" text-anchor="middle" fill="#ffffff" font-family="Arial Black, sans-serif" font-size="54" font-weight="900">LoL</text>
 </svg>

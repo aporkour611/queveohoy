@@ -205,10 +205,7 @@ export function getSpotlightCardModel(
       time,
       meta: channels || event.competition?.trim() || gameArt.label,
       platform: event.platform?.trim() || "Streaming",
-      coverImage: localSpotlightCover(
-        gameArt.url,
-        hasDuel ? "emblem-duel" : "emblem"
-      ),
+      coverImage: localSpotlightCover(gameArt.url, "poster"),
       visualClass: gameArt.visualClass,
       homeCrest: logos?.homeUrl ?? undefined,
       awayCrest: logos?.awayUrl ?? undefined,

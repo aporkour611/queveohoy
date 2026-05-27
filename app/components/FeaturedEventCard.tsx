@@ -20,11 +20,15 @@ type Props = {
 function SpotlightCoverArt({
   cover,
   priority = false,
+  esports = false,
 }: {
   cover: SpotlightCover;
   priority?: boolean;
+  esports?: boolean;
 }) {
-  const layoutClass = `qvh-spotlight-cover-${cover.layout}`;
+  const layoutClass = `qvh-spotlight-cover-${cover.layout}${
+    esports ? " qvh-spotlight-cover-esports" : ""
+  }`;
 
   if (cover.local) {
     return (
@@ -71,7 +75,11 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
       >
         {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
         {card.coverImage && !card.showUfcDuel ? (
-          <SpotlightCoverArt cover={card.coverImage} priority={priority} />
+          <SpotlightCoverArt
+            cover={card.coverImage}
+            priority={priority}
+            esports={card.badgeVariant === "esports"}
+          />
         ) : null}
         <div className="qvh-spotlight-overlay" />
 

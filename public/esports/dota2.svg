@@ -1,7 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Dota 2">
-  <rect width="240" height="240" rx="28" fill="#120c0c"/>
-  <path d="M56 176 L120 56 L184 176 Z" fill="#a51f1f"/>
-  <path d="M88 176 L120 112 L152 176 Z" fill="#7a1212"/>
-  <rect x="108" y="176" width="24" height="20" fill="#a51f1f"/>
-  <text x="120" y="228" text-anchor="middle" fill="#e04b4b" font-family="Arial Black, sans-serif" font-size="20" font-weight="700">DOTA 2</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450" role="img" aria-label="Dota 2">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b0764"/>
+      <stop offset="45%" stop-color="#180808"/>
+      <stop offset="100%" stop-color="#0a0610"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="58%">
+      <stop offset="0%" stop-color="#e04b4b" stop-opacity="0.34"/>
+      <stop offset="100%" stop-color="#e04b4b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="450" fill="url(#bg)"/>
+  <rect width="300" height="450" fill="url(#glow)"/>
+  <path d="M72 305 L150 135 L228 305 Z" fill="#a51f1f"/>
+  <path d="M112 305 L150 215 L188 305 Z" fill="#7a1212"/>
+  <text x="150" y="360" text-anchor="middle" fill="#ffffff" font-family="Arial Black, sans-serif" font-size="48" font-weight="900">DOTA 2</text>
 </svg>

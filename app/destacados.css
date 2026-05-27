@@ -370,23 +370,12 @@
 }
 
 .qvh-spotlight-visual-esports {
-  background: linear-gradient(135deg, #0f3320 0%, #1f6e43 55%, #081a10 100%);
+  background: linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #4c1d95 100%);
 }
 
-.qvh-spotlight-visual-csgo {
-  background: linear-gradient(135deg, #1a1208 0%, #f7931e 42%, #111318 100%);
-}
-
-.qvh-spotlight-visual-valorant {
-  background: linear-gradient(135deg, #0f1923 0%, #ff4655 38%, #0a1018 100%);
-}
-
-.qvh-spotlight-visual-lol {
-  background: linear-gradient(135deg, #091428 0%, #c8aa6e 40%, #050b16 100%);
-}
-
-.qvh-spotlight-visual-dota2 {
-  background: linear-gradient(135deg, #120c0c 0%, #a51f1f 42%, #080404 100%);
+.qvh-spotlight-cover-esports .qvh-spotlight-cover-img,
+.qvh-spotlight-cover-esports .qvh-remote-poster-img {
+  object-position: center center;
 }
 
 .qvh-spotlight-visual-f1 {

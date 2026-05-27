@@ -1,6 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Valorant">
-  <rect width="240" height="240" rx="28" fill="#0f1923"/>
-  <path d="M48 196 L120 44 L192 196 Z" fill="none" stroke="#ff4655" stroke-width="16" stroke-linejoin="round"/>
-  <path d="M88 196 L120 120 L152 196 Z" fill="#ff4655"/>
-  <text x="120" y="228" text-anchor="middle" fill="#ff4655" font-family="Arial Black, sans-serif" font-size="20" font-weight="700">VALORANT</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450" role="img" aria-label="Valorant">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b0764"/>
+      <stop offset="45%" stop-color="#1a1028"/>
+      <stop offset="100%" stop-color="#0a0612"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="58%">
+      <stop offset="0%" stop-color="#ff4655" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#ff4655" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="450" fill="url(#bg)"/>
+  <rect width="300" height="450" fill="url(#glow)"/>
+  <path d="M78 300 L150 120 L222 300 Z" fill="none" stroke="#ff4655" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M118 300 L150 220 L182 300 Z" fill="#ff4655"/>
+  <text x="150" y="355" text-anchor="middle" fill="#ffffff" font-family="Arial Black, sans-serif" font-size="34" font-weight="800" letter-spacing="6">VALORANT</text>
 </svg>

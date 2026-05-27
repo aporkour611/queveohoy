@@ -1,16 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="CS2">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450" role="img" aria-label="CS2">
   <defs>
-    <linearGradient id="cs2g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f7931e"/>
-      <stop offset="100%" stop-color="#c45f00"/>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2e1065"/>
+      <stop offset="45%" stop-color="#1a1840"/>
+      <stop offset="100%" stop-color="#0a0818"/>
     </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#f7931e" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#f7931e" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <rect width="240" height="240" rx="28" fill="#111318"/>
-  <circle cx="120" cy="120" r="78" fill="none" stroke="url(#cs2g)" stroke-width="14"/>
-  <circle cx="120" cy="120" r="10" fill="url(#cs2g)"/>
-  <line x1="120" y1="28" x2="120" y2="58" stroke="url(#cs2g)" stroke-width="10" stroke-linecap="round"/>
-  <line x1="120" y1="182" x2="120" y2="212" stroke="url(#cs2g)" stroke-width="10" stroke-linecap="round"/>
-  <line x1="28" y1="120" x2="58" y2="120" stroke="url(#cs2g)" stroke-width="10" stroke-linecap="round"/>
-  <line x1="182" y1="120" x2="212" y2="120" stroke="url(#cs2g)" stroke-width="10" stroke-linecap="round"/>
-  <text x="120" y="228" text-anchor="middle" fill="#f7931e" font-family="Arial Black, sans-serif" font-size="22" font-weight="700">CS2</text>
+  <rect width="300" height="450" fill="url(#bg)"/>
+  <rect width="300" height="450" fill="url(#glow)"/>
+  <text x="150" y="255" text-anchor="middle" fill="#ffffff" font-family="Arial Black, sans-serif" font-size="92" font-weight="900" letter-spacing="-2">CS2</text>
+  <text x="150" y="305" text-anchor="middle" fill="#f7931e" font-family="Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="8">COUNTER-STRIKE</text>
 </svg>
