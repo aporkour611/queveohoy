@@ -7,6 +7,10 @@ export type SpanishTvShow = {
   competition: string;
   platform: string;
   priority: number;
+  /** ID TMDB fijo (evita confundir con versiones extranjeras). */
+  tmdbId?: number;
+  /** Hora habitual de emisión en península (HH:MM). */
+  airTime?: string;
 };
 
 /** Programas de máxima audiencia en España — prioridad editorial y cron TMDB */
@@ -21,11 +25,13 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
   },
   {
     id: "isla-tentaciones",
+    tmdbId: 95676,
     search: "La Isla de las Tentaciones",
     patterns: [/isla de las tentaciones|temptation island/i],
     competition: "Reality · La Isla de las Tentaciones",
     platform: "Telecinco · Mitele",
-    priority: 96,
+    priority: 98,
+    airTime: "22:00",
   },
   {
     id: "operacion-triunfo",
