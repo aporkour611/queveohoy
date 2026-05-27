@@ -23,14 +23,14 @@ export const THESPORTSDB_LEAGUES: LeagueCronConfig[] = [
     sport: "tenis",
     competition: "ATP",
     platform: "Movistar+, DAZN, Eurosport",
-    maxEvents: 12,
+    maxEvents: 16,
   },
   {
     leagueId: "4517",
     sport: "tenis",
     competition: "WTA",
     platform: "Movistar+, DAZN, Eurosport",
-    maxEvents: 12,
+    maxEvents: 16,
   },
   {
     leagueId: "4465",

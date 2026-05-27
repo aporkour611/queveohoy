@@ -3,6 +3,7 @@ import type { SpanishTvShow } from "./spanish-tv-curated";
 import { SPANISH_TV_FLAGSHIP } from "./spanish-tv-curated";
 import { isoWeekdayFromDateKey } from "./curated-tv-events";
 import { encodeTmdbSource, getTmdbApiKey, tmdbBuzzScore } from "./tmdb";
+import { isExcludedUsTvTitle } from "./spain-latam-media";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const REALITY_GENRE_ID = "10764";
@@ -440,6 +441,9 @@ export async function fetchRealityCronEvents(
 
     const detail = await tmdbGet<ShowDetail>(`/tv/${item.id}`);
     if (!detail) continue;
+
+    const showName = detail.name?.trim() || item.name?.trim() || "";
+    if (isExcludedUsTvTitle(showName)) continue;
 
     const event = eventFromNextEpisode(item.id, detail, item);
     if (!event) continue;

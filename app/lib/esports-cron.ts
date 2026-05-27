@@ -43,7 +43,7 @@ export function shouldIngestPandascoreMatch(match: PandascoreMatchMeta): boolean
     match.serie?.tier?.toLowerCase() ??
     match.league?.tier?.toLowerCase() ??
     match.tournament?.tier?.toLowerCase();
-  if (tier === "s" || tier === "a") return true;
+  if (tier === "s" || tier === "a" || tier === "b") return true;
   if (tier === "c" || tier === "d") return false;
 
   if (ESPORTS_MINOR.test(comp)) return false;

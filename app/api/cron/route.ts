@@ -279,7 +279,7 @@ type PandaScoreMatch = {
   tournament?: { name?: string; tier?: string };
 };
 
-const ESPORTS_MAX_PER_GAME = 25;
+const ESPORTS_MAX_PER_GAME = 35;
 
 async function fetchEsports(): Promise<CountResult> {
   const games = [

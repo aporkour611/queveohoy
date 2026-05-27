@@ -19,6 +19,7 @@ import { parseTmdbBuzzScore } from "./tmdb-client";
 
 const COMPETITION_PRIORITY: { match: RegExp; score: number }[] = [
   { match: /champions|mundial|world cup/i, score: 100 },
+  { match: /roland garros|french open|grand slam/i, score: 88 },
   { match: /europa league/i, score: 92 },
   { match: /conference/i, score: 88 },
   { match: /libertadores|sudamericana/i, score: 86 },
@@ -100,6 +101,11 @@ export function eventPriority(e: EventRow): number {
       score += s;
       break;
     }
+  }
+
+  if (e.sport === "tenis") {
+    const blob = `${comp} ${e.title ?? ""}`;
+    if (/roland garros|french open|grand slam/i.test(blob)) score += 20;
   }
 
   if (e.sport === "futbol") {

@@ -1,6 +1,7 @@
 import { addDaysToDateKey, getMadridWeekDates, toMadridDateKey } from "./madrid-time";
 import { CURATED_MOVIES } from "./movies-curated";
 import { formatSeriesEpisodeTitle } from "./series-display";
+import { isExcludedUsTvTitle } from "./spain-latam-media";
 import {
   BUZZ_SUFFIX,
   LOGO_PREFIX,
@@ -340,6 +341,7 @@ async function buildSeriesEvent(
 
   const showName = detail.name?.trim();
   if (!showName) return null;
+  if (isExcludedUsTvTitle(showName)) return null;
 
   const season = next?.season_number ?? 0;
   const episode = next?.episode_number ?? 0;

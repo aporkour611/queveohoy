@@ -98,6 +98,18 @@ function mergeDestacadosEvents(
 
 export { isChampionsFinal, isDestacadoFinal, isDestacadoPremiere } from "./event-card-stamp";
 
+/** Partidos de Champions en eliminatorias/final (no jornadas de fase de grupos). */
+export function isChampionsWeekDestacado(event: EventRow): boolean {
+  if (event.sport !== "futbol") return false;
+  const comp = event.competition ?? "";
+  const blob = `${comp} ${event.title ?? ""} ${event.home_team ?? ""} ${event.away_team ?? ""}`;
+  if (!/champions/i.test(blob)) return false;
+  if (/jornada\s*\d|matchday\s*\d|fase de grupos|group stage/i.test(blob)) {
+    return false;
+  }
+  return true;
+}
+
 function matchesRule(event: EventRow, rule: DestacadoRule): boolean {
   if (rule.externalId) {
     const id = event.external_id ?? "";
@@ -338,6 +350,10 @@ export function pickWeekDestacados(
 
   for (const event of pool) {
     if (isCuratedSeriesEvent(event)) addPinned(event);
+  }
+
+  for (const event of pool) {
+    if (isChampionsWeekDestacado(event)) addPinned(event);
   }
 
   for (const event of pool) {
