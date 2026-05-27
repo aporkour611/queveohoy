@@ -3,14 +3,15 @@ const BUZZ_SUFFIX = "|buzz:";
 
 export function parseTmdbPoster(
   source?: string | null,
-  size: "thumb" | "card" = "card"
+  size: "thumb" | "card" | "poster" = "card"
 ): string | null {
   const raw = source?.split("|")[0];
   if (!raw?.startsWith(LOGO_PREFIX)) return null;
   const path = raw.slice(LOGO_PREFIX.length).trim();
   if (!path) return null;
   if (path.startsWith("http")) return path;
-  const width = size === "thumb" ? "w92" : "w185";
+  const width =
+    size === "thumb" ? "w92" : size === "poster" ? "w342" : "w185";
   return `https://image.tmdb.org/t/p/${width}${path.startsWith("/") ? path : `/${path}`}`;
 }
 

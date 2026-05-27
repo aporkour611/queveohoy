@@ -9,6 +9,8 @@ import {
   footballSpotlightMeta,
 } from "./football";
 import { getTvShowCategory, tvCategoryLabel } from "./tv-show-category";
+import { displaySeriesSubtitle, displaySeriesTitle } from "./series-display";
+import { resolveEventStreamingPlatform } from "./media-platform";
 import { parseTmdbPoster, isSeasonPremiereEvent } from "./tmdb-client";
 import {
   parseUfcFighterImages,
@@ -100,16 +102,28 @@ export function getSpotlightCardModel(
     const competition = event.competition?.trim() || "";
 
     return {
-      headline: event.title?.trim() || "Sin título",
+      headline:
+        sport === "series"
+          ? displaySeriesTitle(event)
+          : event.title?.trim() || "Sin título",
       badge: premiere ? "Estreno" : sport === "cine" ? "Cine" : "Series",
       badgeVariant: premiere ? "premiere" : "media",
       dateLabel,
       time,
-      meta: premiere
-        ? competition || "Nuevo estreno de temporada"
-        : competition || sportLabel(sport),
-      platform: event.platform?.trim() || channels || "TV y streaming",
-      poster: parseTmdbPoster(event.source) ?? undefined,
+      meta:
+        sport === "series"
+          ? displaySeriesSubtitle(event) ||
+            competition ||
+            "Nuevo episodio"
+          : premiere
+            ? competition || "Nuevo estreno de temporada"
+            : competition || sportLabel(sport),
+      platform:
+        resolveEventStreamingPlatform(event)?.name ||
+        event.platform?.trim() ||
+        channels ||
+        "TV y streaming",
+      poster: parseTmdbPoster(event.source, "poster") ?? undefined,
       visualClass: premiere
         ? "qvh-spotlight-visual-premiere"
         : sport === "cine"

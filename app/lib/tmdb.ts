@@ -1,5 +1,6 @@
 import { getMadridWeekDates } from "./madrid-time";
 import { CURATED_MOVIES } from "./movies-curated";
+import { formatSeriesEpisodeTitle } from "./series-display";
 import {
   BUZZ_SUFFIX,
   LOGO_PREFIX,
@@ -336,14 +337,12 @@ async function buildSeriesEvent(
 
   const season = next?.season_number ?? 0;
   const episode = next?.episode_number ?? 0;
-  const epLabel =
-    season && episode ? `T${season}E${episode}` : null;
-  const epName = next?.name?.trim();
-  const title = epLabel
-    ? epName
-      ? `${showName} — ${epLabel}: ${epName}`
-      : `${showName} — ${epLabel}`
-    : showName;
+  const title = formatSeriesEpisodeTitle(
+    showName,
+    season,
+    episode,
+    next?.name
+  );
 
   const score = tmdbBuzzScore({
     popularity: detail.popularity,

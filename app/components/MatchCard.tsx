@@ -5,7 +5,9 @@ import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
-import { parseTmdbPoster, parseTmdbEpisodeMeta } from "../lib/tmdb-client";
+import { parseTmdbPoster } from "../lib/tmdb-client";
+import { resolveEventStreamingPlatform } from "../lib/media-platform";
+import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
 import {
   parseUfcFighterImages,
   parseUfcImage,
@@ -147,20 +149,19 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const isMedia = isCine || isSeries || isTv;
   const isUfc = event.sport === "ufc";
   const ufcKind = isUfc ? parseUfcKindFromSource(event.source) : null;
-  const mediaTitle = event.title?.trim() || "Sin título";
-  const episodeMeta = isSeries ? parseTmdbEpisodeMeta(event.external_id) : null;
-  const mediaSubtitle =
-    event.competition?.trim() ||
-    (episodeMeta ? `T${episodeMeta.season} · E${episodeMeta.episode}` : null);
-  const ufcSubtitle =
-    isUfc && event.competition?.trim() && event.competition !== ufcKindLabel(ufcKind ?? "other")
+  const mediaTitle = isSeries
+    ? displaySeriesTitle(event)
+    : event.title?.trim() || "Sin título";
+  const mediaSubtitle = isSeries
+    ? displaySeriesSubtitle(event)
+    : isUfc && event.competition?.trim() && event.competition !== ufcKindLabel(ufcKind ?? "other")
       ? event.competition.trim()
       : isUfc
         ? event.platform?.trim() || null
-        : null;
+        : event.competition?.trim() || null;
   const posterUrl = isUfc
     ? parseUfcImage(event.source)
-    : parseTmdbPoster(event.source, "thumb");
+    : parseTmdbPoster(event.source, isSeries || isCine || isTv ? "poster" : "thumb");
 
   const esportsLogos = parseEsportsTeamLogos(event.source);
   const footballIds =
@@ -199,7 +200,12 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const dateLabel = event.date
     ? formatDisplayDateLabel(event.date, MADRID_TZ)
     : "";
-  const channels = resolveChannelsForEvent(event);
+  const mediaPlatform = isMedia ? resolveEventStreamingPlatform(event) : null;
+  const channels = mediaPlatform
+    ? [mediaPlatform.name]
+    : isMedia
+      ? []
+      : resolveChannelsForEvent(event);
   const compFull = event.competition ?? "";
   const compDisplay = compFull.split(" · ")[0] || compFull;
   const matchClass = competitionMatchClass(compDisplay, event.sport);
@@ -294,7 +300,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         badgeClass="fh-media-spotlight-badge-ufc"
         badgeLabel={ufcBadgeLabel}
         title={mediaTitle}
-        subtitle={ufcSubtitle}
+        subtitle={mediaSubtitle}
         posterUrl={showUfcDuel ? null : posterUrl}
         ufcF1Url={f1}
         ufcF2Url={f2}

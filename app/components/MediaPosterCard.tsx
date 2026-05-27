@@ -3,18 +3,17 @@
 import { memo, useMemo, useState } from "react";
 import { RemotePoster } from "./RemotePoster";
 import { buildEventDetails } from "../lib/event-details";
-import { parseChannels } from "../lib/channels";
 import { displayTime } from "../lib/madrid-time";
 import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 import {
   mediaBadgeForEvent,
-  resolveMediaPlatform,
+  resolveEventStreamingPlatform,
 } from "../lib/media-platform";
 import {
   isSeasonPremiereEvent,
-  parseTmdbEpisodeMeta,
   parseTmdbPoster,
 } from "../lib/tmdb-client";
+import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
 import { getEventCardStamp } from "../lib/event-card-stamp";
 import type { EventRow } from "./types";
 import { EventCardStamp } from "./EventCardStamp";
@@ -46,15 +45,16 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   const [expanded, setExpanded] = useState(false);
   const sport =
     event.sport === "cine" ? "cine" : event.sport === "tv" ? "tv" : "series";
-  const title = event.title?.trim() || "Sin título";
-  const posterUrl = parseTmdbPoster(event.source, "thumb");
-  const channels = parseChannels(event.platform);
-  const platform = resolveMediaPlatform(channels[0]);
-  const episodeMeta =
-    sport === "series" ? parseTmdbEpisodeMeta(event.external_id) : null;
+  const title =
+    sport === "series"
+      ? displaySeriesTitle(event)
+      : event.title?.trim() || "Sin título";
+  const posterUrl = parseTmdbPoster(event.source, "poster");
+  const platform = resolveEventStreamingPlatform(event);
   const subtitle =
-    event.competition?.trim() ||
-    (episodeMeta ? `T${episodeMeta.season} · E${episodeMeta.episode}` : "");
+    sport === "series"
+      ? displaySeriesSubtitle(event)
+      : event.competition?.trim() || null;
   const dateLabel = event.date
     ? formatDisplayDateLabel(event.date, MADRID_TZ)
     : "";
