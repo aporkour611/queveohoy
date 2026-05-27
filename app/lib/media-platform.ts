@@ -19,7 +19,7 @@ export type MediaPlatformStyle = {
 
 /** Plataformas reconocibles en España cuando TMDB devuelve marcas US (EPIX, MGM+…). */
 const SERIES_PLATFORM_OVERRIDES: Record<string, string> = {
-  "124364": "Prime Video", // FROM
+  "124364": "HBO Max", // FROM (EPIX/MGM+ US → HBO Max España)
   "85552": "HBO Max", // Euphoria
 };
 

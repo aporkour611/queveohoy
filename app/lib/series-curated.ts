@@ -6,7 +6,9 @@ export type CuratedSeriesEpisode = {
   season: number;
   episode: number;
   episodeName?: string;
+  /** Fecha de estreno en España (Europe/Madrid), YYYY-MM-DD — no la air_date US de TMDB. */
   airDate: string;
+  /** Hora en península (HH:MM). Streaming US → suele ser madrugada del lunes. */
   airTime?: string;
   platform: string;
   competition?: string;
@@ -14,6 +16,7 @@ export type CuratedSeriesEpisode = {
   priority: number;
 };
 
+/** Series con calendario distinto al de TMDB/US — el cron no corrige la fecha sola. */
 export const CURATED_SERIES_EPISODES: CuratedSeriesEpisode[] = [
   {
     tmdbId: 124364,
@@ -21,9 +24,10 @@ export const CURATED_SERIES_EPISODES: CuratedSeriesEpisode[] = [
     patterns: [/^from\b/i],
     season: 4,
     episode: 6,
-    airDate: "2026-05-31",
-    airTime: "22:00",
-    platform: "Prime Video",
+    episodeName: "The Heart Is a Lonely Hunter",
+    airDate: "2026-06-01",
+    airTime: "03:00",
+    platform: "HBO Max",
     competition: "Nuevo episodio",
     posterPath: "/pRtJagIxpfODzzb0T0NAvZSzErC.jpg",
     priority: 95,
@@ -35,8 +39,8 @@ export const CURATED_SERIES_EPISODES: CuratedSeriesEpisode[] = [
     season: 3,
     episode: 8,
     episodeName: "Episodio 8",
-    airDate: "2026-05-31",
-    airTime: "23:00",
+    airDate: "2026-06-01",
+    airTime: "03:00",
     platform: "HBO Max",
     competition: "Final de temporada · Nuevo episodio",
     posterPath: "/6Sdm5XwdCnspdEF8fTFx6UJrl7o.jpg",

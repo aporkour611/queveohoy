@@ -154,11 +154,13 @@ function matchesFlagshipTv(event: EventRow): boolean {
   return SPANISH_TV_TITLE_PATTERNS.some((pattern) => pattern.test(blob));
 }
 
-/** Orden cronológico: izquierda = menos tiempo restante, derecha = más. */
+/** Orden cronológico: izquierda = antes en el tiempo (fecha, hora, título). */
 export function sortDestacadosBySoonest(a: EventRow, b: EventRow): number {
   const dateCmp = (a.date ?? "").localeCompare(b.date ?? "");
   if (dateCmp !== 0) return dateCmp;
-  return (a.time ?? "").localeCompare(b.time ?? "");
+  const timeCmp = (a.time ?? "").localeCompare(b.time ?? "");
+  if (timeCmp !== 0) return timeCmp;
+  return (a.title ?? "").localeCompare(b.title ?? "", "es");
 }
 
 function sortTodayItems(a: EventRow, b: EventRow): number {
