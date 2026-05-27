@@ -15,6 +15,10 @@ import {
   mergeCuratedMovieEvents,
 } from "./curated-movie-events";
 import {
+  isCuratedSeriesEvent,
+  mergeCuratedSeriesEvents,
+} from "./curated-series-events";
+import {
   isFlagshipSpanishTvEvent,
   isRecurringFlagshipSpanishTvEvent,
   mergeCuratedSpanishTvEvents,
@@ -81,7 +85,11 @@ function mergeDestacadosEvents(
   windowDays: number
 ): EventRow[] {
   return mergeCuratedSpanishTvEvents(
-    mergeCuratedMovieEvents(events, todayKey),
+    mergeCuratedSeriesEvents(
+      mergeCuratedMovieEvents(events, todayKey),
+      todayKey,
+      windowDays
+    ),
     todayKey,
     windowDays
   );
@@ -161,7 +169,9 @@ function sortTodayItems(a: EventRow, b: EventRow): number {
 
 function isPinnedWeekDestacado(event: EventRow): boolean {
   return (
-    isCuratedMovieEvent(event) || isRecurringFlagshipSpanishTvEvent(event)
+    isCuratedMovieEvent(event) ||
+    isCuratedSeriesEvent(event) ||
+    isRecurringFlagshipSpanishTvEvent(event)
   );
 }
 
@@ -304,6 +314,10 @@ export function pickWeekDestacados(
 
   for (const event of pool) {
     if (isRecurringFlagshipSpanishTvEvent(event)) addPinned(event);
+  }
+
+  for (const event of pool) {
+    if (isCuratedSeriesEvent(event)) addPinned(event);
   }
 
   for (const event of pool) {

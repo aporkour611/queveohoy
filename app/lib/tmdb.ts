@@ -133,7 +133,7 @@ export function seriesCompetitionLabel(
 /** Series que el cron siempre vigila (episodios en Destacados) */
 export const EDITORIAL_TV_TMDB_IDS = [
   124364, // FROM
-  77169, // Euphoria
+  85552, // Euphoria
   250307, // MobLand
 ] as const;
 

@@ -1,5 +1,6 @@
 import type { EventRow } from "../components/types";
 import { curatedMovieByExternalId } from "./movies-curated";
+import { curatedSeriesByExternalId } from "./series-curated";
 import { matchesSpanishTvFlagship } from "./spanish-tv-curated";
 import { encodeTmdbSource } from "./tmdb";
 import { parseTmdbPoster } from "./tmdb-client";
@@ -12,10 +13,18 @@ export function resolveEventPosterUrl(
   const fromSource = parseTmdbPoster(event.source, size);
   if (fromSource) return fromSource;
 
-  const curated = curatedMovieByExternalId(event.external_id);
-  if (curated?.posterPath) {
+  const curatedMovie = curatedMovieByExternalId(event.external_id);
+  if (curatedMovie?.posterPath) {
     return parseTmdbPoster(
-      encodeTmdbSource(curated.posterPath, curated.priority),
+      encodeTmdbSource(curatedMovie.posterPath, curatedMovie.priority),
+      size
+    );
+  }
+
+  const curatedSeries = curatedSeriesByExternalId(event.external_id);
+  if (curatedSeries?.posterPath) {
+    return parseTmdbPoster(
+      encodeTmdbSource(curatedSeries.posterPath, curatedSeries.priority),
       size
     );
   }
