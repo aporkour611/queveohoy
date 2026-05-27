@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { HomeTrafficHubs } from "./components/HomeTrafficHubs";
 import { HomePage } from "./components/HomePage";
 import { ShareTodayBar } from "./components/ShareTodayBar";
 import { HomeJsonLd } from "./components/HomeJsonLd";
@@ -10,10 +9,11 @@ import {
   buildHomeMetadataTitle,
 } from "./lib/seo-jsonld";
 import { pageMetadata, seoKeywords } from "./lib/seo";
+import { FEED_REVALIDATE_SECONDS } from "./lib/cache-config";
 
-const HomeEventOutline = dynamic(
+const HomeTrafficHubs = dynamic(
   () =>
-    import("./components/HomeEventOutline").then((mod) => mod.HomeEventOutline),
+    import("./components/HomeTrafficHubs").then((mod) => mod.HomeTrafficHubs),
   { loading: () => null }
 );
 
@@ -22,7 +22,13 @@ const HomeFaq = dynamic(
   { loading: () => null }
 );
 
-export const revalidate = 900;
+const HomeEventOutline = dynamic(
+  () =>
+    import("./components/HomeEventOutline").then((mod) => mod.HomeEventOutline),
+  { loading: () => null }
+);
+
+export const revalidate = FEED_REVALIDATE_SECONDS;
 
 export async function generateMetadata(): Promise<Metadata> {
   const { events } = await fetchHomeFeedEvents();

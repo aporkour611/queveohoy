@@ -108,8 +108,9 @@ function HomePageContent({
   const isFeaturedMode = selectedSports.length === 0;
   const hasInitialData = initialEvents.length > 0;
 
-  const loadEvents = useCallback(async (options?: { silent?: boolean }) => {
+  const loadEvents = useCallback(async (options?: { silent?: boolean; fullWeek?: boolean }) => {
     const silent = options?.silent ?? false;
+    const fullWeek = options?.fullWeek ?? false;
     if (silent) {
       setRefreshing(true);
     } else {
@@ -118,7 +119,8 @@ function HomePageContent({
     setLoadError(null);
 
     try {
-      const res = await fetch("/api/events");
+      const url = fullWeek ? "/api/events" : "/api/events?scope=home";
+      const res = await fetch(url);
       const body = (await res.json()) as {
         events?: EventRow[];
         error?: string;
@@ -129,7 +131,7 @@ function HomePageContent({
         if (!silent) setEvents([]);
       } else {
         setEvents(body.events ?? []);
-        setHasFullWeek(true);
+        if (fullWeek) setHasFullWeek(true);
       }
     } catch (err) {
       setLoadError(
@@ -174,23 +176,11 @@ function HomePageContent({
   }, [hasInitialData, loadEvents]);
 
   useEffect(() => {
-    if (hasFullWeek || loading) return;
-    const needsFullWeek =
-      weekView ||
-      activeDay >= HOME_SSR_DAY_COUNT ||
-      selectedSports.length > 0;
-    if (!needsFullWeek) return;
+    if (!weekView || hasFullWeek || loading) return;
     queueMicrotask(() => {
-      void loadEvents({ silent: true });
+      void loadEvents({ silent: true, fullWeek: true });
     });
-  }, [
-    hasFullWeek,
-    loading,
-    weekView,
-    activeDay,
-    selectedSports.length,
-    loadEvents,
-  ]);
+  }, [weekView, hasFullWeek, loading, loadEvents]);
 
   useEffect(() => {
     if (!hasPreferenceConsent()) return;
@@ -291,34 +281,42 @@ function HomePageContent({
       const day = daySections[index];
       if (!day) return;
 
-      setActiveDay(index);
+      const apply = () => {
+        setActiveDay(index);
 
-      if (weekView) {
-        lockScrollSpy();
-        requestAnimationFrame(() => scrollToDaySection(day.date));
-      } else {
-        const feed = document.getElementById("day-feed");
-        if (feed) {
-          const top =
-            feed.getBoundingClientRect().top +
-            window.scrollY -
-            getScrollAnchorOffset();
-          window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        if (weekView) {
+          lockScrollSpy();
+          requestAnimationFrame(() => scrollToDaySection(day.date));
+        } else {
+          const feed = document.getElementById("day-feed");
+          if (feed) {
+            const top =
+              feed.getBoundingClientRect().top +
+              window.scrollY -
+              getScrollAnchorOffset();
+            window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+          }
         }
+      };
+
+      if (index >= HOME_SSR_DAY_COUNT && !hasFullWeek) {
+        void loadEvents({ silent: true, fullWeek: true }).then(apply);
+        return;
       }
+
+      apply();
     },
-    [lockScrollSpy, daySections, weekView]
+    [lockScrollSpy, daySections, weekView, hasFullWeek, loadEvents]
   );
 
   const resetHome = useCallback(() => {
     lockScrollSpy();
     setActiveDay(0);
     setWeekView(false);
+    setHasFullWeek(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    if (!hasInitialData) {
-      void loadEvents({ silent: true });
-    }
-  }, [hasInitialData, loadEvents, lockScrollSpy]);
+    void loadEvents({ silent: true, fullWeek: false });
+  }, [loadEvents, lockScrollSpy]);
 
   useEffect(() => {
     if (!weekView || showInitialLoading || daySections.length === 0) return;
@@ -421,11 +419,18 @@ function HomePageContent({
               type="button"
               className={`qvh-view-toggle-btn${weekView ? " qvh-view-toggle-btn-active" : ""}`}
               onClick={() => {
-                setWeekView(true);
-                requestAnimationFrame(() => {
-                  const day = daySections[activeDay];
-                  if (day) scrollToDaySection(day.date);
-                });
+                const openWeek = () => {
+                  setWeekView(true);
+                  requestAnimationFrame(() => {
+                    const day = daySections[activeDay];
+                    if (day) scrollToDaySection(day.date);
+                  });
+                };
+                if (!hasFullWeek) {
+                  void loadEvents({ silent: true, fullWeek: true }).then(openWeek);
+                } else {
+                  openWeek();
+                }
               }}
               aria-pressed={weekView}
             >
