@@ -356,14 +356,8 @@ html {
 }
 
 .fh-main {
-  padding-top: 6px;
+  padding-top: 0;
   overflow-anchor: none;
-}
-
-@media (min-width: 768px) {
-  .fh-main {
-    padding-top: 10px;
-  }
 }
 
 .fh-page-title {
