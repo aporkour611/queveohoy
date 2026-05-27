@@ -1,18 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450" role="img" aria-label="League of Legends">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="League of Legends">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4c1d95"/>
-      <stop offset="45%" stop-color="#1e1b4b"/>
-      <stop offset="100%" stop-color="#0a0818"/>
+    <linearGradient id="lol-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0a1428"/>
+      <stop offset="45%" stop-color="#060b16"/>
+      <stop offset="100%" stop-color="#030508"/>
     </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="40%" r="58%">
-      <stop offset="0%" stop-color="#c8aa6e" stop-opacity="0.34"/>
-      <stop offset="100%" stop-color="#c8aa6e" stop-opacity="0"/>
+    <radialGradient id="lol-glow" cx="50%" cy="28%" r="68%">
+      <stop offset="0%" stop-color="#c89b3c" stop-opacity="0.45"/>
+      <stop offset="45%" stop-color="#0397ab" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="lol-beam" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c89b3c" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#c89b3c" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#0397ab" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="lol-blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
   </defs>
-  <rect width="300" height="450" fill="url(#bg)"/>
-  <rect width="300" height="450" fill="url(#glow)"/>
-  <path d="M95 310 V150 L150 125 L205 150 V310 L150 335 Z" fill="none" stroke="#c8aa6e" stroke-width="12"/>
-  <path d="M125 275 V185 L150 172 L175 185 V275 L150 288 Z" fill="#c8aa6e"/>
-  <text x="150" y="365" text-anchor="middle" fill="#ffffff" font-family="Arial Black, sans-serif" font-size="54" font-weight="900">LoL</text>
+  <rect width="400" height="600" fill="url(#lol-sky)"/>
+  <rect width="400" height="600" fill="url(#lol-glow)"/>
+  <rect x="-20" y="90" width="440" height="130" fill="url(#lol-beam)" transform="rotate(-8 200 300)"/>
+  <ellipse cx="200" cy="525" rx="215" ry="78" fill="#000" opacity="0.52" filter="url(#lol-blur)"/>
+  <path d="M0 425 Q130 365 200 392 T400 418 V600 H0 Z" fill="#050810" opacity="0.9"/>
+  <g transform="translate(200 235)">
+    <path d="M-58 88 V-72 L0 -98 L58 -72 V88 L0 112 Z" fill="none" stroke="#c89b3c" stroke-width="13"/>
+    <path d="M-32 72 V-38 L0 -52 L32 -38 V72 L0 86 Z" fill="#c89b3c"/>
+  </g>
+  <text x="200" y="375" text-anchor="middle" fill="#ffffff" font-family="Arial Black, Helvetica, sans-serif" font-size="72" font-weight="900">LoL</text>
+  <text x="200" y="410" text-anchor="middle" fill="#c89b3c" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" letter-spacing="6">LEAGUE OF LEGENDS</text>
 </svg>

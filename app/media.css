@@ -567,6 +567,54 @@
   display: block;
 }
 
+.fh-media-spotlight-visual .fh-media-spotlight-banner,
+.fh-media-spotlight-visual .fh-media-spotlight-banner .qvh-remote-poster-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.fh-media-spotlight-visual-team-duel {
+  min-height: 148px;
+}
+
+.fh-media-spotlight-visual-team-duel .qvh-spotlight-duel {
+  z-index: 2;
+}
+
+.fh-media-spotlight-visual-team-duel .fh-media-spotlight-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.42) 50%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+}
+
+.fh-media-spotlight-badge-esports {
+  background: rgba(31, 110, 67, 0.88);
+  border-color: rgba(140, 220, 170, 0.35);
+}
+
+.fh-match-media-spotlight.fh-match_cs2 {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.fh-match-media-spotlight.fh-match_valorant {
+  border-color: rgba(255, 70, 85, 0.35);
+}
+
+.fh-match-media-spotlight.fh-match_lol {
+  border-color: rgba(200, 155, 60, 0.35);
+}
+
+.fh-match-media-spotlight.fh-match_dota2 {
+  border-color: rgba(224, 75, 75, 0.35);
+}
+
 .fh-media-spotlight-visual-ufc {
   background:
     radial-gradient(circle at 20% 110%, rgba(212, 20, 20, 0.35), transparent 45%),

@@ -1,17 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450" role="img" aria-label="CS2">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Counter-Strike 2">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2e1065"/>
-      <stop offset="45%" stop-color="#1a1840"/>
-      <stop offset="100%" stop-color="#0a0818"/>
+    <linearGradient id="cs2-sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a1208"/>
+      <stop offset="35%" stop-color="#0f0d0a"/>
+      <stop offset="100%" stop-color="#050505"/>
     </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="42%" r="55%">
-      <stop offset="0%" stop-color="#f7931e" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#f7931e" stop-opacity="0"/>
+    <radialGradient id="cs2-glow" cx="50%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#de9b35" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="cs2-beam" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="45%" stop-color="#fbbf24" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="cs2-blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
   </defs>
-  <rect width="300" height="450" fill="url(#bg)"/>
-  <rect width="300" height="450" fill="url(#glow)"/>
-  <text x="150" y="255" text-anchor="middle" fill="#ffffff" font-family="Arial Black, sans-serif" font-size="92" font-weight="900" letter-spacing="-2">CS2</text>
-  <text x="150" y="305" text-anchor="middle" fill="#f7931e" font-family="Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="8">COUNTER-STRIKE</text>
+  <rect width="400" height="600" fill="url(#cs2-sky)"/>
+  <rect width="400" height="600" fill="url(#cs2-glow)"/>
+  <rect x="-40" y="80" width="480" height="120" fill="url(#cs2-beam)" transform="rotate(-12 200 300)"/>
+  <ellipse cx="200" cy="520" rx="220" ry="80" fill="#000000" opacity="0.55" filter="url(#cs2-blur)"/>
+  <path d="M0 420 Q120 360 200 390 T400 410 V600 H0 Z" fill="#0a0a0a" opacity="0.85"/>
+  <path d="M0 460 Q160 400 280 430 T400 450 V600 H0 Z" fill="#111111" opacity="0.7"/>
+  <g opacity="0.08" stroke="#f59e0b" stroke-width="1">
+    <line x1="0" y1="120" x2="400" y2="120"/>
+    <line x1="0" y1="200" x2="400" y2="200"/>
+    <line x1="0" y1="280" x2="400" y2="280"/>
+  </g>
+  <text x="200" y="250" text-anchor="middle" fill="#ffffff" font-family="Arial Black, Helvetica, sans-serif" font-size="118" font-weight="900" letter-spacing="-4">CS2</text>
+  <text x="200" y="302" text-anchor="middle" fill="#f59e0b" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" letter-spacing="10">COUNTER-STRIKE</text>
+  <text x="200" y="332" text-anchor="middle" fill="#9ca3af" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" letter-spacing="4">COMPETITIVE</text>
 </svg>

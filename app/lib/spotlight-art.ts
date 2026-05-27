@@ -12,22 +12,22 @@ const ESPORTS_GAME_ART: Record<
 > = {
   csgo: {
     url: "/esports/cs2.svg",
-    visualClass: "qvh-spotlight-visual-series",
+    visualClass: "qvh-spotlight-visual-cs2",
     label: "CS2",
   },
   valorant: {
     url: "/esports/valorant.svg",
-    visualClass: "qvh-spotlight-visual-series",
+    visualClass: "qvh-spotlight-visual-valorant",
     label: "Valorant",
   },
   lol: {
     url: "/esports/lol.svg",
-    visualClass: "qvh-spotlight-visual-series",
+    visualClass: "qvh-spotlight-visual-lol",
     label: "LoL",
   },
   dota2: {
     url: "/esports/dota2.svg",
-    visualClass: "qvh-spotlight-visual-series",
+    visualClass: "qvh-spotlight-visual-dota2",
     label: "Dota 2",
   },
 };

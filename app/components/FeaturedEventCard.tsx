@@ -74,7 +74,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
         }${stamp ? " qvh-spotlight-visual-stamped" : ""}`}
       >
         {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
-        {card.coverImage && !card.showUfcDuel ? (
+        {card.coverImage ? (
           <SpotlightCoverArt
             cover={card.coverImage}
             priority={priority}

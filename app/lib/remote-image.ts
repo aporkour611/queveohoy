@@ -35,7 +35,12 @@ export function isAllowedRemoteImageUrl(url?: string | null): boolean {
 }
 
 export function safeRemoteImageUrl(url?: string | null): string | null {
-  const normalized = normalizeRemoteImageUrl(url);
+  if (!url?.trim()) return null;
+
+  const trimmed = url.trim();
+  if (trimmed.startsWith("/")) return trimmed;
+
+  const normalized = normalizeRemoteImageUrl(trimmed);
   if (!normalized || !isAllowedRemoteImageUrl(normalized)) return null;
   return normalized;
 }

@@ -2,7 +2,7 @@
 
 import { memo, useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
-import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
+import { parseEsportsTeamLogos, esportsLogoFallbackUrls, isEsportsSport } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
 import { parseTmdbPoster } from "../lib/tmdb-client";
@@ -18,6 +18,7 @@ import {
 import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { isFreeTvChannel, resolveChannelsForEvent } from "../lib/channels";
+import { getSpotlightCardModel } from "../lib/featured-card";
 import { partidoPath } from "../lib/event-slug";
 import {
   eventDisplayTitle,
@@ -52,6 +53,13 @@ type SpotlightCardContent = {
   ufcF1Name?: string | null;
   ufcF2Name?: string | null;
   showUfcDuel?: boolean;
+  showTeamDuel?: boolean;
+  homeCrest?: string;
+  awayCrest?: string;
+  homeCrestList?: string[];
+  awayCrestList?: string[];
+  homeName?: string;
+  awayName?: string;
   stampKind?: EventCardStampKind | null;
 };
 
@@ -70,27 +78,65 @@ function SpotlightCardContent({
   ufcF1Name,
   ufcF2Name,
   showUfcDuel = false,
+  showTeamDuel = false,
+  homeCrest,
+  awayCrest,
+  homeCrestList,
+  awayCrestList,
+  homeName,
+  awayName,
   stampKind = null,
 }: SpotlightCardContent) {
-  const duelActive =
+  const ufcDuelActive =
     showUfcDuel || Boolean(ufcF1Url || ufcF2Url || (ufcF1Name && ufcF2Name));
+  const teamDuelActive =
+    showTeamDuel || Boolean(homeCrest || awayCrest || (homeName && awayName));
 
   return (
     <>
       <div
         className={`fh-media-spotlight-visual ${visualClass}${
-          duelActive ? " fh-media-spotlight-visual-ufc-duel" : ""
-        }${stampKind ? " fh-media-spotlight-visual-stamped" : ""}`}
+          ufcDuelActive ? " fh-media-spotlight-visual-ufc-duel" : ""
+        }${teamDuelActive ? " fh-media-spotlight-visual-team-duel" : ""}${
+          stampKind ? " fh-media-spotlight-visual-stamped" : ""
+        }`}
       >
         {stampKind ? <EventCardStamp kind={stampKind} size="compact" /> : null}
-        {posterUrl && !duelActive ? <RemotePoster src={posterUrl} /> : null}
-        {duelActive ? (
+        {posterUrl && !ufcDuelActive ? (
+          <RemotePoster src={posterUrl} className="fh-media-spotlight-banner" />
+        ) : null}
+        {ufcDuelActive ? (
           <UfcFightVisual
             f1Url={ufcF1Url}
             f2Url={ufcF2Url}
             f1Name={ufcF1Name}
             f2Name={ufcF2Name}
           />
+        ) : null}
+        {teamDuelActive ? (
+          <div className="qvh-spotlight-duel" aria-hidden>
+            <div className="qvh-spotlight-duel-team">
+              <TeamCrest
+                src={homeCrest}
+                srcList={homeCrestList}
+                name={homeName}
+                size={48}
+                className="qvh-spotlight-crest"
+              />
+              <span className="qvh-spotlight-duel-name">{homeName}</span>
+            </div>
+            <span className="qvh-spotlight-duel-vs">vs</span>
+            <div className="qvh-spotlight-duel-team">
+              <TeamCrest
+                src={awayCrest}
+                srcList={awayCrestList}
+                name={awayName}
+                size={48}
+                className="qvh-spotlight-crest"
+              />
+              <span className="qvh-spotlight-duel-name">{awayName}</span>
+            </div>
+          </div>
         ) : null}
         <div className="fh-media-spotlight-overlay" aria-hidden />
         <span className={`fh-media-spotlight-badge ${badgeClass}`}>
@@ -320,6 +366,38 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
       "fh-match-media-spotlight"
     );
   }
+
+  if (isEsportsSport(event.sport)) {
+    const card = getSpotlightCardModel(event, MADRID_TZ);
+
+    return cardShell(
+      <SpotlightCardContent
+        visualClass={card.visualClass ?? "qvh-spotlight-visual-esports"}
+        badgeClass="fh-media-spotlight-badge-esports"
+        badgeLabel={card.badge}
+        title={card.headline}
+        subtitle={card.meta}
+        posterUrl={card.coverImage?.url ?? null}
+        dateLabel={dateLabel || card.dateLabel}
+        time={time || card.time}
+        channels={
+          channels.length > 0
+            ? channels
+            : ([card.platform].filter(Boolean) as string[])
+        }
+        showTeamDuel={card.showTeamDuel}
+        homeCrest={card.homeCrest}
+        awayCrest={card.awayCrest}
+        homeCrestList={card.homeCrestList}
+        awayCrestList={card.awayCrestList}
+        homeName={card.homeName}
+        awayName={card.awayName}
+        stampKind={stamp}
+      />,
+      "fh-match-media-spotlight"
+    );
+  }
+
   return cardShell(
     <>
         <div className="fh-m-comp">{compDisplay}</div>
