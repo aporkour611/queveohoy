@@ -59,7 +59,13 @@ jobs:
       - name: Deploy
         id: deploy
         run: |
-          url=$(vercel deploy --prebuilt --prod --archive=tgz --token=${{ secrets.VERCEL_TOKEN }})
+          set -e
+          url=$(vercel deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}" 2>&1 | tee /tmp/vercel-deploy.log | tail -n 1)
+          if [ -z "$url" ] || ! echo "$url" | grep -qE '^https?://'; then
+            echo "Vercel deploy failed:"
+            cat /tmp/vercel-deploy.log
+            exit 1
+          fi
           echo "deployment_url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed to $url"
 

@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import type { ReactNode } from "react";
-import dynamic from "next/dynamic";
 import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, startTransition } from "react";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
@@ -15,7 +14,7 @@ import {
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
-import { EventDaySections } from "./EventDaySections";
+import { DestacadosSection } from "./DestacadosSection";
 import { FeedControls } from "./FeedControls";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { LoadingState } from "./LoadingState";
@@ -37,12 +36,7 @@ import {
   resolveHomeDayEvents,
 } from "../lib/upcoming-events";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
-
-const DestacadosSection = dynamic(
-  () =>
-    import("./DestacadosSection").then((mod) => mod.DestacadosSection),
-  { loading: () => null }
-);
+import { EventDaySections } from "./EventDaySections";
 
 type Props = {
   initialEvents?: EventRow[];
