@@ -22,6 +22,7 @@ import { ChannelBadges } from "./ChannelBadge";
 import { resolveChannelsForEvent } from "../lib/channels";
 import { getFreeLiveBroadcast } from "../lib/event-live";
 import { useLiveClock } from "../lib/use-live-clock";
+import { useClientMounted } from "../lib/use-client-mounted";
 import { partidoPath } from "../lib/event-slug";
 import {
   eventDisplayTitle,
@@ -230,9 +231,10 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const matchClass = competitionMatchClass(compDisplay, event.sport);
   const stamp = getEventCardStamp(event);
   const now = useLiveClock();
+  const mounted = useClientMounted();
   const liveBroadcast = useMemo(
-    () => getFreeLiveBroadcast(event, now),
-    [event, now]
+    () => (mounted ? getFreeLiveBroadcast(event, now) : null),
+    [mounted, event, now]
   );
   const liveChannel = liveBroadcast?.channel ?? null;
 

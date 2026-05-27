@@ -42,6 +42,13 @@
   letter-spacing: 0.01em;
 }
 
+button.qvh-channel-badge {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
 .qvh-channel-badges--prominent .qvh-channel-badge,
 .qvh-channel-badge--match {
   padding: 5px 12px;

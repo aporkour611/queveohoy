@@ -35,6 +35,7 @@ import {
   indexDisplayEventsByDate,
   resolveDayEventsFromIndex,
 } from "../lib/upcoming-events";
+import { mergeFeedEvents } from "../lib/merge-feed-events";
 
 const DestacadosSection = dynamic(
   () =>
@@ -87,6 +88,7 @@ export function HomePage({
   const [weekView, setWeekView] = useState(false);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const [hasFullWeek, setHasFullWeek] = useState(false);
+  const [fullWeekReady, setFullWeekReady] = useState(false);
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
   const pinnedScrollYRef = useRef<number | null>(null);
@@ -98,9 +100,15 @@ export function HomePage({
   const deferredFeaturedMode = deferredSports.length === 0;
   const hasInitialData = initialEvents.length > 0;
 
-  const loadEvents = useCallback(async (options?: { silent?: boolean; fullWeek?: boolean }) => {
+  const loadEvents = useCallback(async (options?: {
+    silent?: boolean;
+    fullWeek?: boolean;
+    /** Si false, carga datos de 7 días sin ampliar pestañas del calendario. */
+    expandTabs?: boolean;
+  }) => {
     const silent = options?.silent ?? false;
     const fullWeek = options?.fullWeek ?? false;
+    const expandTabs = options?.expandTabs ?? true;
     if (silent) {
       setRefreshing(true);
     } else {
@@ -120,8 +128,17 @@ export function HomePage({
         setLoadError(body.error ?? "No se pudieron cargar los eventos");
         if (!silent) setEvents([]);
       } else {
-        setEvents(body.events ?? []);
-        if (fullWeek) setHasFullWeek(true);
+        const incoming = body.events ?? [];
+        if (fullWeek) {
+          setEvents((prev) => {
+            if (incoming.length === 0 && prev.length > 0) return prev;
+            return mergeFeedEvents(prev, incoming);
+          });
+          setFullWeekReady(true);
+          if (expandTabs) setHasFullWeek(true);
+        } else {
+          setEvents(incoming);
+        }
       }
     } catch (err) {
       setLoadError(
@@ -139,15 +156,32 @@ export function HomePage({
 
   const ensureFullWeek = useCallback(() => {
     if (hasFullWeek) return Promise.resolve();
+    if (fullWeekReady) {
+      setHasFullWeek(true);
+      return Promise.resolve();
+    }
     if (fullWeekLoadRef.current) return fullWeekLoadRef.current;
 
-    fullWeekLoadRef.current = loadEvents({ silent: true, fullWeek: true }).finally(
-      () => {
-        fullWeekLoadRef.current = null;
-      }
-    );
+    fullWeekLoadRef.current = loadEvents({
+      silent: true,
+      fullWeek: true,
+      expandTabs: true,
+    }).finally(() => {
+      fullWeekLoadRef.current = null;
+    });
     return fullWeekLoadRef.current;
-  }, [hasFullWeek, loadEvents]);
+  }, [fullWeekReady, hasFullWeek, loadEvents]);
+
+  const prefetchFullWeek = useCallback(() => {
+    if (hasFullWeek || fullWeekReady || fullWeekLoadRef.current) return;
+    fullWeekLoadRef.current = loadEvents({
+      silent: true,
+      fullWeek: true,
+      expandTabs: false,
+    }).finally(() => {
+      fullWeekLoadRef.current = null;
+    });
+  }, [fullWeekReady, hasFullWeek, loadEvents]);
 
   useEffect(() => {
     if (!hasFullWeek) return;
@@ -207,22 +241,6 @@ export function HomePage({
     window.addEventListener(COOKIE_CONSENT_EVENT, onConsentChange);
     return () => window.removeEventListener(COOKIE_CONSENT_EVENT, onConsentChange);
   }, []);
-
-  useEffect(() => {
-    if (!hasInitialData || hasFullWeek) return;
-
-    const runPrefetch = () => {
-      void ensureFullWeek();
-    };
-
-    if (typeof requestIdleCallback !== "undefined") {
-      const id = requestIdleCallback(runPrefetch, { timeout: 2000 });
-      return () => cancelIdleCallback(id);
-    }
-
-    const timer = window.setTimeout(runPrefetch, 800);
-    return () => window.clearTimeout(timer);
-  }, [hasInitialData, hasFullWeek, ensureFullWeek]);
 
   const dayWindow =
     weekView || hasFullWeek ? FEED_DAY_COUNT : HOME_SSR_DAY_COUNT;
@@ -373,6 +391,7 @@ export function HomePage({
     setActiveDay(0);
     setWeekView(false);
     setHasFullWeek(false);
+    setFullWeekReady(false);
     fullWeekLoadRef.current = null;
     window.scrollTo({ top: 0, behavior: "smooth" });
     void loadEvents({ silent: true, fullWeek: false });
@@ -485,7 +504,7 @@ export function HomePage({
             weekView={weekView}
             onSelectTodayView={closeWeekView}
             onSelectWeekView={openWeekView}
-            onPrefetchWeekView={() => void ensureFullWeek()}
+            onPrefetchWeekView={prefetchFullWeek}
             selectedSports={selectedSports}
             onFilterChange={handleFilterChange}
             isFeaturedMode={isFeaturedMode}

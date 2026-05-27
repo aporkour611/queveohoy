@@ -13,6 +13,7 @@ import { EventCardStamp } from "./EventCardStamp";
 import { ChannelBadges } from "./ChannelBadge";
 import { getFreeLiveBroadcast } from "../lib/event-live";
 import { useLiveClock } from "../lib/use-live-clock";
+import { useClientMounted } from "../lib/use-client-mounted";
 
 type Props = {
   event: EventRow;
@@ -68,10 +69,11 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
   const card = getSpotlightCardModel(event, MADRID_TZ);
   const stamp = getEventCardStamp(event);
   const now = useLiveClock();
+  const mounted = useClientMounted();
   const liveChannel = useMemo(() => {
-    const live = getFreeLiveBroadcast(event, now);
-    return live?.channel ?? null;
-  }, [event, now]);
+    if (!mounted) return null;
+    return getFreeLiveBroadcast(event, now)?.channel ?? null;
+  }, [mounted, event, now]);
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (
