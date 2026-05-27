@@ -47,7 +47,7 @@ export function mergeCuratedMovieEvents(
         date: movie.releaseDate,
         time: undefined,
         sport: "cine",
-        competition: movie.competition ?? existing.competition ?? "Estreno top · Cines",
+        competition: movie.competition ?? existing.competition ?? "Cine",
         platform: existing.platform?.trim() || "Cines",
         source: curatedMovieSource(movie, existing),
       });
@@ -64,7 +64,7 @@ export function mergeCuratedMovieEvents(
       title: movie.title,
       date: movie.releaseDate,
       sport: "cine",
-      competition: movie.competition ?? "Estreno top · Cines",
+      competition: movie.competition ?? "Cine",
       platform: "Cines",
       source: curatedMovieSource(movie),
     });

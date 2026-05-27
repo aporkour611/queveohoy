@@ -57,9 +57,39 @@ export const MediaPosterCard = memo(function MediaPosterCard({
     ? formatDisplayDateLabel(event.date, MADRID_TZ)
     : "";
   const time = eventDisplayTime(event);
-  const badge = mediaBadgeForEvent(event, isSeasonPremiereEvent(event));
+  const badge =
+    sport === "cine"
+      ? { label: "Cine", tone: "heat" as const }
+      : mediaBadgeForEvent(event, isSeasonPremiereEvent(event));
   const whenLabel = [dateLabel, time].filter(Boolean).join(" · ");
   const stamp = getEventCardStamp(event);
+
+  const typeBadge = (
+    <span
+      className={`qvh-media-type-badge qvh-media-type-badge-${
+        badge.label === "Concurso"
+          ? "concurso"
+          : badge.label === "Directo"
+            ? "directo"
+            : badge.tone
+      }`}
+    >
+      {badge.label}
+    </span>
+  );
+
+  const platformPill = platform ? (
+    <div className="qvh-media-platform-pill">
+      <span
+        className={`qvh-media-platform-icon qvh-media-platform-icon-${platform.accent}`}
+      >
+        {platform.initials}
+      </span>
+      <span className="qvh-media-platform-name">{platform.name}</span>
+    </div>
+  ) : (
+    <span />
+  );
 
   return (
     <div
@@ -94,29 +124,17 @@ export const MediaPosterCard = memo(function MediaPosterCard({
           <div className="qvh-media-card-overlay" aria-hidden />
 
           <div className="qvh-media-card-top">
-            {platform ? (
-              <div className="qvh-media-platform-pill">
-                <span
-                  className={`qvh-media-platform-icon qvh-media-platform-icon-${platform.accent}`}
-                >
-                  {platform.initials}
-                </span>
-                <span className="qvh-media-platform-name">{platform.name}</span>
-              </div>
+            {sport === "cine" ? (
+              <>
+                {typeBadge}
+                {platformPill}
+              </>
             ) : (
-              <span />
+              <>
+                {platformPill}
+                {typeBadge}
+              </>
             )}
-            <span
-              className={`qvh-media-type-badge qvh-media-type-badge-${
-                badge.label === "Concurso"
-                  ? "concurso"
-                  : badge.label === "Directo"
-                    ? "directo"
-                    : badge.tone
-              }`}
-            >
-              {badge.label}
-            </span>
           </div>
 
           <div className="qvh-media-card-bottom">

@@ -134,13 +134,12 @@ export function getSpotlightCardModel(
         sport === "series"
           ? displaySeriesTitle(event)
           : event.title?.trim() || "Sin título",
-      badge:
-        premiere || curatedMovie
-          ? "Estreno"
-          : sport === "cine"
-            ? "Cine"
-            : "Series",
-      badgeVariant: premiere || curatedMovie ? "premiere" : "media",
+      badge: premiere
+        ? "Estreno"
+        : sport === "cine"
+          ? "Cine"
+          : "Series",
+      badgeVariant: premiere ? "premiere" : "media",
       dateLabel,
       time,
       meta:

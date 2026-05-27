@@ -20,7 +20,7 @@ export const CURATED_MOVIES: CuratedMovie[] = [
     tmdbId: 1325734,
     title: "El drama",
     releaseDate: "2026-05-29",
-    competition: "Estreno top · Cines",
+    competition: "Cine",
     priority: 95,
     posterPath: "/zgfBYGYCNcOZ51JDbr6tm45H8y0.jpg",
   },
