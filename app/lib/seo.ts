@@ -57,9 +57,9 @@ export const defaultOpenGraph = {
   siteName,
   images: [
     {
-      url: "/logo-queveohoy.png",
-      width: 1200,
-      height: 630,
+      url: "/icons/app-icon-512.png",
+      width: 512,
+      height: 512,
       alt: "Qué veo hoy — queveohoy.es",
     },
   ],
@@ -105,10 +105,11 @@ export const rootMetadata: Metadata = {
     card: "summary_large_image",
     title: homeTitle,
     description: defaultDescription,
-    images: ["/logo-queveohoy.png"],
+    images: ["/icons/app-icon-512.png"],
   },
   icons: {
     icon: [
+      { url: "/logo-queveohoy.svg", type: "image/svg+xml" },
       { url: "/icons/app-icon.svg", type: "image/svg+xml" },
       { url: "/icons/app-icon-192.png", sizes: "192x192", type: "image/png" },
     ],
@@ -158,6 +159,6 @@ export const homeMetadata: Metadata = {
     card: "summary_large_image",
     title: homeTitle,
     description: defaultDescription,
-    images: ["/logo-queveohoy.png"],
+    images: ["/icons/app-icon-512.png"],
   },
 };

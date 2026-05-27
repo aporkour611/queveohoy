@@ -356,13 +356,13 @@ html {
 }
 
 .fh-main {
-  padding-top: 12px;
+  padding-top: 6px;
   overflow-anchor: none;
 }
 
 @media (min-width: 768px) {
   .fh-main {
-    padding-top: 16px;
+    padding-top: 10px;
   }
 }
 

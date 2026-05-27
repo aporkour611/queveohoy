@@ -1,10 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 import {
-  getSupabasePublishableKey,
-  getSupabaseUrl,
   isSupabaseConfigured,
+  resolveSupabasePublishableKey,
+  resolveSupabaseUrl,
 } from "./supabase-config";
 
 export const supabaseConfigured = isSupabaseConfigured();
 
-export const supabase = createClient(getSupabaseUrl(), getSupabasePublishableKey());
+export const supabase = createClient(
+  resolveSupabaseUrl(),
+  resolveSupabasePublishableKey()
+);

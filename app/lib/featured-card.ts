@@ -1,5 +1,5 @@
 import { sportLabel } from "./filter-config";
-import { parseChannels } from "./channels";
+import { resolveChannelsForEvent } from "./channels";
 import { eventDisplayTime, MADRID_TZ } from "./madrid-time";
 import { formatDisplayDateLabel } from "./timezone";
 import {
@@ -60,6 +60,8 @@ export type SpotlightCardModel = {
   time: string;
   meta: string;
   platform: string;
+  /** Canales como pegatinas individuales (fútbol, motor, etc.) */
+  channelList?: string[];
   coverImage?: SpotlightCover;
   visualClass?: string;
   homeCrest?: string;
@@ -91,7 +93,11 @@ export function getSpotlightCardModel(
   const date = event.date ?? "";
   const dateLabel = date ? formatDisplayDateLabel(date, timeZone) : "";
   const time = eventDisplayTime(event);
-  const channels = parseChannels(event.platform).join(" · ");
+  const channelList =
+    sport === "ufc" || sport === "series" || sport === "cine" || sport === "tv"
+      ? []
+      : resolveChannelsForEvent(event);
+  const channels = channelList.join(" · ");
 
   if (sport === "ufc") {
     const kind = parseUfcKindFromSource(event.source);
@@ -196,6 +202,7 @@ export function getSpotlightCardModel(
       time,
       meta: event.competition?.trim() || "Motor",
       platform: event.platform?.trim() || channels || "TV",
+      channelList: channelList.length ? channelList : undefined,
       coverImage: localSpotlightCover(motorArt.url, "emblem"),
       visualClass: motorArt.visualClass,
     };
@@ -213,6 +220,7 @@ export function getSpotlightCardModel(
       time,
       meta: competition,
       platform: event.platform?.trim() || channels || "TV",
+      channelList: channelList.length ? channelList : undefined,
       coverImage: poster
         ? remoteSpotlightCover(poster, "poster")
         : mediaFallbackCover(sport) ??
@@ -272,6 +280,7 @@ export function getSpotlightCardModel(
       time,
       meta: footballSpotlightMeta(event.competition),
       platform: channels || "TV y streaming",
+      channelList: channelList.length ? channelList : undefined,
       visualClass: isChampions
         ? "qvh-spotlight-visual-champions"
         : "qvh-spotlight-visual-futbol",
@@ -291,6 +300,7 @@ export function getSpotlightCardModel(
     time,
     meta: channels || event.competition?.trim() || sportLabel(sport),
     platform: event.platform?.trim() || channels || "TV",
+    channelList: channelList.length ? channelList : undefined,
     coverImage:
       mediaFallbackCover(sport) ??
       localSpotlightCover("/fallback/deportes.svg", "emblem"),

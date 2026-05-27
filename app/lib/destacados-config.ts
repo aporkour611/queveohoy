@@ -328,10 +328,9 @@ export function pickWeekDestacados(
     }
   }
 
-  return [
-    ...pinned,
-    ...rest.sort(sortDestacadosBySoonest),
-  ].slice(0, MAX_DESTACADOS_WEEK);
+  return [...pinned, ...rest]
+    .sort(sortDestacadosBySoonest)
+    .slice(0, MAX_DESTACADOS_WEEK);
 }
 
 /** @deprecated Usar pickTodayDestacados + pickWeekDestacados */

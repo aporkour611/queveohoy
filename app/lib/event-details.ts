@@ -1,5 +1,5 @@
 import type { EventRow } from "../components/types";
-import { parseChannels } from "./channels";
+import { resolveChannelsForEvent } from "./channels";
 import { sportLabel } from "./filter-config";
 import { footballSpotlightMeta } from "./football";
 import { parseTmdbBuzzScore, parseTmdbEpisodeMeta } from "./tmdb-client";
@@ -56,7 +56,7 @@ function pushDetail(
 export function buildEventDetails(event: EventRow): EventDetail[] {
   const rows: EventDetail[] = [];
   const sport = event.sport ?? "";
-  const channels = parseChannels(event.platform).join(" · ");
+  const channels = resolveChannelsForEvent(event).join(" · ");
 
   if (sport === "futbol") {
     pushDetail(rows, "Fase", footballPhase(event.competition));

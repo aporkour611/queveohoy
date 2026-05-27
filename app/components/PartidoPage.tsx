@@ -7,6 +7,7 @@ import { SiteFooter } from "./SiteFooter";
 import { Logo } from "./Logo";
 import { eventLabel } from "../lib/seo-events";
 import { displayTime } from "../lib/madrid-time";
+import { ChannelBadges } from "./ChannelBadge";
 import { resolveChannelsForEvent } from "../lib/channels";
 import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 
@@ -47,11 +48,17 @@ export function PartidoPage({ event }: Props) {
               event.competition?.split(" · ")[0],
               dateLabel,
               event.time ? displayTime(event.time) : null,
-              channels.length ? channels.join(", ") : null,
             ]
               .filter(Boolean)
               .join(" · ")}
           </p>
+          {channels.length > 0 ? (
+            <ChannelBadges
+              channels={channels}
+              variant="inline"
+              className="fh-page-lead-channels"
+            />
+          ) : null}
 
           <div className="fh-partido-card-wrap">
             <MatchCard event={event} />

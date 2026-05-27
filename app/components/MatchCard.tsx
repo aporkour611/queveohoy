@@ -18,7 +18,8 @@ import {
 } from "../lib/thesportsdb-ufc-client";
 import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
-import { isFreeTvChannel, resolveChannelsForEvent } from "../lib/channels";
+import { ChannelBadges } from "./ChannelBadge";
+import { resolveChannelsForEvent } from "../lib/channels";
 import { partidoPath } from "../lib/event-slug";
 import {
   eventDisplayTitle,
@@ -112,21 +113,9 @@ function SpotlightCardContent({
       <div className="fh-media-spotlight-body">
         <h4 className="fh-media-spotlight-title">{title}</h4>
         {subtitle ? <p className="fh-media-spotlight-meta">{subtitle}</p> : null}
-        {channels.length > 0 && (
-          <div className="fh-m-chan fh-m-chan-prominent">
-            {channels.map((ch) => (
-              <span
-                key={ch}
-                className={
-                  isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"
-                }
-                title={isFreeTvChannel(ch) ? "En abierto" : "De pago"}
-              >
-                {ch}
-              </span>
-            ))}
-          </div>
-        )}
+        {channels.length > 0 ? (
+          <ChannelBadges channels={channels} prominent />
+        ) : null}
       </div>
     </>
   );
@@ -134,6 +123,7 @@ function SpotlightCardContent({
 
 function EventDetailsPanel({ event }: { event: EventRow }) {
   const details = useMemo(() => buildEventDetails(event), [event]);
+  const watchChannels = useMemo(() => resolveChannelsForEvent(event), [event]);
 
   if (!details.length) return null;
 
@@ -142,7 +132,13 @@ function EventDetailsPanel({ event }: { event: EventRow }) {
       {details.map(({ label, value }) => (
         <div key={label} className="fh-m-detail-row">
           <span className="fh-m-detail-label">{label}</span>
-          <span className="fh-m-detail-value">{value}</span>
+          {label === "Dónde ver" && watchChannels.length > 0 ? (
+            <span className="fh-m-detail-value">
+              <ChannelBadges channels={watchChannels} variant="inline" />
+            </span>
+          ) : (
+            <span className="fh-m-detail-value">{value}</span>
+          )}
         </div>
       ))}
     </div>
@@ -381,19 +377,9 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
           </>
         )}
 
-      {channels.length > 0 && (
-        <div className="fh-m-chan fh-m-chan-prominent">
-          {channels.map((ch) => (
-            <span
-              key={ch}
-              className={isFreeTvChannel(ch) ? "fh-ch-free" : "fh-ch-paid"}
-              title={isFreeTvChannel(ch) ? "En abierto" : "De pago"}
-            >
-              {ch}
-            </span>
-          ))}
-        </div>
-      )}
+      {channels.length > 0 ? (
+        <ChannelBadges channels={channels} prominent />
+      ) : null}
     </>,
     "",
     true

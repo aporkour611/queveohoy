@@ -10,6 +10,7 @@ import { RemotePoster } from "./RemotePoster";
 import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { EventCardStamp } from "./EventCardStamp";
+import { ChannelBadges } from "./ChannelBadge";
 
 type Props = {
   event: EventRow;
@@ -136,7 +137,9 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
       <div className="qvh-spotlight-body">
         <h3 className="qvh-spotlight-headline">{card.headline}</h3>
         {card.meta ? <p className="qvh-spotlight-meta">{card.meta}</p> : null}
-        {card.platform && card.platform !== card.meta ? (
+        {card.channelList?.length ? (
+          <ChannelBadges channels={card.channelList} variant="spotlight" />
+        ) : card.platform && card.platform !== card.meta ? (
           <p
             className={`qvh-spotlight-platform ${
               card.badgeVariant === "champions"

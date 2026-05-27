@@ -1,0 +1,73 @@
+.qvh-channel-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.qvh-channel-badges--match {
+  justify-content: center;
+  width: 100%;
+  margin-top: 4px;
+  padding-top: 2px;
+}
+
+.qvh-channel-badges--prominent {
+  gap: 8px;
+}
+
+.qvh-channel-badges--spotlight {
+  justify-content: flex-start;
+  margin-top: 4px;
+}
+
+.qvh-channel-badges--inline {
+  justify-content: flex-start;
+}
+
+.fh-page-lead-channels {
+  margin: -4px 0 18px;
+}
+
+.qvh-channel-badge {
+  font-family: var(--qvh-font-display);
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.8em;
+  font-weight: 700;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  white-space: nowrap;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+.qvh-channel-badges--prominent .qvh-channel-badge,
+.qvh-channel-badge--match {
+  padding: 5px 12px;
+  font-size: 0.88em;
+}
+
+.qvh-channel-badge--free {
+  box-shadow:
+    0 0 0 1px rgba(90, 158, 40, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.qvh-channel-badge--paid {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.qvh-channel-badge--spotlight {
+  font-size: 0.78em;
+  padding: 4px 9px;
+}
+
+.fh-m-detail-value .qvh-channel-badges--inline {
+  justify-content: flex-end;
+}
+
+.fh-m-detail-row .qvh-channel-badge {
+  font-size: 0.75em;
+  padding: 3px 8px;
+}

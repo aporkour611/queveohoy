@@ -2,7 +2,7 @@ import webpush from "web-push";
 import type { EventRow } from "../components/types";
 import { partidoPath } from "./event-slug";
 import { eventDisplayTitle } from "./event-display";
-import { parseChannels, resolveChannelsForEvent } from "./channels";
+import { resolveChannelsForEvent } from "./channels";
 import { displayTime, madridDateTimeToUtc, toMadridDateKey } from "./madrid-time";
 import {
   normalizePushTopics,
@@ -49,7 +49,6 @@ function eventNotificationCopy(event: EventRow): { title: string; body: string }
   const title = eventDisplayTitle(event);
   const time = displayTime(event.time);
   const channels =
-    parseChannels(event.platform).join(" · ") ||
     resolveChannelsForEvent(event).join(" · ") ||
     event.platform?.trim() ||
     "Consulta horario en la web";

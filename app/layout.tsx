@@ -7,6 +7,7 @@ import "./destacados.css";
 import "./media.css";
 import "./event-stamp.css";
 import "./push.css";
+import "./channel-badges.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { Analytics } from "./components/Analytics";
 import { SpeedInsights } from "./components/SpeedInsights";
@@ -18,7 +19,7 @@ export const preferredRegion = ["cdg1", "fra1"];
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "600", "700", "800"],
   display: "swap",
 });
 

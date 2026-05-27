@@ -194,7 +194,7 @@ export function buildHomeJsonLd(events: EventRow[]) {
         "@id": `${siteUrl}/#organization`,
         name: siteBrand,
         url: siteUrl,
-        logo: `${siteUrl}/logo-queveohoy.png`,
+        logo: `${siteUrl}/logo-queveohoy.svg`,
       },
       {
         "@type": "WebSite",
@@ -248,7 +248,7 @@ export function buildDateJsonLd(dateKey: string, events: EventRow[]) {
         "@id": `${siteUrl}/#organization`,
         name: siteBrand,
         url: siteUrl,
-        logo: `${siteUrl}/logo-queveohoy.png`,
+        logo: `${siteUrl}/logo-queveohoy.svg`,
       },
       {
         "@type": "WebSite",
@@ -311,7 +311,7 @@ export function buildHubJsonLd(hub: SeoHubConfig, events: EventRow[]) {
         "@id": `${siteUrl}/#organization`,
         name: siteBrand,
         url: siteUrl,
-        logo: `${siteUrl}/logo-queveohoy.png`,
+        logo: `${siteUrl}/logo-queveohoy.svg`,
       },
       {
         "@type": "WebSite",

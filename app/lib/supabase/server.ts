@@ -1,9 +1,12 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import {
-  getSupabasePublishableKey,
-  getSupabaseUrl,
-} from "../supabase-admin";
+  resolveSupabasePublishableKey,
+  resolveSupabaseUrl,
+} from "../supabase-config";
 
 export function createClient() {
-  return createSupabaseClient(getSupabaseUrl(), getSupabasePublishableKey());
+  return createSupabaseClient(
+    resolveSupabaseUrl(),
+    resolveSupabasePublishableKey()
+  );
 }
