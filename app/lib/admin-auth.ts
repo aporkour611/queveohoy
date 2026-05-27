@@ -66,6 +66,21 @@ export function isAdminRequest(request: Request): boolean {
   return isAdminCookieValid(match?.[1]);
 }
 
+export function verifyAdminSecret(candidate: string): boolean {
+  const secret = getAdminSecret();
+  return Boolean(secret && candidate && safeEqual(candidate, secret));
+}
+
+export function adminSessionCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: ADMIN_SESSION_MAX_AGE_SEC,
+  };
+}
+
 /** Vercel Cron envía `Authorization: Bearer CRON_SECRET`. */
 export function isCronAuthorized(request: Request): boolean {
   const secret = getCronSecret();

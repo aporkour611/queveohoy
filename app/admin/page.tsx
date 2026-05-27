@@ -36,7 +36,14 @@ export default function AdminPage() {
 
   return (
     <main className="p-6 text-white bg-black min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">Admin — Añadir evento</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-3xl font-bold">Admin — Añadir evento</h1>
+        <form action="/api/admin/logout" method="post">
+          <button type="submit" className="text-sm text-neutral-400 underline">
+            Cerrar sesión
+          </button>
+        </form>
+      </div>
       <p className="mb-6 max-w-md text-sm text-neutral-400">
         Los cambios se guardan en el servidor con permisos de administrador.
       </p>

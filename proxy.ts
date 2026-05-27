@@ -2,38 +2,24 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
   ADMIN_COOKIE,
-  createAdminSessionToken,
-  getAdminSecret,
   isAdminCookieValid,
 } from "@/app/lib/admin-auth";
 
 export async function proxy(request: NextRequest) {
-  const secret = getAdminSecret();
-  const adminKey = request.nextUrl.searchParams.get("admin");
+  const { pathname } = request.nextUrl;
 
-  if (adminKey && secret && adminKey === secret) {
-    const token = createAdminSessionToken();
-    if (!token) {
-      return NextResponse.redirect(new URL("/", request.url));
+  if (pathname === "/admin/login") {
+    const cookie = request.cookies.get(ADMIN_COOKIE)?.value;
+    if (isAdminCookieValid(cookie)) {
+      return NextResponse.redirect(new URL("/admin", request.url));
     }
-
-    const url = request.nextUrl.clone();
-    url.searchParams.delete("admin");
-    const response = NextResponse.redirect(url);
-    response.cookies.set(ADMIN_COOKIE, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365,
-    });
-    return response;
+    return NextResponse.next();
   }
 
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  if (pathname.startsWith("/admin")) {
     const cookie = request.cookies.get(ADMIN_COOKIE)?.value;
     if (!isAdminCookieValid(cookie)) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
   }
 

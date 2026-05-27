@@ -29,6 +29,7 @@ Abre [http://localhost:3000](http://localhost:3000).
 | `npm run dev` | Servidor de desarrollo |
 | `npm run build` | Build de producción |
 | `npm run lint` | ESLint |
+| `npm run test` | Tests unitarios (Vitest) |
 | `npm run ping-search` | IndexNow manual (requiere `CRON_SECRET`) |
 | `npm run vapid:keys` | Genera claves Web Push |
 
@@ -42,7 +43,7 @@ Ver `.env.example`. En producción son obligatorias:
 
 ## Admin
 
-Acceso: `/?admin=TU_ADMIN_SECRET` (cookie firmada, HttpOnly). Panel en `/admin`.
+Acceso en `/admin/login` (POST con `ADMIN_SECRET`; cookie firmada HttpOnly). Panel en `/admin`.
 
 Las escrituras en `events` van por `/api/admin/events` con service role; la tabla tiene RLS de solo lectura para anon.
 
@@ -54,8 +55,8 @@ Ingesta: fútbol, F1, MotoGP, UFC, baloncesto, e-sports, TMDB, etc.
 
 ## CI/CD
 
-- **PR → main:** lint (`.github/workflows/validate.yml`)
-- **Push → main:** lint + build Vercel + deploy (`.github/workflows/deploy.yml`)
+- **PR → main:** lint + tests (`.github/workflows/validate.yml`)
+- **Push → main:** lint + tests + build Vercel + deploy (`.github/workflows/deploy.yml`)
 
 ## SEO
 
