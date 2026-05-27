@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { countHiddenHomeEvents } from "../lib/featured";
@@ -14,7 +14,9 @@ import {
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
+import { DayTabs } from "./DayTabs";
 import { EventDaySections } from "./EventDaySections";
+import { EventFilters } from "./EventFilters";
 import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
 import { Logo } from "./Logo";
@@ -29,7 +31,10 @@ import {
   MADRID_TZ,
 } from "../lib/timezone";
 import { filterEventsByQuery } from "../lib/event-search";
-import { resolveDayEventsForFeed } from "../lib/upcoming-events";
+import {
+  indexDisplayEventsByDate,
+  resolveDayEventsFromIndex,
+} from "../lib/upcoming-events";
 
 const DestacadosSection = dynamic(
   () =>
@@ -37,18 +42,8 @@ const DestacadosSection = dynamic(
   { loading: () => null }
 );
 
-const EventFilters = dynamic(
-  () => import("./EventFilters").then((mod) => mod.EventFilters),
-  { loading: () => null }
-);
-
 const EventSearch = dynamic(
   () => import("./EventSearch").then((mod) => mod.EventSearch),
-  { loading: () => null }
-);
-
-const DayTabs = dynamic(
-  () => import("./DayTabs").then((mod) => mod.DayTabs),
   { loading: () => null }
 );
 
@@ -92,6 +87,8 @@ export function HomePage({
   const scrollLockTimerRef = useRef<number | null>(null);
 
   const isFeaturedMode = selectedSports.length === 0;
+  const deferredSports = useDeferredValue(selectedSports);
+  const deferredFeaturedMode = deferredSports.length === 0;
   const hasInitialData = initialEvents.length > 0;
 
   const loadEvents = useCallback(async (options?: { silent?: boolean; fullWeek?: boolean }) => {
@@ -170,9 +167,12 @@ export function HomePage({
 
   useEffect(() => {
     if (!hasPreferenceConsent()) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedSports));
-    } catch {}
+    const timer = window.setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedSports));
+      } catch {}
+    }, 120);
+    return () => window.clearTimeout(timer);
   }, [selectedSports]);
 
   useEffect(() => {
@@ -198,18 +198,28 @@ export function HomePage({
     [dayWindow]
   );
 
+  const eventsByDate = useMemo(
+    () => indexDisplayEventsByDate(displayEvents),
+    [displayEvents]
+  );
+
+  const deferredSportSet = useMemo(
+    () => new Set(deferredSports),
+    [deferredSports]
+  );
+
   const daySections = useMemo(
     () =>
       displayDays.map((day) => ({
         ...day,
-        events: resolveDayEventsForFeed(
-          displayEvents,
+        events: resolveDayEventsFromIndex(
+          eventsByDate,
           day.date,
-          selectedSports,
-          isFeaturedMode
+          deferredSportSet,
+          deferredFeaturedMode
         ),
       })),
-    [displayDays, displayEvents, selectedSports, isFeaturedMode]
+    [displayDays, eventsByDate, deferredSportSet, deferredFeaturedMode]
   );
 
   const feedEvents = useMemo(
@@ -220,10 +230,10 @@ export function HomePage({
   const activeSection = daySections[activeDay];
 
   const hiddenOnActiveDay = useMemo(() => {
-    if (!isFeaturedMode || !activeSection) return 0;
+    if (!deferredFeaturedMode || !activeSection) return 0;
     const rawDay = displayEvents.filter((e) => e.date === activeSection.date);
     return countHiddenHomeEvents(rawDay, activeSection.events);
-  }, [isFeaturedMode, activeSection, displayEvents]);
+  }, [deferredFeaturedMode, activeSection, displayEvents]);
 
   const searchResults = useMemo(
     () => filterEventsByQuery(feedEvents, searchQuery),
@@ -242,14 +252,10 @@ export function HomePage({
     }, ms);
   }, []);
 
-  const sportsFilterKey = useMemo(
-    () => selectedSports.join(","),
-    [selectedSports]
-  );
-
-  useEffect(() => {
-    deferClientStateUpdate(() => setActiveDay(0));
-  }, [sportsFilterKey]);
+  const handleFilterChange = useCallback((ids: string[]) => {
+    setSelectedSports(ids);
+    setActiveDay(0);
+  }, []);
 
   useEffect(() => {
     deferClientStateUpdate(() =>
@@ -361,7 +367,7 @@ export function HomePage({
 
           <EventFilters
             selected={selectedSports}
-            onChange={setSelectedSports}
+            onChange={handleFilterChange}
             isFeaturedMode={isFeaturedMode}
           />
 

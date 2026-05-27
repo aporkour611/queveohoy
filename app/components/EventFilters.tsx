@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { FILTER_GROUPS, QUICK_FILTERS, sportLabel } from "../lib/filter-config";
 
 type Props = {
@@ -17,11 +17,16 @@ function filterSummary(selected: string[]): string {
   return `${selected.slice(0, 2).map(sportLabel).join(", ")} +${selected.length - 2}`;
 }
 
-export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
+export const EventFilters = memo(function EventFilters({
+  selected,
+  onChange,
+  isFeaturedMode,
+}: Props) {
   const [open, setOpen] = useState(false);
+  const selectedSet = useMemo(() => new Set(selected), [selected]);
 
   function toggle(id: string) {
-    if (selected.includes(id)) {
+    if (selectedSet.has(id)) {
       onChange(selected.filter((s) => s !== id));
     } else {
       onChange([...selected, id]);
@@ -38,7 +43,7 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
   function isQuickFilterActive(sportIds: string[]): boolean {
     if (sportIds.length === 0) return selected.length === 0;
     if (sportIds.length !== selected.length) return false;
-    return sportIds.every((id) => selected.includes(id));
+    return sportIds.every((id) => selectedSet.has(id));
   }
 
   return (
@@ -144,7 +149,7 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
             </span>
             <div className="fh-filter-chips">
               {group.options.map((opt) => {
-                const on = selected.includes(opt.id);
+                const on = selectedSet.has(opt.id);
                 return (
                   <button
                     key={opt.id}
@@ -170,4 +175,4 @@ export function EventFilters({ selected, onChange, isFeaturedMode }: Props) {
       </div>
     </div>
   );
-}
+});

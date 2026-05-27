@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useMemo } from "react";
 import type { EventRow } from "./types";
 import { MatchCard } from "./MatchCard";
 import { MediaEntertainmentSection } from "./MediaEntertainmentSection";
@@ -46,7 +47,12 @@ type Props = {
   emptyMessage?: string;
 };
 
-export function EventDaySections({ events, emptyMessage }: Props) {
+export const EventDaySections = memo(function EventDaySections({
+  events,
+  emptyMessage,
+}: Props) {
+  const sections = useMemo(() => groupForDisplay(events), [events]);
+
   if (events.length === 0) {
     return emptyMessage ? (
       <div className="fh-day-empty">
@@ -54,8 +60,6 @@ export function EventDaySections({ events, emptyMessage }: Props) {
       </div>
     ) : null;
   }
-
-  const sections = groupForDisplay(events);
 
   return (
     <>
@@ -94,4 +98,4 @@ export function EventDaySections({ events, emptyMessage }: Props) {
       />
     </>
   );
-}
+});

@@ -99,3 +99,40 @@ export function resolveDayEventsForFeed(
     dayEvents.filter((e) => selectedSports.includes(e.sport ?? ""))
   );
 }
+
+/** Indexa eventos visibles por fecha (una sola pasada). */
+export function indexDisplayEventsByDate(
+  events: EventRow[]
+): Map<string, EventRow[]> {
+  const byDate = new Map<string, EventRow[]>();
+
+  for (const event of filterEventsForDisplay(events)) {
+    if (!event.date) continue;
+    const list = byDate.get(event.date);
+    if (list) list.push(event);
+    else byDate.set(event.date, [event]);
+  }
+
+  return byDate;
+}
+
+export function resolveDayEventsFromIndex(
+  byDate: Map<string, EventRow[]>,
+  date: string,
+  selectedSports: Set<string>,
+  isFeaturedMode: boolean
+): EventRow[] {
+  const dayEvents = byDate.get(date) ?? [];
+
+  if (isFeaturedMode) {
+    return pickHomePageEvents(dayEvents);
+  }
+
+  if (selectedSports.size === 0) {
+    return pickHomePageEvents(dayEvents);
+  }
+
+  return pickFilteredEvents(
+    dayEvents.filter((e) => selectedSports.has(e.sport ?? ""))
+  );
+}
