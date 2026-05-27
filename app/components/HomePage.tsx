@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
-import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, startTransition } from "react";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { countHiddenHomeEvents } from "../lib/featured";
@@ -57,8 +57,10 @@ function getScrollAnchorOffset(): number {
   return (Number.isFinite(navH) ? navH : 64) + 12;
 }
 
-function scrollToDaySection(date: string) {
-  const el = document.getElementById(`day-${date}`);
+function scrollToDaySection(date: string, weekMode = false) {
+  const el = document.getElementById(
+    weekMode ? `day-week-${date}` : `day-${date}`
+  );
   if (!el) return;
 
   const top =
@@ -80,15 +82,20 @@ export function HomePage({
   initialError = null,
   children,
 }: Props = {}) {
-  const [events, setEvents] = useState(initialEvents);
+  const [events, setEvents] = useState(() =>
+    mergeFeedEvents(initialEvents, initialDestacadosEvents)
+  );
   const [loading, setLoading] = useState(initialEvents.length === 0);
   const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(initialError);
   const [activeDay, setActiveDay] = useState(0);
   const [weekView, setWeekView] = useState(false);
+  const [weekViewMounted, setWeekViewMounted] = useState(false);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const [hasFullWeek, setHasFullWeek] = useState(false);
-  const [fullWeekReady, setFullWeekReady] = useState(false);
+  const [fullWeekReady, setFullWeekReady] = useState(
+    () => initialDestacadosEvents.length > 0
+  );
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
   const pinnedScrollYRef = useRef<number | null>(null);
@@ -105,13 +112,16 @@ export function HomePage({
     fullWeek?: boolean;
     /** Si false, carga datos de 7 días sin ampliar pestañas del calendario. */
     expandTabs?: boolean;
+    /** Overlay de carga sobre el feed (solo si hace falta feedback explícito). */
+    showLoader?: boolean;
   }) => {
     const silent = options?.silent ?? false;
     const fullWeek = options?.fullWeek ?? false;
     const expandTabs = options?.expandTabs ?? true;
-    if (silent) {
+    const showLoader = options?.showLoader ?? false;
+    if (showLoader) {
       setRefreshing(true);
-    } else {
+    } else if (!silent) {
       setLoading(true);
     }
     setLoadError(null);
@@ -147,9 +157,9 @@ export function HomePage({
       if (!silent) setEvents([]);
     }
 
-    if (silent) {
+    if (showLoader) {
       setRefreshing(false);
-    } else {
+    } else if (!silent) {
       setLoading(false);
     }
   }, []);
@@ -173,6 +183,7 @@ export function HomePage({
   }, [fullWeekReady, hasFullWeek, loadEvents]);
 
   const prefetchFullWeek = useCallback(() => {
+    setWeekViewMounted(true);
     if (hasFullWeek || fullWeekReady || fullWeekLoadRef.current) return;
     fullWeekLoadRef.current = loadEvents({
       silent: true,
@@ -182,6 +193,20 @@ export function HomePage({
       fullWeekLoadRef.current = null;
     });
   }, [fullWeekReady, hasFullWeek, loadEvents]);
+
+  useEffect(() => {
+    if (!fullWeekReady || weekViewMounted) return;
+
+    const mountWeekPane = () => setWeekViewMounted(true);
+
+    if (typeof requestIdleCallback !== "undefined") {
+      const id = requestIdleCallback(mountWeekPane, { timeout: 2500 });
+      return () => cancelIdleCallback(id);
+    }
+
+    const timer = window.setTimeout(mountWeekPane, 1200);
+    return () => window.clearTimeout(timer);
+  }, [fullWeekReady, weekViewMounted]);
 
   useEffect(() => {
     if (!hasFullWeek) return;
@@ -309,7 +334,7 @@ export function HomePage({
     }, ms);
   }, []);
 
-  const pinScrollForViewToggle = useCallback((ms = 1200) => {
+  const pinScrollForViewToggle = useCallback((ms = 350) => {
     pinnedScrollYRef.current = captureScrollY();
     scrollLockRef.current = true;
 
@@ -363,7 +388,7 @@ export function HomePage({
 
         if (weekView) {
           lockScrollSpy();
-          requestAnimationFrame(() => scrollToDaySection(day.date));
+          requestAnimationFrame(() => scrollToDaySection(day.date, true));
         } else {
           const feed = document.getElementById("day-feed");
           if (feed) {
@@ -401,7 +426,7 @@ export function HomePage({
     if (!weekView || showInitialLoading || daySections.length === 0) return;
 
     const sections = daySections
-      .map((d) => document.getElementById(`day-${d.date}`))
+      .map((d) => document.getElementById(`day-week-${d.date}`))
       .filter(Boolean) as HTMLElement[];
 
     if (!sections.length) return;
@@ -443,16 +468,20 @@ export function HomePage({
   }, [showInitialLoading, daySections, weekView]);
 
   const openWeekView = useCallback(() => {
-    pinScrollForViewToggle(800);
-    setWeekView(true);
-    if (!hasFullWeek) {
+    setWeekViewMounted(true);
+    pinScrollForViewToggle();
+    startTransition(() => {
+      setWeekView(true);
+      if (fullWeekReady) setHasFullWeek(true);
+    });
+    if (!fullWeekReady) {
       void ensureFullWeek();
     }
-  }, [pinScrollForViewToggle, hasFullWeek, ensureFullWeek]);
+  }, [pinScrollForViewToggle, fullWeekReady, ensureFullWeek]);
 
   const closeWeekView = useCallback(() => {
     pinScrollForViewToggle();
-    setWeekView(false);
+    startTransition(() => setWeekView(false));
   }, [pinScrollForViewToggle]);
 
   useLayoutEffect(() => {
@@ -464,7 +493,7 @@ export function HomePage({
     if (pinnedScrollYRef.current === null) return;
 
     schedulePinnedScrollRestore();
-    const timers = [32, 96, 200, 400].map((delay) =>
+    const timers = [0, 32, 96].map((delay) =>
       window.setTimeout(schedulePinnedScrollRestore, delay)
     );
 
@@ -533,74 +562,90 @@ export function HomePage({
               </div>
             ) : (
               <FeedErrorBoundary>
-                {weekView ? (
-                  <div className="fh-day-feed" id="day-feed">
-                  {daySections.map((section, i) => (
-                    <section
-                      key={section.date}
-                      id={`day-${section.date}`}
-                      className="fh-day-section fh-matchday"
-                      aria-labelledby={`day-title-${section.date}`}
-                    >
-                      <h2
-                        id={`day-title-${section.date}`}
-                        className="fh-matchday-header"
-                      >
-                        {section.title}
-                        {isFeaturedMode && i === activeDay && (
-                          <span className="fh-featured-badge">Destacados</span>
-                        )}
-                      </h2>
-
-                      <EventDaySections
-                        events={section.events}
-                        emptyMessage={
-                          isFeaturedMode
-                            ? "Sin eventos este día."
-                            : "Sin eventos para estos filtros."
-                        }
-                      />
-                    </section>
-                  ))}
-                </div>
-              ) : (
                 <div className="fh-day-feed" id="day-feed">
-                  {activeSection ? (
-                    <section
-                      id={`day-${activeSection.date}`}
-                      className="fh-day-section fh-matchday"
-                      aria-labelledby={`day-title-${activeSection.date}`}
+                  {weekViewMounted ? (
+                    <div
+                      className={
+                        weekView
+                          ? "fh-feed-pane fh-feed-pane-week"
+                          : "fh-feed-pane fh-feed-pane-hidden"
+                      }
+                      aria-hidden={!weekView}
                     >
-                      <h2
-                        id={`day-title-${activeSection.date}`}
-                        className="fh-matchday-header"
-                      >
-                        {activeSection.title}
-                        {isFeaturedMode && activeDay === 0 && (
-                          <span className="fh-featured-badge">Destacados</span>
-                        )}
-                      </h2>
+                      {daySections.map((section, i) => (
+                        <section
+                          key={section.date}
+                          id={`day-week-${section.date}`}
+                          className="fh-day-section fh-matchday"
+                          aria-labelledby={`day-week-title-${section.date}`}
+                        >
+                          <h2
+                            id={`day-week-title-${section.date}`}
+                            className="fh-matchday-header"
+                          >
+                            {section.title}
+                            {isFeaturedMode && weekView && i === activeDay ? (
+                              <span className="fh-featured-badge">Destacados</span>
+                            ) : null}
+                          </h2>
 
-                      <EventDaySections
-                        events={activeSection.events}
-                        emptyMessage={
-                          isFeaturedMode
-                            ? "Sin eventos este día."
-                            : "Sin eventos para estos filtros."
-                        }
-                      />
-                      {hiddenOnActiveDay > 0 ? (
-                        <p className="fh-home-more-link">
-                          <Link href={partidosHoyDatePath(activeSection.date)}>
-                            Ver todos los eventos ({hiddenOnActiveDay} más) →
-                          </Link>
-                        </p>
-                      ) : null}
-                    </section>
+                          <EventDaySections
+                            events={section.events}
+                            emptyMessage={
+                              isFeaturedMode
+                                ? "Sin eventos este día."
+                                : "Sin eventos para estos filtros."
+                            }
+                          />
+                        </section>
+                      ))}
+                    </div>
                   ) : null}
+
+                  <div
+                    className={
+                      weekView
+                        ? "fh-feed-pane fh-feed-pane-hidden"
+                        : "fh-feed-pane fh-feed-pane-today"
+                    }
+                    aria-hidden={weekView}
+                  >
+                    {activeSection ? (
+                      <section
+                        id={`day-${activeSection.date}`}
+                        className="fh-day-section fh-matchday"
+                        aria-labelledby={`day-title-${activeSection.date}`}
+                      >
+                        <h2
+                          id={`day-title-${activeSection.date}`}
+                          className="fh-matchday-header"
+                        >
+                          {activeSection.title}
+                          {isFeaturedMode && activeDay === 0 ? (
+                            <span className="fh-featured-badge">Destacados</span>
+                          ) : null}
+                        </h2>
+
+                        <EventDaySections
+                          events={activeSection.events}
+                          emptyMessage={
+                            isFeaturedMode
+                              ? "Sin eventos este día."
+                              : "Sin eventos para estos filtros."
+                          }
+                        />
+                        {hiddenOnActiveDay > 0 ? (
+                          <p className="fh-home-more-link">
+                            <Link href={partidosHoyDatePath(activeSection.date)}>
+                              Ver todos los eventos ({hiddenOnActiveDay} más) →
+                            </Link>
+                          </p>
+                        ) : null}
+                      </section>
+                    ) : null}
+                  </div>
                 </div>
-              )}
-            </FeedErrorBoundary>
+              </FeedErrorBoundary>
           )}
           </div>
 

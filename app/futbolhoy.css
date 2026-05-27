@@ -538,6 +538,10 @@ html {
   overflow-anchor: none;
 }
 
+.fh-feed-pane-hidden {
+  display: none !important;
+}
+
 .fh-day-section {
   scroll-margin-top: calc(var(--qvh-navbar-h) + 8px);
 }
