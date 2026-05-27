@@ -17,6 +17,7 @@ import {
 import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { EventDaySections } from "./EventDaySections";
 import { FeedControls } from "./FeedControls";
+import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
 import { PushNavButton } from "./PushNotifications";
@@ -90,6 +91,7 @@ export function HomePage({
   const scrollLockTimerRef = useRef<number | null>(null);
   const pinnedScrollYRef = useRef<number | null>(null);
   const scrollRestoreFrameRef = useRef<number | null>(null);
+  const fullWeekLoadRef = useRef<Promise<void> | null>(null);
 
   const isFeaturedMode = selectedSports.length === 0;
   const deferredSports = useDeferredValue(selectedSports);
@@ -134,6 +136,23 @@ export function HomePage({
       setLoading(false);
     }
   }, []);
+
+  const ensureFullWeek = useCallback(() => {
+    if (hasFullWeek) return Promise.resolve();
+    if (fullWeekLoadRef.current) return fullWeekLoadRef.current;
+
+    fullWeekLoadRef.current = loadEvents({ silent: true, fullWeek: true }).finally(
+      () => {
+        fullWeekLoadRef.current = null;
+      }
+    );
+    return fullWeekLoadRef.current;
+  }, [hasFullWeek, loadEvents]);
+
+  useEffect(() => {
+    if (!hasFullWeek) return;
+    fullWeekLoadRef.current = null;
+  }, [hasFullWeek]);
 
   useEffect(() => {
     deferClientStateUpdate(() => {
@@ -189,7 +208,24 @@ export function HomePage({
     return () => window.removeEventListener(COOKIE_CONSENT_EVENT, onConsentChange);
   }, []);
 
-  const dayWindow = hasFullWeek ? FEED_DAY_COUNT : HOME_SSR_DAY_COUNT;
+  useEffect(() => {
+    if (!hasInitialData || hasFullWeek) return;
+
+    const runPrefetch = () => {
+      void ensureFullWeek();
+    };
+
+    if (typeof requestIdleCallback !== "undefined") {
+      const id = requestIdleCallback(runPrefetch, { timeout: 2000 });
+      return () => cancelIdleCallback(id);
+    }
+
+    const timer = window.setTimeout(runPrefetch, 800);
+    return () => window.clearTimeout(timer);
+  }, [hasInitialData, hasFullWeek, ensureFullWeek]);
+
+  const dayWindow =
+    weekView || hasFullWeek ? FEED_DAY_COUNT : HOME_SSR_DAY_COUNT;
 
   const destacadosEvents = useMemo(() => {
     const merged = new Map<number, EventRow>();
@@ -323,13 +359,13 @@ export function HomePage({
       };
 
       if (index >= HOME_SSR_DAY_COUNT && !hasFullWeek) {
-        void loadEvents({ silent: true, fullWeek: true }).then(apply);
+        void ensureFullWeek().then(apply);
         return;
       }
 
       apply();
     },
-    [lockScrollSpy, daySections, weekView, hasFullWeek, loadEvents]
+    [lockScrollSpy, daySections, weekView, hasFullWeek, ensureFullWeek]
   );
 
   const resetHome = useCallback(() => {
@@ -337,6 +373,7 @@ export function HomePage({
     setActiveDay(0);
     setWeekView(false);
     setHasFullWeek(false);
+    fullWeekLoadRef.current = null;
     window.scrollTo({ top: 0, behavior: "smooth" });
     void loadEvents({ silent: true, fullWeek: false });
   }, [loadEvents, lockScrollSpy]);
@@ -387,12 +424,12 @@ export function HomePage({
   }, [showInitialLoading, daySections, weekView]);
 
   const openWeekView = useCallback(() => {
-    pinScrollForViewToggle();
+    pinScrollForViewToggle(800);
     setWeekView(true);
     if (!hasFullWeek) {
-      void loadEvents({ silent: true, fullWeek: true });
+      void ensureFullWeek();
     }
-  }, [pinScrollForViewToggle, hasFullWeek, loadEvents]);
+  }, [pinScrollForViewToggle, hasFullWeek, ensureFullWeek]);
 
   const closeWeekView = useCallback(() => {
     pinScrollForViewToggle();
@@ -448,17 +485,14 @@ export function HomePage({
             weekView={weekView}
             onSelectTodayView={closeWeekView}
             onSelectWeekView={openWeekView}
+            onPrefetchWeekView={() => void ensureFullWeek()}
             selectedSports={selectedSports}
             onFilterChange={handleFilterChange}
             isFeaturedMode={isFeaturedMode}
           />
 
           <div className="fh-feed-area">
-            {refreshing && !showInitialLoading ? (
-              <p className="fh-feed-refresh" aria-live="polite">
-                Actualizando eventos…
-              </p>
-            ) : null}
+            {refreshing && !showInitialLoading ? <FeedRefreshLoader /> : null}
 
             {showInitialLoading ? (
               <LoadingState />

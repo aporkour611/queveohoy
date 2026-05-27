@@ -17,6 +17,7 @@ type Props = {
   weekView: boolean;
   onSelectTodayView: () => void;
   onSelectWeekView: () => void;
+  onPrefetchWeekView?: () => void;
   selectedSports: string[];
   onFilterChange: (ids: string[]) => void;
   isFeaturedMode: boolean;
@@ -29,6 +30,7 @@ export function FeedControls({
   weekView,
   onSelectTodayView,
   onSelectWeekView,
+  onPrefetchWeekView,
   selectedSports,
   onFilterChange,
   isFeaturedMode,
@@ -60,6 +62,8 @@ export function FeedControls({
             type="button"
             className={`qvh-feed-view-toggle-btn${weekView ? " qvh-feed-view-toggle-btn-active" : ""}`}
             onMouseDown={(event) => event.preventDefault()}
+            onMouseEnter={onPrefetchWeekView}
+            onFocus={onPrefetchWeekView}
             onClick={onSelectWeekView}
             aria-pressed={weekView}
           >
