@@ -110,7 +110,11 @@ export const MediaPosterCard = memo(function MediaPosterCard({
             )}
             <span
               className={`qvh-media-type-badge qvh-media-type-badge-${
-                badge.label === "Concurso" ? "concurso" : badge.tone
+                badge.label === "Concurso"
+                  ? "concurso"
+                  : badge.label === "Directo"
+                    ? "directo"
+                    : badge.tone
               }`}
             >
               {badge.label}

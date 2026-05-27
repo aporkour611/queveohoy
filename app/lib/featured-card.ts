@@ -125,7 +125,12 @@ export function getSpotlightCardModel(
     return {
       headline: event.title?.trim() || badge,
       badge,
-      badgeVariant: category === "concurso" ? "media" : "premiere",
+      badgeVariant:
+        category === "concurso"
+          ? "media"
+          : category === "directo"
+            ? "premiere"
+            : "premiere",
       dateLabel,
       time,
       meta: event.competition?.trim() || `${badge} · Nuevo episodio`,

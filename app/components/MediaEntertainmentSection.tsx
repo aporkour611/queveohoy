@@ -8,7 +8,7 @@ type Props = {
   series: EventRow[];
   tvReality?: EventRow[];
   tvConcurso?: EventRow[];
-  tvEvento?: EventRow[];
+  tvDirecto?: EventRow[];
 };
 
 function MediaRail({
@@ -18,7 +18,7 @@ function MediaRail({
   events,
 }: {
   label: string;
-  accent: "cine" | "series" | "tv" | "tv-concurso";
+  accent: "cine" | "series" | "tv" | "tv-concurso" | "tv-directo";
   count: number;
   events: EventRow[];
 }) {
@@ -49,14 +49,14 @@ export function MediaEntertainmentSection({
   series,
   tvReality = [],
   tvConcurso = [],
-  tvEvento = [],
+  tvDirecto = [],
 }: Props) {
   if (
     cine.length === 0 &&
     series.length === 0 &&
     tvReality.length === 0 &&
     tvConcurso.length === 0 &&
-    tvEvento.length === 0
+    tvDirecto.length === 0
   ) {
     return null;
   }
@@ -71,7 +71,7 @@ export function MediaEntertainmentSection({
             Entretenimiento
           </p>
           <h3 className="qvh-media-hero-title">
-            TV, cine <span className="qvh-media-hero-amp">&</span> series
+            TV, Twitch, cine <span className="qvh-media-hero-amp">&</span> series
           </h3>
         </div>
         <div className="qvh-media-hero-rule" aria-hidden />
@@ -89,14 +89,12 @@ export function MediaEntertainmentSection({
         count={tvConcurso.length}
         events={tvConcurso}
       />
-      {tvEvento.length > 0 ? (
-        <MediaRail
-          label="Eventos"
-          accent="tv"
-          count={tvEvento.length}
-          events={tvEvento}
-        />
-      ) : null}
+      <MediaRail
+        label="Directos"
+        accent="tv-directo"
+        count={tvDirecto.length}
+        events={tvDirecto}
+      />
       <MediaRail
         label="En cines"
         accent="cine"

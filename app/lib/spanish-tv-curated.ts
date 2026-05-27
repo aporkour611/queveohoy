@@ -15,7 +15,7 @@ export type SpanishTvShow = {
   competition: string;
   platform: string;
   priority: number;
-  category: "reality" | "concurso" | "evento";
+  category: "reality" | "concurso" | "directo";
   /** ID TMDB fijo (evita confundir con versiones extranjeras). */
   tmdbId?: number;
   /** Hora habitual de emisión en península (HH:MM). */
@@ -50,10 +50,10 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     id: "velada-ibai",
     search: "La Velada del Año",
     patterns: [/velada del a[nñ]o|la velada\b/i],
-    competition: "Evento · La Velada del Año",
+    competition: "Directo · La Velada del Año",
     platform: "Twitch · Ibai",
     priority: 99,
-    category: "evento",
+    category: "directo",
     airTime: "19:30",
     manualSlots: [
       {

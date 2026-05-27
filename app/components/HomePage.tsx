@@ -9,6 +9,7 @@ import { countHiddenHomeEvents } from "../lib/featured";
 import { partidosHoyDatePath } from "../lib/seo-date";
 import Link from "next/link";
 import { STORAGE_KEY, ALL_SPORT_IDS } from "../lib/filter-config";
+import { TV_SPORT_FILTER_IDS } from "../lib/tv-show-category";
 import {
   COOKIE_CONSENT_EVENT,
   hasPreferenceConsent,
@@ -145,7 +146,7 @@ export function HomePage({
                   ...new Set(
                     parsed.flatMap((id): string[] => {
                       if (typeof id !== "string") return [];
-                      if (id === "tv") return ["tv-reality", "tv-concurso"];
+                      if (id === "tv") return [...TV_SPORT_FILTER_IDS];
                       return ALL_SPORT_IDS.includes(id) ? [id] : [];
                     })
                   ),

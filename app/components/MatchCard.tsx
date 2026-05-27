@@ -253,7 +253,9 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         ? "fh-media-spotlight-badge-series"
         : tvBadge?.label === "Concurso"
           ? "fh-media-spotlight-badge-concurso"
-          : "fh-media-spotlight-badge-premiere";
+          : tvBadge?.label === "Directo"
+            ? "fh-media-spotlight-badge-directo"
+            : "fh-media-spotlight-badge-premiere";
     const mediaBadgeLabel = isCine
       ? "Cine"
       : isSeries

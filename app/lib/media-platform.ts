@@ -35,7 +35,7 @@ export function mediaBadgeForEvent(
   if (event.sport === "tv") {
     const category = getTvShowCategory(event as EventRow);
     if (category === "concurso") return { label: "Concurso", tone: "heat" };
-    if (category === "evento") return { label: "Evento", tone: "trending" };
+    if (category === "directo") return { label: "Directo", tone: "trending" };
     return { label: "Reality", tone: "trending" };
   }
   if (event.sport === "cine") return { label: "Cine", tone: "heat" };

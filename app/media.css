@@ -139,6 +139,17 @@
   color: #1a1200;
 }
 
+.qvh-media-rail-accent-tv-directo {
+  background: linear-gradient(180deg, #b794f6, #9146ff);
+  box-shadow: 0 0 14px rgba(145, 70, 255, 0.4);
+}
+
+.qvh-media-type-badge-directo {
+  background: rgba(145, 70, 255, 0.92);
+  border-color: rgba(200, 160, 255, 0.45);
+  color: #fff;
+}
+
 .qvh-media-rail-copy {
   display: flex;
   align-items: baseline;
@@ -648,6 +659,12 @@
   background: rgba(245, 158, 11, 0.94);
   border-color: rgba(255, 220, 140, 0.45);
   color: #1a1200;
+}
+
+.fh-media-spotlight-badge-directo {
+  background: rgba(145, 70, 255, 0.94);
+  border-color: rgba(200, 160, 255, 0.45);
+  color: #fff;
 }
 
 .fh-media-spotlight-when {

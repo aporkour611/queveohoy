@@ -1,3 +1,5 @@
+import { TV_SPORT_FILTER_IDS } from "./tv-show-category";
+
 export type FilterOption = { id: string; label: string };
 
 export type FilterGroup = {
@@ -22,7 +24,7 @@ export const QUICK_FILTERS: QuickFilter[] = [
   },
   { id: "motor", label: "Motor", sportIds: ["formula1", "motos"] },
   { id: "esports", label: "E-Sports", sportIds: ["csgo", "valorant", "lol", "dota2"] },
-  { id: "tv", label: "Televisión", sportIds: ["tv-reality", "tv-concurso"] },
+  { id: "tv", label: "TV y Twitch", sportIds: [...TV_SPORT_FILTER_IDS] },
   { id: "cine", label: "Cine y series", sportIds: ["cine", "series"] },
 ];
 
@@ -66,10 +68,11 @@ export const FILTER_GROUPS: FilterGroup[] = [
   },
   {
     id: "tv",
-    label: "TV",
+    label: "TV y Twitch",
     options: [
       { id: "tv-reality", label: "Reality" },
       { id: "tv-concurso", label: "Concursos" },
+      { id: "tv-directo", label: "Directos" },
     ],
   },
 ];
@@ -101,5 +104,5 @@ export const LEGEND_ITEMS = [
   { label: "E-Sports", dot: "qvh-dot-green" },
   { label: "Coches & motos", dot: "qvh-dot-motor" },
   { label: "Cine & series", dot: "qvh-dot-gold" },
-  { label: "TV", dot: "qvh-dot-pink" },
+  { label: "TV y Twitch", dot: "qvh-dot-pink" },
 ] as const;
