@@ -1,0 +1,120 @@
+/* Indicador en directo (solo canales en abierto) */
+
+.qvh-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin: 0 auto 8px;
+  padding: 5px 10px 5px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(227, 6, 19, 0.55);
+  background: linear-gradient(
+    135deg,
+    rgba(227, 6, 19, 0.22) 0%,
+    rgba(93, 95, 239, 0.18) 100%
+  );
+  font-family: var(--qvh-font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+a.qvh-live-badge:hover {
+  border-color: rgba(255, 120, 120, 0.85);
+  box-shadow: 0 0 12px rgba(227, 6, 19, 0.35);
+  transform: translateY(-1px);
+}
+
+.qvh-live-badge--spotlight {
+  margin: 0 0 8px;
+  justify-content: flex-start;
+}
+
+.qvh-live-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3b30;
+  box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.55);
+  animation: qvh-live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes qvh-live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 59, 48, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
+  }
+}
+
+.qvh-live-label {
+  flex-shrink: 0;
+  color: #ffb4b0;
+}
+
+.qvh-live-channel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fff;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+}
+
+.qvh-channel-badge--broadcasting {
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(255, 59, 48, 0.65),
+    0 0 10px rgba(255, 59, 48, 0.35);
+  animation: qvh-channel-live-glow 1.6s ease-in-out infinite;
+}
+
+.qvh-channel-badge--broadcasting::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff3b30;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  animation: qvh-live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes qvh-channel-live-glow {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.12);
+  }
+}
+
+.fh-m-logos .qvh-live-badge,
+.fh-m-solo-when .qvh-live-badge {
+  display: flex;
+  width: fit-content;
+  margin: 6px auto 0;
+}
+
+.fh-media-spotlight-when + .qvh-live-badge--spotlight,
+.fh-media-spotlight-body > .qvh-live-badge--spotlight:first-child {
+  margin-top: 0;
+}

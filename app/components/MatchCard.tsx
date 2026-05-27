@@ -19,7 +19,10 @@ import {
 import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { ChannelBadges } from "./ChannelBadge";
+import { EventLiveBadge } from "./EventLiveBadge";
 import { resolveChannelsForEvent } from "../lib/channels";
+import { getFreeLiveBroadcast } from "../lib/event-live";
+import { useLiveClock } from "../lib/use-live-clock";
 import { partidoPath } from "../lib/event-slug";
 import {
   eventDisplayTitle,
@@ -40,6 +43,7 @@ type Props = {
 };
 
 type SpotlightCardContent = {
+  event: EventRow;
   visualClass: string;
   badgeClass: string;
   badgeLabel: string;
@@ -49,6 +53,7 @@ type SpotlightCardContent = {
   dateLabel: string;
   time: string;
   channels: string[];
+  liveChannel?: string | null;
   ufcF1Url?: string | null;
   ufcF2Url?: string | null;
   ufcF1Name?: string | null;
@@ -58,6 +63,7 @@ type SpotlightCardContent = {
 };
 
 function SpotlightCardContent({
+  event,
   visualClass,
   badgeClass,
   badgeLabel,
@@ -67,6 +73,7 @@ function SpotlightCardContent({
   dateLabel,
   time,
   channels,
+  liveChannel = null,
   ufcF1Url,
   ufcF2Url,
   ufcF1Name,
@@ -113,8 +120,13 @@ function SpotlightCardContent({
       <div className="fh-media-spotlight-body">
         <h4 className="fh-media-spotlight-title">{title}</h4>
         {subtitle ? <p className="fh-media-spotlight-meta">{subtitle}</p> : null}
+        <EventLiveBadge event={event} variant="spotlight" />
         {channels.length > 0 ? (
-          <ChannelBadges channels={channels} prominent />
+          <ChannelBadges
+            channels={channels}
+            prominent
+            liveChannel={liveChannel}
+          />
         ) : null}
       </div>
     </>
@@ -219,6 +231,12 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const compDisplay = compFull.split(" · ")[0] || compFull;
   const matchClass = competitionMatchClass(compDisplay, event.sport);
   const stamp = getEventCardStamp(event);
+  const now = useLiveClock();
+  const liveBroadcast = useMemo(
+    () => getFreeLiveBroadcast(event, now),
+    [event, now]
+  );
+  const liveChannel = liveBroadcast?.channel ?? null;
 
   function toggleExpanded() {
     if (!hasExtraDetails) return;
@@ -279,6 +297,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
     return cardShell(
       <SpotlightCardContent
+        event={event}
         visualClass={mediaVisualClass}
         badgeClass={mediaBadgeClass}
         badgeLabel={mediaBadgeLabel}
@@ -288,6 +307,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         dateLabel={dateLabel}
         time={time}
         channels={channels}
+        liveChannel={liveChannel}
         stampKind={stamp}
       />,
       "fh-match-media-spotlight"
@@ -305,6 +325,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
     return cardShell(
       <SpotlightCardContent
+        event={event}
         visualClass="fh-media-spotlight-visual-ufc"
         badgeClass="fh-media-spotlight-badge-ufc"
         badgeLabel={ufcBadgeLabel}
@@ -319,6 +340,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         dateLabel={dateLabel}
         time={time}
         channels={channels}
+        liveChannel={liveChannel}
         stampKind={stamp}
       />,
       "fh-match-media-spotlight"
@@ -377,8 +399,17 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
           </>
         )}
 
-      {channels.length > 0 ? (
-        <ChannelBadges channels={channels} prominent />
+      {channels.length > 0 || liveChannel ? (
+        <>
+          <EventLiveBadge event={event} />
+          {channels.length > 0 ? (
+            <ChannelBadges
+              channels={channels}
+              prominent
+              liveChannel={liveChannel}
+            />
+          ) : null}
+        </>
       ) : null}
     </>,
     "",

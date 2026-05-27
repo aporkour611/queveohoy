@@ -5,14 +5,21 @@ type BadgeVariant = "match" | "spotlight" | "inline";
 type ChannelBadgeProps = {
   name: string;
   variant?: BadgeVariant;
+  broadcasting?: boolean;
 };
 
-export function ChannelBadge({ name, variant = "match" }: ChannelBadgeProps) {
+export function ChannelBadge({
+  name,
+  variant = "match",
+  broadcasting = false,
+}: ChannelBadgeProps) {
   const style = channelStyle(name);
 
   return (
     <span
-      className={`qvh-channel-badge qvh-channel-badge--${style.tier} qvh-channel-badge--${variant}`}
+      className={`qvh-channel-badge qvh-channel-badge--${style.tier} qvh-channel-badge--${variant}${
+        broadcasting ? " qvh-channel-badge--broadcasting" : ""
+      }`}
       style={{
         backgroundColor: style.bg,
         color: style.color,
@@ -30,6 +37,7 @@ type ChannelBadgesProps = {
   variant?: BadgeVariant;
   prominent?: boolean;
   className?: string;
+  liveChannel?: string | null;
 };
 
 export function ChannelBadges({
@@ -37,6 +45,7 @@ export function ChannelBadges({
   variant = "match",
   prominent = false,
   className = "",
+  liveChannel = null,
 }: ChannelBadgesProps) {
   if (!channels.length) return null;
 
@@ -52,7 +61,12 @@ export function ChannelBadges({
   return (
     <div className={wrapClass}>
       {channels.map((ch) => (
-        <ChannelBadge key={ch} name={ch} variant={variant} />
+        <ChannelBadge
+          key={ch}
+          name={ch}
+          variant={variant}
+          broadcasting={Boolean(liveChannel && ch === liveChannel)}
+        />
       ))}
     </div>
   );
