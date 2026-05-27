@@ -20,7 +20,7 @@ export default function PrivacidadPage() {
       <main className="qvh-legal-page">
         <div className="fh-container">
           <h1>Política de privacidad</h1>
-          <p className="qvh-legal-updated">Última actualización: 26 de mayo de 2026</p>
+          <p className="qvh-legal-updated">Última actualización: 27 de mayo de 2026</p>
 
           <section>
             <h2>Responsable</h2>
@@ -40,7 +40,10 @@ export default function PrivacidadPage() {
               dispositivo, páginas visitadas) a través del proveedor de
               alojamiento con fines de seguridad y estadísticas agregadas. Las
               preferencias de filtros se guardan en tu navegador;
-              no identifican por sí solas a una persona concreta.
+              no identifican por sí solas a una persona concreta. Si activas
+              avisos push, almacenamos un identificador de suscripción y tus
+              categorías preferidas (fútbol, UFC, series, motor) para enviarte
+              como máximo 2 avisos al día.
             </p>
           </section>
 
@@ -55,6 +58,12 @@ export default function PrivacidadPage() {
               <li>
                 <strong>Seguridad y funcionamiento</strong> — logs técnicos del
                 hosting y prevención de abusos. Base: interés legítimo.
+              </li>
+              <li>
+                <strong>Notificaciones push (opcional)</strong> — avisos de
+                eventos destacados ~45 min antes de su hora. Base: consentimiento
+                explícito del navegador. Puedes desactivarlas en cualquier
+                momento desde el icono de campana en la home.
               </li>
             </ul>
           </section>

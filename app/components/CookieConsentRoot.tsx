@@ -9,11 +9,18 @@ const CookieConsentBanner = dynamic(
   { ssr: false }
 );
 
+const PushNotificationPrompt = dynamic(
+  () =>
+    import("./PushNotifications").then((mod) => mod.PushNotificationPrompt),
+  { ssr: false }
+);
+
 export function CookieConsentRoot({ children }: { children: ReactNode }) {
   return (
     <>
       {children}
       <CookieConsentBanner />
+      <PushNotificationPrompt />
     </>
   );
 }

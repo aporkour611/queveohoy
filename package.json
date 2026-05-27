@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "ping-search": "node scripts/ping-indexnow.mjs",
-    "db:index": "node scripts/apply-index.mjs"
+    "db:index": "node scripts/apply-index.mjs",
+    "vapid:keys": "node scripts/generate-vapid-keys.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.1",
@@ -17,7 +18,8 @@
     "next": "16.2.6",
     "pg": "^8.16.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -25,6 +27,7 @@
     "@types/pg": "^8.15.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",

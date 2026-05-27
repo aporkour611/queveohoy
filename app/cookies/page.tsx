@@ -20,7 +20,7 @@ export default function CookiesPage() {
       <main className="qvh-legal-page">
         <div className="fh-container">
           <h1>Política de cookies</h1>
-          <p className="qvh-legal-updated">Última actualización: 26 de mayo de 2026</p>
+          <p className="qvh-legal-updated">Última actualización: 27 de mayo de 2026</p>
 
           <section>
             <h2>Qué son las cookies</h2>
@@ -49,6 +49,13 @@ export default function CookiesPage() {
                 (Vercel) y servicios relacionados pueden usar cookies o
                 identificadores técnicos propios para seguridad, rendimiento y
                 estadísticas agregadas.
+              </li>
+              <li>
+                <strong>Avisos push (opcional)</strong> — si activas las
+                notificaciones, guardamos en tu navegador las preferencias de
+                categorías y un identificador de suscripción push en nuestros
+                servidores para enviarte avisos de eventos destacados. Solo se
+                activa con tu permiso explícito.
               </li>
             </ul>
           </section>

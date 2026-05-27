@@ -20,6 +20,7 @@ import { EventDaySections } from "./EventDaySections";
 import { EventFilters } from "./EventFilters";
 import { LoadingState } from "./LoadingState";
 import { AdminNavLink } from "./AdminNavLink";
+import { PushNavButton } from "./PushNotifications";
 import { Logo } from "./Logo";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
 import { LazyMount } from "./LazyMount";
@@ -375,6 +376,7 @@ export function HomePage({
         <div className="fh-navbar-inner">
           <Logo onHomeClick={resetHome} />
           <div className="fh-nav-links">
+            <PushNavButton />
             <AdminNavLink />
           </div>
         </div>

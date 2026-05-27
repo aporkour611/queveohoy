@@ -6,6 +6,7 @@ import "./futbolhoy.css";
 import "./destacados.css";
 import "./media.css";
 import "./event-stamp.css";
+import "./push.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { Analytics } from "./components/Analytics";
 import { SpeedInsights } from "./components/SpeedInsights";
@@ -46,6 +47,7 @@ export default function RootLayout({
           title="Qué veo hoy — agenda TV"
           href={`${siteUrl}/feed.xml`}
         />
+        <link rel="manifest" href="/manifest.webmanifest" />
       </head>
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
         <CookieConsentRoot>{children}</CookieConsentRoot>
