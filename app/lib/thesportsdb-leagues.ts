@@ -73,7 +73,7 @@ export type LeagueCronEvent = {
   source: string;
 };
 
-function encodeLeagueSource(
+export function encodeLeagueSource(
   poster?: string | null,
   thumb?: string | null,
   leagueId?: string
@@ -83,6 +83,11 @@ function encodeLeagueSource(
   const image = poster?.trim() || thumb?.trim();
   if (image) parts.push(`img:${image}`);
   return parts.join("|");
+}
+
+export function parseLeaguePoster(source?: string | null): string | null {
+  const match = source?.match(/img:([^|]+)/);
+  return match?.[1]?.trim() || null;
 }
 
 function parseVersusTitle(strEvent: string): {
@@ -123,6 +128,25 @@ function normalizeLeagueEvent(
   const today = toMadridDateKey(new Date());
   const weekEnd = weekDates[weekDates.length - 1];
   if (date < today || date > weekEnd) return null;
+
+  if (config.sport === "ciclismo") {
+    const title = raw.strEvent.trim();
+    if (!title) return null;
+
+    return {
+      external_id: `tsdb_${config.sport}_${raw.idEvent}`,
+      title,
+      home_team: null,
+      away_team: null,
+      date,
+      time,
+      sport: config.sport,
+      category: "deportes",
+      competition: raw.strLeague?.trim() || config.competition,
+      platform: config.platform,
+      source: encodeLeagueSource(raw.strPoster, raw.strThumb, config.leagueId),
+    };
+  }
 
   const home = raw.strHomeTeam?.trim() || null;
   const away = raw.strAwayTeam?.trim() || null;

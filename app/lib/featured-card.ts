@@ -31,6 +31,8 @@ import {
   remoteSpotlightCover,
   type SpotlightCover,
 } from "./spotlight-art";
+import { eventDisplayTitle } from "./event-display";
+import { parseLeaguePoster } from "./thesportsdb-leagues";
 import type { EventRow } from "../components/types";
 
 export type SpotlightBadgeVariant =
@@ -178,7 +180,7 @@ export function getSpotlightCardModel(
   if (sport === "formula1" || sport === "motos") {
     const motorArt = getMotorArt(sport);
     return {
-      headline: event.title?.trim() || sportLabel(sport),
+      headline: eventDisplayTitle(event),
       badge: sportLabel(sport),
       badgeVariant: "motor",
       dateLabel,
@@ -187,6 +189,26 @@ export function getSpotlightCardModel(
       platform: event.platform?.trim() || channels || "TV",
       coverImage: localSpotlightCover(motorArt.url, "emblem"),
       visualClass: motorArt.visualClass,
+    };
+  }
+
+  if (sport === "ciclismo") {
+    const poster = parseLeaguePoster(event.source);
+    const competition = event.competition?.split(" · ")[0]?.trim() || "Ciclismo";
+
+    return {
+      headline: eventDisplayTitle(event),
+      badge: competition,
+      badgeVariant: "motor",
+      dateLabel,
+      time,
+      meta: competition,
+      platform: event.platform?.trim() || channels || "TV",
+      coverImage: poster
+        ? remoteSpotlightCover(poster, "poster")
+        : mediaFallbackCover(sport) ??
+          localSpotlightCover("/fallback/deportes.svg", "emblem"),
+      visualClass: "qvh-spotlight-visual-motor",
     };
   }
 
@@ -253,7 +275,7 @@ export function getSpotlightCardModel(
   }
 
   return {
-    headline: teamTitle(event) || event.title?.trim() || sportLabel(sport) || "Evento",
+    headline: eventDisplayTitle(event),
     badge: event.competition?.trim() || sportLabel(sport) || "Deportes",
     badgeVariant: "default",
     dateLabel,

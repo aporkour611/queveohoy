@@ -820,6 +820,37 @@
   flex-shrink: 0;
 }
 
+.fh-match .fh-m-title-solo {
+  display: block;
+  padding: 0 10px;
+  line-height: 1.15;
+  font-size: 1.15em;
+}
+
+.fh-match-solo .fh-m-comp {
+  display: block;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.fh-match .fh-m-solo-when {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+  min-height: 50px;
+  align-items: center;
+}
+
+.fh-match .fh-m-time-solo {
+  font-size: 1.35em;
+  font-weight: 700;
+}
+
 .fh-match .fh-m-logos {
   display: flex;
   align-items: center;

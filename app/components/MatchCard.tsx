@@ -19,6 +19,11 @@ import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { isFreeTvChannel, resolveChannelsForEvent } from "../lib/channels";
 import { partidoPath } from "../lib/event-slug";
+import {
+  eventDisplayTitle,
+  eventVersusTeams,
+  isTeamVersusEvent,
+} from "../lib/event-display";
 import Link from "next/link";
 import { competitionMatchClass } from "../lib/competition-style";
 import { displayTime } from "../lib/madrid-time";
@@ -192,10 +197,10 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
       ? [awayCrest]
       : [];
 
-  const home = shortTeamName(event.home_team || event.title?.split(" vs ")[0]);
-  const away = shortTeamName(
-    event.away_team || event.title?.split(" vs ").slice(1).join(" vs ")
-  );
+  const teams = eventVersusTeams(event);
+  const home = teams ? shortTeamName(teams.home) : "";
+  const away = teams ? shortTeamName(teams.away) : "";
+  const soloTitle = eventDisplayTitle(event);
   const time = displayTime(event.time);
   const dateLabel = event.date
     ? formatDisplayDateLabel(event.date, MADRID_TZ)
@@ -317,35 +322,55 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   }
   return cardShell(
     <>
-        <div className="fh-m-comp" />
+        <div className="fh-m-comp">{compDisplay}</div>
 
-        <div className="fh-m-title">
-          <Link
-            href={partidoPath(event)}
-            className="fh-m-title-link"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <span className="fh-dest-team">{home}</span>
-            {" - "}
-            <span className="fh-dest-team">{away}</span>
-          </Link>
-        </div>
+        {isTeamVersusEvent(event) ? (
+          <>
+            <div className="fh-m-title">
+              <Link
+                href={partidoPath(event)}
+                className="fh-m-title-link"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <span className="fh-dest-team">{home}</span>
+                {" - "}
+                <span className="fh-dest-team">{away}</span>
+              </Link>
+            </div>
 
-        <div className="fh-m-logos">
-          <TeamCrest
-            srcList={homeCrestUrls}
-            name={home}
-            size={50}
-            className="fh-crest-fallback"
-          />
-          <span className="fh-m-time">{time}</span>
-          <TeamCrest
-            srcList={awayCrestUrls}
-            name={away}
-            size={50}
-            className="fh-crest-fallback"
-          />
-        </div>
+            <div className="fh-m-logos">
+              <TeamCrest
+                srcList={homeCrestUrls}
+                name={home}
+                size={50}
+                className="fh-crest-fallback"
+              />
+              <span className="fh-m-time">{time}</span>
+              <TeamCrest
+                srcList={awayCrestUrls}
+                name={away}
+                size={50}
+                className="fh-crest-fallback"
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="fh-m-title">
+              <Link
+                href={partidoPath(event)}
+                className="fh-m-title-link fh-m-title-solo"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {soloTitle}
+              </Link>
+            </div>
+
+            <div className="fh-m-solo-when">
+              <span className="fh-m-time fh-m-time-solo">{time}</span>
+            </div>
+          </>
+        )}
 
       {channels.length > 0 && (
         <div className="fh-m-chan fh-m-chan-prominent">

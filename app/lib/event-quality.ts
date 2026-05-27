@@ -26,10 +26,15 @@ type TeamEventFields = {
   sport?: string | null;
 };
 
+function isSoloCompetitionSport(sport?: string | null): boolean {
+  return sport === "ciclismo" || sport === "formula1" || sport === "motos";
+}
+
 /** Partido con al menos un equipo sin confirmar. */
 export function eventHasPlaceholderTeams(
   event: TeamEventFields
 ): boolean {
+  if (isSoloCompetitionSport(event.sport)) return false;
   const home = event.home_team?.trim();
   const away = event.away_team?.trim();
 

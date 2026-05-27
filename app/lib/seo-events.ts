@@ -1,10 +1,8 @@
 import type { EventRow } from "../components/types";
+import { eventDisplayTitle } from "./event-display";
 
 export function eventLabel(event: EventRow): string {
-  if (event.home_team && event.away_team) {
-    return `${event.home_team} vs ${event.away_team}`;
-  }
-  return event.title?.trim() || "Evento";
+  return eventDisplayTitle(event);
 }
 
 export function schemaEventType(
