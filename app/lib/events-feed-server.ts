@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { FEED_REVALIDATE_SECONDS } from "./cache-config";
 import { FEED_DAY_COUNT, FEED_EVENT_SELECT, normalizeFeedEvents } from "./events-feed";
@@ -87,3 +88,6 @@ export async function fetchFeedEvents() {
 export async function fetchHomeFeedEvents() {
   return getCachedFeed(HOME_SSR_DAY_COUNT, true);
 }
+
+/** Dedup en la misma petición (generateMetadata + Page). */
+export const getHomeFeedEventsForPage = cache(fetchHomeFeedEvents);

@@ -93,7 +93,7 @@ export function HomePage({
     setLoadError(null);
 
     try {
-      const url = fullWeek ? "/api/events" : "/api/home-feed";
+      const url = fullWeek ? "/api/events" : "/api/events?scope=home";
       const res = await fetch(url);
       const body = (await res.json()) as {
         events?: EventRow[];
@@ -174,14 +174,16 @@ export function HomePage({
     return () => window.removeEventListener(COOKIE_CONSENT_EVENT, onConsentChange);
   }, []);
 
+  const dayWindow = hasFullWeek ? FEED_DAY_COUNT : HOME_SSR_DAY_COUNT;
+
   const displayEvents = useMemo(
-    () => filterEventsInWeek(events, MADRID_TZ, FEED_DAY_COUNT),
-    [events]
+    () => filterEventsInWeek(events, MADRID_TZ, dayWindow),
+    [events, dayWindow]
   );
 
   const displayDays = useMemo(
-    () => buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT),
-    []
+    () => buildDisplayDays(MADRID_TZ, dayWindow),
+    [dayWindow]
   );
 
   const daySections = useMemo(

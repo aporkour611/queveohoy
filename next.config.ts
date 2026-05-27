@@ -4,6 +4,10 @@ import { SEO_HUB_SLUGS } from "./app/lib/seo-hubs";
 function buildBeforeFileRewrites() {
   const rewrites: { source: string; destination: string }[] = [
     {
+      source: "/api/home-feed",
+      destination: "/api/events?scope=home",
+    },
+    {
       source: "/partidos-hoy/:fecha",
       destination: "/agenda/partidos-hoy/:fecha",
     },
