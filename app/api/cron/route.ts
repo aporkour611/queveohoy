@@ -11,6 +11,8 @@ import {
 import { dedupeEvents, findDuplicateIdsToRemove, type EventRecord } from "@/app/lib/dedupe-events";
 import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
+import { ensureEventsDateIndex } from "@/app/lib/ensure-db-index";
+import { shouldIngestPandascoreMatch } from "@/app/lib/esports-cron";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
 import { fetchJsonWithTimeout } from "@/app/lib/fetch-json";
 import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
@@ -260,9 +262,12 @@ type PandaScoreMatch = {
   id: number;
   begin_at?: string;
   opponents?: Array<{ opponent?: PandaScoreOpponent }>;
-  league?: { name?: string };
-  serie?: { full_name?: string };
+  league?: { name?: string; tier?: string };
+  serie?: { full_name?: string; tier?: string };
+  tournament?: { name?: string; tier?: string };
 };
+
+const ESPORTS_MAX_PER_GAME = 25;
 
 async function fetchEsports(): Promise<CountResult> {
   const games = [
@@ -294,8 +299,12 @@ async function fetchEsports(): Promise<CountResult> {
         return;
       }
 
+      let ingested = 0;
       for (const match of result.data) {
+        if (ingested >= ESPORTS_MAX_PER_GAME) break;
         if (!match.begin_at) continue;
+        if (!shouldIngestPandascoreMatch(match)) continue;
+
         const { date, time } = splitToMadrid(parseUtcIso(String(match.begin_at)));
         if (!dates.includes(date)) continue;
 
@@ -317,6 +326,7 @@ async function fetchEsports(): Promise<CountResult> {
           platform: "Twitch, YouTube",
           source: encodeEsportsSource(homeLogo, awayLogo),
         });
+        ingested += 1;
       }
     })
   );
@@ -512,6 +522,18 @@ export async function GET(request: Request) {
   console.log("TMDB key:", process.env.TMDB_API_KEY ? "OK" : "MISSING");
   console.log("Balldontlie key:", process.env.BALLDONTLIE_API_KEY ? "OK" : "MISSING");
 
+  let dbIndex: Awaited<ReturnType<typeof ensureEventsDateIndex>> = {
+    ok: false,
+    skipped: true,
+  };
+  try {
+    dbIndex = await ensureEventsDateIndex();
+    if (dbIndex.ok) console.log("✓ events_date_time_idx OK");
+    else if (!dbIndex.skipped) console.warn("DB index:", dbIndex.error);
+  } catch (e) {
+    console.warn("DB index error:", e);
+  }
+
   let football = { count: 0, dateFrom: "", dateTo: "", errors: [] as string[] };
   let esports: CountResult = { count: 0 };
   let f1: CountResult = { count: 0 };
@@ -611,6 +633,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     ok: true,
     timestamp: new Date().toISOString(),
+    dbIndex,
     indexNow,
     feedCache,
     football,

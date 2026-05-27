@@ -3,6 +3,8 @@ import dynamic from "next/dynamic";
 import { HomePage } from "./components/HomePage";
 import { ShareTodayBar } from "./components/ShareTodayBar";
 import { HomeJsonLd } from "./components/HomeJsonLd";
+import { HomeFaq } from "./components/HomeFaq";
+import { HomeEventOutline } from "./components/HomeEventOutline";
 import { fetchHomeFeedEvents } from "./lib/events-feed-server";
 import {
   buildHomeMetadataDescription,
@@ -14,17 +16,6 @@ import { FEED_REVALIDATE_SECONDS } from "./lib/cache-config";
 const HomeTrafficHubs = dynamic(
   () =>
     import("./components/HomeTrafficHubs").then((mod) => mod.HomeTrafficHubs),
-  { loading: () => null }
-);
-
-const HomeFaq = dynamic(
-  () => import("./components/HomeFaq").then((mod) => mod.HomeFaq),
-  { loading: () => null }
-);
-
-const HomeEventOutline = dynamic(
-  () =>
-    import("./components/HomeEventOutline").then((mod) => mod.HomeEventOutline),
   { loading: () => null }
 );
 
