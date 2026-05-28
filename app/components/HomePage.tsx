@@ -102,8 +102,12 @@ export function HomePage({
   const isFeaturedMode = selectedSports.length === 0;
   const deferredSports = useDeferredValue(selectedSports);
   // Al volver a "Todo", no diferir: la vista ya estuvo calculada y montada.
-  const feedSports = isFeaturedMode ? selectedSports : deferredSports;
-  const feedFeaturedMode = feedSports.length === 0;
+  // Al salir de "Todo", aplicar el filtro al instante (deferredSports puede ir un frame detrás).
+  const feedSports = isFeaturedMode
+    ? selectedSports
+    : deferredSports.length === 0 && selectedSports.length > 0
+      ? selectedSports
+      : deferredSports;
   const hasInitialData = initialEvents.length > 0;
 
   const loadEvents = useCallback(async (options?: {
@@ -292,9 +296,9 @@ export function HomePage({
       eventsByDate,
       activeDayMeta.date,
       feedSportSet,
-      feedFeaturedMode
+      isFeaturedMode
     );
-  }, [activeDayMeta, weekView, eventsByDate, feedSportSet, feedFeaturedMode]);
+  }, [activeDayMeta, weekView, eventsByDate, feedSportSet, isFeaturedMode]);
 
   const activeHomeDay = useMemo(() => {
     if (!activeDayMeta || weekView) {
@@ -305,7 +309,7 @@ export function HomePage({
       };
     }
 
-    if (feedFeaturedMode) {
+    if (isFeaturedMode) {
       return resolveFeaturedHomeDayEvents(
         eventsByDate,
         activeDayMeta.date,
@@ -318,7 +322,7 @@ export function HomePage({
       activeDayMeta.date,
       todayKey,
       feedSportSet,
-      feedFeaturedMode
+      isFeaturedMode
     );
   }, [
     activeDayMeta,
@@ -326,14 +330,14 @@ export function HomePage({
     eventsByDate,
     todayKey,
     feedSportSet,
-    feedFeaturedMode,
+    isFeaturedMode,
   ]);
 
   const hiddenOnActiveDay = useMemo(() => {
-    if (!feedFeaturedMode || !activeDayMeta) return 0;
+    if (!isFeaturedMode || !activeDayMeta) return 0;
     const rawDay = displayEvents.filter((e) => e.date === activeDayMeta.date);
     return countHiddenHomeEvents(rawDay, activeTodayEvents);
-  }, [feedFeaturedMode, activeDayMeta, displayEvents, activeTodayEvents]);
+  }, [isFeaturedMode, activeDayMeta, displayEvents, activeTodayEvents]);
 
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
@@ -590,7 +594,7 @@ export function HomePage({
                           isFeaturedMode={isFeaturedMode}
                           eventsByDate={eventsByDate}
                           sportFilter={feedSportSet}
-                          featuredMode={feedFeaturedMode}
+                          featuredMode={isFeaturedMode}
                         />
                       ))}
                     </div>
