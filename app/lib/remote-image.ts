@@ -4,6 +4,7 @@ export const REMOTE_IMAGE_HOSTS = new Set([
   "cdn.pandascore.co",
   "cdn-api.pandascore.co",
   "image.tmdb.org",
+  "cdn.myanimelist.net",
   "r2.thesportsdb.com",
   "www.thesportsdb.com",
 ]);

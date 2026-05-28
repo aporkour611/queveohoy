@@ -6,7 +6,9 @@ export function competitionMatchClass(
   if (sport === "ciclismo") return "fh-match_ciclismo fh-match-solo";
   if (sport === "ufc") return "fh-match_ufc fh-match-media";
   if (sport === "cine") return "fh-match_cine fh-match-media";
-  if (sport === "series") return "fh-match_series fh-match-media";
+  if (sport === "series" || sport === "anime") {
+    return "fh-match_series fh-match-media";
+  }
   if (sport === "tv") return "fh-match_tv fh-match-media";
   if (["tenis", "basket", "ciclismo"].includes(sport ?? "")) {
     return "fh-match_default";

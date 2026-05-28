@@ -8,7 +8,7 @@ export function eventLabel(event: EventRow): string {
 export function schemaEventType(
   sport?: string | null
 ): "SportsEvent" | "BroadcastEvent" {
-  if (sport === "cine" || sport === "series" || sport === "tv") {
+  if (sport === "cine" || sport === "series" || sport === "anime" || sport === "tv") {
     return "BroadcastEvent";
   }
   return "SportsEvent";

@@ -15,6 +15,7 @@ import {
 } from "./timezone";
 import { spanishTvPriorityBonus } from "./spanish-tv-curated";
 import { curatedMovieByExternalId } from "./movies-curated";
+import { parseJikanBuzzScore } from "./jikan-client";
 import { parseTmdbBuzzScore } from "./tmdb-client";
 import {
   isRolandGarrosEvent,
@@ -42,6 +43,7 @@ const SPORT_BASE: Record<string, number> = {
   motos: 64,
   cine: 62,
   series: 61,
+  anime: 63,
   tv: 72,
   tenis: 60,
   basket: 58,
@@ -133,8 +135,9 @@ export function eventPriority(e: EventRow): number {
     else if (homeOrg || awayOrg) score += 4;
   }
 
-  if (e.sport === "cine" || e.sport === "series") {
-    const buzz = parseTmdbBuzzScore(e.source);
+  if (e.sport === "cine" || e.sport === "series" || e.sport === "anime") {
+    const buzz =
+      parseTmdbBuzzScore(e.source) || parseJikanBuzzScore(e.source);
     if (buzz > 0) score += Math.min(50, Math.round(buzz / 8));
   }
 
@@ -278,7 +281,7 @@ function pickTopPerCategory(
     if (!list?.length) continue;
 
     if (cat === "cine") {
-      for (const sportId of ["cine", "series"] as const) {
+      for (const sportId of ["cine", "series", "anime"] as const) {
         const sportList = list.filter((e) => e.sport === sportId);
         if (!sportList.length) continue;
         const sorted = sortByPriority(sportList);

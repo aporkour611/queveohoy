@@ -165,8 +165,9 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const hasExtraDetails = details.length > 0;
   const isCine = event.sport === "cine";
   const isSeries = event.sport === "series";
+  const isAnime = event.sport === "anime";
   const isTv = event.sport === "tv";
-  const isMedia = isCine || isSeries || isTv;
+  const isMedia = isCine || isSeries || isAnime || isTv;
   const isUfc = event.sport === "ufc";
   const ufcKind = isUfc ? parseUfcKindFromSource(event.source) : null;
   const mediaTitle = isSeries
@@ -183,7 +184,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     ? parseUfcImage(event.source)
     : resolveEventPosterUrl(
         event,
-        isSeries || isCine || isTv ? "poster" : "thumb"
+        isSeries || isCine || isAnime || isTv ? "poster" : "thumb"
       );
 
   const esportsLogos = parseEsportsTeamLogos(event.source);
@@ -277,7 +278,13 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
   if (isMedia) {
     const tvBadge = isTv ? mediaBadgeForEvent(event) : null;
-    const mediaSport = isCine ? "cine" : isSeries ? "series" : "tv";
+    const mediaSport = isCine
+      ? "cine"
+      : isSeries
+        ? "series"
+        : isAnime
+          ? "anime"
+          : "tv";
     const mediaVisualClass = matchCardEntertainmentVisualClass(
       mediaSport,
       Boolean(posterUrl)
@@ -290,12 +297,16 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
           ? "fh-media-spotlight-badge-concurso"
           : tvBadge?.label === "Directo"
             ? "fh-media-spotlight-badge-directo"
-            : "fh-media-spotlight-badge-premiere";
+            : isAnime
+              ? "fh-media-spotlight-badge-anime"
+              : "fh-media-spotlight-badge-premiere";
     const mediaBadgeLabel = isCine
       ? "Cine"
-      : isSeries
-        ? "Serie"
-        : tvBadge?.label ?? "Reality";
+      : isAnime
+        ? "Anime"
+        : isSeries
+          ? "Serie"
+          : tvBadge?.label ?? "Reality";
 
     return cardShell(
       <SpotlightCardContent

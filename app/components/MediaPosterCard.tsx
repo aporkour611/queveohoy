@@ -45,18 +45,27 @@ export const MediaPosterCard = memo(function MediaPosterCard({
 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const sport =
-    event.sport === "cine" ? "cine" : event.sport === "tv" ? "tv" : "series";
+    event.sport === "cine"
+      ? "cine"
+      : event.sport === "tv"
+        ? "tv"
+        : event.sport === "anime"
+          ? "anime"
+          : "series";
   const title =
     sport === "series"
       ? displaySeriesTitle(event)
       : event.title?.trim() || "Sin título";
+  const isAnimeCard = sport === "anime";
   const posterUrl = resolveEventPosterUrl(event, "poster");
   const posterObjectPosition = resolveEventPosterObjectPosition(event);
   const platform = resolveEventStreamingPlatform(event);
   const subtitle =
     sport === "series"
       ? displaySeriesSubtitle(event)
-      : event.competition?.trim() || null;
+      : isAnimeCard
+        ? event.competition?.trim() || "Anime"
+        : event.competition?.trim() || null;
   const dateLabel = event.date
     ? formatDisplayDateLabel(event.date, MADRID_TZ)
     : "";
@@ -64,7 +73,9 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   const badge =
     sport === "cine"
       ? { label: "Cine", tone: "heat" as const }
-      : mediaBadgeForEvent(event, isSeasonPremiereEvent(event));
+      : isAnimeCard
+        ? { label: "Anime", tone: "trending" as const }
+        : mediaBadgeForEvent(event, isSeasonPremiereEvent(event));
   const whenLabel = [dateLabel, time].filter(Boolean).join(" · ");
   const stamp = getEventCardStamp(event);
 
@@ -75,7 +86,9 @@ export const MediaPosterCard = memo(function MediaPosterCard({
           ? "concurso"
           : badge.label === "Directo"
             ? "directo"
-            : badge.tone
+            : badge.label === "Anime"
+              ? "anime"
+              : badge.tone
       }`}
     >
       {badge.label}

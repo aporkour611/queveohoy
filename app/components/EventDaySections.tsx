@@ -17,6 +17,7 @@ function groupForDisplay(events: EventRow[]) {
     {};
   const cine: EventRow[] = [];
   const series: EventRow[] = [];
+  const anime: EventRow[] = [];
   const tvReality: EventRow[] = [];
   const tvConcurso: EventRow[] = [];
   const tvDirecto: EventRow[] = [];
@@ -30,6 +31,8 @@ function groupForDisplay(events: EventRow[]) {
       cine.push(e);
     } else if (e.sport === "series") {
       series.push(e);
+    } else if (e.sport === "anime") {
+      anime.push(e);
     } else if (e.sport === "tv") {
       const category = getTvShowCategory(e);
       if (category === "concurso") tvConcurso.push(e);
@@ -48,7 +51,7 @@ function groupForDisplay(events: EventRow[]) {
     }
   }
 
-  return { football, bySport, cine, series, tvReality, tvConcurso, tvDirecto };
+  return { football, bySport, cine, series, anime, tvReality, tvConcurso, tvDirecto };
 }
 
 type Props = {
@@ -148,6 +151,7 @@ export const EventDaySections = memo(function EventDaySections({
         <MediaEntertainmentSection
           cine={sections.cine}
           series={sections.series}
+          anime={sections.anime}
           tvReality={sections.tvReality}
           tvConcurso={sections.tvConcurso}
           tvDirecto={sections.tvDirecto}

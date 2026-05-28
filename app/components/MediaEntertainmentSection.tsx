@@ -6,6 +6,7 @@ import { MediaPosterCard } from "./MediaPosterCard";
 type Props = {
   cine: EventRow[];
   series: EventRow[];
+  anime?: EventRow[];
   tvReality?: EventRow[];
   tvConcurso?: EventRow[];
   tvDirecto?: EventRow[];
@@ -18,7 +19,7 @@ function MediaRail({
   events,
 }: {
   label: string;
-  accent: "cine" | "series" | "tv" | "tv-concurso" | "tv-directo";
+  accent: "cine" | "series" | "anime" | "tv" | "tv-concurso" | "tv-directo";
   count: number;
   events: EventRow[];
 }) {
@@ -47,6 +48,7 @@ function MediaRail({
 export function MediaEntertainmentSection({
   cine,
   series,
+  anime = [],
   tvReality = [],
   tvConcurso = [],
   tvDirecto = [],
@@ -54,6 +56,7 @@ export function MediaEntertainmentSection({
   if (
     cine.length === 0 &&
     series.length === 0 &&
+    anime.length === 0 &&
     tvReality.length === 0 &&
     tvConcurso.length === 0 &&
     tvDirecto.length === 0
@@ -71,7 +74,8 @@ export function MediaEntertainmentSection({
             Entretenimiento
           </p>
           <h3 className="qvh-media-hero-title">
-            TV, Twitch, cine <span className="qvh-media-hero-amp">&</span> series
+            TV, Twitch, cine <span className="qvh-media-hero-amp">&</span> series{" "}
+            <span className="qvh-media-hero-amp">&</span> anime
           </h3>
         </div>
         <div className="qvh-media-hero-rule" aria-hidden />
@@ -106,6 +110,12 @@ export function MediaEntertainmentSection({
         accent="series"
         count={series.length}
         events={series}
+      />
+      <MediaRail
+        label="Anime"
+        accent="anime"
+        count={anime.length}
+        events={anime}
       />
     </section>
   );

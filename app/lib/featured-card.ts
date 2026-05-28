@@ -94,7 +94,9 @@ export function getSpotlightCardModel(
   const dateLabel = date ? formatDisplayDateLabel(date, timeZone) : "";
   const time = eventDisplayTime(event);
   const channelList = (() => {
-    if (sport === "ufc" || sport === "series" || sport === "cine") return [];
+    if (sport === "ufc" || sport === "series" || sport === "cine" || sport === "anime") {
+      return [];
+    }
     if (sport === "tv") {
       const mediaPlatform = resolveEventStreamingPlatform(event);
       return mediaPlatform
@@ -135,7 +137,7 @@ export function getSpotlightCardModel(
     };
   }
 
-  if (sport === "cine" || sport === "series") {
+  if (sport === "cine" || sport === "series" || sport === "anime") {
     const premiere = sport === "series" && isSeasonPremiereEvent(event);
     const curatedMovie = sport === "cine" ? curatedMovieByExternalId(event.external_id) : null;
     const competition = event.competition?.trim() || "";
@@ -150,7 +152,9 @@ export function getSpotlightCardModel(
         ? "Estreno"
         : sport === "cine"
           ? "Cine"
-          : "Series",
+          : sport === "anime"
+            ? "Anime"
+            : "Series",
       badgeVariant: premiere ? "premiere" : "media",
       dateLabel,
       time,

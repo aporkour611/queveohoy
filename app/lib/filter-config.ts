@@ -25,7 +25,11 @@ export const QUICK_FILTERS: QuickFilter[] = [
   { id: "motor", label: "Motor", sportIds: ["formula1", "motos"] },
   { id: "esports", label: "E-Sports", sportIds: ["csgo", "valorant", "lol"] },
   { id: "tv", label: "TV y Twitch", sportIds: [...TV_SPORT_FILTER_IDS] },
-  { id: "cine", label: "Cine y series", sportIds: ["cine", "series"] },
+  {
+    id: "cine",
+    label: "Cine y series",
+    sportIds: ["cine", "series", "anime"],
+  },
 ];
 
 export const FILTER_GROUPS: FilterGroup[] = [
@@ -63,6 +67,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
     options: [
       { id: "cine", label: "Cine" },
       { id: "series", label: "Series" },
+      { id: "anime", label: "Anime" },
     ],
   },
   {
@@ -89,6 +94,7 @@ export function sportLabel(sportId: string): string {
 }
 
 export function sportFilterGroupId(sportId: string): string | null {
+  if (sportId === "anime") return "cine";
   for (const g of FILTER_GROUPS) {
     if (g.options.some((o) => o.id === sportId)) return g.id;
   }

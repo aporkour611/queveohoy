@@ -16,6 +16,7 @@ import { ensureEventsDateIndex } from "@/app/lib/ensure-db-index";
 import { shouldIngestPandascoreMatch } from "@/app/lib/esports-cron";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
 import { fetchJsonWithTimeout } from "@/app/lib/fetch-json";
+import { fetchJikanAnimeEventsForWeek } from "@/app/lib/jikan-anime";
 import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
 import { fetchRealityCronEvents } from "@/app/lib/tmdb-reality";
 import { fetchBasketballCronEvents } from "@/app/lib/balldontlie";
@@ -450,6 +451,75 @@ async function purgeOutOfWindowTmdbEvents(
   return { purged: ids.length };
 }
 
+async function purgeOutOfWindowJikanEvents(
+  dateFrom: string,
+  dateTo: string
+): Promise<{ purged: number; error?: string }> {
+  const graceStart = addDaysToDateKey(dateFrom, -7);
+  const graceEnd = addDaysToDateKey(dateTo, 7);
+
+  const { data, error } = await getSupabase()
+    .from("events")
+    .select("id, external_id, date")
+    .like("external_id", "jikan_%");
+
+  if (error) {
+    return { purged: 0, error: error.message };
+  }
+
+  const ids =
+    data
+      ?.filter((row) => {
+        if (!row.date) return false;
+        return row.date < graceStart || row.date > graceEnd;
+      })
+      .map((row) => row.id) ?? [];
+
+  if (!ids.length) return { purged: 0 };
+
+  const { error: delError } = await getSupabase()
+    .from("events")
+    .delete()
+    .in("id", ids);
+
+  if (delError) {
+    return { purged: 0, error: delError.message };
+  }
+
+  console.log(`Jikan fuera de ventana eliminados: ${ids.length}`);
+  return { purged: ids.length };
+}
+
+async function fetchAnime(): Promise<{
+  count: number;
+  purged: number;
+  error?: string;
+}> {
+  try {
+    const { events, error } = await fetchJikanAnimeEventsForWeek(7);
+    if (error) {
+      console.error("Jikan:", error);
+    }
+
+    const upsertError = events.length ? await upsertEvents(events) : null;
+    if (upsertError) {
+      return { count: 0, purged: 0, error: upsertError };
+    }
+
+    const dates = getWeekDates();
+    const purge = await purgeOutOfWindowJikanEvents(
+      dates[0],
+      dates[dates.length - 1]
+    );
+
+    console.log(`Jikan: ${events.length} anime (${purge.purged} fuera de ventana)`);
+    return { count: events.length, purged: purge.purged, error };
+  } catch (e) {
+    console.error("Error fetching Jikan:", e);
+    return { count: 0, purged: 0, error: String(e) };
+  }
+}
+
 async function fetchTmdb(): Promise<{
   movies: number;
   series: number;
@@ -586,6 +656,10 @@ export async function GET(request: Request) {
   };
   let reality: CountResult = { count: 0 };
   let ufc: CountResult = { count: 0 };
+  let anime: { count: number; purged: number; error?: string } = {
+    count: 0,
+    purged: 0,
+  };
 
   const ingest = await Promise.allSettled([
     fetchFootball(),
@@ -595,6 +669,7 @@ export async function GET(request: Request) {
     fetchLeagueSports(),
     fetchBasketball(),
     fetchTmdb(),
+    fetchAnime(),
     fetchRealityTv(),
     fetchUfc(),
   ]);
@@ -608,8 +683,9 @@ export async function GET(request: Request) {
   if (ingest[4].status === "fulfilled") leagues = ingest[4].value;
   if (ingest[5].status === "fulfilled") basket = ingest[5].value;
   if (ingest[6].status === "fulfilled") tmdb = ingest[6].value;
-  if (ingest[7].status === "fulfilled") reality = ingest[7].value;
-  if (ingest[8].status === "fulfilled") ufc = ingest[8].value;
+  if (ingest[7].status === "fulfilled") anime = ingest[7].value;
+  if (ingest[8].status === "fulfilled") reality = ingest[8].value;
+  if (ingest[9].status === "fulfilled") ufc = ingest[9].value;
 
   console.log("✓ Ingesta paralela completada");
 
@@ -692,6 +768,9 @@ export async function GET(request: Request) {
     tmdbSeries: tmdb.series,
     tmdbPurged: tmdb.purged,
     tmdbError: tmdb.error,
+    anime: anime.count,
+    animePurged: anime.purged,
+    animeError: anime.error,
     reality: reality.count,
     realityError: reality.error,
     ufc: ufc.count,

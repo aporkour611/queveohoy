@@ -140,6 +140,7 @@ export function mediaBadgeForEvent(
     if (category === "directo") return { label: "Directo", tone: "trending" };
     return { label: "Reality", tone: "trending" };
   }
+  if (event.sport === "anime") return { label: "Anime", tone: "trending" };
   if (event.sport === "cine") return { label: "Cine", tone: "heat" };
   if (event.sport === "series" && isPremiere) {
     return { label: "Estreno", tone: "release" };

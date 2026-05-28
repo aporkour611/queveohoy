@@ -2,6 +2,7 @@ import type { EventRow } from "../components/types";
 import { curatedMovieByExternalId } from "./movies-curated";
 import { curatedSeriesByExternalId } from "./series-curated";
 import { matchesSpanishTvFlagship } from "./spanish-tv-curated";
+import { parseJikanPoster } from "./jikan-client";
 import { encodeTmdbSource } from "./tmdb";
 import { parseTmdbPoster } from "./tmdb-client";
 
@@ -12,6 +13,9 @@ export function resolveEventPosterUrl(
 ): string | null {
   const flagship = matchesSpanishTvFlagship(event);
   if (flagship?.localPosterPath) return flagship.localPosterPath;
+
+  const fromJikan = parseJikanPoster(event.source, size);
+  if (fromJikan) return fromJikan;
 
   const fromSource = parseTmdbPoster(event.source, size);
   if (fromSource) return fromSource;

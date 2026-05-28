@@ -9,12 +9,17 @@ import {
   type SpotlightCover,
 } from "./spotlight-art";
 
-export type EntertainmentSport = "cine" | "series" | "tv";
+export type EntertainmentSport = "cine" | "series" | "anime" | "tv";
 
 export function isEntertainmentSport(
   sport?: string | null
 ): sport is EntertainmentSport {
-  return sport === "cine" || sport === "series" || sport === "tv";
+  return (
+    sport === "cine" ||
+    sport === "series" ||
+    sport === "anime" ||
+    sport === "tv"
+  );
 }
 
 export type EntertainmentVisualOptions = {
@@ -57,7 +62,7 @@ export function entertainmentSpotlightVisualClass(
   }
 
   if (sport === "cine") return "qvh-spotlight-visual-cine";
-  if (sport === "series") return "qvh-spotlight-visual-series";
+  if (sport === "series" || sport === "anime") return "qvh-spotlight-visual-series";
   return "qvh-spotlight-visual-premiere";
 }
 
@@ -74,6 +79,8 @@ export function matchCardEntertainmentVisualClass(
   }
 
   if (sport === "cine") return "fh-media-spotlight-visual-cine";
-  if (sport === "series") return "fh-media-spotlight-visual-series";
+  if (sport === "series" || sport === "anime") {
+    return "fh-media-spotlight-visual-series";
+  }
   return "fh-media-spotlight-visual-premiere";
 }

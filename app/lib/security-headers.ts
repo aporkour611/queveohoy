@@ -15,6 +15,7 @@ export function buildContentSecurityPolicy(isProduction: boolean): string {
       "https://cdn.pandascore.co",
       "https://cdn-api.pandascore.co",
       "https://image.tmdb.org",
+      "https://cdn.myanimelist.net",
       "https://r2.thesportsdb.com",
       "https://www.thesportsdb.com",
     ].join(" "),
