@@ -9,6 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "verify:release": "node scripts/verify-release-checklist.mjs",
+    "verify:prod": "node scripts/verify-prod-v1.mjs",
     "ping-search": "node scripts/ping-indexnow.mjs",
     "db:index": "node scripts/apply-index.mjs",
     "vapid:keys": "node scripts/generate-vapid-keys.mjs",

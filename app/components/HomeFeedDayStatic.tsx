@@ -39,7 +39,6 @@ export function HomeFeedDayStatic({
     <div
       id="home-feed-day-ssr"
       className="fh-feed-area qvh-home-feed-day-ssr"
-      aria-hidden="true"
     >
       <div className="fh-day-feed" id="day-feed-ssr">
         <div className="fh-feed-pane fh-feed-pane-today">
