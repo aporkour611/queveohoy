@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import type { EventRow } from "./components/types";
 import { fetchFeedEvents } from "./lib/events-feed-server";
+import { raceWithTimeout } from "./lib/race-with-timeout";
 import {
   buildPartidoSitemapEntries,
   buildStaticSitemapEntries,
@@ -11,20 +12,12 @@ export const revalidate = 900;
 const SITEMAP_DB_TIMEOUT_MS = 5_000;
 
 async function fetchSitemapEvents(): Promise<EventRow[]> {
-  let timeoutId: ReturnType<typeof setTimeout> | undefined;
-  try {
-    const result = await Promise.race([
-      fetchFeedEvents(),
-      new Promise<{ events: EventRow[] }>((resolve) => {
-        timeoutId = setTimeout(() => resolve({ events: [] }), SITEMAP_DB_TIMEOUT_MS);
-      }),
-    ]);
-    return result.events;
-  } catch {
-    return [];
-  } finally {
-    if (timeoutId) clearTimeout(timeoutId);
-  }
+  const result = await raceWithTimeout(
+    fetchFeedEvents(),
+    SITEMAP_DB_TIMEOUT_MS,
+    () => ({ events: [] as EventRow[], error: null })
+  );
+  return result.events;
 }
 
 /** Sitemap: URLs estáticas siempre; partidos solo si Supabase responde a tiempo. */

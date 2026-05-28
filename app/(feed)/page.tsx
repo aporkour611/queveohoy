@@ -17,6 +17,7 @@ import {
   getDestacadosFeedEventsForPage,
   getHomeFeedEventsForPage,
 } from "../lib/events-feed-server";
+import { raceWithTimeout } from "../lib/race-with-timeout";
 import { resolveHomeLcpPreloadEntries } from "../lib/home-lcp";
 import { buildHomeMetadataTitle } from "../lib/seo-jsonld";
 import { defaultDescription, pageMetadata, seoKeywords } from "../lib/seo";
@@ -26,47 +27,31 @@ export const maxDuration = 25;
 
 const PAGE_DATA_BUDGET_MS = 8_000;
 
+const PAGE_DATA_FALLBACK = {
+  events: [] as Awaited<ReturnType<typeof getHomeFeedEventsForPage>>["events"],
+  error: "La agenda tardó demasiado en cargar.",
+  weekEvents: [] as Awaited<
+    ReturnType<typeof getDestacadosFeedEventsForPage>
+  >["events"],
+};
+
 async function loadHomePageData(): Promise<{
   events: Awaited<ReturnType<typeof getHomeFeedEventsForPage>>["events"];
   error: string | null;
   weekEvents: Awaited<ReturnType<typeof getDestacadosFeedEventsForPage>>["events"];
 }> {
-  let timeoutId: ReturnType<typeof setTimeout> | undefined;
-
-  const budget = new Promise<{
-    events: [];
-    error: string;
-    weekEvents: [];
-  }>((resolve) => {
-    timeoutId = setTimeout(
-      () =>
-        resolve({
-          events: [],
-          error: "La agenda tardó demasiado en cargar.",
-          weekEvents: [],
-        }),
-      PAGE_DATA_BUDGET_MS
-    );
-  });
-
-  try {
-    const result = await Promise.race([
-      Promise.all([
-        getHomeFeedEventsForPage(),
-        getDestacadosFeedEventsForPage(),
-      ]),
-      budget,
-    ]);
-
-    if (Array.isArray(result)) {
-      const [{ events, error }, { events: weekEvents }] = result;
-      return { events, error, weekEvents };
-    }
-
-    return result;
-  } finally {
-    if (timeoutId) clearTimeout(timeoutId);
-  }
+  return raceWithTimeout(
+    Promise.all([
+      getHomeFeedEventsForPage(),
+      getDestacadosFeedEventsForPage(),
+    ]).then(([{ events, error }, { events: weekEvents }]) => ({
+      events,
+      error,
+      weekEvents,
+    })),
+    PAGE_DATA_BUDGET_MS,
+    () => PAGE_DATA_FALLBACK
+  );
 }
 
 export function generateMetadata(): Metadata {
@@ -79,54 +64,74 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function Page() {
-  const { events, error, weekEvents } = await loadHomePageData();
-  const ssrEvents = trimHomeSsrEvents(events);
-  const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
-  const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
-  const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
+  try {
+    const { events, error, weekEvents } = await loadHomePageData();
+    const ssrEvents = trimHomeSsrEvents(events);
+    const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
+    const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
+    const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
 
-  return (
-    <>
-      <HomeLcpPreload entries={lcpPreloadEntries} />
-      <HomeJsonLd events={ssrEvents} />
-      <div className="fh-body">
-        <HomeResetProvider>
-          <HomeNav />
-          <main id="main-content" className="fh-content">
-            <div className="fh-container fh-main">
-              <h1 className="sr-only">Qué ver hoy en TV</h1>
+    return (
+      <>
+        <HomeLcpPreload entries={lcpPreloadEntries} />
+        <HomeJsonLd events={ssrEvents} />
+        <div className="fh-body">
+          <HomeResetProvider>
+            <HomeNav />
+            <main id="main-content" className="fh-content">
+              <div className="fh-container fh-main">
+                <h1 className="sr-only">Qué ver hoy en TV</h1>
 
-              <FeedErrorBoundary>
-                <DestacadosSection events={weekEvents} />
-              </FeedErrorBoundary>
+                <FeedErrorBoundary>
+                  <DestacadosSection events={weekEvents} />
+                </FeedErrorBoundary>
 
-              <div className="qvh-home-feed-slot">
-                <FeedControlsShell days={shellDays} />
-                {initialDay ? (
-                  <HomeFeedDayHeader
-                    date={initialDay.date}
-                    title={initialDay.title}
-                  />
-                ) : null}
-                {initialDay ? (
-                  <HomeFeedDayStatic
+                <div className="qvh-home-feed-slot">
+                  <FeedControlsShell days={shellDays} />
+                  {initialDay ? (
+                    <HomeFeedDayHeader
+                      date={initialDay.date}
+                      title={initialDay.title}
+                    />
+                  ) : null}
+                  {initialDay ? (
+                    <HomeFeedDayStatic
+                      initialEvents={ssrEvents}
+                      initialDestacadosEvents={weekEvents}
+                      dayDate={initialDay.date}
+                    />
+                  ) : null}
+                  <HomeFeedGate
                     initialEvents={ssrEvents}
                     initialDestacadosEvents={weekEvents}
-                    dayDate={initialDay.date}
+                    initialError={error}
+                    serverDayHeaderDate={initialDay?.date ?? null}
                   />
-                ) : null}
-                <HomeFeedGate
-                  initialEvents={ssrEvents}
-                  initialDestacadosEvents={weekEvents}
-                  initialError={error}
-                  serverDayHeaderDate={initialDay?.date ?? null}
-                />
+                </div>
               </div>
-            </div>
-            <SiteFooter />
-          </main>
-        </HomeResetProvider>
+              <SiteFooter />
+            </main>
+          </HomeResetProvider>
+        </div>
+      </>
+    );
+  } catch {
+    return (
+      <div className="fh-body">
+        <HomeNav />
+        <main id="main-content" className="fh-content">
+          <div className="fh-container fh-main">
+            <h1 className="sr-only">Qué ver hoy en TV</h1>
+            <HomeFeedGate
+              initialEvents={[]}
+              initialDestacadosEvents={[]}
+              initialError="La agenda tardó demasiado en cargar."
+              serverDayHeaderDate={null}
+            />
+          </div>
+          <SiteFooter />
+        </main>
       </div>
-    </>
-  );
+    );
+  }
 }
