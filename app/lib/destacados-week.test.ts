@@ -7,7 +7,7 @@ import {
   pickWeekDestacados,
 } from "./destacados-config";
 import { eventPriority, isImportantEvent, isSuperRelevantEvent } from "./featured";
-import { formatRolandGarrosCompetition } from "./roland-garros";
+import { formatRolandGarrosCompetition, parseTennisMatchFromEventTitle } from "./roland-garros";
 
 describe("pickWeekDestacados", () => {
   it("incluye Champions en eliminatorias en Esta semana", () => {
@@ -95,5 +95,26 @@ describe("pickWeekDestacados", () => {
         "Roland Garros Final Jannik Sinner vs Carlos Alcaraz"
       )
     ).toBe("Roland Garros · Final");
+  });
+
+  it("extrae jugadores de títulos Roland Garros de TheSportsDB", () => {
+    expect(
+      parseTennisMatchFromEventTitle(
+        "Roland Garros Emma Navarro vs Iva Jovic"
+      )
+    ).toEqual({
+      title: "Emma Navarro vs Iva Jovic",
+      home: "Emma Navarro",
+      away: "Iva Jovic",
+    });
+    expect(
+      parseTennisMatchFromEventTitle(
+        "Roland Garros Semifinal Jannik Sinner vs Novak Djokovic"
+      )
+    ).toEqual({
+      title: "Jannik Sinner vs Novak Djokovic",
+      home: "Jannik Sinner",
+      away: "Novak Djokovic",
+    });
   });
 });

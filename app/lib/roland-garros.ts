@@ -48,3 +48,33 @@ export function formatRolandGarrosCompetition(strEvent: string): string | null {
 
   return "Roland Garros";
 }
+
+const RG_TITLE_NOISE =
+  /semi.?final|semifinal|octavos de final|octavos|cuartos de final|cuartos|quarter.?final|round of 16|last.?16|4th round|\bfinal\b/gi;
+
+/** Extrae jugadores de títulos TheSportsDB tipo "Roland Garros X vs Y". */
+export function parseTennisMatchFromEventTitle(strEvent: string): {
+  title: string;
+  home?: string;
+  away?: string;
+} {
+  let cleaned = strEvent.trim();
+  if (ROLAND_GARROS_PATTERN.test(cleaned)) {
+    cleaned = cleaned
+      .replace(ROLAND_GARROS_PATTERN, "")
+      .replace(RG_TITLE_NOISE, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  const vsMatch = cleaned.match(/^(.+?)\s+vs\s+(.+)$/i);
+  if (!vsMatch) return { title: strEvent.trim() };
+
+  const home = vsMatch[1].trim();
+  const away = vsMatch[2].trim();
+  return {
+    title: `${home} vs ${away}`,
+    home,
+    away,
+  };
+}

@@ -5,7 +5,12 @@ import {
   toMadridDateKey,
 } from "./madrid-time";
 import { isPlaceholderTeamName } from "./event-quality";
-import { formatRolandGarrosCompetition } from "./roland-garros";
+import { fetchJsonWithTimeout } from "./fetch-json";
+import {
+  formatRolandGarrosCompetition,
+  parseTennisMatchFromEventTitle,
+  ROLAND_GARROS_PATTERN,
+} from "./roland-garros";
 
 const API_BASE = "https://www.thesportsdb.com/api/v1/json/3";
 
@@ -58,6 +63,7 @@ type RawEvent = {
   strPostponed?: string;
   strHomeTeam?: string | null;
   strAwayTeam?: string | null;
+  idLeague?: string | number | null;
 };
 
 export type LeagueCronEvent = {
@@ -151,7 +157,10 @@ function normalizeLeagueEvent(
 
   const home = raw.strHomeTeam?.trim() || null;
   const away = raw.strAwayTeam?.trim() || null;
-  const parsed = parseVersusTitle(raw.strEvent);
+  const parsed =
+    config.sport === "tenis"
+      ? parseTennisMatchFromEventTitle(raw.strEvent)
+      : parseVersusTitle(raw.strEvent);
 
   if (
     isPlaceholderTeamName(home) ||
@@ -188,14 +197,58 @@ function normalizeLeagueEvent(
   };
 }
 
-async function fetchJson<T>(path: string): Promise<T | null> {
-  try {
-    const res = await fetch(`${API_BASE}${path}`, { next: { revalidate: 3600 } });
-    if (!res.ok) return null;
-    return res.json() as Promise<T>;
-  } catch {
-    return null;
+async function fetchJson<T>(path: string, retries = 2): Promise<T | null> {
+  const url = `${API_BASE}${path}`;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const result = await fetchJsonWithTimeout<T>(url, {
+      headers: {
+        Accept: "application/json",
+        "User-Agent": "queveohoy-cron/1.0 (+https://queveohoy.es)",
+      },
+    });
+
+    if (result.ok && result.data) return result.data;
+
+    if (result.status === 429 && attempt < retries) {
+      await new Promise((resolve) => setTimeout(resolve, 1200 * (attempt + 1)));
+      continue;
+    }
   }
+
+  return null;
+}
+
+const DAY_FETCH_DELAY_MS = 400;
+
+async function fetchTennisEventsByDay(
+  weekDates: string[]
+): Promise<LeagueCronEvent[]> {
+  const fallbackConfig = THESPORTSDB_LEAGUES.find((c) => c.leagueId === "4464");
+  if (!fallbackConfig) return [];
+
+  const map = new Map<string, LeagueCronEvent>();
+
+  for (const date of weekDates) {
+    const data = await fetchJson<{ events?: RawEvent[] | null }>(
+      `/eventsday.php?d=${date}&s=Tennis`
+    );
+
+    for (const raw of data?.events ?? []) {
+      if (!raw.strEvent || !ROLAND_GARROS_PATTERN.test(raw.strEvent)) continue;
+
+      const leagueId = raw.idLeague?.toString();
+      const config =
+        THESPORTSDB_LEAGUES.find((c) => c.leagueId === leagueId) ??
+        fallbackConfig;
+      const event = normalizeLeagueEvent(raw, config, weekDates);
+      if (event) map.set(event.external_id, event);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, DAY_FETCH_DELAY_MS));
+  }
+
+  return [...map.values()];
 }
 
 async function fetchLeagueEvents(
@@ -230,8 +283,21 @@ export async function fetchTheSportsDbLeagueEvents(
   dayCount = 7
 ): Promise<LeagueCronEvent[]> {
   const weekDates = getMadridWeekDates(dayCount);
-  const batches = await Promise.all(
-    THESPORTSDB_LEAGUES.map((config) => fetchLeagueEvents(config, weekDates))
+  const [batches, dayTennis] = await Promise.all([
+    Promise.all(
+      THESPORTSDB_LEAGUES.map((config) => fetchLeagueEvents(config, weekDates))
+    ),
+    fetchTennisEventsByDay(weekDates),
+  ]);
+
+  const map = new Map<string, LeagueCronEvent>();
+  for (const batch of batches) {
+    for (const event of batch) map.set(event.external_id, event);
+  }
+  for (const event of dayTennis) map.set(event.external_id, event);
+
+  return [...map.values()].sort(
+    (a, b) =>
+      a.date.localeCompare(b.date) || (a.time ?? "").localeCompare(b.time ?? "")
   );
-  return batches.flat();
 }
