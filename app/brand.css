@@ -24,26 +24,25 @@
   --qvh-text-on-light: #14141c;
   --qvh-border: #2a2a38;
   --qvh-border-light: #e0e0e8;
-  --qvh-navbar-accent-h: 1px;
-  --qvh-navbar-padding-y: 12px;
-  --qvh-navbar-content-h: 52px;
+  --qvh-navbar-accent-h: 2px;
+  --qvh-navbar-padding-y: 0px;
+  --qvh-navbar-content-h: 60px;
   --qvh-navbar-h: calc(
-    var(--qvh-navbar-accent-h) + var(--qvh-navbar-padding-y) * 2 +
-      var(--qvh-navbar-content-h)
+    var(--qvh-navbar-padding-y) * 2 + var(--qvh-navbar-content-h) + 1px
   );
   --qvh-font-display: var(--font-barlow-condensed), "Arial Narrow", Arial, sans-serif;
-  /* Letterboxd-like shell: barra a 100vw, contenido ~1100px centrado */
-  --qvh-shell-max: 1100px;
-  --qvh-layout-max: 1100px;
-  --qvh-layout-gutter: clamp(20px, 4vw, 48px);
+  /* Letterboxd shell: contenido 950px + gutter 20px */
+  --qvh-shell-max: 950px;
+  --qvh-layout-max: 950px;
+  --qvh-layout-gutter: 20px;
   --qvh-prose-max: 42rem;
   --qvh-feed-controls-h: 112px;
 }
 
 @media (max-width: 640px) {
   :root {
-    --qvh-navbar-padding-y: 9px;
-    --qvh-navbar-content-h: 46px;
+    --qvh-navbar-content-h: 52px;
+    --qvh-layout-gutter: 16px;
   }
 }
 
@@ -81,12 +80,12 @@
 }
 
 .fh-navbar .qvh-logo-svg {
-  height: 34px;
+  height: 40px;
 }
 
 @media (min-width: 768px) {
   .fh-navbar .qvh-logo-svg {
-    height: 36px;
+    height: 40px;
   }
 }
 

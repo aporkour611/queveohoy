@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" role="img" aria-label="Gran Hermano">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" role="img" aria-label="La Isla">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#dc2626"/>
-      <stop offset="100%" stop-color="#1a0606"/>
+      <stop offset="0%" stop-color="#db2777"/>
+      <stop offset="100%" stop-color="#2a0618"/>
     </linearGradient>
     <radialGradient id="glow" cx="72%" cy="8%" r="65%">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
@@ -12,8 +12,8 @@
   </defs>
   <rect width="400" height="225" fill="url(#bg)"/>
   <rect width="400" height="225" fill="url(#glow)"/>
-  <circle cx="200" cy="96" r="50" fill="none" stroke="#fff" stroke-width="4" opacity="0.7"/><circle cx="200" cy="96" r="16" fill="#fff" opacity="0.85"/>
+  <path d="M110 140 Q200 48 290 140 Z" fill="rgba(255,255,255,0.1)"/><circle cx="168" cy="108" r="14" fill="#fff" opacity="0.75"/><circle cx="232" cy="108" r="14" fill="#fff" opacity="0.75"/><path d="M152 124 Q200 148 248 124" stroke="#ffd166" stroke-width="3" fill="none"/>
   <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
-  <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">Gran Hermano</text>
+  <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">La Isla</text>
   <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">TELECINCO</text>
 </svg>

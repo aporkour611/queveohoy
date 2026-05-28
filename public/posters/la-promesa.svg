@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="La promesa">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" role="img" aria-label="La promesa">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0.2" y2="1">
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#0d9488"/>
       <stop offset="100%" stop-color="#051412"/>
     </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="18%" r="55%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+    <radialGradient id="glow" cx="72%" cy="8%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="400" height="600" fill="url(#bg)"/>
-  <rect width="400" height="600" fill="url(#glow)"/>
-  <rect x="24" y="24" width="352" height="552" rx="18" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
-  <text x="200" y="470" text-anchor="middle" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="34" font-weight="700">La promesa</text>
-  <text x="200" y="512" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="18" font-weight="600" letter-spacing="3">RTVE</text>
+  <rect width="400" height="225" fill="url(#bg)"/>
+  <rect width="400" height="225" fill="url(#glow)"/>
+  <path d="M128 140 L200 54 L272 140 Z" fill="rgba(255,255,255,0.12)" stroke="#fff" stroke-width="2"/><rect x="182" y="108" width="36" height="32" fill="rgba(255,255,255,0.2)"/>
+  <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
+  <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">La promesa</text>
+  <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">RTVE</text>
 </svg>

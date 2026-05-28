@@ -34,6 +34,17 @@ describe("sticky scroll surfaces", () => {
     expect(feedControlsBlock).not.toContain("backdrop-filter");
   });
 
+  it("la altura de navbar usa content-box en el inner para coincidir con --qvh-navbar-h", () => {
+    const shellCss = readFileSync(
+      join(process.cwd(), "app", "futbolhoy-shell.css"),
+      "utf8"
+    );
+    const innerStart = shellCss.indexOf(".fh-navbar-inner {");
+    const innerBlock = shellCss.slice(innerStart, innerStart + 280);
+
+    expect(innerBlock).toContain("box-sizing: content-box");
+  });
+
   it("solo el cartel del día es sticky bajo la navbar", () => {
     const brandCss = readFileSync(join(process.cwd(), "app", "brand.css"), "utf8");
     const shellCss = readFileSync(

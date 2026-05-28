@@ -6,6 +6,7 @@ import {
   stripDuplicateGenericSpanishTvEvents,
 } from "./curated-tv-events";
 import { normalizeFeedEvents } from "./events-feed";
+import { resolveEventPosterUrl } from "./event-poster";
 
 describe("mergeCuratedSpanishTvEvents", () => {
   it("inserta El Hormiguero de lunes a viernes a las 22:00", () => {
@@ -27,7 +28,7 @@ describe("mergeCuratedSpanishTvEvents", () => {
     expect(show?.time).toBe("15:45");
   });
 
-  it("inserta MasterChef los lunes a las 22:50 con póster TMDB", () => {
+  it("inserta MasterChef los lunes a las 22:50 con póster editorial", () => {
     const events = mergeCuratedSpanishTvEvents([], "2026-06-01", 7);
     const masterChef = events.find((event) => /master\s*chef/i.test(event.title ?? ""));
 
@@ -35,7 +36,7 @@ describe("mergeCuratedSpanishTvEvents", () => {
     expect(masterChef?.date).toBe("2026-06-01");
     expect(masterChef?.time).toBe("22:50");
     expect(masterChef?.platform).toContain("La 1");
-    expect(masterChef?.source).toContain("9p3sgMqNulDMsHbk2ZdOsWoJqTq");
+    expect(resolveEventPosterUrl(masterChef!)).toBe("/posters/masterchef.svg");
   });
 
   it("inserta Mask Singer los miércoles a las 23:00 con póster editorial", () => {

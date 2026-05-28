@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="El Hormiguero">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" role="img" aria-label="El Hormiguero">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0.2" y2="1">
-      <stop offset="0%" stop-color="#5d5fef"/>
-      <stop offset="100%" stop-color="#1a1030"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff7328"/>
+      <stop offset="100%" stop-color="#1a0a04"/>
     </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="18%" r="55%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+    <radialGradient id="glow" cx="72%" cy="8%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="400" height="600" fill="url(#bg)"/>
-  <rect width="400" height="600" fill="url(#glow)"/>
-  <rect x="24" y="24" width="352" height="552" rx="18" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
-  <text x="200" y="470" text-anchor="middle" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="34" font-weight="700">El Hormiguero</text>
-  <text x="200" y="512" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="18" font-weight="600" letter-spacing="3">ANTENA 3</text>
+  <rect width="400" height="225" fill="url(#bg)"/>
+  <rect width="400" height="225" fill="url(#glow)"/>
+  <ellipse cx="200" cy="98" rx="52" ry="38" fill="rgba(0,0,0,0.22)"/><circle cx="168" cy="92" r="8" fill="#fff" opacity="0.9"/><circle cx="232" cy="92" r="8" fill="#fff" opacity="0.9"/><path d="M148 118 Q200 142 252 118" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M176 74 L200 52 L224 74 L214 98 L186 98 Z" fill="#ffd166"/>
+  <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
+  <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">El Hormiguero</text>
+  <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">ANTENA 3</text>
 </svg>

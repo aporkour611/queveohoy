@@ -108,6 +108,7 @@ html {
   margin: 0 auto;
   padding: var(--qvh-navbar-padding-y) var(--qvh-layout-gutter);
   min-height: var(--qvh-navbar-content-h);
+  box-sizing: content-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -448,7 +449,7 @@ html {
 
 @media (max-width: 640px) {
   .fh-navbar-inner {
-    padding: var(--qvh-navbar-padding-y) 12px;
+    padding: var(--qvh-navbar-padding-y) var(--qvh-layout-gutter);
     gap: 8px;
   }
 

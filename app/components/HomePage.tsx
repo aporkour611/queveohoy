@@ -498,6 +498,13 @@ export function HomeFeed({
   }, [registerReset, resetHome]);
 
   useEffect(() => {
+    const handleNavbarMetrics = () => invalidateScrollAnchorOffset();
+    window.addEventListener("qvh-navbar-metrics", handleNavbarMetrics);
+    return () =>
+      window.removeEventListener("qvh-navbar-metrics", handleNavbarMetrics);
+  }, []);
+
+  useEffect(() => {
     if (!weekView || showInitialLoading || displayDays.length === 0) return;
 
     const sections = displayDays

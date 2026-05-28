@@ -2,10 +2,8 @@ import type { EventRow } from "../components/types";
 import { resolveChannelsForEvent } from "./channels";
 import { sportLabel } from "./filter-config";
 import { footballSpotlightMeta } from "./football";
-import { parseJikanBuzzScore } from "./jikan-client";
-import { parseTmdbBuzzScore, parseTmdbEpisodeMeta } from "./tmdb-client";
+import { parseTmdbEpisodeMeta } from "./tmdb-client";
 import { parseUfcKindFromSource, ufcKindLabel } from "./thesportsdb-ufc-client";
-
 export type EventDetail = {
   label: string;
   value: string;
@@ -35,24 +33,6 @@ function esportsFormat(competition?: string | null): string | null {
   }
   if (/regular|split|season|league/i.test(blob)) return "Liga regular";
   return null;
-}
-
-function tmdbInterestLabel(source?: string | null): string | null {
-  const buzz = parseTmdbBuzzScore(source);
-  if (buzz <= 0) return null;
-  if (buzz >= 200) return "Muy buscado esta semana";
-  if (buzz >= 140) return "Tendencia en TMDB";
-  return "Interés moderado en TMDB";
-}
-
-function mediaInterestLabel(source?: string | null): string | null {
-  const tmdb = tmdbInterestLabel(source);
-  if (tmdb) return tmdb;
-  const jikanBuzz = parseJikanBuzzScore(source);
-  if (jikanBuzz <= 0) return null;
-  if (jikanBuzz >= 50) return "Muy popular en MyAnimeList";
-  if (jikanBuzz >= 35) return "Tendencia en anime";
-  return "En emisión esta semana";
 }
 
 function pushDetail(
@@ -128,14 +108,12 @@ export function buildEventDetails(event: EventRow): EventDetail[] {
       }
     }
     pushDetail(rows, "Dónde ver", event.platform);
-    pushDetail(rows, "Interés", mediaInterestLabel(event.source));
     return rows;
   }
 
   if (sport === "tv") {
     pushDetail(rows, "Programa", event.title);
     pushDetail(rows, "Formato", event.competition);
-    pushDetail(rows, "Interés", tmdbInterestLabel(event.source));
     pushDetail(rows, "Emisión", channels || event.platform);
     return rows;
   }

@@ -163,7 +163,7 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     platform: "Telecinco · Mitele",
     priority: 98,
     category: "reality",
-    posterPath: "/5UNSRQc1ZCVmkDxi9llNqrUudYt.jpg",
+    localPosterPath: "/posters/isla-tentaciones.svg",
     airTime: "23:00",
     airWeekdays: [1, 2],
     episodeSpainDates: [
@@ -199,7 +199,7 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     platform: "La 1 · RTVE Play",
     priority: 94,
     category: "concurso",
-    posterPath: "/9p3sgMqNulDMsHbk2ZdOsWoJqTq.jpg",
+    localPosterPath: "/posters/masterchef.svg",
     airTime: "22:50",
     airWeekdays: [1],
   },

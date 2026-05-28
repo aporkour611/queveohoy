@@ -2,13 +2,13 @@
 
 .qvh-cl-week-shell {
   max-width: min(var(--qvh-shell-max), calc(100% - 24px));
-  margin: 0 auto 16px;
+  margin: 0 auto 12px;
   overflow: hidden;
-  border-radius: 14px;
-  border: 1px solid rgba(120, 140, 255, 0.22);
+  border-radius: 10px;
+  border: 1px solid rgba(120, 140, 255, 0.18);
   box-shadow:
-    0 18px 44px rgba(8, 6, 40, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 8px 20px rgba(8, 6, 40, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .qvh-cl-week-hero {
@@ -30,42 +30,16 @@
   pointer-events: none;
 }
 
-.qvh-cl-week-hero-rays {
-  position: absolute;
-  inset: -40% -20%;
-  background: conic-gradient(
-    from 200deg at 50% 120%,
-    transparent 0deg,
-    rgba(93, 95, 239, 0.14) 24deg,
-    transparent 48deg,
-    rgba(201, 162, 39, 0.1) 72deg,
-    transparent 96deg,
-    rgba(93, 95, 239, 0.12) 120deg,
-    transparent 360deg
-  );
-  opacity: 0.9;
-  animation: qvh-cl-rays-drift 18s linear infinite;
-}
-
-@keyframes qvh-cl-rays-drift {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .qvh-cl-week-hero-glow {
   position: absolute;
-  top: -30%;
+  top: -40%;
   left: 50%;
-  width: 120%;
-  height: 80%;
+  width: 100%;
+  height: 70%;
   transform: translateX(-50%);
   background: radial-gradient(
     ellipse 55% 45% at 50% 0%,
-    rgba(120, 130, 255, 0.35),
+    rgba(120, 130, 255, 0.2),
     transparent 68%
   );
 }
@@ -73,155 +47,162 @@
 .qvh-cl-week-hero-inner {
   position: relative;
   z-index: 1;
-  padding: 20px 18px 18px;
-  max-width: 100%;
-  margin: 0 auto;
-}
-
-.qvh-cl-week-hero-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 16px;
+  gap: 10px;
+  padding: 10px 12px;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .qvh-cl-week-emblem {
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 64px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 30%, rgba(201, 162, 39, 0.28), rgba(10, 6, 72, 0.6));
-  border: 1px solid rgba(201, 162, 39, 0.35);
-  box-shadow: 0 0 24px rgba(201, 162, 39, 0.25);
+  background: radial-gradient(circle at 50% 30%, rgba(201, 162, 39, 0.22), rgba(10, 6, 72, 0.6));
+  border: 1px solid rgba(201, 162, 39, 0.28);
+  box-shadow: 0 0 10px rgba(201, 162, 39, 0.15);
 }
 
 .qvh-cl-week-trophy {
-  width: 42px;
+  width: 22px;
   height: auto;
-  filter: drop-shadow(0 4px 12px rgba(201, 162, 39, 0.45));
+  filter: drop-shadow(0 2px 6px rgba(201, 162, 39, 0.3));
+}
+
+.qvh-cl-week-hero-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qvh-cl-week-hero-titleline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
 }
 
 .qvh-cl-week-kicker {
-  margin: 0 0 2px;
+  margin: 0;
   font-family: var(--qvh-font-display);
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .qvh-cl-week-headline {
   margin: 0;
   font-family: var(--qvh-font-display);
-  font-size: clamp(1.55rem, 4.8vw, 2.15rem);
+  font-size: clamp(0.88rem, 2.8vw, 1.1rem);
   font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 0.95;
+  letter-spacing: 0.03em;
+  line-height: 1;
   text-transform: uppercase;
   color: #fff;
-  text-shadow: 0 2px 24px rgba(93, 95, 239, 0.45);
-}
-
-.qvh-cl-week-stage {
-  margin: 8px 0 0;
+  text-shadow: 0 1px 12px rgba(93, 95, 239, 0.3);
 }
 
 .qvh-cl-week-stage-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
+  padding: 2px 8px;
   border-radius: 999px;
   font-family: var(--qvh-font-display);
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #1a1028;
   background: linear-gradient(135deg, #f5e6a8 0%, #c9a227 45%, #e8d48a 100%);
-  box-shadow: 0 0 20px rgba(201, 162, 39, 0.45);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.25);
+}
+
+.qvh-cl-week-hero-detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
 }
 
 .qvh-cl-week-matchup {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px 12px;
-  margin-bottom: 12px;
-  padding: 12px 12px;
-  border-radius: 14px;
-  background: rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.qvh-cl-week-team {
-  min-width: 0;
-  text-align: center;
+  gap: 6px 8px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .qvh-cl-week-team-name {
-  display: block;
   font-family: var(--qvh-font-display);
-  font-size: clamp(1rem, 3.2vw, 1.35rem);
+  font-size: clamp(0.78rem, 2.4vw, 0.92rem);
   font-weight: 700;
-  line-height: 1.15;
-  color: #fff;
-  text-wrap: balance;
+  line-height: 1.1;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .qvh-cl-week-vs {
   font-family: var(--qvh-font-display);
-  font-size: 0.82rem;
+  font-size: 0.62rem;
   font-weight: 800;
-  letter-spacing: 0.2em;
-  color: rgba(201, 162, 39, 0.85);
+  letter-spacing: 0.16em;
+  color: rgba(201, 162, 39, 0.75);
 }
 
 .qvh-cl-week-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 14px;
+  gap: 6px 10px;
 }
 
 .qvh-cl-week-date,
 .qvh-cl-week-time {
   font-family: var(--qvh-font-display);
-  font-size: 0.88rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .qvh-cl-week-time {
-  padding: 4px 10px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .qvh-cl-week-destacados {
-  padding: 14px 16px 12px;
+  padding: 10px 12px 10px;
   background: linear-gradient(180deg, #07051e 0%, #0d0d12 100%);
-  border-top: 1px solid rgba(120, 140, 255, 0.12);
+  border-top: 1px solid rgba(120, 140, 255, 0.1);
 }
 
 .qvh-cl-week-destacados .qvh-destacados-head {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .qvh-cl-week-destacados .qvh-destacados-title {
   color: rgba(255, 255, 255, 0.92);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
 }
 
 .qvh-cl-week-destacados .qvh-destacados-sub {
   color: rgba(255, 255, 255, 0.48);
+  font-size: 0.78rem;
 }
 
 .qvh-cl-week-destacados .qvh-destacados-dot {
   background: linear-gradient(135deg, #c9a227, #f5e6a8);
-  box-shadow: 0 0 12px rgba(201, 162, 39, 0.55);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.4);
 }
 
 /* Spotlight final */
@@ -296,17 +277,32 @@
   font-weight: 700;
 }
 
+@media (min-width: 640px) {
+  .qvh-cl-week-hero-main {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .qvh-cl-week-hero-detail {
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+}
+
 @media (min-width: 768px) {
+  .qvh-cl-week-hero-inner {
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
   .qvh-cl-week-emblem {
-    width: 72px;
-    height: 72px;
+    width: 40px;
+    height: 40px;
   }
 
   .qvh-cl-week-trophy {
-    width: 48px;
-  }
-
-  .qvh-cl-week-matchup {
-    padding: 16px 18px;
+    width: 24px;
   }
 }
