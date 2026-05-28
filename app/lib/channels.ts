@@ -11,6 +11,7 @@ const CHANNEL_STYLES: { match: RegExp; style: Omit<ChannelStyle, "label" | "tier
   { match: /dazn/i, style: { bg: "#111", color: "#f5d020", border: "#333" } },
   { match: /la\s*1|rtve|teledeporte/i, style: { bg: "#e30613", color: "#fff", border: "#c90511" } },
   { match: /antena|atresplayer/i, style: { bg: "#ff7328", color: "#fff", border: "#e56520" } },
+  { match: /telecinco|mitele|mediaset|cuatro/i, style: { bg: "#00a0e3", color: "#fff", border: "#0088c2" } },
   { match: /gol|vamos|orange/i, style: { bg: "#ff6b00", color: "#fff", border: "#e55f00" } },
   { match: /sky/i, style: { bg: "#0072c6", color: "#fff", border: "#0060a8" } },
   { match: /eurosport/i, style: { bg: "#003087", color: "#fff", border: "#00256a" } },
@@ -41,7 +42,7 @@ export function parseChannels(platform?: string | null): string[] {
 }
 
 export function isFreeTvChannel(name: string): boolean {
-  return /rtve\s*play|teledeporte|la\s*1\b|gol\s*play|tv3|esport\s*3|etb|ten\s*tv|^rtve$|antena\s*3|atresplayer/i.test(
+  return /rtve\s*play|teledeporte|la\s*1\b|gol\s*play|tv3|esport\s*3|etb|ten\s*tv|^rtve$|antena\s*3|atresplayer|atresmedia|la\s*sexta|lasexta|neox|nova|mega|atreseries|telecinco|mitele|mediaset|cuatro/i.test(
     name.trim()
   );
 }

@@ -22,6 +22,7 @@ describe("isFreeLiveChannel", () => {
     expect(isFreeLiveChannel("RTVE Play")).toBe(true);
     expect(isFreeLiveChannel("Antena 3")).toBe(true);
     expect(isFreeLiveChannel("ATRESPLAYER TV")).toBe(true);
+    expect(isFreeLiveChannel("Telecinco")).toBe(true);
     expect(isFreeLiveChannel("Twitch · Ibai")).toBe(true);
     expect(isFreeLiveChannel("Movistar+")).toBe(false);
   });

@@ -5,6 +5,7 @@ import { ChannelBadge } from "./ChannelBadge";
 import { Logo } from "./Logo";
 import { SiteFooter } from "./SiteFooter";
 import type { LivePlayerEmbed } from "../lib/live-player";
+import { LiveEmbedPlayer } from "./LiveEmbedPlayer";
 
 type Props = {
   channel: string;
@@ -33,33 +34,7 @@ export function ChannelWatchPage({ channel, player }: Props) {
           </header>
 
           <div className="fh-live-stage">
-            {player.embedSrc ? (
-              <div className="fh-live-player-wrap">
-                <iframe
-                  src={player.embedSrc}
-                  title={player.playerTitle}
-                  className="fh-live-player"
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
-                  referrerPolicy="strict-origin-when-cross-origin"
-                />
-              </div>
-            ) : (
-              <div className="fh-live-fallback">
-                <p>
-                  Este canal no permite incrustar el vídeo aquí. Ábrelo en{" "}
-                  <strong>{channel}</strong> para ver la retransmisión.
-                </p>
-                <a
-                  href={player.externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="fh-btn fh-btn-primary fh-live-fallback-btn"
-                >
-                  Abrir {channel}
-                </a>
-              </div>
-            )}
+            <LiveEmbedPlayer player={player} channel={channel} />
           </div>
 
           <p className="fh-seo-hub-cta">

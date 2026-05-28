@@ -60,8 +60,23 @@ function liveChannelWatchUrl(channel: string): string | null {
   if (/rtve|la\s*1|teledeporte/.test(lower)) {
     return "https://www.rtve.es/play/en-directo/";
   }
-  if (/antena|atresplayer/.test(lower)) {
+  if (/antena|atresplayer|atresmedia|la\s*sexta|lasexta|neox|nova|mega|atreseries/i.test(lower)) {
+    if (/la\s*sexta|lasexta/i.test(lower)) {
+      return "https://www.atresplayer.com/directos/lasexta/";
+    }
+    if (/neox/i.test(lower)) return "https://www.atresplayer.com/directos/neox/";
+    if (/nova/i.test(lower)) return "https://www.atresplayer.com/directos/nova/";
+    if (/mega/i.test(lower)) return "https://www.atresplayer.com/directos/mega/";
+    if (/atreseries/i.test(lower)) {
+      return "https://www.atresplayer.com/directos/atreseries/";
+    }
     return "https://www.atresplayer.com/directos/antena3/";
+  }
+  if (/telecinco|mitele|mediaset|cuatro|infinity/i.test(lower)) {
+    if (/cuatro/i.test(lower)) {
+      return "https://www.mediasetinfinity.es/directo/cuatro/";
+    }
+    return "https://www.mediasetinfinity.es/directo/telecinco/";
   }
   if (/gol\s*play|^gol\b/.test(lower)) {
     return "https://www.golplay.es/directos";

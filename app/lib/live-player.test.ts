@@ -40,10 +40,27 @@ describe("resolveLivePlayerEmbed", () => {
     expect(player.embedSrc).toContain("la-1");
   });
 
-  it("enlaza Antena 3 al directo de ATRESPLAYER TV", () => {
+  it("incrusta Antena 3 con el reproductor de ATRESPLAYER TV", () => {
     const player = resolveLivePlayerEmbed("Antena 3", "https://queveohoy.es");
 
     expect(player.kind).toBe("atresplayer");
+    expect(player.embedSrc).toContain("atresplayer.com/directos/antena3");
     expect(player.externalUrl).toContain("atresplayer.com/directos/antena3");
+  });
+
+  it("bloquea iframe de Telecinco y enlaza a Mediaset Infinity", () => {
+    const player = resolveLivePlayerEmbed("Telecinco", "https://queveohoy.es");
+
+    expect(player.kind).toBe("mitele");
+    expect(player.embedBlocked).toBe(true);
+    expect(player.embedSrc).toBeNull();
+    expect(player.externalUrl).toContain("mediasetinfinity.es/directo/telecinco");
+  });
+
+  it("incrusta laSexta en ATRESPLAYER", () => {
+    const player = resolveLivePlayerEmbed("laSexta", "https://queveohoy.es");
+
+    expect(player.kind).toBe("atresplayer");
+    expect(player.embedSrc).toContain("directos/lasexta");
   });
 });
