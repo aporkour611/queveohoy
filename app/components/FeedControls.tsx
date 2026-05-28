@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { DayTabs } from "./DayTabs";
 import { EventFilters } from "./EventFilters";
 
@@ -23,6 +24,20 @@ type Props = {
   isFeaturedMode: boolean;
 };
 
+function CollapseFiltersIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden>
+      <path
+        d="M7 14l5-5 5 5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function FeedControls({
   days,
   activeDayIndex,
@@ -35,6 +50,8 @@ export function FeedControls({
   onFilterChange,
   isFeaturedMode,
 }: Props) {
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   return (
     <section
       id="feed-controls"
@@ -43,32 +60,48 @@ export function FeedControls({
     >
       <DayTabs days={days} activeIndex={activeDayIndex} onChange={onDayChange} />
 
-      <div className="qvh-feed-controls-toolbar">
-        <div
-          className="qvh-feed-view-toggle"
-          role="group"
-          aria-label="Vista del calendario"
-        >
-          <button
-            type="button"
-            className={`qvh-feed-view-toggle-btn${!weekView ? " qvh-feed-view-toggle-btn-active" : ""}`}
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={onSelectTodayView}
-            aria-pressed={!weekView}
+      <div
+        className={`qvh-feed-controls-toolbar${filtersOpen ? " is-filters-open" : ""}`}
+      >
+        <div className="qvh-feed-controls-sidebar">
+          <div
+            className="qvh-feed-view-toggle"
+            role="group"
+            aria-label="Vista del calendario"
           >
-            Hoy
-          </button>
-          <button
-            type="button"
-            className={`qvh-feed-view-toggle-btn${weekView ? " qvh-feed-view-toggle-btn-active" : ""}`}
-            onMouseDown={(event) => event.preventDefault()}
-            onMouseEnter={onPrefetchWeekView}
-            onFocus={onPrefetchWeekView}
-            onClick={onSelectWeekView}
-            aria-pressed={weekView}
-          >
-            Semana completa
-          </button>
+            <button
+              type="button"
+              className={`qvh-feed-view-toggle-btn${!weekView ? " qvh-feed-view-toggle-btn-active" : ""}`}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={onSelectTodayView}
+              aria-pressed={!weekView}
+            >
+              Hoy
+            </button>
+            <button
+              type="button"
+              className={`qvh-feed-view-toggle-btn${weekView ? " qvh-feed-view-toggle-btn-active" : ""}`}
+              onMouseDown={(event) => event.preventDefault()}
+              onMouseEnter={onPrefetchWeekView}
+              onFocus={onPrefetchWeekView}
+              onClick={onSelectWeekView}
+              aria-pressed={weekView}
+            >
+              Semana completa
+            </button>
+          </div>
+
+          {filtersOpen ? (
+            <button
+              type="button"
+              className="qvh-feed-filters-collapse"
+              onClick={() => setFiltersOpen(false)}
+              aria-label="Ocultar filtros detallados"
+              title="Ocultar filtros"
+            >
+              <CollapseFiltersIcon />
+            </button>
+          ) : null}
         </div>
 
         <div className="qvh-feed-controls-divider" aria-hidden />
@@ -78,6 +111,8 @@ export function FeedControls({
           selected={selectedSports}
           onChange={onFilterChange}
           isFeaturedMode={isFeaturedMode}
+          open={filtersOpen}
+          onOpenChange={setFiltersOpen}
         />
       </div>
     </section>

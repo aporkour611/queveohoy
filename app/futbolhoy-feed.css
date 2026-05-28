@@ -86,6 +86,13 @@
   }
 }
 
+@media (min-width: 1024px) {
+  .fh-match-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+
 .fh-cardcol {
   padding: 0;
 }
@@ -689,39 +696,141 @@
 }
 
 .qvh-site-footer {
-  margin-top: 28px;
-  padding: 28px 15px 36px;
+  margin-top: 36px;
+  padding: 0;
   border-top: 1px solid var(--qvh-border);
-  background: var(--qvh-bg);
+  background: linear-gradient(180deg, #0a0a10 0%, #060608 100%);
+}
+
+.qvh-site-footer-shell {
+  max-width: var(--qvh-layout-max);
+  margin: 0 auto;
+  padding: 28px var(--qvh-layout-gutter) 22px;
+}
+
+.qvh-site-footer-grid {
+  display: grid;
+  gap: 24px 32px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .qvh-site-footer-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 0.85fr);
+    align-items: start;
+  }
+}
+
+.qvh-site-footer-brand {
+  min-width: 0;
+}
+
+.qvh-site-footer-eyebrow {
+  margin: 0 0 8px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--qvh-purple-hover);
 }
 
 .qvh-site-footer-inner {
-  max-width: 720px;
-  margin: 0 auto;
-  text-align: center;
+  max-width: none;
+  margin: 0;
+  text-align: left;
   font-family: var(--qvh-font-display);
 }
 
 .qvh-site-footer-copy {
-  margin: 0 0 10px;
-  color: var(--qvh-text);
-  font-size: 0.95rem;
-  font-weight: 600;
+  margin: 0;
+  color: var(--qvh-text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
   letter-spacing: 0.01em;
 }
 
 .qvh-site-footer-note {
-  margin: 0 0 14px;
+  margin: 0;
   color: var(--qvh-text-muted);
   font-size: 0.88rem;
-  line-height: 1.5;
+  line-height: 1.55;
+  max-width: 36rem;
+}
+
+.qvh-site-footer-nav-title {
+  margin: 0 0 10px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.qvh-site-footer-linklist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.qvh-site-footer-linklist a {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: color 0.12s ease;
+}
+
+.qvh-site-footer-linklist a:hover {
+  color: var(--qvh-purple-hover);
+}
+
+.qvh-site-footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.qvh-site-footer-bottom-meta {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.qvh-site-footer-bottom-legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+}
+
+.qvh-site-footer-bottom-legal a {
+  color: rgba(255, 255, 255, 0.52);
+  text-decoration: none;
+}
+
+.qvh-site-footer-bottom-legal a:hover {
+  color: var(--qvh-purple-hover);
+  text-decoration: underline;
 }
 
 .qvh-site-footer-legal {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px 10px;
   font-size: 0.88rem;
 }
@@ -1250,9 +1359,9 @@
 
 /* SEO: agenda semanal indexable (HTML est├ítico en servidor) */
 .fh-seo-outline {
-  max-width: 720px;
+  max-width: var(--qvh-layout-max);
   margin: 0 auto;
-  padding: 24px 16px 32px;
+  padding: 24px var(--qvh-layout-gutter) 32px;
   border-top: 1px solid var(--fh-border, rgba(255, 255, 255, 0.08));
 }
 
@@ -1399,34 +1508,14 @@
 }
 
 .qvh-site-footer-seo {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 8px 10px;
-  margin: 0 0 14px;
-  font-size: 0.85rem;
-}
-
-.qvh-site-footer-seo a {
-  color: var(--qvh-purple-hover);
-  text-decoration: none;
-}
-
-.qvh-site-footer-seo a:hover {
-  text-decoration: underline;
-}
-
-.qvh-site-footer-seo span[aria-hidden] {
-  color: var(--qvh-text-muted);
-  opacity: 0.6;
+  margin: 0;
 }
 
 /* FAQ indexable (home + hubs Champions / LaLiga) */
 .qvh-faq {
-  max-width: 720px;
+  max-width: var(--qvh-layout-max);
   margin: 0 auto;
-  padding: 20px 16px 28px;
+  padding: 20px var(--qvh-layout-gutter) 28px;
   border-top: 1px solid var(--fh-border, rgba(255, 255, 255, 0.08));
 }
 
@@ -1470,9 +1559,9 @@
 }
 
 .fh-seo-date-nav {
-  max-width: 720px;
+  max-width: var(--qvh-layout-max);
   margin: 0 auto;
-  padding: 16px 16px 8px;
+  padding: 16px var(--qvh-layout-gutter) 8px;
 }
 
 .fh-seo-date-nav-title {
@@ -1622,7 +1711,7 @@
 }
 
 .fh-seo-guide-block {
-  max-width: 720px;
+  max-width: var(--qvh-prose-max);
   margin-bottom: 20px;
 }
 

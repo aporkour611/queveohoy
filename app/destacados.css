@@ -129,6 +129,12 @@
   scroll-snap-align: start;
 }
 
+@media (min-width: 1024px) {
+  .qvh-destacados-carousel-scroll .qvh-spotlight-card {
+    flex: 0 0 min(280px, calc((100% - 24px) / 3));
+  }
+}
+
 @media (max-width: 520px) {
   .qvh-destacados-carousel-scroll {
     position: relative;
