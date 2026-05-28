@@ -9,7 +9,6 @@ import { fetchJsonWithTimeout } from "./fetch-json";
 import {
   formatRolandGarrosCompetition,
   parseTennisMatchFromEventTitle,
-  ROLAND_GARROS_PATTERN,
 } from "./roland-garros";
 
 const API_BASE = "https://www.thesportsdb.com/api/v1/json/3";
@@ -224,7 +223,7 @@ async function fetchJson<T>(path: string, retries = 2): Promise<T | null> {
   return null;
 }
 
-const DAY_FETCH_DELAY_MS = 400;
+const DAY_FETCH_DELAY_MS = 650;
 
 async function fetchTennisEventsByDay(
   weekDates: string[]
@@ -240,7 +239,7 @@ async function fetchTennisEventsByDay(
     );
 
     for (const raw of data?.events ?? []) {
-      if (!raw.strEvent || !ROLAND_GARROS_PATTERN.test(raw.strEvent)) continue;
+      if (!raw.strEvent) continue;
 
       const leagueId = raw.idLeague?.toString();
       const config =
@@ -288,9 +287,12 @@ export async function fetchTheSportsDbLeagueEvents(
   dayCount = 7
 ): Promise<LeagueCronEvent[]> {
   const weekDates = getMadridWeekDates(dayCount);
+  const nonTennisLeagues = THESPORTSDB_LEAGUES.filter(
+    (config) => config.sport !== "tenis"
+  );
   const [batches, dayTennis] = await Promise.all([
     Promise.all(
-      THESPORTSDB_LEAGUES.map((config) => fetchLeagueEvents(config, weekDates))
+      nonTennisLeagues.map((config) => fetchLeagueEvents(config, weekDates))
     ),
     fetchTennisEventsByDay(weekDates),
   ]);
