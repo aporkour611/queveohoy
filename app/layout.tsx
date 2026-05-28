@@ -13,7 +13,7 @@ const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
   weight: ["600", "700", "800"],
-  preload: false,
+  preload: true,
   adjustFontFallback: true,
   display: "swap",
 });
@@ -35,7 +35,7 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${barlowCondensed.variable} h-full antialiased`}
-      style={{ background: "#000000", color: "#ffffff" }}
+      suppressHydrationWarning
     >
       <head>
         <link rel="preconnect" href="https://image.tmdb.org" />
@@ -52,10 +52,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-title" content="Qué veo hoy" />
       </head>
-      <body
-        className="min-h-full flex flex-col"
-        style={{ margin: 0, background: "#000000", color: "#ffffff" }}
-      >
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <a href="#main-content" className="qvh-skip-link">
           Saltar al contenido
         </a>

@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import tvTmdbPosters from "./spanish-tv-tmdb-posters.json";
 
 export type SpanishTvManualSlot = {
   /** YYYY-MM-DD en Europe/Madrid */
@@ -42,8 +43,26 @@ export type SpanishTvShow = {
   manualSlots?: SpanishTvManualSlot[];
 };
 
+type TmdbPosterMeta = {
+  tmdbId: number;
+  posterPath: string | null;
+};
+
+function applyTmdbPosterMeta(show: SpanishTvShow): SpanishTvShow {
+  const meta = (tvTmdbPosters as Record<string, TmdbPosterMeta>)[show.id];
+  if (!meta?.posterPath) {
+    return show.tmdbId ? show : { ...show, tmdbId: meta?.tmdbId ?? show.tmdbId };
+  }
+
+  return {
+    ...show,
+    tmdbId: meta.tmdbId ?? show.tmdbId,
+    posterPath: meta.posterPath,
+  };
+}
+
 /** Programas de máxima audiencia en España — prioridad editorial y cron TMDB/TVmaze/RTVE */
-export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
+const SPANISH_TV_FLAGSHIP_RAW: SpanishTvShow[] = [
   {
     id: "eurovision",
     search: "Eurovisión",
@@ -248,6 +267,9 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     airWeekdays: [3],
   },
 ];
+
+export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] =
+  SPANISH_TV_FLAGSHIP_RAW.map(applyTmdbPosterMeta);
 
 export const SPANISH_TV_TITLE_PATTERNS = SPANISH_TV_FLAGSHIP.flatMap(
   (show) => show.patterns

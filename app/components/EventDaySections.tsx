@@ -16,54 +16,14 @@ const MediaEntertainmentSection = dynamic(
   { loading: () => null }
 );
 import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
-import { sportLabel } from "../lib/filter-config";
-import { getTvShowCategory } from "../lib/tv-show-category";
+import { groupEventsForDisplay } from "../lib/event-day-group";
 import {
   isChampionsCompetitionTitle,
 } from "../lib/champions-week";
 import { isChampionsFinal } from "../lib/event-card-stamp";
 
 function groupForDisplay(events: EventRow[]) {
-  const football: Record<string, EventRow[]> = {};
-  const bySport: Record<string, { label: string; sportId: string; events: EventRow[] }> =
-    {};
-  const cine: EventRow[] = [];
-  const series: EventRow[] = [];
-  const anime: EventRow[] = [];
-  const tvReality: EventRow[] = [];
-  const tvConcurso: EventRow[] = [];
-  const tvDirecto: EventRow[] = [];
-
-  for (const e of events) {
-    if (e.sport === "futbol") {
-      const key = (e.competition || "Fútbol").split(" · ")[0];
-      if (!football[key]) football[key] = [];
-      football[key].push(e);
-    } else if (e.sport === "cine") {
-      cine.push(e);
-    } else if (e.sport === "series") {
-      series.push(e);
-    } else if (e.sport === "anime") {
-      anime.push(e);
-    } else if (e.sport === "tv") {
-      const category = getTvShowCategory(e);
-      if (category === "concurso") tvConcurso.push(e);
-      else if (category === "directo") tvDirecto.push(e);
-      else tvReality.push(e);
-    } else {
-      const sportId = e.sport ?? "otros";
-      if (!bySport[sportId]) {
-        bySport[sportId] = {
-          label: sportLabel(sportId),
-          sportId,
-          events: [],
-        };
-      }
-      bySport[sportId].events.push(e);
-    }
-  }
-
-  return { football, bySport, cine, series, anime, tvReality, tvConcurso, tvDirecto };
+  return groupEventsForDisplay(events);
 }
 
 type Props = {

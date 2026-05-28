@@ -6,19 +6,34 @@ import { parseJikanPoster } from "./jikan-client";
 import { encodeTmdbSource } from "./tmdb";
 import { parseTmdbPoster } from "./tmdb-client";
 
-/** Poster TMDB del evento, con fallback editorial para estrenos y TV curada. */
+function flagshipTmdbPoster(
+  flagship: NonNullable<ReturnType<typeof matchesSpanishTvFlagship>>,
+  size: "thumb" | "card" | "poster"
+): string | null {
+  if (!flagship.posterPath) return null;
+  return parseTmdbPoster(
+    encodeTmdbSource(flagship.posterPath, flagship.priority),
+    size
+  );
+}
+
+/** Poster del evento: TMDB oficial primero; fallback editorial local. */
 export function resolveEventPosterUrl(
   event: EventRow,
   size: "thumb" | "card" | "poster" = "poster"
 ): string | null {
   const flagship = matchesSpanishTvFlagship(event);
-  if (flagship?.localPosterPath) return flagship.localPosterPath;
 
   const fromJikan = parseJikanPoster(event.source, size);
   if (fromJikan) return fromJikan;
 
   const fromSource = parseTmdbPoster(event.source, size);
   if (fromSource) return fromSource;
+
+  if (flagship) {
+    const official = flagshipTmdbPoster(flagship, size);
+    if (official) return official;
+  }
 
   const curatedMovie = curatedMovieByExternalId(event.external_id);
   if (curatedMovie?.posterPath) {
@@ -36,12 +51,7 @@ export function resolveEventPosterUrl(
     );
   }
 
-  if (flagship?.posterPath) {
-    return parseTmdbPoster(
-      encodeTmdbSource(flagship.posterPath, flagship.priority),
-      size
-    );
-  }
+  if (flagship?.localPosterPath) return flagship.localPosterPath;
 
   return null;
 }

@@ -27,19 +27,33 @@ export type EntertainmentVisualOptions = {
   curatedMovie?: boolean;
 };
 
-/** Portada TMDB remota cuando existe; fallback local si no. */
+/** Portada TMDB oficial cuando existe; fallback editorial local. */
 export function buildEntertainmentCover(event: EventRow): SpotlightCover {
   const sport = isEntertainmentSport(event.sport) ? event.sport : "tv";
   const flagship = matchesSpanishTvFlagship(event);
-  if (flagship?.localPosterPath) {
-    return localSpotlightCover(
-      flagship.localPosterPath,
+  const poster = resolveEventPosterUrl(event, "poster");
+
+  if (poster) {
+    const isLocal =
+      poster.startsWith("/") &&
+      !poster.startsWith("//") &&
+      !poster.includes("image.tmdb.org") &&
+      !poster.includes("media.themoviedb.org");
+
+    if (isLocal) {
+      return localSpotlightCover(
+        poster,
+        "poster",
+        flagship?.posterObjectPosition
+      );
+    }
+
+    return remoteSpotlightCover(
+      poster,
       "poster",
-      flagship.posterObjectPosition
+      flagship?.posterObjectPosition
     );
   }
-  const poster = resolveEventPosterUrl(event, "poster");
-  if (poster) return remoteSpotlightCover(poster, "poster");
 
   return (
     mediaFallbackCover(sport) ??

@@ -1,0 +1,68 @@
+import type { EventRow } from "../components/types";
+import { sportLabel } from "./filter-config";
+import { getTvShowCategory } from "./tv-show-category";
+
+export type EventDayGroups = {
+  football: Record<string, EventRow[]>;
+  bySport: Record<string, { label: string; sportId: string; events: EventRow[] }>;
+  cine: EventRow[];
+  series: EventRow[];
+  anime: EventRow[];
+  tvReality: EventRow[];
+  tvConcurso: EventRow[];
+  tvDirecto: EventRow[];
+};
+
+export function groupEventsForDisplay(events: EventRow[]): EventDayGroups {
+  const football: Record<string, EventRow[]> = {};
+  const bySport: Record<
+    string,
+    { label: string; sportId: string; events: EventRow[] }
+  > = {};
+  const cine: EventRow[] = [];
+  const series: EventRow[] = [];
+  const anime: EventRow[] = [];
+  const tvReality: EventRow[] = [];
+  const tvConcurso: EventRow[] = [];
+  const tvDirecto: EventRow[] = [];
+
+  for (const event of events) {
+    if (event.sport === "futbol") {
+      const key = (event.competition || "Fútbol").split(" · ")[0];
+      if (!football[key]) football[key] = [];
+      football[key].push(event);
+    } else if (event.sport === "cine") {
+      cine.push(event);
+    } else if (event.sport === "series") {
+      series.push(event);
+    } else if (event.sport === "anime") {
+      anime.push(event);
+    } else if (event.sport === "tv") {
+      const category = getTvShowCategory(event);
+      if (category === "concurso") tvConcurso.push(event);
+      else if (category === "directo") tvDirecto.push(event);
+      else tvReality.push(event);
+    } else {
+      const sportId = event.sport ?? "otros";
+      if (!bySport[sportId]) {
+        bySport[sportId] = {
+          label: sportLabel(sportId),
+          sportId,
+          events: [],
+        };
+      }
+      bySport[sportId].events.push(event);
+    }
+  }
+
+  return {
+    football,
+    bySport,
+    cine,
+    series,
+    anime,
+    tvReality,
+    tvConcurso,
+    tvDirecto,
+  };
+}

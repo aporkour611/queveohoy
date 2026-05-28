@@ -4,7 +4,8 @@ import { DestacadosSection } from "../components/DestacadosSection";
 import { FeedErrorBoundary } from "../components/FeedErrorBoundary";
 import { FeedControlsShell } from "../components/FeedControlsShell";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
-import { HomeFeed } from "../components/HomePage";
+import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
+import { HomeFeedGate } from "../components/HomeFeedGate";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { HomeJsonLd } from "../components/HomeJsonLd";
@@ -67,14 +68,25 @@ export default async function Page() {
               </FeedErrorBoundary>
 
               <div className="qvh-home-feed-slot">
-                <HomeFeed
+                <FeedControlsShell days={displayDays} />
+                {initialDay ? (
+                  <HomeFeedDayHeader
+                    date={initialDay.date}
+                    title={initialDay.title}
+                  />
+                ) : null}
+                {initialDay ? (
+                  <HomeFeedDayStatic
+                    initialEvents={ssrEvents}
+                    initialDestacadosEvents={weekEvents}
+                    dayDate={initialDay.date}
+                  />
+                ) : null}
+                <HomeFeedGate
                   initialEvents={ssrEvents}
                   initialDestacadosEvents={weekEvents}
                   initialError={error}
                   serverDayHeaderDate={initialDay?.date ?? null}
-                  feedControlsShell={
-                    <FeedControlsShell days={displayDays} />
-                  }
                   dayHeader={
                     initialDay ? (
                       <HomeFeedDayHeader

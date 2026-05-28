@@ -12,10 +12,12 @@ import {
 } from "../lib/cookie-consent";
 
 export function CookieConsentBanner() {
-  const [choice, setChoice] = useState<CookieConsentChoice | null>(() =>
-    typeof window === "undefined" ? null : readCookieConsent()
-  );
+  const [choice, setChoice] = useState<CookieConsentChoice | null>(null);
   const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setChoice(readCookieConsent());
+  }, []);
 
   useEffect(() => {
     if (choice) return;

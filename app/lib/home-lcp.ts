@@ -34,6 +34,7 @@ export function resolveHomeLcpPreloadEntries(
     if (!entry || seen.has(entry.href)) continue;
     seen.add(entry.href);
     entries.push(entry);
+    break;
   }
 
   return entries;

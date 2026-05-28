@@ -1,6 +1,7 @@
 import type { EventRow } from "../components/types";
 import { resolveChannelsForEvent } from "./channels";
 import { isChampionsFinal } from "./event-card-stamp";
+import { parseFootballTeamIds, teamCrestUrl } from "./football";
 import { addDaysToDateKey, eventDisplayTime } from "./madrid-time";
 import { formatDisplayDateLabel, MADRID_TZ } from "./timezone";
 
@@ -12,6 +13,8 @@ export type ChampionsWeekContext = {
   stageLabel: string;
   homeTeam: string;
   awayTeam: string;
+  homeCrest?: string;
+  awayCrest?: string;
   dateLabel: string;
   time: string;
   channels: string[];
@@ -50,6 +53,13 @@ export function resolveChampionsWeekContext(
     finalEvent.title?.split(/\s+vs\s+/i)[1]?.trim() ||
     "Visitante";
 
+  const teamIds = parseFootballTeamIds(
+    finalEvent.external_id,
+    finalEvent.source,
+    finalEvent.home_team,
+    finalEvent.away_team
+  );
+
   return {
     isActive: true,
     finalEvent,
@@ -58,6 +68,8 @@ export function resolveChampionsWeekContext(
     stageLabel: championsStageLabel(finalEvent),
     homeTeam,
     awayTeam,
+    homeCrest: teamIds ? teamCrestUrl(teamIds.homeId) : undefined,
+    awayCrest: teamIds ? teamCrestUrl(teamIds.awayId) : undefined,
     dateLabel: finalEvent.date
       ? formatDisplayDateLabel(finalEvent.date, MADRID_TZ)
       : "",

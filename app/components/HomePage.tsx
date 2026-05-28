@@ -14,15 +14,18 @@ import {
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
-import { FeedControls } from "./FeedControls";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { LoadingState } from "./LoadingState";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
-import { EventDaySections } from "./EventDaySections";
 import { useHomeReset } from "./HomeResetContext";
 import dynamic from "next/dynamic";
 
-const EventDaySectionsLazy = dynamic(
+const FeedControls = dynamic(
+  () => import("./FeedControls").then((mod) => mod.FeedControls),
+  { loading: () => null }
+);
+
+const EventDaySections = dynamic(
   () => import("./EventDaySections").then((mod) => mod.EventDaySections),
   { loading: () => <div className="qvh-feed-day-placeholder" aria-hidden /> }
 );
@@ -268,6 +271,27 @@ export function HomeFeed({
   }, []);
 
   useEffect(() => {
+    if (hasFullWeek || fullWeekReady) return;
+
+    const run = () => prefetchFullWeek();
+    const idle =
+      typeof window.requestIdleCallback === "function"
+        ? window.requestIdleCallback(run, { timeout: 6000 })
+        : undefined;
+    const fallback = window.setTimeout(run, 5000);
+
+    return () => {
+      if (
+        idle !== undefined &&
+        typeof window.cancelIdleCallback === "function"
+      ) {
+        window.cancelIdleCallback(idle);
+      }
+      window.clearTimeout(fallback);
+    };
+  }, [fullWeekReady, hasFullWeek, prefetchFullWeek]);
+
+  useEffect(() => {
     if (hasInitialData) return;
     queueMicrotask(() => {
       void loadEvents();
@@ -437,7 +461,6 @@ export function HomeFeed({
   }, [displayDays.length]);
 
   const showInitialLoading = loading && events.length === 0;
-  const DaySections = hasInitialData ? EventDaySections : EventDaySectionsLazy;
 
   useEffect(() => {
     const el = document.getElementById("home-day-header-ssr");
@@ -447,6 +470,7 @@ export function HomeFeed({
 
   useLayoutEffect(() => {
     document.getElementById("feed-controls-ssr")?.setAttribute("hidden", "");
+    document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
   }, []);
 
   const goToDay = useCallback(
@@ -670,7 +694,7 @@ export function HomeFeed({
                           </h2>
                         )}
 
-                        <DaySections
+                        <EventDaySections
                           events={activeHomeDay.todayEvents}
                           priority="high"
                           emptyMessage={
@@ -684,7 +708,7 @@ export function HomeFeed({
                         ) : null}
                         {activeHomeDay.upcomingEvents.length > 0 ? (
                           <LazyMount minHeight={240} rootMargin="400px 0px">
-                            <DaySections events={activeHomeDay.upcomingEvents} />
+                            <EventDaySections events={activeHomeDay.upcomingEvents} />
                           </LazyMount>
                         ) : null}
                         {hiddenOnActiveDay > 0 ? (

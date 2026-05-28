@@ -23,6 +23,7 @@ function teamIdFromName(name?: string | null): string | null {
   const n = name.toLowerCase();
   if (/paris saint|psg/.test(n)) return "524";
   if (/arsenal/.test(n)) return "57";
+  if (/inter milan|\binter\b/.test(n)) return "108";
   if (/real madrid/.test(n) && !/castilla|femenino|fem/.test(n)) return "86";
   if (/barcelona/.test(n) && !/femenino|fem/.test(n)) return "81";
   return null;

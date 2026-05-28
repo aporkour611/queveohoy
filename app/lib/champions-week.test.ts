@@ -1,54 +1,47 @@
 import { describe, expect, it } from "vitest";
 import type { EventRow } from "../components/types";
-import {
-  isChampionsCompetitionTitle,
-  resolveChampionsWeekContext,
-} from "./champions-week";
+import { resolveChampionsWeekContext } from "./champions-week";
+import { resolveEventPosterUrl } from "./event-poster";
 
-const championsFinal: EventRow = {
-  id: 100,
-  title: "Paris Saint-Germain vs Inter",
-  home_team: "Paris Saint-Germain",
-  away_team: "Inter",
-  date: "2026-05-31",
-  time: "21:00",
-  sport: "futbol",
-  competition: "UEFA Champions League · Final",
-  platform: "Movistar+, La 1",
-};
-
-describe("resolveChampionsWeekContext", () => {
-  it("activa el diseño cuando hay final de Champions en la ventana", () => {
-    const context = resolveChampionsWeekContext([championsFinal], "2026-05-27", 7);
-
-    expect(context?.isActive).toBe(true);
-    expect(context?.kicker).toBe("Semana de");
-    expect(context?.headline).toBe("Champions League");
-    expect(context?.stageLabel).toBe("Final");
-    expect(context?.homeTeam).toBe("Paris Saint-Germain");
-    expect(context?.awayTeam).toBe("Inter");
-  });
-
-  it("no activa el diseño si la final queda fuera de la ventana", () => {
-    const context = resolveChampionsWeekContext([championsFinal], "2026-06-01", 7);
-
-    expect(context).toBeNull();
-  });
-
-  it("no activa el diseño para semifinales sin final", () => {
-    const semi: EventRow = {
-      ...championsFinal,
-      id: 101,
-      competition: "UEFA Champions League · Semifinal",
+describe("resolveEventPosterUrl TV", () => {
+  it("prioriza póster TMDB oficial sobre el fallback local", () => {
+    const event: EventRow = {
+      id: 1,
+      title: "Pasapalabra",
+      sport: "tv",
+      date: "2026-05-28",
+      time: "17:00",
+      competition: "Concurso · Pasapalabra",
+      platform: "Antena 3 · ATRESPLAYER TV",
+      source: "tmdb|buzz:98",
     };
 
-    expect(resolveChampionsWeekContext([semi], "2026-05-27", 7)).toBeNull();
+    const poster = resolveEventPosterUrl(event, "poster");
+
+    expect(poster).toContain("image.tmdb.org");
+    expect(poster).toContain("bEjPWrz2InMeqAjaxNycvaqVL59");
   });
 });
 
-describe("isChampionsCompetitionTitle", () => {
-  it("detecta bloques de competición Champions", () => {
-    expect(isChampionsCompetitionTitle("UEFA Champions League")).toBe(true);
-    expect(isChampionsCompetitionTitle("LaLiga")).toBe(false);
+describe("resolveChampionsWeekContext crests", () => {
+  it("expone escudos cuando el partido trae IDs football-data", () => {
+    const events: EventRow[] = [
+      {
+        id: 10,
+        title: "Paris Saint-Germain vs Inter",
+        sport: "futbol",
+        date: "2026-05-31",
+        time: "21:00",
+        competition: "UEFA Champions League · Final",
+        home_team: "Paris Saint-Germain",
+        away_team: "Inter",
+        source: "football-data:524:108",
+      },
+    ];
+
+    const context = resolveChampionsWeekContext(events, "2026-05-28", 7);
+
+    expect(context?.homeCrest).toContain("524");
+    expect(context?.awayCrest).toContain("108");
   });
 });

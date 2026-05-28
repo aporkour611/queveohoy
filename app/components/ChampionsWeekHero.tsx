@@ -1,14 +1,25 @@
 import Image from "next/image";
 import type { ChampionsWeekContext } from "../lib/champions-week";
 import { ChannelBadges } from "./ChannelBadge";
+import { TeamCrest } from "./TeamCrest";
 
 type Props = {
   context: ChampionsWeekContext;
 };
 
 export function ChampionsWeekHero({ context }: Props) {
-  const { kicker, headline, stageLabel, homeTeam, awayTeam, dateLabel, time, channels } =
-    context;
+  const {
+    kicker,
+    headline,
+    stageLabel,
+    homeTeam,
+    awayTeam,
+    homeCrest,
+    awayCrest,
+    dateLabel,
+    time,
+    channels,
+  } = context;
 
   return (
     <section className="qvh-cl-week-hero" aria-label="Semana de Champions League">
@@ -37,9 +48,27 @@ export function ChampionsWeekHero({ context }: Props) {
 
           <div className="qvh-cl-week-hero-detail">
             <div className="qvh-cl-week-matchup">
-              <span className="qvh-cl-week-team-name">{homeTeam}</span>
+              <div className="qvh-cl-week-team">
+                <TeamCrest
+                  src={homeCrest}
+                  name={homeTeam}
+                  size={36}
+                  className="qvh-cl-week-crest"
+                  eager
+                />
+                <span className="qvh-cl-week-team-name">{homeTeam}</span>
+              </div>
               <span className="qvh-cl-week-vs">VS</span>
-              <span className="qvh-cl-week-team-name">{awayTeam}</span>
+              <div className="qvh-cl-week-team">
+                <TeamCrest
+                  src={awayCrest}
+                  name={awayTeam}
+                  size={36}
+                  className="qvh-cl-week-crest"
+                  eager
+                />
+                <span className="qvh-cl-week-team-name">{awayTeam}</span>
+              </div>
             </div>
 
             <div className="qvh-cl-week-meta">
