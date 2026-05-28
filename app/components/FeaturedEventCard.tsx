@@ -12,7 +12,6 @@ import { UfcFightVisual } from "./UfcFightVisual";
 import { EventCardStamp } from "./EventCardStamp";
 import { ChannelBadges } from "./ChannelBadge";
 import { getFreeLiveBroadcast } from "../lib/event-live";
-import { useLiveClock } from "../lib/use-live-clock";
 import { useClientMounted } from "../lib/use-client-mounted";
 
 type Props = {
@@ -70,12 +69,11 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
 }: Props) {
   const card = getSpotlightCardModel(event, MADRID_TZ);
   const stamp = getEventCardStamp(event);
-  const now = useLiveClock();
   const mounted = useClientMounted();
   const liveChannel = useMemo(() => {
     if (!mounted) return null;
-    return getFreeLiveBroadcast(event, now)?.channel ?? null;
-  }, [mounted, event, now]);
+    return getFreeLiveBroadcast(event)?.channel ?? null;
+  }, [mounted, event]);
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState, type ReactNode } from "react";
+import { memo, startTransition, useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
@@ -21,7 +21,6 @@ import { UfcFightVisual } from "./UfcFightVisual";
 import { ChannelBadges } from "./ChannelBadge";
 import { resolveChannelsForEvent } from "../lib/channels";
 import { getFreeLiveBroadcast } from "../lib/event-live";
-import { useLiveClock } from "../lib/use-live-clock";
 import { useClientMounted } from "../lib/use-client-mounted";
 import { partidoPath } from "../lib/event-slug";
 import {
@@ -234,17 +233,16 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const compDisplay = compFull.split(" · ")[0] || compFull;
   const matchClass = competitionMatchClass(compDisplay, event.sport);
   const stamp = getEventCardStamp(event);
-  const now = useLiveClock();
   const mounted = useClientMounted();
   const liveBroadcast = useMemo(
-    () => (mounted ? getFreeLiveBroadcast(event, now) : null),
-    [mounted, event, now]
+    () => (mounted ? getFreeLiveBroadcast(event) : null),
+    [mounted, event]
   );
   const liveChannel = liveBroadcast?.channel ?? null;
 
   function toggleExpanded() {
     if (!hasExtraDetails) return;
-    setExpanded((open) => !open);
+    startTransition(() => setExpanded((open) => !open));
   }
 
   const cardShell = (children: ReactNode, extraClass = "", stampOnCard = false) => (

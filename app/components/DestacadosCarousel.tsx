@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { startTransition, useRef, useState } from "react";
 import type { EventRow } from "./types";
 import {
   DESTACADOS_SCROLL_STEP,
@@ -47,7 +47,9 @@ export function DestacadosCarousel({
   const clampedPage = Math.min(page, pageCount - 1);
 
   const setPage = (next: number) => {
-    setPageState(Math.max(0, Math.min(next, pageCount - 1)));
+    startTransition(() =>
+      setPageState(Math.max(0, Math.min(next, pageCount - 1)))
+    );
   };
   const showNav = items.length > DESTACADOS_VISIBLE_SLOTS;
   const start = clampedPage * pageSize;

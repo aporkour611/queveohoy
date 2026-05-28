@@ -546,6 +546,35 @@ html {
   scroll-margin-top: calc(var(--qvh-navbar-h) + 8px);
 }
 
+/* El navegador salta el layout de bloques fuera de pantalla (scroll más fluido). */
+.qvh-content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+
+.fh-lazy-mount,
+.fh-day-lazy-placeholder {
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.07) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  background-size: 200% 100%;
+}
+
+.fh-day-lazy-placeholder {
+  min-height: 160px;
+  margin: 0 0 12px;
+}
+
+.fh-lazy-sentinel {
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+
 .fh-day-empty {
   padding: 16px 10px 24px;
   text-align: center;

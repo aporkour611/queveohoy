@@ -34,10 +34,11 @@ import {
   indexDisplayEventsByDate,
   resolveDayEventsFromIndex,
   resolveHomeDayEvents,
-  resolveDayEventsAllFromIndex,
 } from "../lib/upcoming-events";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { EventDaySections } from "./EventDaySections";
+import { LazyMount } from "./LazyMount";
+import { WeekDaySection } from "./WeekDaySection";
 
 type Props = {
   initialEvents?: EventRow[];
@@ -86,7 +87,6 @@ export function HomePage({
   const [loadError, setLoadError] = useState<string | null>(initialError);
   const [activeDay, setActiveDay] = useState(0);
   const [weekView, setWeekView] = useState(false);
-  const [weekViewMounted, setWeekViewMounted] = useState(false);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const [hasFullWeek, setHasFullWeek] = useState(false);
   const [fullWeekReady, setFullWeekReady] = useState(
@@ -182,7 +182,6 @@ export function HomePage({
   }, [fullWeekReady, hasFullWeek, loadEvents]);
 
   const prefetchFullWeek = useCallback(() => {
-    setWeekViewMounted(true);
     if (hasFullWeek || fullWeekReady || fullWeekLoadRef.current) return;
     fullWeekLoadRef.current = loadEvents({
       silent: true,
@@ -192,20 +191,6 @@ export function HomePage({
       fullWeekLoadRef.current = null;
     });
   }, [fullWeekReady, hasFullWeek, loadEvents]);
-
-  useEffect(() => {
-    if (!fullWeekReady || weekViewMounted) return;
-
-    const mountWeekPane = () => setWeekViewMounted(true);
-
-    if (typeof requestIdleCallback !== "undefined") {
-      const id = requestIdleCallback(mountWeekPane, { timeout: 2500 });
-      return () => cancelIdleCallback(id);
-    }
-
-    const timer = window.setTimeout(mountWeekPane, 1200);
-    return () => window.clearTimeout(timer);
-  }, [fullWeekReady, weekViewMounted]);
 
   useEffect(() => {
     if (!hasFullWeek) return;
@@ -298,48 +283,37 @@ export function HomePage({
     [deferredSports]
   );
 
-  const daySections = useMemo(
-    () =>
-      displayDays.map((day) => ({
-        ...day,
-        events: weekView
-            ? resolveDayEventsAllFromIndex(
-                eventsByDate,
-                day.date,
-                deferredSportSet,
-                deferredFeaturedMode
-              )
-            : resolveDayEventsFromIndex(
-                eventsByDate,
-                day.date,
-                deferredSportSet,
-                deferredFeaturedMode
-              ),
-      })),
-    [displayDays, eventsByDate, deferredSportSet, deferredFeaturedMode, weekView]
-  );
-
-  const activeSection = daySections[activeDay];
+  const activeDayMeta = displayDays[activeDay] ?? null;
   const todayKey = displayDays[0]?.date ?? "";
 
+  const activeTodayEvents = useMemo(() => {
+    if (!activeDayMeta || weekView) return [];
+    return resolveDayEventsFromIndex(
+      eventsByDate,
+      activeDayMeta.date,
+      deferredSportSet,
+      deferredFeaturedMode
+    );
+  }, [activeDayMeta, weekView, eventsByDate, deferredSportSet, deferredFeaturedMode]);
+
   const activeHomeDay = useMemo(() => {
-    if (!activeSection || weekView) {
+    if (!activeDayMeta || weekView) {
       return {
-        todayEvents: activeSection?.events ?? [],
-        upcomingEvents: [],
-        upcomingMessage: null,
+        todayEvents: [] as EventRow[],
+        upcomingEvents: [] as EventRow[],
+        upcomingMessage: null as string | null,
       };
     }
 
     return resolveHomeDayEvents(
       eventsByDate,
-      activeSection.date,
+      activeDayMeta.date,
       todayKey,
       deferredSportSet,
       deferredFeaturedMode
     );
   }, [
-    activeSection,
+    activeDayMeta,
     weekView,
     eventsByDate,
     todayKey,
@@ -348,10 +322,10 @@ export function HomePage({
   ]);
 
   const hiddenOnActiveDay = useMemo(() => {
-    if (!deferredFeaturedMode || !activeSection) return 0;
-    const rawDay = displayEvents.filter((e) => e.date === activeSection.date);
-    return countHiddenHomeEvents(rawDay, activeSection.events);
-  }, [deferredFeaturedMode, activeSection, displayEvents]);
+    if (!deferredFeaturedMode || !activeDayMeta) return 0;
+    const rawDay = displayEvents.filter((e) => e.date === activeDayMeta.date);
+    return countHiddenHomeEvents(rawDay, activeTodayEvents);
+  }, [deferredFeaturedMode, activeDayMeta, displayEvents, activeTodayEvents]);
 
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
@@ -396,25 +370,27 @@ export function HomePage({
   }, [flushPinnedScroll]);
 
   const handleFilterChange = useCallback((ids: string[]) => {
-    setSelectedSports(ids);
-    setActiveDay(0);
+    startTransition(() => {
+      setSelectedSports(ids);
+      setActiveDay(0);
+    });
   }, []);
 
   useEffect(() => {
     deferClientStateUpdate(() =>
-      setActiveDay((prev) => Math.min(prev, Math.max(daySections.length - 1, 0)))
+      setActiveDay((prev) => Math.min(prev, Math.max(displayDays.length - 1, 0)))
     );
-  }, [daySections.length]);
+  }, [displayDays.length]);
 
   const showInitialLoading = loading && events.length === 0;
 
   const goToDay = useCallback(
     (index: number) => {
-      const day = daySections[index];
+      const day = displayDays[index];
       if (!day) return;
 
       const apply = () => {
-        setActiveDay(index);
+        startTransition(() => setActiveDay(index));
 
         if (weekView) {
           lockScrollSpy();
@@ -438,7 +414,7 @@ export function HomePage({
 
       apply();
     },
-    [lockScrollSpy, daySections, weekView, hasFullWeek, ensureFullWeek]
+    [lockScrollSpy, displayDays, weekView, hasFullWeek, ensureFullWeek]
   );
 
   const resetHome = useCallback(() => {
@@ -453,9 +429,9 @@ export function HomePage({
   }, [loadEvents, lockScrollSpy]);
 
   useEffect(() => {
-    if (!weekView || showInitialLoading || daySections.length === 0) return;
+    if (!weekView || showInitialLoading || displayDays.length === 0) return;
 
-    const sections = daySections
+    const sections = displayDays
       .map((d) => document.getElementById(`day-week-${d.date}`))
       .filter(Boolean) as HTMLElement[];
 
@@ -495,10 +471,9 @@ export function HomePage({
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [showInitialLoading, daySections, weekView]);
+  }, [showInitialLoading, displayDays, weekView]);
 
   const openWeekView = useCallback(() => {
-    setWeekViewMounted(true);
     pinScrollForViewToggle();
     startTransition(() => {
       setWeekView(true);
@@ -557,7 +532,7 @@ export function HomePage({
           )}
 
           <FeedControls
-            days={daySections}
+            days={displayDays}
             activeDayIndex={activeDay}
             onDayChange={goToDay}
             weekView={weekView}
@@ -593,64 +568,33 @@ export function HomePage({
             ) : (
               <FeedErrorBoundary>
                 <div className="fh-day-feed" id="day-feed">
-                  {weekViewMounted ? (
-                    <div
-                      className={
-                        weekView
-                          ? "fh-feed-pane fh-feed-pane-week"
-                          : "fh-feed-pane fh-feed-pane-hidden"
-                      }
-                      aria-hidden={!weekView}
-                    >
-                      {daySections.map((section, i) => (
-                        <section
-                          key={section.date}
-                          id={`day-week-${section.date}`}
-                          className="fh-day-section fh-matchday"
-                          aria-labelledby={`day-week-title-${section.date}`}
-                        >
-                          <h2
-                            id={`day-week-title-${section.date}`}
-                            className="fh-matchday-header"
-                          >
-                            {section.title}
-                            {isFeaturedMode && weekView && i === activeDay ? (
-                              <span className="fh-featured-badge">Destacados</span>
-                            ) : null}
-                          </h2>
-
-                          <EventDaySections
-                            events={section.events}
-                            emptyMessage={
-                              isFeaturedMode
-                                ? "Sin eventos este día."
-                                : "Sin eventos para estos filtros."
-                            }
-                          />
-                        </section>
+                  {weekView ? (
+                    <div className="fh-feed-pane fh-feed-pane-week">
+                      {displayDays.map((day, i) => (
+                        <WeekDaySection
+                          key={day.date}
+                          day={day}
+                          dayIndex={i}
+                          activeDay={activeDay}
+                          isFeaturedMode={isFeaturedMode}
+                          eventsByDate={eventsByDate}
+                          sportFilter={deferredSportSet}
+                          featuredMode={deferredFeaturedMode}
+                        />
                       ))}
                     </div>
-                  ) : null}
-
-                  <div
-                    className={
-                      weekView
-                        ? "fh-feed-pane fh-feed-pane-hidden"
-                        : "fh-feed-pane fh-feed-pane-today"
-                    }
-                    aria-hidden={weekView}
-                  >
-                    {activeSection ? (
+                  ) : activeDayMeta ? (
+                    <div className="fh-feed-pane fh-feed-pane-today">
                       <section
-                        id={`day-${activeSection.date}`}
+                        id={`day-${activeDayMeta.date}`}
                         className="fh-day-section fh-matchday"
-                        aria-labelledby={`day-title-${activeSection.date}`}
+                        aria-labelledby={`day-title-${activeDayMeta.date}`}
                       >
                         <h2
-                          id={`day-title-${activeSection.date}`}
+                          id={`day-title-${activeDayMeta.date}`}
                           className="fh-matchday-header"
                         >
-                          {activeSection.title}
+                          {activeDayMeta.title}
                           {isFeaturedMode && activeDay === 0 ? (
                             <span className="fh-featured-badge">Destacados</span>
                           ) : null}
@@ -658,6 +602,7 @@ export function HomePage({
 
                         <EventDaySections
                           events={activeHomeDay.todayEvents}
+                          priority="high"
                           emptyMessage={
                             isFeaturedMode
                               ? "Sin eventos este día."
@@ -668,18 +613,20 @@ export function HomePage({
                           <p className="fh-upcoming-notice">{activeHomeDay.upcomingMessage}</p>
                         ) : null}
                         {activeHomeDay.upcomingEvents.length > 0 ? (
-                          <EventDaySections events={activeHomeDay.upcomingEvents} />
+                          <LazyMount minHeight={240} rootMargin="400px 0px">
+                            <EventDaySections events={activeHomeDay.upcomingEvents} />
+                          </LazyMount>
                         ) : null}
                         {hiddenOnActiveDay > 0 ? (
                           <p className="fh-home-more-link">
-                            <Link href={partidosHoyDatePath(activeSection.date)}>
+                            <Link href={partidosHoyDatePath(activeDayMeta.date)}>
                               Ver todos los eventos ({hiddenOnActiveDay} más) →
                             </Link>
                           </p>
                         ) : null}
                       </section>
-                    ) : null}
-                  </div>
+                    </div>
+                  ) : null}
                 </div>
               </FeedErrorBoundary>
           )}

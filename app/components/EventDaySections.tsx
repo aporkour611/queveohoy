@@ -2,11 +2,14 @@
 
 import { memo, useMemo } from "react";
 import type { EventRow } from "./types";
-import { MatchCard } from "./MatchCard";
+import { LazyMatchGrid } from "./LazyMatchGrid";
+import { LazyMount } from "./LazyMount";
 import { MediaEntertainmentSection } from "./MediaEntertainmentSection";
 import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
 import { sportLabel } from "../lib/filter-config";
 import { getTvShowCategory } from "../lib/tv-show-category";
+
+const INITIAL_GRID_EAGER_MAX = 8;
 
 function groupForDisplay(events: EventRow[]) {
   const football: Record<string, EventRow[]> = {};
@@ -51,13 +54,51 @@ function groupForDisplay(events: EventRow[]) {
 type Props = {
   events: EventRow[];
   emptyMessage?: string;
+  /** Above-the-fold: monta las primeras secciones al instante. */
+  priority?: "high" | "normal";
 };
+
+function estimateBlockHeight(eventCount: number): number {
+  return Math.min(720, 96 + eventCount * 88);
+}
+
+function SportSectionBlock({
+  title,
+  accentClass,
+  events,
+  eager,
+}: {
+  title: string;
+  accentClass: string;
+  events: EventRow[];
+  eager: boolean;
+}) {
+  const gridEager = eager || events.length <= INITIAL_GRID_EAGER_MAX;
+
+  return (
+    <LazyMount
+      eager={eager}
+      minHeight={estimateBlockHeight(Math.min(events.length, 4))}
+      rootMargin="560px 0px"
+    >
+      <div className="fh-section-block qvh-content-auto">
+        <div className={`fh-comp-header ${accentClass}`}>
+          <h3>{title}</h3>
+          <span className="fh-comp-count">{events.length}</span>
+        </div>
+        <LazyMatchGrid events={events} eager={gridEager} />
+      </div>
+    </LazyMount>
+  );
+}
 
 export const EventDaySections = memo(function EventDaySections({
   events,
   emptyMessage,
+  priority = "normal",
 }: Props) {
   const sections = useMemo(() => groupForDisplay(events), [events]);
+  const highPriority = priority === "high";
 
   if (events.length === 0) {
     return emptyMessage ? (
@@ -67,43 +108,51 @@ export const EventDaySections = memo(function EventDaySections({
     ) : null;
   }
 
+  let blockIndex = 0;
+
   return (
     <>
-      {Object.entries(sections.football).map(([comp, evs]) => (
-        <div key={comp} className="fh-section-block">
-          <div className={`fh-comp-header ${competitionAccentClass(comp)}`}>
-            <h3>{comp}</h3>
-            <span className="fh-comp-count">{evs.length}</span>
-          </div>
-          <div className="fh-match-grid">
-            {evs.map((e) => (
-              <MatchCard key={e.id} event={e} />
-            ))}
-          </div>
-        </div>
-      ))}
+      {Object.entries(sections.football).map(([comp, evs]) => {
+        const eager = highPriority && blockIndex < 2;
+        blockIndex += 1;
+        return (
+          <SportSectionBlock
+            key={comp}
+            title={comp}
+            accentClass={competitionAccentClass(comp)}
+            events={evs}
+            eager={eager}
+          />
+        );
+      })}
 
-      {Object.values(sections.bySport).map(({ label, sportId, events: evs }) => (
-        <div key={sportId} className="fh-section-block">
-          <div className={`fh-comp-header ${sportAccentClass(sportId)}`}>
-            <h3>{label}</h3>
-            <span className="fh-comp-count">{evs.length}</span>
-          </div>
-          <div className="fh-match-grid">
-            {evs.map((e) => (
-              <MatchCard key={e.id} event={e} />
-            ))}
-          </div>
-        </div>
-      ))}
+      {Object.values(sections.bySport).map(({ label, sportId, events: evs }) => {
+        const eager = highPriority && blockIndex < 2;
+        blockIndex += 1;
+        return (
+          <SportSectionBlock
+            key={sportId}
+            title={label}
+            accentClass={sportAccentClass(sportId)}
+            events={evs}
+            eager={eager}
+          />
+        );
+      })}
 
-      <MediaEntertainmentSection
-        cine={sections.cine}
-        series={sections.series}
-        tvReality={sections.tvReality}
-        tvConcurso={sections.tvConcurso}
-        tvDirecto={sections.tvDirecto}
-      />
+      <LazyMount
+        eager={highPriority && blockIndex === 0}
+        minHeight={220}
+        rootMargin="480px 0px"
+      >
+        <MediaEntertainmentSection
+          cine={sections.cine}
+          series={sections.series}
+          tvReality={sections.tvReality}
+          tvConcurso={sections.tvConcurso}
+          tvDirecto={sections.tvDirecto}
+        />
+      </LazyMount>
     </>
   );
 });
