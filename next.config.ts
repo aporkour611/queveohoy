@@ -29,7 +29,12 @@ function buildBeforeFileRewrites() {
 
 const nextConfig: NextConfig = {
   experimental: {
-    optimizePackageImports: ["react", "react-dom"],
+    optimizePackageImports: [
+      "react",
+      "react-dom",
+      "@vercel/analytics",
+      "@vercel/speed-insights",
+    ],
   },
   async headers() {
     return [

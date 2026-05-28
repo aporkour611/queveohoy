@@ -1,10 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { memo, useMemo } from "react";
 import type { EventRow } from "./types";
 import { LazyMatchGrid } from "./LazyMatchGrid";
 import { LazyMount } from "./LazyMount";
-import { MediaEntertainmentSection } from "./MediaEntertainmentSection";
+const MediaEntertainmentSection = dynamic(
+  () =>
+    import("./MediaEntertainmentSection").then(
+      (mod) => mod.MediaEntertainmentSection
+    ),
+  { loading: () => null }
+);
 import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
 import { sportLabel } from "../lib/filter-config";
 import { getTvShowCategory } from "../lib/tv-show-category";

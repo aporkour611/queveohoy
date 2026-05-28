@@ -2,11 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import "./brand.css";
-import "./futbolhoy.css";
-import "./destacados.css";
-import "./media.css";
-import "./push.css";
-import "./channel-badges.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { Analytics } from "./components/Analytics";
 import { SpeedInsights } from "./components/SpeedInsights";
@@ -19,6 +14,8 @@ const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
   weight: ["400", "600", "700", "800"],
+  preload: true,
+  adjustFontFallback: true,
   display: "swap",
 });
 
@@ -38,9 +35,6 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${barlowCondensed.variable} h-full antialiased`}>
       <head>
-        <link rel="preconnect" href="https://crests.football-data.org" />
-        <link rel="preconnect" href="https://image.tmdb.org" />
-        <link rel="preconnect" href="https://r2.thesportsdb.com" />
         <link
           rel="alternate"
           type="application/rss+xml"

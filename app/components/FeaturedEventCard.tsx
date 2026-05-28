@@ -44,6 +44,7 @@ function SpotlightCoverArt({
           className="qvh-spotlight-cover-img"
           style={cover.objectPosition ? { objectPosition: cover.objectPosition } : undefined}
           loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
           decoding="async"
         />
       </div>

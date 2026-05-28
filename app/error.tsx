@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import "./futbolhoy.css";
 
 export default function Error({
   reset,

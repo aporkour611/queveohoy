@@ -14,16 +14,22 @@ import {
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
-import { DestacadosSection } from "./DestacadosSection";
+import dynamic from "next/dynamic";
 import { FeedControls } from "./FeedControls";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { LoadingState } from "./LoadingState";
-import { AdminNavLink } from "./AdminNavLink";
-import { PushNavButton } from "./PushNotifications";
-import { Logo } from "./Logo";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
-import { ScrollToTop } from "./ScrollToTop";
-import { SiteFooter } from "./SiteFooter";
+import { useHomeReset } from "./HomeResetContext";
+
+const WeekDaySection = dynamic(
+  () => import("./WeekDaySection").then((mod) => mod.WeekDaySection),
+  { loading: () => null }
+);
+
+const ScrollToTop = dynamic(
+  () => import("./ScrollToTop").then((mod) => mod.ScrollToTop),
+  { ssr: false }
+);
 import type { EventRow } from "./types";
 import {
   buildDisplayDays,
@@ -39,7 +45,6 @@ import {
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { EventDaySections } from "./EventDaySections";
 import { LazyMount } from "./LazyMount";
-import { WeekDaySection } from "./WeekDaySection";
 
 type Props = {
   initialEvents?: EventRow[];
@@ -74,7 +79,7 @@ function restoreScrollY(y: number) {
   window.scrollTo({ left: 0, top: y, behavior: "instant" });
 }
 
-export function HomePage({
+export function HomeFeed({
   initialEvents = [],
   initialDestacadosEvents = [],
   initialError = null,
@@ -98,6 +103,7 @@ export function HomePage({
   const pinnedScrollYRef = useRef<number | null>(null);
   const scrollRestoreFrameRef = useRef<number | null>(null);
   const fullWeekLoadRef = useRef<Promise<void> | null>(null);
+  const { registerReset } = useHomeReset();
 
   const isFeaturedMode = selectedSports.length === 0;
   const deferredSports = useDeferredValue(selectedSports);
@@ -441,6 +447,10 @@ export function HomePage({
   }, [loadEvents, lockScrollSpy]);
 
   useEffect(() => {
+    registerReset(resetHome);
+  }, [registerReset, resetHome]);
+
+  useEffect(() => {
     if (!weekView || showInitialLoading || displayDays.length === 0) return;
 
     const sections = displayDays
@@ -520,30 +530,12 @@ export function HomePage({
   }, [weekView, events.length, refreshing, schedulePinnedScrollRestore]);
 
   return (
-    <div className="fh-body">
-      <nav className="fh-navbar">
-        <div className="fh-navbar-inner">
-          <Logo onHomeClick={resetHome} />
-          <div className="fh-nav-links">
-            <PushNavButton />
-            <AdminNavLink />
-          </div>
-        </div>
-      </nav>
-
-      <main id="main-content" className="fh-content">
-        <div className="fh-container fh-main">
-          <h1 className="sr-only">Qué ver hoy en TV</h1>
-
+    <>
           <div
             className={isFeaturedMode ? undefined : "fh-feed-pane-hidden"}
             aria-hidden={!isFeaturedMode}
           >
             {children}
-
-            <FeedErrorBoundary>
-              <DestacadosSection events={destacadosEvents} />
-            </FeedErrorBoundary>
           </div>
 
           <FeedControls
@@ -647,11 +639,10 @@ export function HomePage({
           )}
           </div>
 
-          <SiteFooter />
-        </div>
-      </main>
-
       <ScrollToTop />
-    </div>
+    </>
   );
 }
+
+/** @deprecated Usar HomeFeed dentro del shell de la home. */
+export const HomePage = HomeFeed;

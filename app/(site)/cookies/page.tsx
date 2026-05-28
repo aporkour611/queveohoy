@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Logo } from "../components/Logo";
-import { pageMetadata } from "../lib/seo";
+import { Logo } from "../../components/Logo";
+import { pageMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = pageMetadata(
   "/cookies",

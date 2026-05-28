@@ -39,6 +39,7 @@ export function RemotePoster({
           className="qvh-remote-poster-img"
           style={objectPosition ? { objectPosition } : undefined}
           loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
           decoding="async"
           onError={() => setFailed(true)}
         />
