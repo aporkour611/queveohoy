@@ -18,6 +18,7 @@ import {
   writeLocalPushTopics,
 } from "../lib/push-client";
 import {
+  notifyPushPreferencesSaved,
   PUSH_CONSENT_EVENT,
   readPushConsent,
 } from "../lib/push-consent";
@@ -49,9 +50,14 @@ function BellIcon() {
 type PushSettingsPanelProps = {
   open: boolean;
   onClose: () => void;
+  onPreferencesSaved?: () => void;
 };
 
-export function PushSettingsPanel({ open, onClose }: PushSettingsPanelProps) {
+export function PushSettingsPanel({
+  open,
+  onClose,
+  onPreferencesSaved,
+}: PushSettingsPanelProps) {
   const [topics, setTopics] = useState<PushTopicId[]>(() =>
     readLocalPushTopics()
   );
@@ -96,10 +102,13 @@ export function PushSettingsPanel({ open, onClose }: PushSettingsPanelProps) {
     if (result.ok) {
       setSubscribed(true);
       setStatus("Avisos activados. Te avisamos ~45 min antes de cada destacado.");
+      notifyPushPreferencesSaved();
+      onPreferencesSaved?.();
+      onClose();
       return;
     }
     setStatus(result.error ?? "No se pudieron activar los avisos.");
-  }, [topics]);
+  }, [topics, onClose, onPreferencesSaved]);
 
   const handleSave = useCallback(async () => {
     setBusy(true);
@@ -108,10 +117,13 @@ export function PushSettingsPanel({ open, onClose }: PushSettingsPanelProps) {
     setBusy(false);
     if (result.ok) {
       setStatus("Preferencias guardadas.");
+      notifyPushPreferencesSaved();
+      onPreferencesSaved?.();
+      onClose();
       return;
     }
     setStatus(result.error ?? "No se pudieron guardar las preferencias.");
-  }, [topics]);
+  }, [topics, onClose, onPreferencesSaved]);
 
   const handleDisable = useCallback(async () => {
     setBusy(true);
@@ -314,7 +326,11 @@ export function PushNotificationPrompt() {
           </div>
         </div>
       ) : null}
-      <PushSettingsPanel open={panelOpen} onClose={() => setPanelOpen(false)} />
+      <PushSettingsPanel
+        open={panelOpen}
+        onClose={() => setPanelOpen(false)}
+        onPreferencesSaved={() => setVisible(false)}
+      />
     </>
   );
 }

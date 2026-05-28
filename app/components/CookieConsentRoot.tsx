@@ -15,12 +15,19 @@ const PushNotificationPrompt = dynamic(
   { ssr: false }
 );
 
+const InstallAppPrompt = dynamic(
+  () =>
+    import("./InstallAppPrompt").then((mod) => mod.InstallAppPrompt),
+  { ssr: false }
+);
+
 export function CookieConsentRoot({ children }: { children: ReactNode }) {
   return (
     <>
       {children}
       <CookieConsentBanner />
       <PushNotificationPrompt />
+      <InstallAppPrompt />
     </>
   );
 }

@@ -654,6 +654,10 @@
   user-select: none;
 }
 
+#feed-controls-ssr:not([hidden]) + #feed-controls {
+  display: none !important;
+}
+
 .qvh-feed-controls-ssr[hidden] {
   display: none !important;
 }

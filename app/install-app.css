@@ -1,0 +1,188 @@
+.qvh-install-banner {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 1210;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 1px;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.85) 0%,
+    rgba(249, 115, 22, 0.75) 52%,
+    rgba(34, 197, 94, 0.65) 100%
+  );
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  animation: qvh-install-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes qvh-install-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.qvh-install-banner-inner {
+  border-radius: 19px;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(139, 92, 246, 0.14), transparent 55%),
+    linear-gradient(180deg, #151826 0%, #0d1018 100%);
+  color: #f8fafc;
+  padding: 18px 18px 16px;
+}
+
+.qvh-install-banner-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.qvh-install-banner-icon {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.qvh-install-banner-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.qvh-install-banner-copy {
+  min-width: 0;
+}
+
+.qvh-install-banner-eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a5b4fc;
+}
+
+.qvh-install-banner-title {
+  margin: 0;
+  font-family: var(--font-barlow-condensed), system-ui, sans-serif;
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
+.qvh-install-banner-lead {
+  margin: 6px 0 0;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: #cbd5e1;
+}
+
+.qvh-install-benefits {
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.qvh-install-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: #94a3b8;
+}
+
+.qvh-install-benefits li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 30% 30%, #fff 0%, transparent 55%),
+    linear-gradient(135deg, #8b5cf6, #22c55e);
+  opacity: 0.9;
+}
+
+.qvh-install-hint {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+.qvh-install-hint strong {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.qvh-install-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.qvh-install-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 18px;
+  font-family: var(--font-barlow-condensed), system-ui, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.qvh-install-btn:active {
+  transform: scale(0.98);
+}
+
+.qvh-install-btn-primary {
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  color: #111827;
+  box-shadow: 0 10px 24px rgba(249, 115, 22, 0.28);
+}
+
+.qvh-install-btn-ghost {
+  background: transparent;
+  color: #94a3b8;
+}
+
+@media (min-width: 640px) {
+  .qvh-install-banner {
+    left: auto;
+    right: 20px;
+    bottom: 20px;
+    margin: 0;
+  }
+
+  .qvh-install-banner-title {
+    font-size: 1.18rem;
+  }
+}

@@ -5,6 +5,12 @@ export const PUSH_ENDPOINT_KEY = "qvh-push-endpoint";
 export type PushConsentChoice = "subscribed" | "dismissed";
 
 export const PUSH_CONSENT_EVENT = "qvh-push-consent-change";
+export const PUSH_PREFERENCES_SAVED_EVENT = "qvh-push-preferences-saved";
+
+export function notifyPushPreferencesSaved(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(PUSH_PREFERENCES_SAVED_EVENT));
+}
 
 export function readPushConsent(): PushConsentChoice | null {
   if (typeof window === "undefined") return null;

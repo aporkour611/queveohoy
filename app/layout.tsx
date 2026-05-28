@@ -49,6 +49,8 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/app-icon-192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Qué veo hoy" />
       </head>
       <body
         className="min-h-full flex flex-col"
