@@ -223,7 +223,7 @@ async function fetchJson<T>(path: string, retries = 2): Promise<T | null> {
   return null;
 }
 
-const DAY_FETCH_DELAY_MS = 650;
+const DAY_FETCH_DELAY_MS = 900;
 
 async function fetchTennisEventsByDay(
   weekDates: string[]

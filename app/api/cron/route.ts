@@ -737,12 +737,18 @@ export async function GET(request: Request) {
     purged: 0,
   };
 
+  // TheSportsDB rate-limita si tenis compite con el resto de fuentes en paralelo
+  try {
+    leagues = await fetchLeagueSports();
+  } catch (e) {
+    console.error("Error fetching TheSportsDB leagues (prefetch):", e);
+  }
+
   const ingest = await Promise.allSettled([
     fetchFootball(),
     fetchEsports(),
     fetchF1(),
     fetchMotos(),
-    fetchLeagueSports(),
     fetchBasketball(),
     fetchTmdb(),
     fetchAnime(),
@@ -757,13 +763,12 @@ export async function GET(request: Request) {
   if (ingest[1].status === "fulfilled") esports = ingest[1].value;
   if (ingest[2].status === "fulfilled") f1 = ingest[2].value;
   if (ingest[3].status === "fulfilled") motos = ingest[3].value;
-  if (ingest[4].status === "fulfilled") leagues = ingest[4].value;
-  if (ingest[5].status === "fulfilled") basket = ingest[5].value;
-  if (ingest[6].status === "fulfilled") tmdb = ingest[6].value;
-  if (ingest[7].status === "fulfilled") anime = ingest[7].value;
-  if (ingest[8].status === "fulfilled") reality = ingest[8].value;
-  if (ingest[9].status === "fulfilled") spanishTv = ingest[9].value;
-  if (ingest[10].status === "fulfilled") ufc = ingest[10].value;
+  if (ingest[4].status === "fulfilled") basket = ingest[4].value;
+  if (ingest[5].status === "fulfilled") tmdb = ingest[5].value;
+  if (ingest[6].status === "fulfilled") anime = ingest[6].value;
+  if (ingest[7].status === "fulfilled") reality = ingest[7].value;
+  if (ingest[8].status === "fulfilled") spanishTv = ingest[8].value;
+  if (ingest[9].status === "fulfilled") ufc = ingest[9].value;
 
   console.log("✓ Ingesta paralela completada");
 
