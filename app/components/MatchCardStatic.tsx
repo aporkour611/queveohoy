@@ -46,7 +46,14 @@ function StaticCover({
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={safeSrc} alt="" className={imgClass} style={style} loading="lazy" decoding="async" />
+    <img
+      src={safeSrc}
+      alt=""
+      className={imgClass}
+      style={style}
+      loading="lazy"
+      decoding="async"
+    />
   );
 }
 
@@ -73,67 +80,68 @@ export function MatchCardStatic({ event }: Props) {
     "qvh-spotlight-visual-",
     "fh-media-spotlight-visual-"
   );
-  const showTeamDuel = card.showTeamDuel && (card.homeName || card.awayName);
+  const showTeamDuel =
+    card.showTeamDuel &&
+    !card.showRolandGarrosDuel &&
+    (card.homeCrest || card.awayCrest || (card.homeName && card.awayName));
   const showRolandGarrosDuel =
     card.showRolandGarrosDuel && card.homeName && card.awayName;
+  const matchExtra = showRolandGarrosDuel ? " fh-match_rolandgarros" : "";
 
   return (
     <Link
       href={href}
-      className={`fh-match-card fh-match-media-spotlight${
-        showRolandGarrosDuel ? " fh-match_rolandgarros" : ""
-      }`}
+      className={`fh-match fh-match-media-spotlight${matchExtra}`}
     >
-      <article className={`fh-media-spotlight ${visualClass}`}>
-        <div className="fh-media-spotlight-body">
-          <span className="fh-media-spotlight-badge">{card.badge}</span>
-          <h4 className="fh-media-spotlight-title">{card.headline}</h4>
-          {card.meta ? (
-            <p className="fh-media-spotlight-subtitle">{card.meta}</p>
-          ) : null}
-          <p className="fh-media-spotlight-meta">
-            <span>{card.dateLabel}</span>
-            <span className="fh-media-spotlight-time">{card.time}</span>
-          </p>
-          {card.channelList && card.channelList.length > 0 ? (
-            <div className="fh-media-spotlight-channels">
-              {card.channelList.map((channel) => (
-                <span key={channel} className="fh-channel-pill">
-                  {channel}
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </div>
-
+      <div
+        className={`fh-media-spotlight-visual ${visualClass}${
+          showRolandGarrosDuel ? " fh-media-spotlight-visual-rg-duel" : ""
+        }${showTeamDuel ? " fh-media-spotlight-visual-team-duel" : ""}`}
+      >
         {showRolandGarrosDuel ? (
-          <div
-            className={`fh-media-spotlight-visual ${visualClass}`}
-            aria-hidden
-          >
-            <RolandGarrosDuelVisual
-              homeName={card.homeName}
-              awayName={card.awayName}
-              size="card"
-            />
-            <div className="fh-media-spotlight-overlay" />
-          </div>
+          <RolandGarrosDuelVisual
+            homeName={card.homeName}
+            awayName={card.awayName}
+            size="card"
+          />
         ) : showTeamDuel ? (
-          <div className="fh-m-logos fh-media-spotlight-duel" aria-hidden>
-            <StaticCrest src={card.homeCrest} name={card.homeName} />
-            <span className="fh-m-time">{card.time}</span>
-            <StaticCrest src={card.awayCrest} name={card.awayName} />
+          <div className="fh-media-spotlight-duel" aria-hidden>
+            <div className="fh-media-spotlight-duel-team">
+              <StaticCrest src={card.homeCrest} name={card.homeName} />
+              <span className="fh-media-spotlight-duel-name">{card.homeName}</span>
+            </div>
+            <span className="fh-media-spotlight-duel-vs">vs</span>
+            <div className="fh-media-spotlight-duel-team">
+              <StaticCrest src={card.awayCrest} name={card.awayName} />
+              <span className="fh-media-spotlight-duel-name">{card.awayName}</span>
+            </div>
           </div>
         ) : card.coverImage ? (
-          <div className="fh-media-spotlight-banner" aria-hidden>
-            <StaticCover
-              url={card.coverImage.url}
-              local={card.coverImage.local}
-              objectPosition={card.coverImage.objectPosition}
-            />
-          </div>
+          <StaticCover
+            url={card.coverImage.url}
+            local={card.coverImage.local}
+            objectPosition={card.coverImage.objectPosition}
+          />
         ) : null}
-      </article>
+        <div className="fh-media-spotlight-overlay" aria-hidden />
+        <span className="fh-media-spotlight-badge">{card.badge}</span>
+        <div className="fh-media-spotlight-when">
+          {card.dateLabel ? (
+            <span className="fh-media-spotlight-date">{card.dateLabel}</span>
+          ) : null}
+          {card.time ? (
+            <span className="fh-media-spotlight-time">{card.time}</span>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="fh-media-spotlight-body">
+        <h4 className="fh-media-spotlight-title">{card.headline}</h4>
+        {card.meta ? <p className="fh-media-spotlight-meta">{card.meta}</p> : null}
+        {card.channelList && card.channelList.length > 0 ? (
+          <p className="fh-media-spotlight-meta">{card.channelList.join(" · ")}</p>
+        ) : null}
+      </div>
     </Link>
   );
 }

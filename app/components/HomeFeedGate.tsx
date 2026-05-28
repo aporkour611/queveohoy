@@ -23,9 +23,9 @@ export function HomeFeedGate(props: HomeFeedProps) {
 
     const idle =
       typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(activate, { timeout: 4200 })
+        ? window.requestIdleCallback(activate, { timeout: 1200 })
         : undefined;
-    const fallback = window.setTimeout(activate, 3200);
+    const fallback = window.setTimeout(activate, 400);
 
     const onInteract = () => activate();
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });

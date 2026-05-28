@@ -106,14 +106,7 @@ function SpotlightCardContent({
     showUfcDuel || Boolean(ufcF1Url || ufcF2Url || (ufcF1Name && ufcF2Name));
   const teamDuelActive =
     showTeamDuel || Boolean(homeCrest || awayCrest || (homeName && awayName));
-  const tennisDuelActive =
-    showTennisDuel ||
-    showRolandGarrosDuel ||
-    Boolean(
-      homeName &&
-        awayName &&
-        (visualClass.includes("tenis") || visualClass.includes("rg"))
-    );
+  const tennisDuelActive = showRolandGarrosDuel;
 
   return (
     <>

@@ -780,6 +780,27 @@
     linear-gradient(180deg, #0a1028 0%, #1a1208 45%, #080604 100%);
 }
 
+.fh-media-spotlight-visual-futbol {
+  background: linear-gradient(135deg, #2a2460 0%, #5d5fef 55%, #1a1840 100%);
+}
+
+.fh-media-spotlight-visual-champions,
+.fh-media-spotlight-visual-champions-final {
+  background: linear-gradient(135deg, #0a0a2e 0%, #1a1060 40%, #050518 100%);
+}
+
+.fh-media-spotlight-visual-f1 {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.28), transparent 55%),
+    linear-gradient(180deg, #1a0808 0%, #060404 100%);
+}
+
+.fh-media-spotlight-visual-motogp {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(234, 88, 12, 0.28), transparent 55%),
+    linear-gradient(180deg, #1a1008 0%, #060404 100%);
+}
+
 .fh-media-spotlight-visual-tenis {
   background:
     radial-gradient(circle at 50% 0%, rgba(132, 204, 22, 0.28), transparent 55%),
@@ -987,7 +1008,7 @@
   font-family: var(--qvh-font-display);
   font-size: 0.82rem;
   font-weight: 600;
-  color: #991b1b;
+  color: var(--qvh-text-muted);
 }
 
 @media (min-width: 768px) {

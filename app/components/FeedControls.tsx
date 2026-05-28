@@ -56,6 +56,8 @@ export function FeedControls({
     const el = document.getElementById("feed-controls");
     if (!el) return;
 
+    document.getElementById("feed-controls-ssr")?.setAttribute("hidden", "");
+
     const syncHeight = () => {
       document.documentElement.style.setProperty(
         "--qvh-feed-controls-h",

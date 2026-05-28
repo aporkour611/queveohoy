@@ -480,12 +480,17 @@ export function HomeFeed({
 
   useEffect(() => {
     const feed = document.getElementById("home-feed-day-ssr");
-    if (feed) feed.hidden = !useStaticDayFeed;
-  }, [useStaticDayFeed]);
+    if (!feed) return;
 
-  useLayoutEffect(() => {
-    document.getElementById("feed-controls-ssr")?.setAttribute("hidden", "");
-  }, []);
+    if (useStaticDayFeed) {
+      feed.hidden = false;
+      return;
+    }
+
+    const showClientFeed =
+      !showInitialLoading && events.length > 0 && !weekView;
+    feed.hidden = showClientFeed;
+  }, [useStaticDayFeed, showInitialLoading, events.length, weekView]);
 
   const goToDay = useCallback(
     (index: number) => {
