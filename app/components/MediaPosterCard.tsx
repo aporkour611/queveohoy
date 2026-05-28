@@ -5,9 +5,10 @@ import { RemotePoster } from "./RemotePoster";
 import { buildEventDetails } from "../lib/event-details";
 import { eventDisplayTime } from "../lib/madrid-time";
 import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
+import { ChannelBadges } from "./ChannelBadge";
 import {
   mediaBadgeForEvent,
-  resolveEventStreamingPlatform,
+  resolveEventChannelList,
 } from "../lib/media-platform";
 import { isSeasonPremiereEvent } from "../lib/tmdb-client";
 import { resolveEventPosterObjectPosition, resolveEventPosterUrl } from "../lib/event-poster";
@@ -58,7 +59,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   const isAnimeCard = sport === "anime";
   const posterUrl = resolveEventPosterUrl(event, "poster");
   const posterObjectPosition = resolveEventPosterObjectPosition(event);
-  const platform = resolveEventStreamingPlatform(event);
+  const channels = resolveEventChannelList(event);
   const subtitle =
     sport === "series"
       ? displaySeriesSubtitle(event)
@@ -94,18 +95,9 @@ export const MediaPosterCard = memo(function MediaPosterCard({
     </span>
   );
 
-  const platformPill = platform ? (
-    <div className="qvh-media-platform-pill">
-      <span
-        className={`qvh-media-platform-icon qvh-media-platform-icon-${platform.accent}`}
-      >
-        {platform.initials}
-      </span>
-      <span className="qvh-media-platform-name">{platform.name}</span>
-    </div>
-  ) : (
-    <span />
-  );
+  const platformBadges = channels.length ? (
+    <ChannelBadges channels={channels} variant="inline" />
+  ) : null;
 
   return (
     <div
@@ -145,11 +137,11 @@ export const MediaPosterCard = memo(function MediaPosterCard({
             {sport === "cine" ? (
               <>
                 {typeBadge}
-                {platformPill}
+                {platformBadges}
               </>
             ) : (
               <>
-                {platformPill}
+                {platformBadges}
                 {typeBadge}
               </>
             )}

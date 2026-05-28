@@ -1,5 +1,5 @@
 import type { EventRow } from "../components/types";
-import { parseChannels } from "./channels";
+import { parseChannels, resolveChannelsForEvent } from "./channels";
 import { parseTmdbEpisodeMeta } from "./tmdb-client";
 import { getTvShowCategory } from "./tv-show-category";
 
@@ -54,9 +54,13 @@ function normalizeStreamingBrand(raw: string): string | null {
   if (/apple/i.test(c)) return "Apple TV+";
   if (/paramount/i.test(c)) return "Paramount+";
   if (/sky/i.test(c)) return "Sky Showtime";
-  if (/rtve|pepetv/i.test(c)) return "RTVE";
   if (/telecinco|mitele/i.test(c)) return "Telecinco";
-  if (/antena|atresplayer/i.test(c)) return "Antena 3 · ATRESPLAYER TV";
+  if (/atresplayer|atresmedia/i.test(c)) return "ATRESPLAYER TV";
+  if (/antena\s*3/i.test(c)) return "Antena 3";
+  if (/la\s*1/i.test(c)) return "La 1";
+  if (/la\s*2/i.test(c)) return "La 2";
+  if (/rtve\s*play/i.test(c)) return "RTVE Play";
+  if (/rtve|pepetv/i.test(c)) return "RTVE";
   if (/twitch/i.test(c)) return "Twitch";
   if (/youtube/i.test(c)) return "YouTube";
 
@@ -67,6 +71,18 @@ function normalizeStreamingBrand(raw: string): string | null {
   }
 
   return trimmed;
+}
+
+/** Etiqueta legible por canal, sin fusionar varios en una sola. */
+export function formatChannelLabel(channel: string): string {
+  return normalizeStreamingBrand(channel) ?? channel.trim();
+}
+
+/** Lista de pegatinas de canal (Twitch, YouTube, La 1…) para un evento. */
+export function resolveEventChannelList(
+  event: Pick<EventRow, "sport" | "competition" | "platform">
+): string[] {
+  return resolveChannelsForEvent(event).map(formatChannelLabel).filter(Boolean);
 }
 
 export function resolveMediaPlatform(

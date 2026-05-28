@@ -10,7 +10,7 @@ import {
 } from "./football";
 import { getTvShowCategory, tvCategoryLabel } from "./tv-show-category";
 import { displaySeriesSubtitle, displaySeriesTitle } from "./series-display";
-import { resolveEventStreamingPlatform } from "./media-platform";
+import { resolveEventChannelList } from "./media-platform";
 import { isSeasonPremiereEvent } from "./tmdb-client";
 import { curatedMovieByExternalId } from "./movies-curated";
 import {
@@ -86,6 +86,19 @@ function teamTitle(event: EventRow): string | null {
   return null;
 }
 
+function ufcSpotlightBadge(
+  kind: ReturnType<typeof parseUfcKindFromSource>,
+  eventName: string,
+  cardLine?: string | null
+): string {
+  if (kind === "ppv" || /^UFC\s+\d+$/i.test(eventName)) return eventName;
+  if (kind === "fight-night") {
+    return /^UFC Fight Night/i.test(eventName) ? eventName : ufcKindLabel(kind);
+  }
+  if (kind === "road" || /temporada\s+\d+/i.test(cardLine ?? "")) return "UFC";
+  return ufcKindLabel(kind);
+}
+
 export function getSpotlightCardModel(
   event: EventRow,
   timeZone: string = MADRID_TZ
@@ -94,28 +107,14 @@ export function getSpotlightCardModel(
   const date = event.date ?? "";
   const dateLabel = date ? formatDisplayDateLabel(date, timeZone) : "";
   const time = eventDisplayTime(event);
-  const channelList = (() => {
-    if (sport === "ufc" || sport === "series" || sport === "cine" || sport === "anime") {
-      return [];
-    }
-    if (sport === "tv") {
-      const mediaPlatform = resolveEventStreamingPlatform(event);
-      return mediaPlatform
-        ? [mediaPlatform.name]
-        : resolveChannelsForEvent(event);
-    }
-    return resolveChannelsForEvent(event);
-  })();
+  const channelList = resolveEventChannelList(event);
   const channels = channelList.join(" · ");
 
   if (sport === "ufc") {
     const kind = parseUfcKindFromSource(event.source);
     const eventName = event.title?.trim() || "UFC";
     const cardLine = event.competition?.trim();
-    const badge =
-      kind === "ppv" || /^UFC\s+\d+$/i.test(eventName)
-        ? eventName
-        : cardLine || ufcKindLabel(kind);
+    const badge = ufcSpotlightBadge(kind, eventName, cardLine);
     const { f1, f2 } = parseUfcFighterImages(event.source);
     const matchup = parseUfcMainEventFighters(event.competition, event.title);
     const homeName = event.home_team || matchup?.n1;
@@ -168,15 +167,15 @@ export function getSpotlightCardModel(
             ? competition || "Nuevo estreno de temporada"
             : competition || sportLabel(sport),
       platform:
-        resolveEventStreamingPlatform(event)?.name ||
+        channelList[0] ||
         event.platform?.trim() ||
-        channels ||
         "TV y streaming",
       coverImage,
       visualClass: entertainmentSpotlightVisualClass(sport, coverImage, {
         premiere,
         curatedMovie: Boolean(curatedMovie),
       }),
+      channelList: channelList.length ? channelList : undefined,
     };
   }
 
@@ -197,9 +196,10 @@ export function getSpotlightCardModel(
       dateLabel,
       time,
       meta: event.competition?.trim() || `${badge} · Nuevo episodio`,
-      platform: event.platform?.trim() || channels || "TV y streaming",
+      platform: channelList[0] || event.platform?.trim() || "TV y streaming",
       coverImage,
       visualClass: entertainmentSpotlightVisualClass(sport, coverImage),
+      channelList: channelList.length ? channelList : undefined,
     };
   }
 
@@ -254,9 +254,10 @@ export function getSpotlightCardModel(
       dateLabel,
       time,
       meta: channels || event.competition?.trim() || gameArt.label,
-      platform: event.platform?.trim() || "Streaming",
+      platform: event.platform?.trim() || channels || "Streaming",
       coverImage: localSpotlightCover(gameArt.url, "poster"),
       visualClass: gameArt.visualClass,
+      channelList: channelList.length ? channelList : undefined,
       homeCrest: logos?.homeUrl ?? undefined,
       awayCrest: logos?.awayUrl ?? undefined,
       homeCrestList: logos?.homeUrl

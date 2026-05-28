@@ -4,7 +4,6 @@ import { memo, useState } from "react";
 import type { EventRow } from "./types";
 import { RemotePoster } from "./RemotePoster";
 import { ChannelBadges } from "./ChannelBadge";
-import { resolveChannelsForEvent } from "../lib/channels";
 import { eventDisplayTime } from "../lib/madrid-time";
 import { resolveEventPosterObjectPosition, resolveEventPosterUrl } from "../lib/event-poster";
 import {
@@ -12,7 +11,7 @@ import {
   tvCategoryLabel,
   type TvShowCategory,
 } from "../lib/tv-show-category";
-import { resolveEventStreamingPlatform } from "../lib/media-platform";
+import { resolveEventChannelList } from "../lib/media-platform";
 
 type Props = {
   event: EventRow;
@@ -40,14 +39,10 @@ export const TvBroadcastCard = memo(function TvBroadcastCard({
   const time = eventDisplayTime(event);
   const posterUrl = resolveEventPosterUrl(event, "poster");
   const posterObjectPosition = resolveEventPosterObjectPosition(event);
-  const platform = resolveEventStreamingPlatform(event);
-  const channels = resolveChannelsForEvent(event);
+  const channels = resolveEventChannelList(event);
   const [posterFailed, setPosterFailed] = useState(false);
   const showPoster = Boolean(posterUrl) && !posterFailed;
-  const metaParts = [
-    time,
-    platform?.name ?? event.platform?.trim(),
-  ].filter(Boolean);
+  const metaParts = [time].filter(Boolean);
 
   return (
     <article

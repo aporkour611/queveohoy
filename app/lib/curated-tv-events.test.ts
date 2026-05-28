@@ -36,7 +36,7 @@ describe("mergeCuratedSpanishTvEvents", () => {
     expect(masterChef?.date).toBe("2026-06-01");
     expect(masterChef?.time).toBe("22:50");
     expect(masterChef?.platform).toContain("La 1");
-    expect(resolveEventPosterUrl(masterChef!)).toBe("/posters/masterchef.svg");
+    expect(resolveEventPosterUrl(masterChef!)).toBe("/posters/masterchef.png");
   });
 
   it("inserta Mask Singer los miércoles a las 23:00 con póster editorial", () => {

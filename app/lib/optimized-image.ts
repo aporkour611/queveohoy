@@ -34,6 +34,7 @@ const spotlightCoverLayoutStyle = {
 export function canOptimizeImageSrc(src?: string | null): boolean {
   const safe = safeRemoteImageUrl(src);
   if (!safe) return false;
+  if (safe.toLowerCase().endsWith(".svg")) return false;
   if (safe.startsWith("/")) return true;
   return isAllowedRemoteImageUrl(safe);
 }

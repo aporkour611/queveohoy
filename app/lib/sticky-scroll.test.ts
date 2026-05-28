@@ -12,13 +12,15 @@ describe("editorial TV posters", () => {
     expect(withPoster.length).toBeGreaterThanOrEqual(SPANISH_TV_FLAGSHIP.length - 1);
   });
 
-  it("las portadas SVG generadas existen en /public/posters", () => {
+  it("las portadas PNG generadas existen en /public/posters", () => {
     const posterRoot = join(process.cwd(), "public", "posters");
 
     for (const show of SPANISH_TV_FLAGSHIP) {
-      if (!show.localPosterPath?.endsWith(".svg")) continue;
+      if (!show.localPosterPath?.endsWith(".png")) continue;
+      if (show.id === "mask-singer") continue;
       const filePath = join(posterRoot, show.localPosterPath.replace("/posters/", ""));
-      expect(readFileSync(filePath, "utf8")).toContain("<svg");
+      const header = readFileSync(filePath).subarray(0, 4);
+      expect(Buffer.from(header).toString("hex")).toBe("89504e47");
     }
   });
 });

@@ -1,7 +1,10 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import sharp from "sharp";
 
 const OUT = join(process.cwd(), "public", "posters");
+const PNG_WIDTH = 800;
+const PNG_HEIGHT = 450;
 
 /** Portadas editoriales 16:9 para parrilla TV (400×225 viewBox). */
 const SHOWS = [
@@ -157,8 +160,20 @@ function buildPoster({ title, subtitle, c1, c2, mark }) {
 
 mkdirSync(OUT, { recursive: true });
 
-for (const show of SHOWS) {
-  writeFileSync(join(OUT, `${show.id}.svg`), buildPoster(show), "utf8");
+async function main() {
+  for (const show of SHOWS) {
+    const svg = buildPoster(show);
+    writeFileSync(join(OUT, `${show.id}.svg`), svg, "utf8");
+    await sharp(Buffer.from(svg))
+      .resize(PNG_WIDTH, PNG_HEIGHT)
+      .png({ compressionLevel: 9 })
+      .toFile(join(OUT, `${show.id}.png`));
+  }
+
+  console.log(`Generated ${SHOWS.length} SVG + PNG posters in public/posters/`);
 }
 
-console.log(`Generated ${SHOWS.length} posters in public/posters/`);
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

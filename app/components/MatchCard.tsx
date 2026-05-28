@@ -9,7 +9,7 @@ import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/footba
 import { buildEventDetails } from "../lib/event-details";
 import { matchCardEntertainmentVisualClass } from "../lib/entertainment-art";
 import { resolveEventPosterObjectPosition, resolveEventPosterUrl } from "../lib/event-poster";
-import { resolveEventStreamingPlatform } from "../lib/media-platform";
+import { resolveEventChannelList } from "../lib/media-platform";
 import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
 import {
   parseUfcFighterImages,
@@ -270,12 +270,9 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const dateLabel = event.date
     ? formatDisplayDateLabel(event.date, MADRID_TZ)
     : "";
-  const mediaPlatform = isMedia ? resolveEventStreamingPlatform(event) : null;
-  const channels = mediaPlatform
-    ? [mediaPlatform.name]
-    : isMedia
-      ? []
-      : resolveChannelsForEvent(event);
+  const channels = isMedia
+    ? resolveEventChannelList(event)
+    : resolveChannelsForEvent(event);
   const compFull = event.competition ?? "";
   const compDisplay = compFull.split(" · ")[0] || compFull;
   const matchClass = competitionMatchClass(compDisplay, event.sport, event);
@@ -389,7 +386,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         gameArtUrl={card.coverImage?.local ? card.coverImage.url : null}
         dateLabel={card.dateLabel}
         time={card.time}
-        channels={card.channelList ?? (card.platform ? [card.platform] : [])}
+        channels={card.channelList ?? channels}
         showTeamDuel={card.showTeamDuel}
         homeCrest={card.homeCrest}
         awayCrest={card.awayCrest}
