@@ -46,7 +46,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
   },
   {
     id: "motor",
-    label: "Coches & motos",
+    label: "Motor",
     options: [
       { id: "formula1", label: "F1" },
       { id: "motos", label: "Motos" },
@@ -107,7 +107,7 @@ export const STORAGE_KEY = "qvh_sport_filters";
 export const LEGEND_ITEMS = [
   { label: "Deportes", dot: "qvh-dot-purple" },
   { label: "E-Sports", dot: "qvh-dot-green" },
-  { label: "Coches & motos", dot: "qvh-dot-motor" },
+  { label: "Motor", dot: "qvh-dot-motor" },
   { label: "Cine, series y anime", dot: "qvh-dot-gold" },
   { label: "TV y Twitch", dot: "qvh-dot-pink" },
 ] as const;

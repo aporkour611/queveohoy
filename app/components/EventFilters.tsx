@@ -73,15 +73,26 @@ export const EventFilters = memo(function EventFilters({
       ))}
       <button
         type="button"
-        className={`fh-quick-filter fh-quick-filter-more${open ? " active" : ""}`}
+        className={`fh-quick-filter fh-quick-filter-more${open ? " active is-collapsed-target" : ""}`}
         aria-expanded={open}
         aria-controls="fh-filters-body"
         onClick={() => setOpen((v) => !v)}
       >
-        Más
-        {selected.length > 0 && !isFeaturedMode ? (
-          <span className="fh-quick-filter-count">{selected.length}</span>
-        ) : null}
+        {open ? (
+          <>
+            <span className="fh-quick-filter-done-icon" aria-hidden>
+              ↑
+            </span>
+            Listo
+          </>
+        ) : (
+          <>
+            Más
+            {selected.length > 0 && !isFeaturedMode ? (
+              <span className="fh-quick-filter-count">{selected.length}</span>
+            ) : null}
+          </>
+        )}
       </button>
     </div>
   );
@@ -113,12 +124,27 @@ export const EventFilters = memo(function EventFilters({
       </div>
     ) : null;
 
+  const collapseFilters = () => setOpen(false);
+
   const filterBody = (
     <div
       id="fh-filters-body"
       className="fh-filters-body"
       hidden={!open}
     >
+      <button
+        type="button"
+        className="fh-filters-collapse"
+        onClick={collapseFilters}
+        aria-label="Ocultar filtros detallados"
+      >
+        <span className="fh-filters-collapse-handle" aria-hidden />
+        <span className="fh-filters-collapse-label">Ocultar filtros</span>
+        <span className="fh-filters-collapse-chevron" aria-hidden>
+          ↑
+        </span>
+      </button>
+
       {isFeaturedMode && (
         <p className="fh-filters-hint">
           Ajusta el calendario por deporte o sección. Sin filtros, ves lo más
