@@ -197,15 +197,20 @@ function normalizeLeagueEvent(
   };
 }
 
+const TSDB_HEADERS: HeadersInit = {
+  Accept: "application/json, text/plain, */*",
+  "Accept-Language": "es-ES,es;q=0.9",
+  Referer: "https://www.thesportsdb.com/",
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+};
+
 async function fetchJson<T>(path: string, retries = 2): Promise<T | null> {
   const url = `${API_BASE}${path}`;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     const result = await fetchJsonWithTimeout<T>(url, {
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "queveohoy-cron/1.0 (+https://queveohoy.es)",
-      },
+      headers: TSDB_HEADERS,
     });
 
     if (result.ok && result.data) return result.data;
