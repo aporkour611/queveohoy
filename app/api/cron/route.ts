@@ -19,6 +19,7 @@ import { fetchJsonWithTimeout } from "@/app/lib/fetch-json";
 import { fetchJikanAnimeEventsForWeek } from "@/app/lib/jikan-anime";
 import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
 import { fetchRealityCronEvents } from "@/app/lib/tmdb-reality";
+import { fetchSpanishTvScheduleEvents } from "@/app/lib/spanish-tv-schedule";
 import { fetchBasketballCronEvents } from "@/app/lib/balldontlie";
 import { fetchMotogpCronEvents } from "@/app/lib/motogp";
 import { fetchTheSportsDbLeagueEvents } from "@/app/lib/thesportsdb-leagues";
@@ -256,6 +257,77 @@ async function fetchRealityTv(): Promise<CountResult> {
   } catch (e) {
     console.error("Error fetching reality TV:", e);
     return { count: 0, error: String(e) };
+  }
+}
+
+async function purgeOutOfWindowScheduleEvents(
+  dateFrom: string,
+  dateTo: string,
+  prefixes: string[]
+): Promise<{ purged: number; error?: string }> {
+  const graceStart = addDaysToDateKey(dateFrom, -3);
+  const graceEnd = addDaysToDateKey(dateTo, 3);
+
+  const { data, error } = await getSupabase()
+    .from("events")
+    .select("id, external_id, date")
+    .eq("sport", "tv");
+
+  if (error) {
+    return { purged: 0, error: error.message };
+  }
+
+  const ids =
+    data
+      ?.filter((row) => {
+        if (!row.external_id || !row.date) return false;
+        if (!prefixes.some((prefix) => row.external_id!.startsWith(prefix))) {
+          return false;
+        }
+        return row.date < graceStart || row.date > graceEnd;
+      })
+      .map((row) => row.id) ?? [];
+
+  if (!ids.length) return { purged: 0 };
+
+  const { error: delError } = await getSupabase()
+    .from("events")
+    .delete()
+    .in("id", ids);
+
+  if (delError) {
+    return { purged: 0, error: delError.message };
+  }
+
+  return { purged: ids.length };
+}
+
+async function fetchSpanishTv(): Promise<{ count: number; purged: number; error?: string }> {
+  try {
+    const { events, error } = await fetchSpanishTvScheduleEvents(7);
+    if (error) {
+      console.error("Spanish TV schedule:", error);
+    }
+
+    const upsertError = events.length ? await upsertEvents(events) : null;
+    if (upsertError) {
+      return { count: 0, purged: 0, error: upsertError };
+    }
+
+    const dates = getWeekDates();
+    const purge = await purgeOutOfWindowScheduleEvents(
+      dates[0],
+      dates[dates.length - 1],
+      ["tvmaze_", "rtve_"]
+    );
+
+    console.log(
+      `TV España (TVmaze/RTVE): ${events.length} eventos (${purge.purged} fuera de ventana)`
+    );
+    return { count: events.length, purged: purge.purged, error };
+  } catch (e) {
+    console.error("Error fetching Spanish TV schedule:", e);
+    return { count: 0, purged: 0, error: String(e) };
   }
 }
 
@@ -655,6 +727,10 @@ export async function GET(request: Request) {
     purged: 0,
   };
   let reality: CountResult = { count: 0 };
+  let spanishTv: { count: number; purged: number; error?: string } = {
+    count: 0,
+    purged: 0,
+  };
   let ufc: CountResult = { count: 0 };
   let anime: { count: number; purged: number; error?: string } = {
     count: 0,
@@ -671,6 +747,7 @@ export async function GET(request: Request) {
     fetchTmdb(),
     fetchAnime(),
     fetchRealityTv(),
+    fetchSpanishTv(),
     fetchUfc(),
   ]);
 
@@ -685,7 +762,8 @@ export async function GET(request: Request) {
   if (ingest[6].status === "fulfilled") tmdb = ingest[6].value;
   if (ingest[7].status === "fulfilled") anime = ingest[7].value;
   if (ingest[8].status === "fulfilled") reality = ingest[8].value;
-  if (ingest[9].status === "fulfilled") ufc = ingest[9].value;
+  if (ingest[9].status === "fulfilled") spanishTv = ingest[9].value;
+  if (ingest[10].status === "fulfilled") ufc = ingest[10].value;
 
   console.log("✓ Ingesta paralela completada");
 
@@ -773,6 +851,9 @@ export async function GET(request: Request) {
     animeError: anime.error,
     reality: reality.count,
     realityError: reality.error,
+    spanishTv: spanishTv.count,
+    spanishTvPurged: spanishTv.purged,
+    spanishTvError: spanishTv.error,
     ufc: ufc.count,
     ufcError: ufc.error,
     crestsEnriched: enrich.enriched,

@@ -8,6 +8,25 @@ import {
 import { normalizeFeedEvents } from "./events-feed";
 
 describe("mergeCuratedSpanishTvEvents", () => {
+  it("inserta El Hormiguero de lunes a viernes a las 22:00", () => {
+    const events = mergeCuratedSpanishTvEvents([], "2026-05-26", 7);
+    const hormiguero = events.find((event) => /hormiguero/i.test(event.title ?? ""));
+
+    expect(hormiguero).toBeDefined();
+    expect(hormiguero?.date).toBe("2026-05-26");
+    expect(hormiguero?.time).toBe("22:00");
+    expect(hormiguero?.platform).toContain("Antena 3");
+  });
+
+  it("inserta Sueños de libertad entre semana con horario de tarde", () => {
+    const events = mergeCuratedSpanishTvEvents([], "2026-05-28", 7);
+    const show = events.find((event) => /sue[nñ]os de libertad/i.test(event.title ?? ""));
+
+    expect(show).toBeDefined();
+    expect(show?.date).toBe("2026-05-28");
+    expect(show?.time).toBe("15:45");
+  });
+
   it("inserta MasterChef los lunes a las 22:50 con póster TMDB", () => {
     const events = mergeCuratedSpanishTvEvents([], "2026-06-01", 7);
     const masterChef = events.find((event) => /master\s*chef/i.test(event.title ?? ""));

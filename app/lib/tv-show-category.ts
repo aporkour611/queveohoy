@@ -12,9 +12,12 @@ export const TV_SPORT_FILTER_IDS = [
 const CONCURSO_PATTERNS = [
   /concurso/i,
   /eurovisi[oó]n|eurovision song contest/i,
-  /operaci[oó]n triunfo|\bOT\b/i,
+  /operaci[oó]n triunfo/i,
   /master\s*chef/i,
   /mask singer|the masked singer/i,
+  /pasapalabra/i,
+  /tu cara me suena/i,
+  /la ruleta de la suerte/i,
 ];
 
 const REALITY_PATTERNS = [
@@ -26,13 +29,19 @@ const REALITY_PATTERNS = [
 
 const DIRECTO_PATTERNS = [
   /directo/i,
+  /talk show/i,
   /\bevento\b/i,
   /velada del a[nñ]o|la velada\b/i,
+  /el hormiguero|hormiguero 3\.0/i,
+  /la revuelta/i,
+  /late xou/i,
   /twitch/i,
   /kick\b/i,
   /youtube live/i,
   /streaming en directo/i,
 ];
+
+const FICCION_PATTERNS = [/ficci[oó]n/i, /sue[nñ]os de libertad/i, /la promesa/i];
 
 function isDirectoPlatform(platform?: string | null): boolean {
   return /twitch|kick|youtube/i.test(platform ?? "");
@@ -42,6 +51,7 @@ export function getTvShowCategory(event: EventRow): TvShowCategory | null {
   if (event.sport !== "tv") return null;
 
   const curated = matchesSpanishTvFlagship(event);
+  if (curated?.category === "ficcion") return "reality";
   if (curated?.category) return curated.category;
 
   const blob = `${event.competition ?? ""} ${event.title ?? ""} ${event.platform ?? ""}`;
@@ -52,6 +62,7 @@ export function getTvShowCategory(event: EventRow): TvShowCategory | null {
     return "directo";
   }
   if (CONCURSO_PATTERNS.some((pattern) => pattern.test(blob))) return "concurso";
+  if (FICCION_PATTERNS.some((pattern) => pattern.test(blob))) return "reality";
   if (REALITY_PATTERNS.some((pattern) => pattern.test(blob))) return "reality";
 
   return "reality";

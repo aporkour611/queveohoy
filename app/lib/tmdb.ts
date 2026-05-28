@@ -1,5 +1,6 @@
 import { addDaysToDateKey, getMadridWeekDates, toMadridDateKey } from "./madrid-time";
 import { CURATED_MOVIES } from "./movies-curated";
+import { STREAMING_PRIORITY_TMDB_IDS } from "./streaming-curated";
 import { formatSeriesEpisodeTitle } from "./series-display";
 import {
   extractSpainProviderNames,
@@ -8,8 +9,7 @@ import {
 } from "./spain-air-schedule";
 import { isExcludedUsTvTitle } from "./spain-latam-media";
 import {
-  BUZZ_SUFFIX,
-  LOGO_PREFIX,
+  encodeTmdbSource,
   parseTmdbBuzzScore,
 } from "./tmdb-client";
 
@@ -18,6 +18,7 @@ export {
   parseTmdbBuzzScore,
   parseTmdbEpisodeMeta,
   parseTmdbPoster,
+  encodeTmdbSource,
 } from "./tmdb-client";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
@@ -131,16 +132,6 @@ export function tmdbBuzzScore(item: {
   return Math.round(score);
 }
 
-export function encodeTmdbSource(
-  posterPath?: string | null,
-  buzzScore?: number
-): string {
-  const path = posterPath?.trim();
-  const base = path ? `${LOGO_PREFIX}${path}` : "tmdb";
-  if (!buzzScore || buzzScore <= 0) return base;
-  return `${base}${BUZZ_SUFFIX}${buzzScore}`;
-}
-
 export function seriesCompetitionLabel(
   season: number,
   episode: number,
@@ -159,11 +150,7 @@ export function seriesCompetitionLabel(
 }
 
 /** Series que el cron siempre vigila (episodios en Destacados) */
-export const EDITORIAL_TV_TMDB_IDS = [
-  124364, // FROM
-  85552, // Euphoria
-  250307, // MobLand
-] as const;
+export const EDITORIAL_TV_TMDB_IDS = STREAMING_PRIORITY_TMDB_IDS;
 
 async function tmdbGet<T>(
   path: string,

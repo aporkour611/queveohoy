@@ -44,4 +44,14 @@ export function parseTmdbBuzzScore(source?: string | null): number {
   return match ? parseInt(match[1], 10) : 0;
 }
 
+export function encodeTmdbSource(
+  posterPath?: string | null,
+  buzzScore?: number
+): string {
+  const path = posterPath?.trim();
+  const base = path ? `${LOGO_PREFIX}${path}` : "tmdb";
+  if (!buzzScore || buzzScore <= 0) return base;
+  return `${base}${BUZZ_SUFFIX}${buzzScore}`;
+}
+
 export { LOGO_PREFIX, BUZZ_SUFFIX };

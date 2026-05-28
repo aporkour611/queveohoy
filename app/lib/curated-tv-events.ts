@@ -1,17 +1,19 @@
 import type { EventRow } from "../components/types";
-import { addDaysToDateKey, madridDateTimeToUtc } from "./madrid-time";
+import { addDaysToDateKey } from "./madrid-time";
 import {
   matchesSpanishTvFlagship,
   SPANISH_TV_FLAGSHIP,
   type SpanishTvShow,
 } from "./spanish-tv-curated";
-import { encodeTmdbSource } from "./tmdb";
+import { encodeTmdbSource } from "./tmdb-client";
 import { parseTmdbPoster } from "./tmdb-client";
 
 /** 1 = lunes … 7 = domingo (ISO). */
 export function isoWeekdayFromDateKey(dateKey: string): number {
-  const day = madridDateTimeToUtc(dateKey, "12:00").getUTCDay();
-  return day === 0 ? 7 : day;
+  const [year, month, day] = dateKey.split("-").map(Number);
+  if (!year || !month || !day) return 1;
+  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  return weekday === 0 ? 7 : weekday;
 }
 
 function syntheticEventId(showId: string, dateKey: string): number {
