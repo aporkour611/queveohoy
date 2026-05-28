@@ -96,10 +96,11 @@
       "subtitle": "Maglia rosa · Etapas de montaña",
       "sponsors": "Eurosport · GCN · RTVE",
       "visualClass": "qvh-spotlight-visual-giro",
+      "objectPosition": "center 36%",
       "sky": "<stop offset=\"0%\" stop-color=\"#2a1020\"/><stop offset=\"100%\" stop-color=\"#0a0608\"/>",
       "glow": "<stop offset=\"0%\" stop-color=\"#ff6b9d\" stop-opacity=\"0.45\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
       "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ff85b3\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
-      "mark": "<path d=\"M40 340 L120 210 L200 250 L280 190 L360 330 Z\" fill=\"rgba(255,107,157,0.12)\" stroke=\"rgba(255,133,179,0.35)\" stroke-width=\"2\"/><path d=\"M60 360 Q200 300 340 360\" fill=\"none\" stroke=\"#ff6b9d\" stroke-width=\"4\" stroke-linecap=\"round\"/>"
+      "mark": "<circle cx=\"200\" cy=\"228\" r=\"78\" fill=\"rgba(255,107,157,0.14)\" stroke=\"#ff6b9d\" stroke-width=\"4\"/><circle cx=\"200\" cy=\"204\" r=\"13\" fill=\"#fff\"/><path d=\"M200 217 L200 248\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M176 262 Q200 232 224 262\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"168\" cy=\"278\" r=\"24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\"/><circle cx=\"232\" cy=\"278\" r=\"24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\"/><line x1=\"188\" y1=\"262\" x2=\"212\" y2=\"262\" stroke=\"#ff6b9d\" stroke-width=\"4\" stroke-linecap=\"round\"/>"
     },
     "tour-france": {
       "dir": "ciclismo",

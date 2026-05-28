@@ -116,6 +116,12 @@ export const POSTER_MATCH_RULES: PosterMatchRule[] = [
     },
   },
   {
+    id: "ufc-default",
+    recipeId: "ufc-ppv",
+    priority: 79,
+    match: (event) => event.sport === "ufc",
+  },
+  {
     id: "baloncesto-nba",
     recipeId: "baloncesto-nba",
     priority: 70,

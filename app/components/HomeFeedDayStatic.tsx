@@ -1,14 +1,7 @@
-import Link from "next/link";
 import "../futbolhoy-feed.css";
-import { countHiddenHomeEvents } from "../lib/featured";
 import { resolveStaticHomeFeedDay } from "../lib/home-feed-day-static";
-import { mergeFeedEvents } from "../lib/merge-feed-events";
-import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
-import { partidosHoyDatePath } from "../lib/seo-date";
-import { filterEventsInWeek, MADRID_TZ } from "../lib/timezone";
 import type { EventRow } from "./types";
 import { EventDaySectionsStatic } from "./EventDaySectionsStatic";
-
 type Props = {
   initialEvents: EventRow[];
   initialDestacadosEvents: EventRow[];
@@ -26,14 +19,6 @@ export function HomeFeedDayStatic({
     initialDestacadosEvents,
     dayDate
   );
-  const feedEvents = mergeFeedEvents(initialEvents, initialDestacadosEvents);
-  const displayEvents = filterEventsInWeek(
-    feedEvents,
-    MADRID_TZ,
-    HOME_SSR_DAY_COUNT
-  );
-  const rawDay = displayEvents.filter((event) => event.date === dayDate);
-  const hiddenOnDay = countHiddenHomeEvents(rawDay, day.todayEvents);
 
   return (
     <div
@@ -56,13 +41,6 @@ export function HomeFeedDayStatic({
             ) : null}
             {day.upcomingEvents.length > 0 ? (
               <EventDaySectionsStatic events={day.upcomingEvents} />
-            ) : null}
-            {hiddenOnDay > 0 ? (
-              <p className="fh-home-more-link">
-                <Link href={partidosHoyDatePath(dayDate)}>
-                  Ver todos los eventos ({hiddenOnDay} más) →
-                </Link>
-              </p>
             ) : null}
           </section>
         </div>

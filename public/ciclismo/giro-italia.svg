@@ -9,7 +9,7 @@
   <rect width="400" height="600" fill="url(#sky)"/>
   <rect width="400" height="600" fill="url(#glow)"/>
   <rect x="-40" y="70" width="480" height="130" fill="url(#beam)" transform="rotate(-10 200 300)"/>
-  <path d="M40 340 L120 210 L200 250 L280 190 L360 330 Z" fill="rgba(255,107,157,0.12)" stroke="rgba(255,133,179,0.35)" stroke-width="2"/><path d="M60 360 Q200 300 340 360" fill="none" stroke="#ff6b9d" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="200" cy="228" r="78" fill="rgba(255,107,157,0.14)" stroke="#ff6b9d" stroke-width="4"/><circle cx="200" cy="204" r="13" fill="#fff"/><path d="M200 217 L200 248" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M176 262 Q200 232 224 262" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="168" cy="278" r="24" fill="none" stroke="#fff" stroke-width="4"/><circle cx="232" cy="278" r="24" fill="none" stroke="#fff" stroke-width="4"/><line x1="188" y1="262" x2="212" y2="262" stroke="#ff6b9d" stroke-width="4" stroke-linecap="round"/>
   <path d="M0 420 Q140 360 200 385 T400 405 V600 H0 Z" fill="#050505" opacity="0.82"/>
   <rect x="0" y="468" width="400" height="132" fill="rgba(0,0,0,0.55)"/>
   <text x="200" y="502" text-anchor="middle" fill="#ffffff" font-family="Arial Black, Helvetica, sans-serif" font-size="34" font-weight="900" letter-spacing="2">Giro d'Italia</text>

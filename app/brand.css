@@ -320,7 +320,7 @@
   background: var(--qvh-pink);
 }
 
-/* Spinner */
+/* Spinner genérico (legacy; preferir BrandLoader) */
 .qvh-spinner {
   width: 32px;
   height: 32px;
@@ -334,6 +334,62 @@
 @keyframes qvh-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Loader de marca Q · V · H */
+.qvh-brand-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.fh-loading .qvh-brand-loader {
+  margin: 0 auto 14px;
+}
+
+.qvh-brand-loader-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  font-family: var(--qvh-font-display);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  animation: qvh-brand-loader-pulse 0.9s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.qvh-brand-loader-tile-q {
+  background: var(--qvh-purple);
+  animation-delay: 0s;
+}
+
+.qvh-brand-loader-tile-v {
+  background: var(--qvh-orange);
+  animation-delay: 0.15s;
+}
+
+.qvh-brand-loader-tile-h {
+  background: var(--qvh-green);
+  animation-delay: 0.3s;
+}
+
+@keyframes qvh-brand-loader-pulse {
+  0%,
+  70%,
+  100% {
+    transform: scale(0.78) translateY(0);
+    opacity: 0.5;
+  }
+  35% {
+    transform: scale(1) translateY(-3px);
+    opacity: 1;
   }
 }
 
@@ -377,39 +433,8 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
-.qvh-feed-loader-tile {
-  width: 11px;
-  height: 11px;
-  border-radius: 3px;
-  animation: qvh-feed-loader-pulse 0.9s ease-in-out infinite;
-}
-
-.qvh-feed-loader-tile-q {
-  background: var(--qvh-purple);
-  animation-delay: 0s;
-}
-
-.qvh-feed-loader-tile-v {
-  background: var(--qvh-orange);
-  animation-delay: 0.15s;
-}
-
-.qvh-feed-loader-tile-h {
-  background: var(--qvh-green);
-  animation-delay: 0.3s;
-}
-
-@keyframes qvh-feed-loader-pulse {
-  0%,
-  70%,
-  100% {
-    transform: scale(0.72);
-    opacity: 0.45;
-  }
-  35% {
-    transform: scale(1);
-    opacity: 1;
-  }
+.qvh-feed-loader-brand .qvh-brand-loader {
+  gap: 6px;
 }
 
 /* Active filter pills */

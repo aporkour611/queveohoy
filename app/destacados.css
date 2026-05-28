@@ -681,6 +681,11 @@
     linear-gradient(180deg, #2a1020 0%, #0a0608 100%);
 }
 
+.qvh-spotlight-visual-giro .qvh-spotlight-cover-img,
+.qvh-spotlight-visual-giro .qvh-remote-poster-img {
+  object-position: center 36%;
+}
+
 .qvh-spotlight-visual-tdf {
   background:
     radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.28), transparent 55%),

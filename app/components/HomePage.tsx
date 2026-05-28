@@ -5,8 +5,6 @@ import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, use
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { countHiddenHomeEvents } from "../lib/featured";
-import { partidosHoyDatePath } from "../lib/seo-date";
-import Link from "next/link";
 import { STORAGE_KEY, ALL_SPORT_IDS } from "../lib/filter-config";
 import { TV_SPORT_FILTER_IDS } from "../lib/tv-show-category";
 import {
@@ -464,6 +462,9 @@ export function HomeFeed({
   }, [displayDays.length]);
 
   const showInitialLoading = loading && events.length === 0;
+  const showWeekLoader = weekView && !fullWeekReady;
+  const showFeedLoader =
+    (refreshing || showWeekLoader) && !showInitialLoading;
 
   useLayoutEffect(() => {
     document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
@@ -643,7 +644,7 @@ export function HomeFeed({
           />
 
           <div className="fh-feed-area">
-            {refreshing && !showInitialLoading ? <FeedRefreshLoader /> : null}
+            {showFeedLoader ? <FeedRefreshLoader /> : null}
 
             {showInitialLoading ? (
               <LoadingState />
@@ -719,9 +720,13 @@ export function HomeFeed({
                         ) : null}
                         {hiddenOnActiveDay > 0 ? (
                           <p className="fh-home-more-link">
-                            <Link href={partidosHoyDatePath(activeDayMeta.date)}>
-                              Ver todos los eventos ({hiddenOnActiveDay} más) →
-                            </Link>
+                            <button
+                              type="button"
+                              className="fh-home-week-cta"
+                              onClick={openWeekView}
+                            >
+                              Ver toda la semana →
+                            </button>
                           </p>
                         ) : null}
                       </section>

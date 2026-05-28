@@ -648,6 +648,21 @@ html {
   text-decoration: underline;
 }
 
+.fh-home-more-link .fh-home-week-cta {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--qvh-accent, #7c3aed);
+  font: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fh-home-more-link .fh-home-week-cta:hover {
+  text-decoration: underline;
+}
+
 .fh-matchday {
   margin-bottom: 16px;
 }

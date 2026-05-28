@@ -49,6 +49,18 @@ describe("poster recipe matching", () => {
     expect(resolvePosterCover(event)?.recipeId).toBe("ufc-ppv");
   });
 
+  it("asigna portada UFC genérica a Fight Night", () => {
+    const event: EventRow = {
+      id: 21,
+      title: "UFC Fight Night: Taira vs Park",
+      sport: "ufc",
+      competition: "Taira vs Park",
+      source: "ufc|kind:fight-night",
+    };
+    expect(resolvePosterCover(event)?.url).toBe("/flagship/ufc-ppv.png");
+    expect(resolvePosterCover(event)?.recipeId).toBe("ufc-ppv");
+  });
+
   it("detecta Giro d'Italia", () => {
     const event: EventRow = {
       id: 3,

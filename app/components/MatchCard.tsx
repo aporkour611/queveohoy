@@ -128,10 +128,12 @@ function SpotlightCardContent({
             className="fh-media-spotlight-banner fh-media-spotlight-game-art"
           />
         ) : null}
-        {posterUrl && !ufcDuelActive && !teamDuelActive && !tennisDuelActive ? (
+        {posterUrl && !teamDuelActive && !tennisDuelActive ? (
           <RemotePoster
             src={posterUrl}
-            className="fh-media-spotlight-banner"
+            className={`fh-media-spotlight-banner${
+              ufcDuelActive ? " fh-media-spotlight-banner-ufc-bg" : ""
+            }`}
             objectPosition={posterObjectPosition}
           />
         ) : null}
@@ -400,7 +402,8 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         badgeLabel={card.badge}
         title={card.headline}
         subtitle={card.meta}
-        gameArtUrl={card.coverImage?.local ? card.coverImage.url : null}
+        posterUrl={card.coverImage?.url ?? null}
+        posterObjectPosition={card.coverImage?.objectPosition}
         dateLabel={card.dateLabel}
         time={card.time}
         channels={card.channelList ?? channels}
@@ -437,7 +440,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         badgeLabel={ufcBadgeLabel}
         title={card.headline}
         subtitle={card.meta}
-        posterUrl={!showUfcDuel ? card.coverImage?.url ?? null : null}
+        posterUrl={card.coverImage?.url ?? null}
         posterObjectPosition={card.coverImage?.objectPosition}
         ufcF1Url={f1}
         ufcF2Url={f2}
@@ -500,8 +503,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         badgeLabel={compDisplay}
         title={basketTitle}
         subtitle={compFull.includes("·") ? compFull.split(" · ").slice(1).join(" · ") : null}
-        gameArtUrl={card.coverImage?.local ? card.coverImage.url : null}
-        posterUrl={!card.coverImage?.local ? card.coverImage?.url ?? null : null}
+        posterUrl={card.coverImage?.url ?? null}
         posterObjectPosition={card.coverImage?.objectPosition}
         dateLabel={dateLabel}
         time={time}
@@ -550,8 +552,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         badgeLabel={card.badge}
         title={card.headline}
         subtitle={card.meta !== card.badge ? card.meta : null}
-        gameArtUrl={card.coverImage?.local ? card.coverImage.url : null}
-        posterUrl={!card.coverImage?.local ? card.coverImage?.url ?? null : null}
+        posterUrl={card.coverImage?.url ?? null}
         posterObjectPosition={card.coverImage?.objectPosition}
         dateLabel={card.dateLabel}
         time={card.time}

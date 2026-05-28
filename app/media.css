@@ -819,6 +819,11 @@
     linear-gradient(180deg, #2a1020 0%, #0a0608 100%);
 }
 
+.fh-media-spotlight-visual-giro .fh-media-spotlight-banner .qvh-remote-poster-img,
+.fh-media-spotlight-visual-giro .qvh-remote-poster-img {
+  object-position: center 36%;
+}
+
 .fh-media-spotlight-visual-tdf,
 .fh-media-spotlight-visual-vuelta,
 .fh-media-spotlight-visual-mundial,

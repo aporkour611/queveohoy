@@ -158,7 +158,7 @@ export function getSpotlightCardModel(
     const matchup = parseUfcMainEventFighters(event.competition, event.title);
     const homeName = event.home_team || matchup?.n1;
     const awayName = event.away_team || matchup?.n2;
-    const flagship = resolveFlagshipCover(event);
+    const poster = resolvePosterCover(event);
 
     return {
       headline: eventName,
@@ -173,10 +173,10 @@ export function getSpotlightCardModel(
       awayCrest: f2,
       homeName: homeName ?? undefined,
       awayName: awayName ?? undefined,
-      coverImage: flagship
-        ? sportPosterCover(flagship.url, flagship.visualClass, flagship.objectPosition)
+      coverImage: poster
+        ? sportPosterCover(poster.url, poster.visualClass, poster.objectPosition)
         : undefined,
-      visualClass: flagship?.visualClass ?? "qvh-spotlight-visual-ufc",
+      visualClass: poster?.visualClass ?? "qvh-spotlight-visual-ufc",
     };
   }
 

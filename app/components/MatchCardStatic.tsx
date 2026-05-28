@@ -11,6 +11,7 @@ import { safeRemoteImageUrl } from "../lib/remote-image";
 import { MADRID_TZ } from "../lib/timezone";
 import type { EventRow } from "./types";
 import { RolandGarrosDuelVisual } from "./RolandGarrosDuelVisual";
+import { UfcFightVisual } from "./UfcFightVisual";
 
 type Props = {
   event: EventRow;
@@ -86,6 +87,14 @@ export function MatchCardStatic({ event }: Props) {
     (card.homeCrest || card.awayCrest || (card.homeName && card.awayName));
   const showRolandGarrosDuel =
     card.showRolandGarrosDuel && card.homeName && card.awayName;
+  const showUfcDuel =
+    event.sport === "ufc" &&
+    Boolean(
+      card.showUfcDuel ||
+        card.homeCrest ||
+        card.awayCrest ||
+        (card.homeName && card.awayName)
+    );
   const matchExtra = showRolandGarrosDuel ? " fh-match_rolandgarros" : "";
 
   return (
@@ -95,10 +104,26 @@ export function MatchCardStatic({ event }: Props) {
     >
       <div
         className={`fh-media-spotlight-visual ${visualClass}${
-          showRolandGarrosDuel ? " fh-media-spotlight-visual-rg-duel" : ""
-        }${showTeamDuel ? " fh-media-spotlight-visual-team-duel" : ""}`}
+          showUfcDuel ? " fh-media-spotlight-visual-ufc-duel" : ""
+        }${showRolandGarrosDuel ? " fh-media-spotlight-visual-rg-duel" : ""}${
+          showTeamDuel ? " fh-media-spotlight-visual-team-duel" : ""
+        }`}
       >
-        {showRolandGarrosDuel ? (
+        {card.coverImage && !showTeamDuel && !showRolandGarrosDuel ? (
+          <StaticCover
+            url={card.coverImage.url}
+            local={card.coverImage.local}
+            objectPosition={card.coverImage.objectPosition}
+          />
+        ) : null}
+        {showUfcDuel ? (
+          <UfcFightVisual
+            f1Url={card.homeCrest}
+            f2Url={card.awayCrest}
+            f1Name={card.homeName}
+            f2Name={card.awayName}
+          />
+        ) : showRolandGarrosDuel ? (
           <RolandGarrosDuelVisual
             homeName={card.homeName}
             awayName={card.awayName}
@@ -116,12 +141,6 @@ export function MatchCardStatic({ event }: Props) {
               <span className="fh-media-spotlight-duel-name">{card.awayName}</span>
             </div>
           </div>
-        ) : card.coverImage ? (
-          <StaticCover
-            url={card.coverImage.url}
-            local={card.coverImage.local}
-            objectPosition={card.coverImage.objectPosition}
-          />
         ) : null}
         <div className="fh-media-spotlight-overlay" aria-hidden />
         <span className="fh-media-spotlight-badge">{card.badge}</span>
