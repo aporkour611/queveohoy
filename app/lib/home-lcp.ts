@@ -15,9 +15,13 @@ function resolveCoverPreloadEntry(event: EventRow): SpotlightPreloadEntry | null
 }
 
 /** Posters visibles en la primera página de destacados (candidatos LCP en home). */
-export function resolveHomeLcpPreloadEntries(events: EventRow[]): SpotlightPreloadEntry[] {
-  const todayKey = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "";
-  const featured = pickWeekDestacados(events, { todayKey }).slice(
+export function resolveHomeLcpPreloadEntries(
+  events: EventRow[],
+  todayKey?: string
+): SpotlightPreloadEntry[] {
+  const today =
+    todayKey ?? buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "";
+  const featured = pickWeekDestacados(events, { todayKey: today }).slice(
     0,
     DESTACADOS_VISIBLE_SLOTS
   );

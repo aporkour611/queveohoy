@@ -25,6 +25,7 @@ import {
 } from "./curated-tv-events";
 import {
   isSpanishTvFlagship,
+  matchesSpanishTvFlagship,
   SPANISH_TV_TITLE_PATTERNS,
 } from "./spanish-tv-curated";
 import { isSeasonPremiereEvent } from "./tmdb";
@@ -195,6 +196,29 @@ function isPinnedWeekDestacado(event: EventRow): boolean {
   );
 }
 
+/** Una sola ficha por reality/concurso recurrente: la emisión más próxima en la ventana. */
+function pickNextRecurringFlagshipPerShow(
+  pool: EventRow[],
+  todayKey: string
+): EventRow[] {
+  const byShow = new Map<string, EventRow>();
+
+  for (const event of pool) {
+    if (!isRecurringFlagshipSpanishTvEvent(event)) continue;
+    if (!event.date || event.date < todayKey) continue;
+
+    const show = matchesSpanishTvFlagship(event);
+    if (!show) continue;
+
+    const existing = byShow.get(show.id);
+    if (!existing || sortDestacadosBySoonest(event, existing) < 0) {
+      byShow.set(show.id, event);
+    }
+  }
+
+  return [...byShow.values()];
+}
+
 function weekPoolFor(
   events: EventRow[],
   todayKey: string,
@@ -336,8 +360,8 @@ export function pickWeekDestacados(
     }
   }
 
-  for (const event of pool) {
-    if (isRecurringFlagshipSpanishTvEvent(event)) addPinned(event);
+  for (const event of pickNextRecurringFlagshipPerShow(pool, todayKey)) {
+    addPinned(event);
   }
 
   for (const event of pool) {
