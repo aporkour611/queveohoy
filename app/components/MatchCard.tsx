@@ -20,8 +20,6 @@ import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { ChannelBadges } from "./ChannelBadge";
 import { resolveChannelsForEvent } from "../lib/channels";
-import { getFreeLiveBroadcast } from "../lib/event-live";
-import { useClientMounted } from "../lib/use-client-mounted";
 import { partidoPath } from "../lib/event-slug";
 import {
   eventDisplayTitle,
@@ -52,7 +50,6 @@ type SpotlightCardContent = {
   dateLabel: string;
   time: string;
   channels: string[];
-  liveChannel?: string | null;
   ufcF1Url?: string | null;
   ufcF2Url?: string | null;
   ufcF1Name?: string | null;
@@ -72,7 +69,6 @@ function SpotlightCardContent({
   dateLabel,
   time,
   channels,
-  liveChannel = null,
   ufcF1Url,
   ufcF2Url,
   ufcF1Name,
@@ -124,11 +120,7 @@ function SpotlightCardContent({
         <h4 className="fh-media-spotlight-title">{title}</h4>
         {subtitle ? <p className="fh-media-spotlight-meta">{subtitle}</p> : null}
         {channels.length > 0 ? (
-          <ChannelBadges
-            channels={channels}
-            prominent
-            liveChannel={liveChannel}
-          />
+          <ChannelBadges channels={channels} prominent />
         ) : null}
       </div>
     </>
@@ -234,12 +226,6 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const compDisplay = compFull.split(" · ")[0] || compFull;
   const matchClass = competitionMatchClass(compDisplay, event.sport);
   const stamp = getEventCardStamp(event);
-  const mounted = useClientMounted();
-  const liveBroadcast = useMemo(
-    () => (mounted ? getFreeLiveBroadcast(event) : null),
-    [mounted, event]
-  );
-  const liveChannel = liveBroadcast?.channel ?? null;
 
   function toggleExpanded() {
     if (!hasExtraDetails) return;
@@ -320,7 +306,6 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         dateLabel={dateLabel}
         time={time}
         channels={channels}
-        liveChannel={liveChannel}
         stampKind={stamp}
       />,
       "fh-match-media-spotlight"
@@ -352,7 +337,6 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         dateLabel={dateLabel}
         time={time}
         channels={channels}
-        liveChannel={liveChannel}
         stampKind={stamp}
       />,
       "fh-match-media-spotlight"
@@ -412,11 +396,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         )}
 
       {channels.length > 0 ? (
-        <ChannelBadges
-          channels={channels}
-          prominent
-          liveChannel={liveChannel}
-        />
+        <ChannelBadges channels={channels} prominent />
       ) : null}
     </>,
     "",

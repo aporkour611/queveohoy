@@ -1,56 +1,22 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { channelStyle } from "../lib/channels";
-import { channelWatchPath } from "../lib/channel-slug";
-import { hasLiveWatchPage } from "../lib/live-player";
 
 type BadgeVariant = "match" | "spotlight" | "inline";
 
 type ChannelBadgeProps = {
   name: string;
   variant?: BadgeVariant;
-  broadcasting?: boolean;
-  /** Si false, muestra el puntito pero no navega (p. ej. ya en /directo). */
-  linked?: boolean;
 };
 
-export function ChannelBadge({
-  name,
-  variant = "match",
-  broadcasting = false,
-  linked = true,
-}: ChannelBadgeProps) {
-  const router = useRouter();
+export function ChannelBadge({ name, variant = "match" }: ChannelBadgeProps) {
   const style = channelStyle(name);
-  const className = `qvh-channel-badge qvh-channel-badge--${style.tier} qvh-channel-badge--${variant}${
-    broadcasting ? " qvh-channel-badge--broadcasting" : ""
-  }`;
+  const className = `qvh-channel-badge qvh-channel-badge--${style.tier} qvh-channel-badge--${variant}`;
   const inlineStyle = {
     backgroundColor: style.bg,
     color: style.color,
     borderColor: style.border,
   };
-
-  const canOpenWatchPage = hasLiveWatchPage(name);
-
-  if (linked && (broadcasting || canOpenWatchPage)) {
-    return (
-      <button
-        type="button"
-        className={`${className} qvh-channel-badge--watch`}
-        style={inlineStyle}
-        title={`Ver en ${name}`}
-        aria-label={`Ver retransmisión en ${name}`}
-        onClick={(clickEvent) => {
-          clickEvent.stopPropagation();
-          router.push(channelWatchPath(name));
-        }}
-      >
-        {style.label}
-      </button>
-    );
-  }
 
   return (
     <span
@@ -68,7 +34,6 @@ type ChannelBadgesProps = {
   variant?: BadgeVariant;
   prominent?: boolean;
   className?: string;
-  liveChannel?: string | null;
 };
 
 export function ChannelBadges({
@@ -76,7 +41,6 @@ export function ChannelBadges({
   variant = "match",
   prominent = false,
   className = "",
-  liveChannel = null,
 }: ChannelBadgesProps) {
   if (!channels.length) return null;
 
@@ -92,12 +56,7 @@ export function ChannelBadges({
   return (
     <div className={wrapClass}>
       {channels.map((ch) => (
-        <ChannelBadge
-          key={ch}
-          name={ch}
-          variant={variant}
-          broadcasting={Boolean(liveChannel && ch === liveChannel)}
-        />
+        <ChannelBadge key={ch} name={ch} variant={variant} />
       ))}
     </div>
   );

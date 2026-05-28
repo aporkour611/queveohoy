@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import type { SpotlightCover } from "../lib/spotlight-art";
@@ -11,8 +11,6 @@ import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { EventCardStamp } from "./EventCardStamp";
 import { ChannelBadges } from "./ChannelBadge";
-import { getFreeLiveBroadcast } from "../lib/event-live";
-import { useClientMounted } from "../lib/use-client-mounted";
 
 type Props = {
   event: EventRow;
@@ -69,11 +67,6 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
 }: Props) {
   const card = getSpotlightCardModel(event, MADRID_TZ);
   const stamp = getEventCardStamp(event);
-  const mounted = useClientMounted();
-  const liveChannel = useMemo(() => {
-    if (!mounted) return null;
-    return getFreeLiveBroadcast(event)?.channel ?? null;
-  }, [mounted, event]);
   const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
 
   return (
@@ -147,11 +140,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
         <h3 className="qvh-spotlight-headline">{card.headline}</h3>
         {card.meta ? <p className="qvh-spotlight-meta">{card.meta}</p> : null}
         {card.channelList?.length ? (
-          <ChannelBadges
-            channels={card.channelList}
-            variant="spotlight"
-            liveChannel={liveChannel}
-          />
+          <ChannelBadges channels={card.channelList} variant="spotlight" />
         ) : card.platform && card.platform !== card.meta ? (
           <p
             className={`qvh-spotlight-platform ${

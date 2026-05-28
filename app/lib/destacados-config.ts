@@ -28,7 +28,6 @@ import {
   SPANISH_TV_TITLE_PATTERNS,
 } from "./spanish-tv-curated";
 import { isSeasonPremiereEvent } from "./tmdb";
-import { getFreeLiveBroadcast } from "./event-live";
 import { isRolandGarrosWeekDestacado } from "./roland-garros";
 
 export type DestacadoRule = {
@@ -293,24 +292,6 @@ export function pickTodayDestacados(
   }
 
   return items.sort(sortDestacadosBySoonest).slice(0, MAX_DESTACADOS_TODAY);
-}
-
-/** En vivo ahora: eventos en emisión con canal en abierto. */
-export function pickLiveNowDestacados(
-  events: EventRow[],
-  options: PickCuratedDestacadosOptions & { now?: Date } = {}
-): EventRow[] {
-  const now = options.now ?? new Date();
-  const today = options.todayKey ?? toMadridDateKey(now);
-  const windowDays = options.windowDays ?? 7;
-  const mergedEvents = mergeDestacadosEvents(events, today, windowDays);
-
-  return mergedEvents
-    .filter((event) => getFreeLiveBroadcast(event, now) !== null)
-    .sort(
-      (a, b) =>
-        eventPriority(b) - eventPriority(a) || sortDestacadosBySoonest(a, b)
-    );
 }
 
 /** Esta semana: Champions, estrenos, series seguidas y reglas editoriales. */

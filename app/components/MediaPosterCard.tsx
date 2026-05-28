@@ -1,9 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { memo, useMemo, useState } from "react";
-import { channelWatchPath } from "../lib/channel-slug";
-import { hasLiveWatchPage } from "../lib/live-player";
 import { RemotePoster } from "./RemotePoster";
 import { buildEventDetails } from "../lib/event-details";
 import { eventDisplayTime } from "../lib/madrid-time";
@@ -96,31 +93,14 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   );
 
   const platformPill = platform ? (
-    hasLiveWatchPage(platform.name) ? (
-      <Link
-        href={channelWatchPath(platform.name)}
-        className="qvh-media-platform-pill qvh-media-platform-pill-link"
-        title={`Ver ${platform.name} en directo`}
-        aria-label={`Ver ${platform.name} en directo`}
-        onClick={(clickEvent) => clickEvent.stopPropagation()}
+    <div className="qvh-media-platform-pill">
+      <span
+        className={`qvh-media-platform-icon qvh-media-platform-icon-${platform.accent}`}
       >
-        <span
-          className={`qvh-media-platform-icon qvh-media-platform-icon-${platform.accent}`}
-        >
-          {platform.initials}
-        </span>
-        <span className="qvh-media-platform-name">{platform.name}</span>
-      </Link>
-    ) : (
-      <div className="qvh-media-platform-pill">
-        <span
-          className={`qvh-media-platform-icon qvh-media-platform-icon-${platform.accent}`}
-        >
-          {platform.initials}
-        </span>
-        <span className="qvh-media-platform-name">{platform.name}</span>
-      </div>
-    )
+        {platform.initials}
+      </span>
+      <span className="qvh-media-platform-name">{platform.name}</span>
+    </div>
   ) : (
     <span />
   );
