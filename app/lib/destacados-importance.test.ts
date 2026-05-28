@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { EventRow } from "../components/types";
+import { pickTodayDestacados, pickWeekDestacados, sortDestacadosBySoonest } from "./destacados-config";
 import {
   getDestacadoImportanceTier,
   pickOneDestacadoPerTier,
   sortDestacadosByImportance,
-  tierRank,
 } from "./destacados-importance";
-import { pickTodayDestacados, pickWeekDestacados } from "./destacados-config";
 
 const cine: EventRow = {
   id: 1,
@@ -93,7 +92,7 @@ describe("destacados importance tiers", () => {
 });
 
 describe("pickWeekDestacados", () => {
-  it("muestra una ficha por categoría en orden de importancia", () => {
+  it("elige una ficha por categoría y las ordena cronológicamente", () => {
     const week = pickWeekDestacados([cine, champions, ufc, reality, series], {
       todayKey: "2026-05-27",
       windowDays: 7,
@@ -102,13 +101,9 @@ describe("pickWeekDestacados", () => {
     const tiers = week.map((event) => getDestacadoImportanceTier(event));
     expect(new Set(tiers).size).toBe(tiers.length);
 
-    for (let i = 1; i < tiers.length; i++) {
-      expect(tierRank(tiers[i])).toBeGreaterThanOrEqual(tierRank(tiers[i - 1]));
+    for (let i = 1; i < week.length; i++) {
+      expect(sortDestacadosBySoonest(week[i - 1], week[i])).toBeLessThanOrEqual(0);
     }
-
-    expect(tiers).toContain("champions");
-    expect(tiers).toContain("ufc");
-    expect(tiers).toContain("reality");
   });
 });
 

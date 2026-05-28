@@ -71,7 +71,7 @@ export const TvBroadcastCard = memo(function TvBroadcastCard({
         {category === "directo" ? (
           <span className="qvh-tv-live-badge">
             <span className="qvh-tv-live-dot" aria-hidden />
-            Directo
+            En vivo
           </span>
         ) : null}
       </div>

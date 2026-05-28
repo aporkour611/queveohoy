@@ -653,8 +653,7 @@
 
 /* ── Calendario unificado: días + vista + filtros ── */
 .qvh-feed-controls {
-  position: sticky;
-  top: var(--qvh-navbar-h);
+  position: relative;
   z-index: 920;
   margin: 20px 0 12px;
   padding: 12px 12px 10px;

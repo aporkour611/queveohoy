@@ -76,7 +76,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
     options: [
       { id: "tv-reality", label: "Reality" },
       { id: "tv-concurso", label: "Concursos" },
-      { id: "tv-directo", label: "Directos" },
+      { id: "tv-directo", label: "TV" },
     ],
   },
 ];

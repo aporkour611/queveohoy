@@ -137,7 +137,7 @@ export function mediaBadgeForEvent(
   if (event.sport === "tv") {
     const category = getTvShowCategory(event as EventRow);
     if (category === "concurso") return { label: "Concurso", tone: "heat" };
-    if (category === "directo") return { label: "Directo", tone: "trending" };
+    if (category === "directo") return { label: "TV", tone: "trending" };
     return { label: "Reality", tone: "trending" };
   }
   if (event.sport === "anime") return { label: "Anime", tone: "trending" };

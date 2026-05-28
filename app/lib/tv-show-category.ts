@@ -70,7 +70,7 @@ export function getTvShowCategory(event: EventRow): TvShowCategory | null {
 
 export function tvCategoryLabel(category: TvShowCategory): string {
   if (category === "concurso") return "Concurso";
-  if (category === "directo") return "Directo";
+  if (category === "directo") return "TV";
   return "Reality";
 }
 

@@ -159,7 +159,7 @@ export function pickTodayDestacados(
   return pickOneDestacadoPerTier(todayPool).slice(0, MAX_DESTACADOS_TODAY);
 }
 
-/** Esta semana: una ficha por categoría, ordenadas por importancia editorial. */
+/** Esta semana: una ficha por categoría, orden cronológico (fecha y hora). */
 export function pickWeekDestacados(
   events: EventRow[],
   options: PickCuratedDestacadosOptions = {}
@@ -170,7 +170,9 @@ export function pickWeekDestacados(
   const mergedEvents = mergeDestacadosEvents(events, todayKey, windowDays);
   const pool = weekPoolFor(mergedEvents, todayKey, windowDays, excludeIds);
 
-  return pickOneDestacadoPerTier(pool).slice(0, MAX_DESTACADOS_WEEK);
+  return pickOneDestacadoPerTier(pool)
+    .sort(sortDestacadosBySoonest)
+    .slice(0, MAX_DESTACADOS_WEEK);
 }
 
 export { isSeasonPremiereEvent };

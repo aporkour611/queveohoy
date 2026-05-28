@@ -1,5 +1,9 @@
 import type { EventRow } from "./types";
-import { pickWeekDestacados, DESTACADOS_VISIBLE_SLOTS } from "../lib/destacados-config";
+import {
+  pickTodayDestacados,
+  pickWeekDestacados,
+  DESTACADOS_VISIBLE_SLOTS,
+} from "../lib/destacados-config";
 import { resolveChampionsWeekContext } from "../lib/champions-week";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
@@ -58,40 +62,60 @@ function DestacadosRow({
 
 export function DestacadosSection({ events }: Props) {
   const todayKey = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "";
-  const weekFeatured = pickWeekDestacados(events, { todayKey });
+  const todayFeatured = pickTodayDestacados(events, { todayKey });
+  const weekFeatured = pickWeekDestacados(events, {
+    todayKey,
+    excludeIds: new Set(todayFeatured.map((event) => event.id)),
+  });
   const championsWeek = resolveChampionsWeekContext(
     events,
     todayKey,
     FEED_DAY_COUNT
   );
 
-  if (weekFeatured.length === 0) return null;
+  if (todayFeatured.length === 0 && weekFeatured.length === 0) return null;
 
-  const weekRow = (
-    <DestacadosRow
-      title="Esta semana"
-      subtitle={
-        championsWeek
-          ? "La gran final y lo más esperado del fin de semana"
-          : "Final de Champions, estrenos y series que marcan"
-      }
-      items={weekFeatured}
-      ariaLabel="Destacados de la semana"
-      className={`qvh-destacados-week qvh-destacados-week-first${
-        championsWeek ? " qvh-cl-week-destacados" : ""
-      }`}
-    />
-  );
+  const todayRow =
+    todayFeatured.length > 0 ? (
+      <DestacadosRow
+        title="Hoy"
+        subtitle="Lo más relevante de la parrilla de hoy"
+        items={todayFeatured}
+        ariaLabel="Destacados de hoy"
+        className="qvh-destacados-today"
+      />
+    ) : null;
+
+  const weekRow =
+    weekFeatured.length > 0 ? (
+      <DestacadosRow
+        title="Esta semana"
+        subtitle={
+          championsWeek
+            ? "La gran final y lo más esperado del fin de semana"
+            : "Estrenos, finales y series que marcan la semana"
+        }
+        items={weekFeatured}
+        ariaLabel="Destacados de la semana"
+        className={`qvh-destacados-week qvh-destacados-week-first${
+          championsWeek ? " qvh-cl-week-destacados" : ""
+        }`}
+      />
+    ) : null;
 
   return (
     <div className="qvh-destacados-stack">
       {championsWeek ? (
         <div className="qvh-cl-week-shell">
           <ChampionsWeekHero context={championsWeek} />
+          {todayRow}
           {weekRow}
         </div>
       ) : (
-        weekRow
+        <>
+          {todayRow}
+          {weekRow}
+        </>
       )}
     </div>
   );

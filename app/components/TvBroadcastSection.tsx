@@ -64,7 +64,7 @@ export function TvBroadcastSection({
         </p>
       </header>
 
-      <TvBroadcastGroup label="En directo" accent="directo" events={tvDirecto} />
+      <TvBroadcastGroup label="TV" accent="directo" events={tvDirecto} />
       <TvBroadcastGroup label="Concursos" accent="concurso" events={tvConcurso} />
       <TvBroadcastGroup label="Reality" accent="reality" events={tvReality} />
     </section>

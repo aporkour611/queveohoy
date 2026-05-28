@@ -24,7 +24,7 @@ describe("editorial TV posters", () => {
 });
 
 describe("sticky scroll surfaces", () => {
-  it("no usa backdrop-filter en calendario sticky", () => {
+  it("no usa backdrop-filter en calendario", () => {
     const brandCss = readFileSync(join(process.cwd(), "app", "brand.css"), "utf8");
     const feedControlsBlock = brandCss.slice(
       brandCss.indexOf(".qvh-feed-controls {"),
@@ -32,6 +32,25 @@ describe("sticky scroll surfaces", () => {
     );
 
     expect(feedControlsBlock).not.toContain("backdrop-filter");
+  });
+
+  it("solo el cartel del día es sticky bajo la navbar", () => {
+    const brandCss = readFileSync(join(process.cwd(), "app", "brand.css"), "utf8");
+    const shellCss = readFileSync(
+      join(process.cwd(), "app", "futbolhoy-shell.css"),
+      "utf8"
+    );
+    const feedControlsBlock = brandCss.slice(
+      brandCss.indexOf(".qvh-feed-controls {"),
+      brandCss.indexOf(".qvh-feed-day-placeholder")
+    );
+    const matchdayStart = shellCss.indexOf(".fh-matchday-header {");
+    const matchdayBlock = shellCss.slice(matchdayStart, matchdayStart + 420);
+
+    expect(feedControlsBlock).not.toMatch(/position:\s*sticky/);
+    expect(matchdayBlock).toContain("position: sticky");
+    expect(matchdayBlock).toContain("top: var(--qvh-navbar-h)");
+    expect(matchdayBlock).not.toContain("--qvh-feed-controls-h");
   });
 
   it("no mantiene capa ambient fija con blur en el shell", () => {

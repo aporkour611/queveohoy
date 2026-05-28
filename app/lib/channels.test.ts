@@ -19,11 +19,15 @@ describe("prioritizeChannels", () => {
 });
 
 describe("channelStyle", () => {
-  it("marca gratuitos con borde verde aunque tengan color de marca", () => {
+  it("usa el estilo verde único para canales gratuitos", () => {
     const rtve = channelStyle("La 1");
     expect(rtve.tier).toBe("free");
-    expect(rtve.bg).toMatch(/e30613/i);
+    expect(rtve.bg).toBe("#73ae2f");
     expect(rtve.border).toBe("#5a9e28");
+
+    const rtvePlay = channelStyle("RTVE Play");
+    expect(rtvePlay.bg).toBe("#73ae2f");
+    expect(rtvePlay.border).toBe("#5a9e28");
 
     const movistar = channelStyle("Movistar+");
     expect(movistar.tier).toBe("paid");

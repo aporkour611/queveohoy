@@ -75,9 +75,6 @@ export function channelStyle(name: string): ChannelStyle {
   const brand = CHANNEL_STYLES.find(({ match }) => match.test(label))?.style;
 
   if (tier === "free") {
-    if (brand) {
-      return { ...brand, label, tier, border: FREE_DEFAULT.border };
-    }
     return { ...FREE_DEFAULT, label };
   }
 

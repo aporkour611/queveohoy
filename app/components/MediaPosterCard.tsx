@@ -83,7 +83,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
       className={`qvh-media-type-badge qvh-media-type-badge-${
         badge.label === "Concurso"
           ? "concurso"
-          : badge.label === "Directo"
+          : badge.label === "TV"
             ? "directo"
             : badge.label === "Anime"
               ? "anime"
