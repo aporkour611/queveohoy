@@ -25,19 +25,29 @@ export function Analytics() {
   }, []);
 
   useEffect(() => {
-    if (!enabled) {
-      setReady(false);
-      return;
-    }
+    if (!enabled) return;
 
-    const schedule = () => deferClientStateUpdate(() => setReady(true));
+    let cancelled = false;
+    const schedule = () =>
+      deferClientStateUpdate(() => {
+        if (!cancelled) setReady(true);
+      });
+
     if (typeof requestIdleCallback === "function") {
       const id = requestIdleCallback(schedule, { timeout: 3500 });
-      return () => cancelIdleCallback(id);
+      return () => {
+        cancelled = true;
+        cancelIdleCallback(id);
+        deferClientStateUpdate(() => setReady(false));
+      };
     }
 
     const timer = setTimeout(schedule, 1800);
-    return () => clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      deferClientStateUpdate(() => setReady(false));
+    };
   }, [enabled]);
 
   if (!enabled || !ready) return null;

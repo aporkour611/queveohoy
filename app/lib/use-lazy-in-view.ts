@@ -14,15 +14,11 @@ export function useLazyInView(options: Options = {}) {
   const { eager = false, rootMargin = "200px 0px" } = options;
   const ref = useRef<HTMLDivElement>(null);
   // SSR y primer paint: solo eager. Evita hidratar cientos de <img> fuera de pantalla.
-  const [inView, setInView] = useState(eager);
+  const supportsObserver = typeof IntersectionObserver !== "undefined";
+  const [inView, setInView] = useState(() => eager || !supportsObserver);
 
   useEffect(() => {
-    if (eager || inView) return;
-
-    if (typeof IntersectionObserver === "undefined") {
-      setInView(true);
-      return;
-    }
+    if (eager || inView || !supportsObserver) return;
 
     const el = ref.current;
     if (!el) return;
@@ -39,7 +35,7 @@ export function useLazyInView(options: Options = {}) {
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [eager, inView, rootMargin]);
+  }, [eager, inView, rootMargin, supportsObserver]);
 
   return { ref, inView };
 }

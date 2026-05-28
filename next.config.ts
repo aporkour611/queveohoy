@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 import { buildSecurityHeaders } from "./app/lib/security-headers";
 import { SEO_HUB_SLUGS } from "./app/lib/seo-hubs";
+import { siteUrl } from "./app/lib/seo";
+
+const emptyPolyfill = path.join(process.cwd(), "empty-polyfill.js");
+const polyfillAliases = {
+  "next/dist/build/polyfills/polyfill-module": emptyPolyfill,
+  "next/dist/build/polyfills/polyfill-module.js": emptyPolyfill,
+} as const;
+
+const apexHost = new URL(siteUrl).host;
 
 const isProduction = process.env.NODE_ENV === "production";
 const securityHeaders = buildSecurityHeaders(isProduction);
@@ -28,6 +38,22 @@ function buildBeforeFileRewrites() {
 }
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    resolveAlias: polyfillAliases,
+  },
+  webpack: (config, { webpack }) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      ...polyfillAliases,
+    };
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /[\\/]build[\\/]polyfills[\\/]polyfill-module(\.js)?$/,
+        emptyPolyfill
+      )
+    );
+    return config;
+  },
   experimental: {
     optimizePackageImports: [
       "react",
@@ -46,10 +72,10 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
-    qualities: [70, 75],
+    qualities: [68, 70, 75],
     minimumCacheTTL: 60 * 60 * 24,
     deviceSizes: [640, 750, 828, 1080],
-    imageSizes: [32, 48, 64, 96, 128, 256, 384],
+    imageSizes: [32, 48, 64, 96, 128, 256, 320, 384],
     remotePatterns: [
       {
         protocol: "https",
@@ -85,6 +111,16 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: buildBeforeFileRewrites(),
     };
+  },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: `www.${apexHost}` }],
+        destination: `${siteUrl}/:path*`,
+        permanent: true,
+      },
+    ];
   },
 };
 

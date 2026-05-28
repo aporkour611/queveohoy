@@ -1,5 +1,13 @@
 {
   "regions": ["cdg1"],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.queveohoy.es" }],
+      "destination": "https://queveohoy.es/:path*",
+      "permanent": true
+    }
+  ],
   "functions": {
     "app/api/cron/route.ts": {
       "maxDuration": 120

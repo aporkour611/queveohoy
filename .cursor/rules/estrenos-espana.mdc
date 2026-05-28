@@ -1,0 +1,55 @@
+---
+description: Fechas y horas de estreno en España (Europe/Madrid), no US/TMDB
+globs: app/lib/**/*curated*.ts,app/lib/tmdb*.ts,app/lib/destacados-config.ts,app/lib/spain-air-schedule.ts
+alwaysApply: false
+---
+
+# Estrenos en España
+
+Qué Ver Hoy es para audiencia en península y Baleares. **Toda fecha/hora visible al usuario es en `Europe/Madrid`**, no la de TMDB ni la de emisión en EE. UU.
+
+## Motor automático (`spain-air-schedule.ts`)
+
+El cron **no copia `air_date` de TMDB** para series US. Usa `resolveSpainEpisodeSchedule`:
+
+1. **Curado editorial** (`series-curated.ts`) — máxima prioridad (retrasos, casos especiales).
+2. **TV flagship** (`spanish-tv-curated.ts`) — `airTime` + `airWeekdays`.
+3. **Origen ES** — confía en `air_date` TMDB + hora lineal 22:00.
+4. **Reglas por plataforma** (TMDB `watch/providers` región ES):
+   - **HBO Max**: domingo US → **lunes 03:00** Madrid.
+   - **Netflix / Disney+ / Apple / Paramount / Sky**: misma fecha, **09:00** (drop global).
+   - **Prime Video**: misma fecha, **00:00**.
+
+**No uses Google Calendar** para esto: no hay calendario fiable/completo de estrenos streaming en España.
+
+## Reglas manuales (solo excepciones)
+
+1. **Cine**: `movies-curated.ts` o TMDB `release_dates` ES (type 3).
+2. **Series puntuales**: añade fila en `series-curated.ts` solo si la regla automática falla.
+3. Si dudas, busca horario confirmado en prensa española antes de curar manualmente.
+4. **«Esta semana»** (`pickWeekDestacados`): orden cronológico por `date` + `time` Madrid.
+
+## Ejemplos
+
+```typescript
+// ❌ Domingo US + plataforma/hora incorrectos
+airDate: "2026-05-31",
+airTime: "22:00",
+platform: "Prime Video",
+
+// ✅ Lunes en España, madrugada HBO Max (FROM T4E6 retrasado una semana)
+airDate: "2026-06-01",
+airTime: "03:00",
+platform: "HBO Max",
+```
+
+## Dónde editar
+
+| Tipo | Archivo |
+|------|---------|
+| Motor automático | `app/lib/spain-air-schedule.ts` |
+| Excepciones series | `app/lib/series-curated.ts` |
+| Cine | `app/lib/movies-curated.ts` |
+| TV / reality España | `app/lib/spanish-tv-curated.ts` |
+
+Tras cambiar fechas editoriales, actualiza los tests en `app/lib/curated-*-events.test.ts`.

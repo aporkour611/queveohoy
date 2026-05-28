@@ -1,5 +1,6 @@
 "use client";
 
+import "../futbolhoy-feed.css";
 import dynamic from "next/dynamic";
 import { memo, useMemo } from "react";
 import type { EventRow } from "./types";

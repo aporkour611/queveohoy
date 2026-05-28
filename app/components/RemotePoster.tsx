@@ -6,6 +6,7 @@ import {
   canOptimizeImageSrc,
   IMAGE_QUALITY,
   POSTER_SIZES,
+  SPOTLIGHT_IMAGE_QUALITY,
   type PosterSizeVariant,
 } from "../lib/optimized-image";
 import { safeRemoteImageUrl } from "../lib/remote-image";
@@ -40,6 +41,8 @@ export function RemotePoster({
 
   const shouldLoad = priority || inView;
   const sizes = POSTER_SIZES[sizeVariant];
+  const quality =
+    sizeVariant === "spotlight" ? SPOTLIGHT_IMAGE_QUALITY : IMAGE_QUALITY;
   const imgStyle = objectPosition ? { objectPosition } : undefined;
 
   return (
@@ -52,8 +55,9 @@ export function RemotePoster({
           className="qvh-remote-poster-img"
           style={imgStyle}
           sizes={sizes}
-          quality={IMAGE_QUALITY}
+          quality={quality}
           priority={priority}
+          fetchPriority={priority ? "high" : undefined}
           onError={() => setFailed(true)}
         />
       ) : shouldLoad ? (

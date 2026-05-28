@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { memo } from "react";
 import type { EventRow } from "./types";
@@ -7,7 +5,11 @@ import { getSpotlightCardModel } from "../lib/featured-card";
 import type { SpotlightCover } from "../lib/spotlight-art";
 import { getEventCardStamp } from "../lib/event-card-stamp";
 import { MADRID_TZ } from "../lib/timezone";
-import { IMAGE_QUALITY, POSTER_SIZES } from "../lib/optimized-image";
+import {
+  buildSpotlightImageProps,
+  spotlightCoverImageStyle,
+} from "../lib/optimized-image";
+import { safeRemoteImageUrl } from "../lib/remote-image";
 import { RemotePoster } from "./RemotePoster";
 import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
@@ -32,24 +34,39 @@ function SpotlightCoverArt({
   const layoutClass = `qvh-spotlight-cover-${cover.layout}${
     esports ? " qvh-spotlight-cover-esports" : ""
   }`;
+  const coverClass = `qvh-spotlight-cover ${layoutClass}`;
+  const imgClass = cover.local
+    ? "qvh-spotlight-cover-img"
+    : "qvh-remote-poster-img";
+  const imgStyle = spotlightCoverImageStyle(cover.objectPosition);
 
-  if (cover.local) {
+  const built = buildSpotlightImageProps(cover.url, priority);
+  if (built) {
     return (
-      <div
-        className={`qvh-spotlight-cover ${layoutClass}`}
-        aria-hidden
-      >
+      <div className={coverClass} aria-hidden>
         <Image
-          src={cover.url}
+          {...built.props}
           alt=""
-          fill
-          className="qvh-spotlight-cover-img"
-          style={
-            cover.objectPosition ? { objectPosition: cover.objectPosition } : undefined
-          }
-          sizes={POSTER_SIZES.spotlight}
-          quality={IMAGE_QUALITY}
-          priority={priority}
+          className={imgClass}
+          style={imgStyle}
+          fetchPriority={priority ? "high" : undefined}
+        />
+      </div>
+    );
+  }
+
+  const safeSrc = safeRemoteImageUrl(cover.url);
+  if (priority && safeSrc) {
+    return (
+      <div className={coverClass} aria-hidden>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={safeSrc}
+          alt=""
+          className={imgClass}
+          style={imgStyle}
+          decoding="async"
+          fetchPriority="high"
         />
       </div>
     );
@@ -58,7 +75,7 @@ function SpotlightCoverArt({
   return (
     <RemotePoster
       src={cover.url}
-      className={`qvh-spotlight-cover ${layoutClass}`}
+      className={coverClass}
       priority={priority}
       objectPosition={cover.objectPosition}
       sizeVariant="spotlight"

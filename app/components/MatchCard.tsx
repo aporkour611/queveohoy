@@ -1,5 +1,7 @@
 "use client";
 
+import "../futbolhoy-feed.css";
+import "../media.css";
 import { memo, startTransition, useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls } from "../lib/esports";

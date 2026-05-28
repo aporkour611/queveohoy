@@ -1,16 +1,25 @@
+import type { SpotlightPreloadEntry } from "../lib/optimized-image";
+
 type Props = {
-  href: string | null;
+  entries: SpotlightPreloadEntry[];
 };
 
-export function HomeLcpPreload({ href }: Props) {
-  if (!href) return null;
+export function HomeLcpPreload({ entries }: Props) {
+  if (entries.length === 0) return null;
 
   return (
-    <link
-      rel="preload"
-      as="image"
-      href={href}
-      fetchPriority="high"
-    />
+    <>
+      {entries.map((entry) => (
+        <link
+          key={entry.href}
+          rel="preload"
+          as="image"
+          href={entry.href}
+          imageSrcSet={entry.imageSrcSet}
+          imageSizes={entry.imageSizes}
+          fetchPriority="high"
+        />
+      ))}
+    </>
   );
 }

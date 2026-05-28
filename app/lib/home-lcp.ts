@@ -1,22 +1,36 @@
 import type { EventRow } from "../components/types";
-import { pickWeekDestacados } from "./destacados-config";
+import { DESTACADOS_VISIBLE_SLOTS, pickWeekDestacados } from "./destacados-config";
 import { getSpotlightCardModel } from "./featured-card";
 import { buildDisplayDays, MADRID_TZ } from "./timezone";
 import { FEED_DAY_COUNT } from "./events-feed";
-import { buildOptimizedPreloadHref } from "./optimized-image";
-import { safeRemoteImageUrl } from "./remote-image";
+import {
+  buildSpotlightPreloadEntry,
+  type SpotlightPreloadEntry,
+} from "./optimized-image";
 
-/** URL del primer poster/cover de destacados para preload (LCP en home). */
-export function resolveHomeLcpPreloadUrl(events: EventRow[]): string | null {
+function resolveCoverPreloadEntry(event: EventRow): SpotlightPreloadEntry | null {
+  const cover = getSpotlightCardModel(event, MADRID_TZ).coverImage;
+  if (!cover?.url) return null;
+  return buildSpotlightPreloadEntry(cover.url);
+}
+
+/** Posters visibles en la primera página de destacados (candidatos LCP en home). */
+export function resolveHomeLcpPreloadEntries(events: EventRow[]): SpotlightPreloadEntry[] {
   const todayKey = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "";
-  const featured = pickWeekDestacados(events, { todayKey });
-  const first = featured[0];
-  if (!first) return null;
+  const featured = pickWeekDestacados(events, { todayKey }).slice(
+    0,
+    DESTACADOS_VISIBLE_SLOTS
+  );
 
-  const cover = getSpotlightCardModel(first, MADRID_TZ).coverImage;
-  if (!cover?.url || cover.local) return null;
+  const entries: SpotlightPreloadEntry[] = [];
+  const seen = new Set<string>();
 
-  const raw = safeRemoteImageUrl(cover.url);
-  if (!raw) return null;
-  return buildOptimizedPreloadHref(raw) ?? raw;
+  for (const event of featured) {
+    const entry = resolveCoverPreloadEntry(event);
+    if (!entry || seen.has(entry.href)) continue;
+    seen.add(entry.href);
+    entries.push(entry);
+  }
+
+  return entries;
 }

@@ -8,7 +8,7 @@ const EXCLUDED_US_TV_TITLE =
   /^(the\s+)?jeopardy!?(\s|$)|^wheel of fortune|^the price is right|^family feud|^deal or no deal|^survivor(\s|$)|^american idol|^the bachelor|^the bachelorette|^love island(\s|$)|^big brother(\s|$)|^the amazing race|^dancing with the stars|^so you think you can dance|^america'?s got talent|^the voice(\s|$|\s*\()|^the masked singer(\s|$)|^ninja warrior|^hollywood squares|^match game|^press your luck/i;
 
 const LATAM_RELEVANCE =
-  /méxico|mexico|argentina|colombia|chile|perú|peru|venezuela|ecuador|uruguay|paraguay|bolivia|costa rica|guatemala|panamá|panama|españa|spain|eurovisi|master\s*chef|gran hermano|operaci[oó]n triunfo|la isla|first dates|first dates|survivor\s+(?:espa|all\s*stars)|the\s+traitors/i;
+  /méxico|mexico|argentina|colombia|chile|perú|peru|venezuela|ecuador|uruguay|paraguay|bolivia|costa rica|guatemala|panamá|panama|españa|spain|eurovisi|master\s*chef|gran hermano|operaci[oó]n triunfo|la isla|first dates|survivor\s+(?:espa|all\s*stars)|the\s+traitors/i;
 
 const SPANISH_BROADCAST =
   /rtve|telecinco|antena|atresmedia|la\s*1|la\s*2|cuatro|factor\s*x|got\s*talent\s*espa|first\s*dates/i;

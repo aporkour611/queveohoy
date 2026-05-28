@@ -130,7 +130,8 @@ function buildRealityEvent(
   season: number,
   episode: number,
   episodeName?: string | null,
-  providerNames: string[] = []
+  providerNames: string[] = [],
+  spainDateOverride?: string
 ): RealityCronEvent {
   const showName = detail.name?.trim() || item.name?.trim() || "Reality";
   const schedule = resolveSpainEpisodeSchedule({
@@ -143,6 +144,11 @@ function buildRealityEvent(
     providerNames,
     spanishTvCurated: curated,
   });
+  const date = spainDateOverride ?? schedule.date;
+  const time =
+    spainDateOverride && curated?.airTime
+      ? curated.airTime
+      : schedule.time;
 
   const score = tmdbBuzzScore({
     popularity: detail.popularity ?? item.popularity,
@@ -155,10 +161,10 @@ function buildRealityEvent(
   const curatedBonus = curated?.priority ?? 0;
 
   return {
-    external_id: `tmdb_tv_reality_${showId}_${schedule.date}_s${season}e${episode}`,
+    external_id: `tmdb_tv_reality_${showId}_${date}_s${season}e${episode}`,
     title: buildRealityTitle(showName, season, episode, episodeName),
-    date: schedule.date,
-    time: schedule.time,
+    date,
+    time,
     sport: "tv",
     category: "tv",
     competition: curated?.competition ?? "Reality · Nuevo episodio",
@@ -191,6 +197,64 @@ function eventFromNextEpisode(
   );
 }
 
+function collectAirWeekdaySlots(
+  airWeekdays: number[],
+  dateFrom: string,
+  dateTo: string
+): string[] {
+  const slots: string[] = [];
+  let date = dateFrom;
+
+  while (date <= dateTo) {
+    if (airWeekdays.includes(isoWeekdayFromDateKey(date))) {
+      slots.push(date);
+    }
+    date = addDaysToDateKey(date, 1);
+  }
+
+  return slots;
+}
+
+function mapEpisodesToWeekdaySlots(
+  episodes: SeasonEpisode[],
+  slots: string[],
+  startEpisodeNumber: number,
+  curated?: SpanishTvShow
+): Array<{ date: string; episode: SeasonEpisode }> {
+  const upcoming = episodes
+    .filter(
+      (episode) =>
+        (episode.episode_number ?? 0) >= startEpisodeNumber &&
+        episode.episode_number
+    )
+    .sort(
+      (a, b) => (a.episode_number ?? 0) - (b.episode_number ?? 0)
+    );
+
+  const mapped: Array<{ date: string; episode: SeasonEpisode }> = [];
+  let slotIndex = 0;
+
+  for (const episode of upcoming) {
+    const season = episode.season_number ?? 0;
+    const episodeNumber = episode.episode_number ?? 0;
+    const override = curated?.episodeSpainDates?.find(
+      (item) =>
+        item.season === season && item.episode === episodeNumber
+    );
+
+    if (override) {
+      mapped.push({ date: override.date, episode });
+      continue;
+    }
+
+    if (slotIndex >= slots.length) break;
+    mapped.push({ date: slots[slotIndex], episode });
+    slotIndex += 1;
+  }
+
+  return mapped;
+}
+
 async function fetchSeasonEpisodesInRange(
   showId: number,
   seasonNumber: number,
@@ -207,6 +271,44 @@ async function fetchSeasonEpisodesInRange(
   if (!season?.episodes?.length) return [];
 
   const events: RealityCronEvent[] = [];
+
+  if (curated?.airWeekdays?.length) {
+    const slots = collectAirWeekdaySlots(
+      curated.airWeekdays,
+      dateFrom,
+      dateTo
+    );
+    const startEpisode =
+      detail.next_episode_to_air?.episode_number ??
+      detail.last_episode_to_air?.episode_number ??
+      1;
+    const mapped = mapEpisodesToWeekdaySlots(
+      season.episodes,
+      slots,
+      startEpisode,
+      curated
+    );
+
+    for (const { date, episode: ep } of mapped) {
+      const airDate = ep.air_date ?? date;
+      events.push(
+        buildRealityEvent(
+          showId,
+          detail,
+          item,
+          curated,
+          airDate,
+          ep.season_number ?? seasonNumber,
+          ep.episode_number ?? 0,
+          ep.name,
+          providerNames,
+          date
+        )
+      );
+    }
+
+    return events;
+  }
 
   for (const ep of season.episodes) {
     const airDate = ep.air_date ?? undefined;

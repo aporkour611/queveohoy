@@ -15,7 +15,20 @@ export function CookieConsentBanner() {
   const [choice, setChoice] = useState<CookieConsentChoice | null>(() =>
     typeof window === "undefined" ? null : readCookieConsent()
   );
-  const [ready] = useState(() => typeof window !== "undefined");
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (choice) return;
+
+    const show = () => setReady(true);
+    const idle = window.requestIdleCallback?.(show, { timeout: 4000 });
+    const fallback = window.setTimeout(show, 3500);
+
+    return () => {
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+      window.clearTimeout(fallback);
+    };
+  }, [choice]);
 
   useEffect(() => {
     function sync() {

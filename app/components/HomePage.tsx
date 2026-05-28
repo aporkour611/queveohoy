@@ -14,20 +14,16 @@ import {
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
-import dynamic from "next/dynamic";
+import { FeedControls } from "./FeedControls";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { LoadingState } from "./LoadingState";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
 import { useHomeReset } from "./HomeResetContext";
-
-const FeedControls = dynamic(
-  () => import("./FeedControls").then((mod) => mod.FeedControls),
-  { loading: () => null }
-);
+import dynamic from "next/dynamic";
 
 const EventDaySections = dynamic(
   () => import("./EventDaySections").then((mod) => mod.EventDaySections),
-  { loading: () => null }
+  { loading: () => <div className="qvh-feed-day-placeholder" aria-hidden /> }
 );
 
 const LazyMount = dynamic(
@@ -61,14 +57,31 @@ type Props = {
   initialEvents?: EventRow[];
   initialDestacadosEvents?: EventRow[];
   initialError?: string | null;
+  /** Fecha del encabezado ya renderizado en servidor (día 0). */
+  serverDayHeaderDate?: string | null;
+  /** Cabecera estática del día (server component). */
+  dayHeader?: ReactNode;
   children?: ReactNode;
 };
 
-function getScrollAnchorOffset(): number {
+let cachedScrollAnchorOffset: number | null = null;
+
+function readScrollAnchorOffset(): number {
   const navH = parseFloat(
     getComputedStyle(document.documentElement).getPropertyValue("--qvh-navbar-h")
   );
   return (Number.isFinite(navH) ? navH : 64) + 12;
+}
+
+function getScrollAnchorOffset(): number {
+  if (cachedScrollAnchorOffset === null) {
+    cachedScrollAnchorOffset = readScrollAnchorOffset();
+  }
+  return cachedScrollAnchorOffset;
+}
+
+function invalidateScrollAnchorOffset(): void {
+  cachedScrollAnchorOffset = null;
 }
 
 function scrollToDaySection(date: string, weekMode = false) {
@@ -94,6 +107,8 @@ export function HomeFeed({
   initialEvents = [],
   initialDestacadosEvents = [],
   initialError = null,
+  serverDayHeaderDate = null,
+  dayHeader,
   children,
 }: Props = {}) {
   const [events, setEvents] = useState(() =>
@@ -285,8 +300,6 @@ export function HomeFeed({
     [events, initialDestacadosEvents]
   );
 
-  const destacadosEvents = feedEvents;
-
   const displayEvents = useMemo(
     () => filterEventsInWeek(feedEvents, MADRID_TZ, dayWindow),
     [feedEvents, dayWindow]
@@ -356,6 +369,13 @@ export function HomeFeed({
     return countHiddenHomeEvents(rawDay, activeTodayEvents);
   }, [isFeaturedMode, activeDayMeta, displayEvents, activeTodayEvents]);
 
+  const useSsrDayHeader =
+    Boolean(serverDayHeaderDate) &&
+    !weekView &&
+    activeDay === 0 &&
+    isFeaturedMode &&
+    activeDayMeta?.date === serverDayHeaderDate;
+
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
     if (scrollLockTimerRef.current !== null) {
@@ -412,6 +432,12 @@ export function HomeFeed({
   }, [displayDays.length]);
 
   const showInitialLoading = loading && events.length === 0;
+
+  useEffect(() => {
+    const el = document.getElementById("home-day-header-ssr");
+    if (!el) return;
+    el.hidden = !useSsrDayHeader;
+  }, [useSsrDayHeader]);
 
   const goToDay = useCallback(
     (index: number) => {
@@ -494,14 +520,18 @@ export function HomeFeed({
     }
 
     if (!scrollLockRef.current) {
-      syncActiveDay();
+      window.requestAnimationFrame(syncActiveDay);
     }
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    const handleResize = () => {
+      invalidateScrollAnchorOffset();
+      onScroll();
+    };
+    window.addEventListener("resize", handleResize, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", handleResize);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [showInitialLoading, displayDays, weekView]);
@@ -563,6 +593,7 @@ export function HomeFeed({
           />
 
           <div className="fh-feed-area">
+            {dayHeader}
             {refreshing && !showInitialLoading ? <FeedRefreshLoader /> : null}
 
             {showInitialLoading ? (
@@ -608,15 +639,17 @@ export function HomeFeed({
                         className="fh-day-section fh-matchday"
                         aria-labelledby={`day-title-${activeDayMeta.date}`}
                       >
-                        <h2
-                          id={`day-title-${activeDayMeta.date}`}
-                          className="fh-matchday-header"
-                        >
-                          {activeDayMeta.title}
-                          {isFeaturedMode && activeDay === 0 ? (
-                            <span className="fh-featured-badge">Destacados</span>
-                          ) : null}
-                        </h2>
+                        {useSsrDayHeader ? null : (
+                          <h2
+                            id={`day-title-${activeDayMeta.date}`}
+                            className="fh-matchday-header"
+                          >
+                            {activeDayMeta.title}
+                            {isFeaturedMode && activeDay === 0 ? (
+                              <span className="fh-featured-badge">Destacados</span>
+                            ) : null}
+                          </h2>
+                        )}
 
                         <EventDaySections
                           events={activeHomeDay.todayEvents}
@@ -654,6 +687,3 @@ export function HomeFeed({
     </>
   );
 }
-
-/** @deprecated Usar HomeFeed dentro del shell de la home. */
-export const HomePage = HomeFeed;

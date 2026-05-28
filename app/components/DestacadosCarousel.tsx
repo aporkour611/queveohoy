@@ -1,15 +1,13 @@
 "use client";
 
-import { startTransition, useRef, useState } from "react";
-import type { EventRow } from "./types";
+import { Children, startTransition, useRef, useState, type ReactNode } from "react";
 import {
   DESTACADOS_SCROLL_STEP,
   DESTACADOS_VISIBLE_SLOTS,
 } from "../lib/destacados-config";
-import { FeaturedEventCard } from "./FeaturedEventCard";
 
 type Props = {
-  items: EventRow[];
+  children: ReactNode;
   ariaLabel: string;
   layout?: "paginated" | "scroll";
 };
@@ -36,13 +34,14 @@ function ChevronIcon({ direction }: { direction: "left" | "right" }) {
 }
 
 export function DestacadosCarousel({
-  items,
+  children,
   ariaLabel,
   layout = "paginated",
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const childArray = Children.toArray(children);
   const pageSize = DESTACADOS_SCROLL_STEP;
-  const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
+  const pageCount = Math.max(1, Math.ceil(childArray.length / pageSize));
   const [page, setPageState] = useState(0);
   const clampedPage = Math.min(page, pageCount - 1);
 
@@ -51,21 +50,16 @@ export function DestacadosCarousel({
       setPageState(Math.max(0, Math.min(next, pageCount - 1)))
     );
   };
-  const showNav = items.length > DESTACADOS_VISIBLE_SLOTS;
+  const showNav = childArray.length > DESTACADOS_VISIBLE_SLOTS;
   const start = clampedPage * pageSize;
-  const visible = items.slice(start, start + pageSize);
+  const visible = childArray.slice(start, start + pageSize);
 
   function scrollByDirection(direction: -1 | 1) {
     const el = scrollRef.current;
     if (!el) return;
 
-    const card = el.querySelector(".qvh-spotlight-card") as HTMLElement | null;
-    const gap = 12;
-    const cardWidth = card?.offsetWidth ?? 236;
-    const step = (cardWidth + gap) * DESTACADOS_SCROLL_STEP;
-
     el.scrollBy({
-      left: direction * step,
+      left: direction * el.clientWidth * 0.85,
       behavior: "smooth",
     });
   }
@@ -89,13 +83,7 @@ export function DestacadosCarousel({
           className="qvh-destacados-scroll"
           aria-label={ariaLabel}
         >
-          {items.map((event, index) => (
-            <FeaturedEventCard
-              key={event.id}
-              event={event}
-              priority={index === 0}
-            />
-          ))}
+          {childArray}
         </div>
 
         {showNav ? (
@@ -127,13 +115,7 @@ export function DestacadosCarousel({
       ) : null}
 
       <div className="qvh-destacados-page" aria-label={ariaLabel}>
-        {visible.map((event, index) => (
-          <FeaturedEventCard
-            key={event.id}
-            event={event}
-            priority={clampedPage === 0 && index === 0}
-          />
-        ))}
+        {visible}
       </div>
 
       {showNav ? (

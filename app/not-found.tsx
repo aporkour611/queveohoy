@@ -1,5 +1,5 @@
+import "./futbolhoy-shell.css";
 import Link from "next/link";
-import "./futbolhoy.css";
 
 export default function NotFound() {
   return (

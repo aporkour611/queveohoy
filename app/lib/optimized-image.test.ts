@@ -22,4 +22,11 @@ describe("optimized-image", () => {
     expect(href).toContain("/_next/image");
     expect(href).toContain("image.tmdb.org");
   });
+
+  it("builds /_next/image preload for local posters with spotlight sizes", () => {
+    const href = buildOptimizedPreloadHref("/posters/mask-singer.png");
+    expect(href).toContain("/_next/image");
+    expect(href).toContain("mask-singer");
+    expect(href).toMatch(/w=320/);
+  });
 });

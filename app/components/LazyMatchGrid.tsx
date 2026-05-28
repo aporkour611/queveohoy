@@ -13,18 +13,28 @@ type Props = {
   eager?: boolean;
 };
 
+type GridState = {
+  key: string;
+  count: number;
+};
+
+function buildGridState(events: EventRow[], eager: boolean): GridState {
+  const key = `${eager}:${events.map((event) => event.id).join(",")}`;
+  const count = eager ? events.length : Math.min(INITIAL_VISIBLE, events.length);
+  return { key, count };
+}
+
 /** Grid que va pintando tarjetas a medida que te acercas al final (scroll infinito ligero). */
 export function LazyMatchGrid({ events, eager = false }: Props) {
-  const [visibleCount, setVisibleCount] = useState(() =>
-    eager ? events.length : Math.min(INITIAL_VISIBLE, events.length)
-  );
+  const [grid, setGrid] = useState<GridState>(() => buildGridState(events, eager));
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const nextState = buildGridState(events, eager);
 
-  useEffect(() => {
-    setVisibleCount(
-      eager ? events.length : Math.min(INITIAL_VISIBLE, events.length)
-    );
-  }, [events, eager]);
+  if (grid.key !== nextState.key) {
+    setGrid(nextState);
+  }
+
+  const visibleCount = grid.count;
 
   useEffect(() => {
     if (eager || visibleCount >= events.length) return;
@@ -35,7 +45,10 @@ export function LazyMatchGrid({ events, eager = false }: Props) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
-        setVisibleCount((count) => Math.min(count + LOAD_BATCH, events.length));
+        setGrid((current) => ({
+          ...current,
+          count: Math.min(current.count + LOAD_BATCH, events.length),
+        }));
       },
       { rootMargin: "480px 0px" }
     );

@@ -379,15 +379,4 @@ export function pickWeekDestacados(
     .slice(0, MAX_DESTACADOS_WEEK);
 }
 
-/** @deprecated Usar pickTodayDestacados + pickWeekDestacados */
-export function pickCuratedDestacados(
-  events: EventRow[],
-  options: PickCuratedDestacadosOptions = {}
-): EventRow[] {
-  const today = pickTodayDestacados(events, options);
-  const excludeIds = new Set(today.map((e) => e.id));
-  const week = pickWeekDestacados(events, { ...options, excludeIds });
-  return [...today, ...week];
-}
-
 export { isSeasonPremiereEvent };

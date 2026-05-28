@@ -28,6 +28,12 @@ export type SpanishTvShow = {
   airTime?: string;
   /** Días de emisión recurrentes: 1 = lunes … 7 = domingo (ISO). */
   airWeekdays?: number[];
+  /** Fechas puntuales en España por episodio (anula TMDB). */
+  episodeSpainDates?: Array<{
+    season: number;
+    episode: number;
+    date: string;
+  }>;
   /** Fechas fijas cuando no hay TMDB (eventos puntuales). */
   manualSlots?: SpanishTvManualSlot[];
 };
@@ -55,6 +61,10 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     posterPath: "/5UNSRQc1ZCVmkDxi9llNqrUudYt.jpg",
     airTime: "23:00",
     airWeekdays: [1, 2],
+    episodeSpainDates: [
+      { season: 10, episode: 24, date: "2026-06-01" },
+      { season: 10, episode: 25, date: "2026-06-02" },
+    ],
   },
   {
     id: "velada-ibai",

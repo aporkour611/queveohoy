@@ -1,9 +1,11 @@
-import "../futbolhoy.css";
+import "../futbolhoy-shell.css";
 import "../destacados.css";
-import "../media.css";
-import "../push.css";
-import "../channel-badges.css";
-import "../event-stamp.css";
+
+const feedCriticalCss = `
+.qvh-spotlight-visual{position:relative;height:132px;overflow:hidden}
+.qvh-destacados-stack{min-height:200px}
+.qvh-home-feed-slot{min-height:420px}
+`.trim();
 
 export default function FeedLayout({
   children,
@@ -12,9 +14,7 @@ export default function FeedLayout({
 }>) {
   return (
     <>
-      <link rel="preconnect" href="https://image.tmdb.org" />
-      <link rel="preconnect" href="https://crests.football-data.org" />
-      <link rel="dns-prefetch" href="https://r2.thesportsdb.com" />
+      <style dangerouslySetInnerHTML={{ __html: feedCriticalCss }} />
       {children}
     </>
   );

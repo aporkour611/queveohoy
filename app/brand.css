@@ -31,7 +31,7 @@
     var(--qvh-navbar-accent-h) + var(--qvh-navbar-padding-y) * 2 +
       var(--qvh-navbar-content-h)
   );
-  --qvh-font-display: var(--font-barlow-condensed), var(--qvh-font-display);
+  --qvh-font-display: var(--font-barlow-condensed), "Arial Narrow", Arial, sans-serif;
 }
 
 @media (max-width: 640px) {
@@ -635,6 +635,17 @@
   background: var(--qvh-bg-panel);
   border: 1px solid var(--qvh-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+  overflow-anchor: none;
+}
+
+.qvh-feed-day-placeholder {
+  min-height: 320px;
+  overflow-anchor: none;
+}
+
+/* Evita CLS al hidratar calendario + primer día del feed bajo Destacados */
+.qvh-home-feed-slot {
+  min-height: 420px;
   overflow-anchor: none;
 }
 

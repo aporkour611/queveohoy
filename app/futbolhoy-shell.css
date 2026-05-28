@@ -1,0 +1,691 @@
+﻿/* Layout de partidos ÔÇö paleta queveohoy.es */
+
+html {
+  overflow-anchor: none;
+}
+
+.fh-body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  background: var(--qvh-bg);
+  color: var(--qvh-text);
+  margin: 0;
+  min-height: 100vh;
+  overflow-anchor: none;
+}
+
+.fh-content {
+  background-color: var(--qvh-bg-elevated);
+  padding: var(--qvh-navbar-h) 0 40px;
+  min-height: 100vh;
+  overflow-anchor: none;
+}
+
+.fh-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* ÔöÇÔöÇ Navbar (solo esta barra queda fija al scroll) ÔöÇÔöÇ */
+.fh-navbar {
+  background-color: var(--qvh-bg) !important;
+  padding: 0;
+  box-shadow: 0 1px 0 var(--qvh-border);
+  border-bottom: 1px solid var(--qvh-border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 960;
+}
+
+.fh-navbar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--qvh-navbar-accent-h);
+  background: linear-gradient(
+    90deg,
+    var(--qvh-purple) 0%,
+    var(--qvh-orange) 50%,
+    var(--qvh-green) 100%
+  );
+}
+
+.fh-navbar-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--qvh-navbar-padding-y) 15px;
+  min-height: var(--qvh-navbar-content-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fh-nav-links {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.fh-nav-links a {
+  font-family: var(--qvh-font-display);
+  font-size: 1.1rem;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  opacity: 0.85;
+}
+
+.fh-nav-links a:hover {
+  opacity: 1;
+  color: var(--qvh-purple);
+}
+
+.fh-nav-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fh-nav-account-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fh-nav-account-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem 0.35rem 0.45rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-family: var(--qvh-font-display);
+  font-size: 1.05rem;
+  opacity: 0.9;
+  cursor: pointer;
+  max-width: 190px;
+}
+
+.fh-nav-account-trigger:hover,
+.fh-nav-account-menu.is-open .fh-nav-account-trigger,
+.fh-nav-account-menu:focus-within .fh-nav-account-trigger {
+  opacity: 1;
+  color: var(--qvh-purple);
+  border-color: var(--qvh-border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.fh-nav-account-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fh-nav-account-name {
+  font-weight: 700;
+}
+
+.fh-nav-account-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 980;
+  min-width: 188px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--qvh-border);
+  background: #12121a;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+}
+
+.fh-nav-account-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+.fh-nav-account-dropdown-head {
+  margin: 0;
+  padding: 8px 12px 6px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  display: none;
+}
+
+.fh-nav-account-logout-form {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--qvh-border);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.fh-nav-auth-dropdown-item-logout {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: #bbb;
+}
+
+.fh-nav-auth-dropdown-item-logout:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@media (min-width: 641px) {
+  .fh-nav-account-menu:hover .fh-nav-account-dropdown,
+  .fh-nav-account-menu:focus-within .fh-nav-account-dropdown,
+  .fh-nav-account-menu.is-open .fh-nav-account-dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+}
+
+.fh-nav-user-icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
+.fh-nav-auth-desktop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  white-space: nowrap;
+}
+
+.fh-nav-auth-desktop a {
+  padding: 0.35rem 0.4rem;
+}
+
+.fh-nav-auth-mobile {
+  display: none;
+  position: relative;
+}
+
+.fh-nav-auth-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--qvh-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.fh-nav-auth-trigger:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--qvh-purple);
+}
+
+.fh-nav-auth-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 980;
+  min-width: 176px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--qvh-border);
+  background: #12121a;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+}
+
+.fh-nav-auth-menu.is-open .fh-nav-auth-dropdown {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.fh-nav-auth-dropdown-item {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-family: var(--qvh-font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  opacity: 1;
+}
+
+.fh-nav-auth-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--qvh-purple);
+}
+
+.fh-nav-auth-dropdown-item-primary {
+  color: var(--qvh-purple-hover);
+}
+
+.fh-nav-auth-sep {
+  color: var(--qvh-text-muted);
+  font-family: var(--qvh-font-display);
+  font-size: 1rem;
+  opacity: 0.7;
+  user-select: none;
+}
+
+/* ÔöÇÔöÇ Sports selector ÔöÇÔöÇ */
+.fh-sports-selector {
+  display: flex;
+  font-family: var(--qvh-font-display);
+  font-weight: 500;
+  margin: 0 -15px 0;
+  background: #fff;
+}
+
+.fh-sports-selector .fh-sport-col {
+  flex: 1;
+  padding: 8px 0;
+  text-align: center;
+  border: 1px solid #fff;
+  border-top: 0;
+  border-bottom: 0;
+  cursor: pointer;
+  background: #fff;
+  color: #212529;
+  font-size: 1.05rem;
+  font-family: inherit;
+}
+
+.fh-sports-selector .fh-sport-col:hover {
+  background-color: var(--qvh-purple);
+  color: #fff;
+  border-color: var(--qvh-purple);
+}
+
+.fh-sports-selector .fh-sport-col.selected {
+  background-color: var(--qvh-purple);
+  color: #fff;
+  border-color: var(--qvh-purple);
+}
+
+/* ÔöÇÔöÇ Title bar ÔöÇÔöÇ */
+.fh-title-bar {
+  background-color: var(--qvh-bg-panel);
+  box-shadow: none;
+  border-bottom: 1px solid var(--qvh-border);
+  padding: 12px 0;
+  margin-bottom: 15px;
+}
+
+.fh-title-bar h1 {
+  padding: 0;
+  margin: 0;
+  font-family: var(--qvh-font-display);
+  font-size: 1.5em;
+  font-weight: 600;
+  color: var(--qvh-text);
+}
+
+.fh-main {
+  padding-top: 0;
+  overflow-anchor: none;
+}
+
+.fh-page-title {
+  margin: 0 0 6px;
+  font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--qvh-text);
+  text-wrap: balance;
+}
+
+.fh-page-lead {
+  margin: 0 0 14px;
+  max-width: 42rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--qvh-text-muted);
+  text-wrap: balance;
+}
+
+.fh-feed-refresh {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 6px 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--qvh-text-muted);
+  pointer-events: none;
+}
+
+.fh-feed-area {
+  position: relative;
+  overflow-anchor: none;
+}
+
+@media (max-width: 640px) {
+  .fh-navbar-inner {
+    padding: var(--qvh-navbar-padding-y) 12px;
+    gap: 8px;
+  }
+
+  .fh-nav-links {
+    gap: 0.25rem;
+  }
+
+  .fh-nav-links a {
+    font-size: 0.95rem;
+    padding: 0.3rem 0.45rem;
+  }
+
+  .fh-nav-auth-desktop {
+    display: none;
+  }
+
+  .fh-nav-auth-mobile {
+    display: block;
+  }
+
+  .fh-nav-account-label {
+    display: none;
+  }
+
+  .fh-nav-account-dropdown-head-mobile {
+    display: block;
+  }
+
+  .fh-nav-account-menu.is-open .fh-nav-account-dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .fh-nav-account-trigger {
+    width: 36px;
+    height: 36px;
+    justify-content: center;
+    padding: 0;
+    max-width: none;
+    border: 1px solid var(--qvh-border);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .qvh-logo-svg {
+    height: 34px;
+  }
+}
+
+/* ÔöÇÔöÇ Day tabs (estilo Twitch) ÔöÇÔöÇ */
+.qvh-day-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 16px;
+  margin-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--qvh-border);
+}
+
+.qvh-day-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.qvh-day-tab {
+  flex-shrink: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-width: 72px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--qvh-text-muted);
+  transition: background 0.12s ease, color 0.12s ease;
+  font-family: var(--qvh-font-display), "Inter", sans-serif;
+  position: relative;
+}
+
+.qvh-day-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--qvh-text);
+}
+
+.qvh-day-tab.active {
+  background: var(--qvh-purple);
+  color: #fff;
+}
+
+.qvh-day-tab.active::after {
+  content: none;
+}
+
+.qvh-day-tab-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.qvh-day-tab-date {
+  font-size: 0.72rem;
+  font-weight: 500;
+  opacity: 0.7;
+  line-height: 1.2;
+}
+
+.qvh-day-tab.active .qvh-day-tab-date {
+  opacity: 0.92;
+}
+
+@media (min-width: 640px) {
+  .qvh-day-tab {
+    min-width: 80px;
+    padding: 9px 18px;
+    border-radius: 8px;
+  }
+
+  .qvh-day-tab-label {
+    font-size: 0.88rem;
+  }
+}
+
+/* ÔöÇÔöÇ Matchday sections ÔöÇÔöÇ */
+.fh-day-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-anchor: none;
+}
+
+.fh-feed-pane-hidden {
+  display: none !important;
+}
+
+.fh-day-section {
+  scroll-margin-top: calc(var(--qvh-navbar-h) + 8px);
+}
+
+/* El navegador salta el layout de bloques fuera de pantalla (scroll m├ís fluido). */
+.qvh-content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+
+.fh-lazy-mount,
+.fh-day-lazy-placeholder {
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.07) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  background-size: 200% 100%;
+}
+
+.fh-day-lazy-placeholder {
+  min-height: 160px;
+  margin: 0 0 12px;
+}
+
+.fh-lazy-sentinel {
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+
+.fh-day-empty {
+  padding: 16px 10px 24px;
+  text-align: center;
+  color: var(--qvh-text-muted);
+  font-size: 0.9em;
+}
+
+.fh-day-empty p {
+  margin: 0;
+}
+
+.fh-home-more-link {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.fh-home-more-link a {
+  color: var(--qvh-accent, #7c3aed);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.fh-home-more-link a:hover {
+  text-decoration: underline;
+}
+
+.fh-matchday {
+  margin-bottom: 30px;
+}
+
+.fh-matchday-header {
+  padding: 12px 10px;
+  margin: 0 -15px 0.5rem;
+  color: #fff;
+  font-family: var(--qvh-font-display);
+  text-align: center;
+  background: linear-gradient(90deg, var(--qvh-muted) 0%, #1a1a24 100%);
+  font-size: 1.25em;
+  font-weight: 600;
+  border-bottom: 2px solid var(--qvh-purple);
+  text-transform: capitalize;
+}
+
+
+/* Empty / loading (above-the-fold errors) */
+.fh-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--qvh-text-muted);
+  font-family: var(--qvh-font-display);
+}
+
+.fh-btn {
+  background-color: #fff;
+  border: 1px solid silver;
+  font-size: 0.9em;
+  border-radius: 15px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-family: var(--qvh-font-display);
+  margin-top: 12px;
+}
+
+.fh-btn:hover {
+  background-color: #e8e8e8;
+}
+
+.fh-btn-primary {
+  background-color: var(--qvh-purple);
+  color: #fff;
+  border-color: var(--qvh-purple);
+}
+
+.fh-btn-primary:hover {
+  background-color: var(--qvh-purple-hover);
+}
+
+/* Featured badge (day header) */
+.fh-featured-badge {
+  display: inline-block;
+  font-family: var(--qvh-font-display);
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #ff8a00 0%, #ff4500 55%, #ffb300 100%);
+  color: #fff;
+  padding: 3px 11px 3px 9px;
+  border-radius: 999px;
+  margin-left: 10px;
+  vertical-align: middle;
+  border: 1px solid rgba(255, 220, 120, 0.55);
+  box-shadow:
+    0 0 14px rgba(255, 90, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  text-shadow: 0 1px 2px rgba(80, 20, 0, 0.35);
+}
+
+.fh-featured-badge::before {
+  content: "🔥 ";
+}
+
+.fh-home-day-header-ssr {
+  overflow-anchor: none;
+}
+
+.fh-home-day-header-ssr[hidden] {
+  display: none !important;
+}
+
+.fh-home-day-header-ssr .fh-matchday-header {
+  margin-bottom: 0.5rem;
+}

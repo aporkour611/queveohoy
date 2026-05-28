@@ -1,5 +1,6 @@
 "use client";
 
+import "../media.css";
 import type { EventRow } from "./types";
 import { MediaPosterCard } from "./MediaPosterCard";
 

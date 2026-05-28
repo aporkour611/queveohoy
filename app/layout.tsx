@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
 import "./globals.css";
-import "./brand.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { Analytics } from "./components/Analytics";
 import { SpeedInsights } from "./components/SpeedInsights";
@@ -13,8 +12,8 @@ export const preferredRegion = ["cdg1", "fra1"];
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
-  preload: true,
+  weight: ["600", "700", "800"],
+  preload: false,
   adjustFontFallback: true,
   display: "swap",
 });
@@ -33,8 +32,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${barlowCondensed.variable} h-full antialiased`}>
+    <html
+      lang="es"
+      className={`${barlowCondensed.variable} h-full antialiased`}
+      style={{ background: "#000000", color: "#ffffff" }}
+    >
       <head>
+        <link rel="preconnect" href="https://image.tmdb.org" />
+        <link rel="dns-prefetch" href="https://crests.football-data.org" />
         <link
           rel="alternate"
           type="application/rss+xml"
@@ -45,7 +50,10 @@ export default function RootLayout({
         <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/app-icon-192.png" />
       </head>
-      <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
+      <body
+        className="min-h-full flex flex-col"
+        style={{ margin: 0, background: "#000000", color: "#ffffff" }}
+      >
         <a href="#main-content" className="qvh-skip-link">
           Saltar al contenido
         </a>

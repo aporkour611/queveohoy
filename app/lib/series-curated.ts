@@ -58,14 +58,3 @@ export function curatedSeriesByExternalId(
       `tmdb_tv_${episode.tmdbId}_${episode.airDate}_s${episode.season}e${episode.episode}`
   );
 }
-
-export function matchesCuratedSeries(event: {
-  title?: string | null;
-  sport?: string | null;
-}): CuratedSeriesEpisode | undefined {
-  if (event.sport !== "series") return undefined;
-  const showTitle = (event.title ?? "").split(" — ")[0]?.trim() ?? "";
-  return CURATED_SERIES_EPISODES.find((episode) =>
-    episode.patterns.some((pattern) => pattern.test(showTitle))
-  );
-}

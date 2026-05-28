@@ -82,6 +82,34 @@ function findExistingCuratedSeries(
   return undefined;
 }
 
+/** Filas TMDB con fecha US (p. ej. domingo) cuando el estreno España es otro día. */
+export function shouldSuppressCuratedSeriesStaleEvent(event: EventRow): boolean {
+  if (event.sport !== "series") return false;
+
+  const episode = CURATED_SERIES_EPISODES.find((item) => {
+    if (event.external_id === curatedSeriesExternalId(item)) return true;
+
+    const showTitle = (event.title ?? "").split(" — ")[0]?.trim() ?? "";
+    if (!item.patterns.some((pattern) => pattern.test(showTitle))) return false;
+
+    const meta = event.title?.match(/\bT(\d+)E(\d+)\b/i);
+    if (!meta) return item.patterns.some((pattern) => pattern.test(showTitle));
+
+    return (
+      Number(meta[1]) === item.season && Number(meta[2]) === item.episode
+    );
+  });
+
+  if (!episode) return false;
+  if (event.external_id === curatedSeriesExternalId(episode)) return false;
+
+  return event.date !== episode.airDate;
+}
+
+export function stripStaleCuratedSeriesEvents(events: EventRow[]): EventRow[] {
+  return events.filter((event) => !shouldSuppressCuratedSeriesStaleEvent(event));
+}
+
 /** Asegura episodios editoriales (FROM, Euphoria…) en Destacados y feed. */
 export function mergeCuratedSeriesEvents(
   events: EventRow[],
@@ -90,7 +118,7 @@ export function mergeCuratedSeriesEvents(
 ): EventRow[] {
   const merged = new Map<string, EventRow>();
 
-  for (const event of events) {
+  for (const event of stripStaleCuratedSeriesEvents(events)) {
     const key = event.external_id ?? String(event.id);
     merged.set(key, event);
   }

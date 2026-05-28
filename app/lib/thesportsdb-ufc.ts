@@ -1,8 +1,5 @@
 import {
-  formatMadridMonthShort,
-  formatMadridWeekday,
   getMadridWeekDates,
-  madridDayNumber,
   parseUtcIso,
   splitToMadrid,
   toMadridDateKey,
@@ -121,15 +118,6 @@ export function parseUfcEventLabel(strEvent: string): UfcEventLabel {
   };
 }
 
-/** @deprecated Usar parseUfcEventLabel */
-export function parseUfcHeadline(strEvent: string): string {
-  const label = parseUfcEventLabel(strEvent);
-  if (label.cardLine && label.kind === "ppv") {
-    return label.cardLine;
-  }
-  return label.eventName;
-}
-
 export function parseUfcKind(strEvent: string): UfcKind {
   return parseUfcEventLabel(strEvent).kind;
 }
@@ -231,16 +219,6 @@ async function enrichUfcFighters(
       f2,
     }),
   };
-}
-
-export function formatEventDateLabel(date: string): string {
-  const today = toMadridDateKey(new Date());
-  const tomorrow = getMadridWeekDates(2)[1];
-  if (date === today) return "Hoy";
-  if (date === tomorrow) return "Mañana";
-  const weekday = formatMadridWeekday(date, "short");
-  const month = formatMadridMonthShort(date);
-  return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1, 3)} ${madridDayNumber(date)} ${month}`;
 }
 
 function normalizeRaw(raw: RawEvent, weekDates: string[]): UfcCronEvent | null {
@@ -350,26 +328,6 @@ export async function fetchUfcCronEvents(
   return Promise.all(
     combined.map((event) => enrichUfcFighters(event, fighterCache))
   );
-}
-
-/** @deprecated Usar fetchUfcCronEvents vía cron */
-export async function fetchUpcomingUfcEvents(limit = UFC_MAX_UPCOMING) {
-  const events = await fetchUfcCronEvents(7);
-  return events.slice(0, limit).map((e) => ({
-    id: e.external_id.replace(/^ufc_/, ""),
-    title: e.title,
-    headline: e.title,
-    kind: parseUfcKindFromSource(e.source),
-    date: e.date,
-    time: e.time,
-    dateLabel: formatEventDateLabel(e.date),
-    venue: e.platform.split(" · ")[0] ?? e.platform,
-    location: e.platform.includes(" · ")
-      ? e.platform.split(" · ").slice(1).join(" · ")
-      : "",
-    poster: parseUfcImage(e.source) ?? undefined,
-    platform: "UFC Fight Pass",
-  }));
 }
 
 export { ufcKindLabel as kindLabel };

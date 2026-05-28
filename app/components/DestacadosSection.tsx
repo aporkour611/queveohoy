@@ -1,8 +1,9 @@
 import type { EventRow } from "./types";
-import { pickWeekDestacados } from "../lib/destacados-config";
+import { pickWeekDestacados, DESTACADOS_VISIBLE_SLOTS } from "../lib/destacados-config";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { DestacadosCarousel } from "./DestacadosCarousel";
+import { FeaturedEventCard } from "./FeaturedEventCard";
 
 type Props = {
   events: EventRow[];
@@ -40,7 +41,15 @@ function DestacadosRow({
         </div>
       </div>
 
-      <DestacadosCarousel items={items} ariaLabel={ariaLabel} layout={layout} />
+      <DestacadosCarousel ariaLabel={ariaLabel} layout={layout}>
+        {items.map((event, index) => (
+          <FeaturedEventCard
+            key={event.id}
+            event={event}
+            priority={index < DESTACADOS_VISIBLE_SLOTS}
+          />
+        ))}
+      </DestacadosCarousel>
     </section>
   );
 }

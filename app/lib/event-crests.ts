@@ -54,8 +54,3 @@ export function eventCanDisplay(e: EventRow): boolean {
 export function filterEventsForDisplay<T extends EventRow>(events: T[]): T[] {
   return events.filter(eventCanDisplay);
 }
-
-/** @deprecated Use filterEventsForDisplay */
-export function filterEventsWithCrests<T extends EventRow>(events: T[]): T[] {
-  return filterEventsForDisplay(events);
-}

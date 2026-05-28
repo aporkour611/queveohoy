@@ -1,5 +1,6 @@
 "use client";
 
+import "../push.css";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {

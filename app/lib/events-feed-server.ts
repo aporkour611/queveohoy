@@ -208,6 +208,3 @@ export const getHomeFeedEventsForPage = cache(fetchHomeFeedEvents);
 export const getDestacadosFeedEventsForPage = cache(fetchDestacadosFeedEvents);
 
 export const getFeedEventsForPage = cache(fetchFeedEvents);
-
-/** @deprecated Usar getDestacadosFeedEventsForPage */
-export const getWeekFeedEventsForPage = getDestacadosFeedEventsForPage;

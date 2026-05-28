@@ -152,3 +152,46 @@ export function isRecurringFlagshipSpanishTvEvent(event: EventRow): boolean {
   const show = matchesSpanishTvFlagship(event);
   return Boolean(show?.airWeekdays?.length);
 }
+
+function parseEpisodeMeta(title?: string | null): { season: number; episode: number } | null {
+  const match = title?.match(/\bT(\d+)E(\d+)\b/i);
+  if (!match) return null;
+  return { season: Number(match[1]), episode: Number(match[2]) };
+}
+
+/** Quita filas TMDB con fecha distinta al calendario España del programa. */
+export function shouldSuppressMisdatedSpanishTvEvent(event: EventRow): boolean {
+  if (event.sport !== "tv") return false;
+
+  const show = matchesSpanishTvFlagship(event);
+  if (!show) return false;
+
+  const meta = parseEpisodeMeta(event.title);
+  if (!meta) return false;
+
+  const override = show.episodeSpainDates?.find(
+    (item) => item.season === meta.season && item.episode === meta.episode
+  );
+  if (!override) return false;
+
+  return event.date !== override.date;
+}
+
+/** Quita título genérico si ya hay episodio concreto ese día (p. ej. La Isla T10E24). */
+export function stripDuplicateGenericSpanishTvEvents(events: EventRow[]): EventRow[] {
+  const episodeSlots = new Set<string>();
+
+  for (const event of events) {
+    const show = matchesSpanishTvFlagship(event);
+    if (!show || event.sport !== "tv" || !event.date) continue;
+    if (!parseEpisodeMeta(event.title)) continue;
+    episodeSlots.add(`${show.id}|${event.date}`);
+  }
+
+  return events.filter((event) => {
+    const show = matchesSpanishTvFlagship(event);
+    if (!show || event.sport !== "tv" || !event.date) return true;
+    if (parseEpisodeMeta(event.title)) return true;
+    return !episodeSlots.has(`${show.id}|${event.date}`);
+  });
+}
