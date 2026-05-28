@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { channelStyle } from "../lib/channels";
 import { channelWatchPath } from "../lib/channel-slug";
+import { hasLiveWatchPage } from "../lib/live-player";
 
 type BadgeVariant = "match" | "spotlight" | "inline";
 
@@ -31,7 +32,9 @@ export function ChannelBadge({
     borderColor: style.border,
   };
 
-  if (broadcasting && linked) {
+  const canOpenWatchPage = hasLiveWatchPage(name);
+
+  if (linked && (broadcasting || canOpenWatchPage)) {
     return (
       <button
         type="button"

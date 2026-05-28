@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import { isBlockedSport } from "./blocked-sports";
 import {
   encodeEsportsSource,
   pandascoreTeamLogo,
@@ -71,6 +72,7 @@ export async function enrichEventCrests(
   e: EventRow,
   maxRetries = 3
 ): Promise<EventRow | null> {
+  if (isBlockedSport(e.sport)) return null;
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     if (attempt > 0) await sleep(500 * attempt);
     const enriched = await enrichOnce(e);

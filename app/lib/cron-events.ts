@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import { isBlockedSport } from "./blocked-sports";
 import {
   eventHasTeamCrests,
   isTeamCrestSport,
@@ -34,6 +35,7 @@ export async function prepareEventsForImport<T extends CronEventInput>(
   const out: T[] = [];
 
   for (const raw of events) {
+    if (isBlockedSport(raw.sport)) continue;
     if (!isPublishableTeamEvent(raw)) continue;
 
     const e = asScorable(raw);
@@ -68,6 +70,7 @@ export async function prepareEventsForImport<T extends CronEventInput>(
 }
 
 export function shouldPurgeEvent(e: EventRow): boolean {
+  if (isBlockedSport(e.sport)) return true;
   /** Solo placeholders; no borrar partidos por falta de escudo (se enriquecen en cron). */
   return eventHasPlaceholderTeams(e);
 }

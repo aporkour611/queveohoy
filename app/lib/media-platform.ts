@@ -56,7 +56,7 @@ function normalizeStreamingBrand(raw: string): string | null {
   if (/sky/i.test(c)) return "Sky Showtime";
   if (/rtve|pepetv/i.test(c)) return "RTVE";
   if (/telecinco|mitele/i.test(c)) return "Telecinco";
-  if (/antena|atresplayer/i.test(c)) return "Antena 3";
+  if (/antena|atresplayer/i.test(c)) return "Antena 3 · ATRESPLAYER TV";
   if (/twitch/i.test(c)) return "Twitch";
   if (/youtube/i.test(c)) return "YouTube";
 

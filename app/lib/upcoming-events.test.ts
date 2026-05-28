@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { EventRow } from "../components/types";
 import {
   indexDisplayEventsByDate,
+  resolveFeaturedHomeDayEvents,
   resolveHomeDayEvents,
 } from "./upcoming-events";
 
@@ -65,5 +66,17 @@ describe("resolveHomeDayEvents", () => {
 
     expect(result.upcomingEvents).toHaveLength(0);
     expect(result.upcomingMessage).toBeNull();
+  });
+});
+
+describe("resolveFeaturedHomeDayEvents", () => {
+  it("reutiliza el resultado en memoria para la misma semana", () => {
+    const events = [event(1, "2026-05-27", "futbol", "Final")];
+    const byDate = indexDisplayEventsByDate(events);
+
+    const first = resolveFeaturedHomeDayEvents(byDate, "2026-05-27", "2026-05-27");
+    const second = resolveFeaturedHomeDayEvents(byDate, "2026-05-27", "2026-05-27");
+
+    expect(second).toBe(first);
   });
 });

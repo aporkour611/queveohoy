@@ -60,6 +60,9 @@ function liveChannelWatchUrl(channel: string): string | null {
   if (/rtve|la\s*1|teledeporte/.test(lower)) {
     return "https://www.rtve.es/play/en-directo/";
   }
+  if (/antena|atresplayer/.test(lower)) {
+    return "https://www.atresplayer.com/directos/antena3/";
+  }
   if (/gol\s*play|^gol\b/.test(lower)) {
     return "https://www.golplay.es/directos";
   }

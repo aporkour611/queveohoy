@@ -1,4 +1,5 @@
 import { isCronAuthorized } from "@/app/lib/admin-auth";
+import { BLOCKED_SPORT_IDS } from "@/app/lib/blocked-sports";
 import { createSupabaseAdmin } from "@/app/lib/supabase-admin";
 import { NextResponse } from "next/server";
 import { defaultChannelsForCompetition } from "@/app/lib/channels";
@@ -381,6 +382,34 @@ async function fetchUfc(): Promise<{ count: number; error?: string }> {
   }
 }
 
+/** Elimina de BD deportes/juegos bloqueados (p. ej. Dota 2 legacy). */
+async function purgeBlockedSportEvents(): Promise<{ purged: number; error?: string }> {
+  const { data, error } = await getSupabase()
+    .from("events")
+    .select("id")
+    .in("sport", [...BLOCKED_SPORT_IDS]);
+
+  if (error) {
+    return { purged: 0, error: error.message };
+  }
+
+  const ids = (data ?? []).map((row) => row.id);
+  if (!ids.length) return { purged: 0 };
+
+  const { error: delError } = await getSupabase()
+    .from("events")
+    .delete()
+    .in("id", ids);
+
+  if (delError) {
+    console.error("Blocked sports purge error:", delError);
+    return { purged: 0, error: delError.message };
+  }
+
+  console.log(`Eventos de deportes bloqueados eliminados: ${ids.length}`);
+  return { purged: ids.length };
+}
+
 /** Solo borra TMDB fuera de ventana; no toca fútbol, e-sports ni tenis. */
 async function purgeOutOfWindowTmdbEvents(
   dateFrom: string,
@@ -600,6 +629,16 @@ export async function GET(request: Request) {
     console.error("✗ Dedupe error:", e);
   }
 
+  let blockedSportsPurge: { purged: number; error?: string } = { purged: 0 };
+  try {
+    blockedSportsPurge = await purgeBlockedSportEvents();
+    if (blockedSportsPurge.purged > 0) {
+      console.log(`✓ Blocked sports purge: ${blockedSportsPurge.purged}`);
+    }
+  } catch (e) {
+    console.error("✗ Blocked sports purge error:", e);
+  }
+
   console.log("=== CRON TERMINADO ===");
 
   let indexNow: Awaited<ReturnType<typeof pingIndexNow>> = {
@@ -660,6 +699,8 @@ export async function GET(request: Request) {
     crestsEnriched: enrich.enriched,
     crestEnrichError: enrich.error,
     crestsPurged: 0,
+    blockedSportsPurged: blockedSportsPurge.purged,
+    blockedSportsPurgeError: blockedSportsPurge.error,
     esportsPurged: 0,
     duplicatesRemoved: dedupe.removed,
     dedupeError: dedupe.error,

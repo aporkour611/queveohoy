@@ -4,6 +4,10 @@ import { SPANISH_TV_FLAGSHIP } from "./spanish-tv-curated";
 import { isoWeekdayFromDateKey } from "./curated-tv-events";
 import { encodeTmdbSource, getTmdbApiKey, tmdbBuzzScore } from "./tmdb";
 import { isExcludedUsTvTitle } from "./spain-latam-media";
+import {
+  extractSpainProviderNames,
+  resolveSpainEpisodeSchedule,
+} from "./spain-air-schedule";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const REALITY_GENRE_ID = "10764";
@@ -46,6 +50,7 @@ type ShowDetail = {
   vote_count?: number;
   vote_average?: number;
   popularity?: number;
+  origin_country?: string[];
   networks?: { name?: string }[];
   next_episode_to_air?: {
     air_date?: string;
@@ -72,6 +77,17 @@ type SeasonDetail = {
   episodes?: SeasonEpisode[];
 };
 
+type TmdbWatchProviders = {
+  results?: Record<
+    string,
+    {
+      flatrate?: Array<{ provider_name?: string }>;
+      buy?: Array<{ provider_name?: string }>;
+      rent?: Array<{ provider_name?: string }>;
+    }
+  >;
+};
+
 async function tmdbGet<T>(
   path: string,
   params: Record<string, string> = {}
@@ -92,15 +108,6 @@ async function tmdbGet<T>(
   return res.json() as Promise<T>;
 }
 
-function defaultPlatform(
-  networks?: { name?: string }[],
-  fallback?: string
-): string {
-  const name = networks?.[0]?.name?.trim();
-  if (name) return `${name} · TV y streaming`;
-  return fallback ?? "TV y streaming";
-}
-
 function buildRealityTitle(
   showName: string,
   season: number,
@@ -119,12 +126,24 @@ function buildRealityEvent(
   detail: ShowDetail,
   item: DiscoverItem | SearchItem,
   curated: SpanishTvShow | undefined,
-  airDate: string,
+  tmdbAirDate: string,
   season: number,
   episode: number,
-  episodeName?: string | null
+  episodeName?: string | null,
+  providerNames: string[] = []
 ): RealityCronEvent {
   const showName = detail.name?.trim() || item.name?.trim() || "Reality";
+  const schedule = resolveSpainEpisodeSchedule({
+    tmdbShowId: showId,
+    tmdbAirDate,
+    season,
+    episode,
+    originCountries: detail.origin_country,
+    networkNames: detail.networks?.map((network) => network.name ?? ""),
+    providerNames,
+    spanishTvCurated: curated,
+  });
+
   const score = tmdbBuzzScore({
     popularity: detail.popularity ?? item.popularity,
     vote_count:
@@ -136,14 +155,14 @@ function buildRealityEvent(
   const curatedBonus = curated?.priority ?? 0;
 
   return {
-    external_id: `tmdb_tv_reality_${showId}_${airDate}_s${season}e${episode}`,
+    external_id: `tmdb_tv_reality_${showId}_${schedule.date}_s${season}e${episode}`,
     title: buildRealityTitle(showName, season, episode, episodeName),
-    date: airDate,
-    time: curated?.airTime ?? DEFAULT_REALITY_AIR_TIME,
+    date: schedule.date,
+    time: schedule.time,
     sport: "tv",
     category: "tv",
     competition: curated?.competition ?? "Reality · Nuevo episodio",
-    platform: defaultPlatform(detail.networks, curated?.platform),
+    platform: curated?.platform ?? schedule.platform,
     source: `${encodeTmdbSource(detail.poster_path ?? item.poster_path, score + curatedBonus)}|curated:${curated?.id ?? "discover"}`,
   };
 }
@@ -152,7 +171,8 @@ function eventFromNextEpisode(
   showId: number,
   detail: ShowDetail,
   item: DiscoverItem | SearchItem,
-  curated?: SpanishTvShow
+  curated?: SpanishTvShow,
+  providerNames: string[] = []
 ): RealityCronEvent | null {
   const next = detail.next_episode_to_air;
   const airDate = next?.air_date;
@@ -166,7 +186,8 @@ function eventFromNextEpisode(
     airDate,
     next?.season_number ?? 0,
     next?.episode_number ?? 0,
-    next?.name
+    next?.name,
+    providerNames
   );
 }
 
@@ -177,7 +198,8 @@ async function fetchSeasonEpisodesInRange(
   dateTo: string,
   detail: ShowDetail,
   item: DiscoverItem | SearchItem,
-  curated?: SpanishTvShow
+  curated?: SpanishTvShow,
+  providerNames: string[] = []
 ): Promise<RealityCronEvent[]> {
   const season = await tmdbGet<SeasonDetail>(
     `/tv/${showId}/season/${seasonNumber}`
@@ -188,20 +210,22 @@ async function fetchSeasonEpisodesInRange(
 
   for (const ep of season.episodes) {
     const airDate = ep.air_date ?? undefined;
-    if (!airDate || airDate < dateFrom || airDate > dateTo) continue;
+    if (!airDate) continue;
 
-    events.push(
-      buildRealityEvent(
-        showId,
-        detail,
-        item,
-        curated,
-        airDate,
-        ep.season_number ?? seasonNumber,
-        ep.episode_number ?? 0,
-        ep.name
-      )
+    const built = buildRealityEvent(
+      showId,
+      detail,
+      item,
+      curated,
+      airDate,
+      ep.season_number ?? seasonNumber,
+      ep.episode_number ?? 0,
+      ep.name,
+      providerNames
     );
+
+    if (built.date < dateFrom || built.date > dateTo) continue;
+    events.push(built);
   }
 
   return events;
@@ -261,7 +285,8 @@ function fillWeekdayAirSlots(
   item: DiscoverItem | SearchItem,
   dateFrom: string,
   dateTo: string,
-  existing: RealityCronEvent[]
+  existing: RealityCronEvent[],
+  providerNames: string[] = []
 ): RealityCronEvent[] {
   if (!curated.airWeekdays?.length) return existing;
 
@@ -295,7 +320,8 @@ function fillWeekdayAirSlots(
           date,
           season,
           episode,
-          null
+          null,
+          providerNames
         )
       );
       slotIndex += 1;
@@ -316,6 +342,11 @@ async function fetchCuratedShowEvents(
   const detail = await tmdbGet<ShowDetail>(`/tv/${showId}`);
   if (!detail) return [];
 
+  const providers = await tmdbGet<TmdbWatchProviders>(
+    `/tv/${showId}/watch/providers`
+  );
+  const providerNames = extractSpainProviderNames(providers);
+
   const seasonNumber =
     detail.next_episode_to_air?.season_number ??
     detail.last_episode_to_air?.season_number;
@@ -328,7 +359,8 @@ async function fetchCuratedShowEvents(
       dateTo,
       detail,
       item,
-      curated
+      curated,
+      providerNames
     );
     if (weekEpisodes.length > 0) {
       return fillWeekdayAirSlots(
@@ -338,12 +370,13 @@ async function fetchCuratedShowEvents(
         item,
         dateFrom,
         dateTo,
-        weekEpisodes
+        weekEpisodes,
+        providerNames
       );
     }
   }
 
-  const next = eventFromNextEpisode(showId, detail, item, curated);
+  const next = eventFromNextEpisode(showId, detail, item, curated, providerNames);
   const fallback =
     !next || next.date < dateFrom || next.date > dateTo ? [] : [next];
   return fillWeekdayAirSlots(
@@ -353,7 +386,8 @@ async function fetchCuratedShowEvents(
     item,
     dateFrom,
     dateTo,
-    fallback
+    fallback,
+    providerNames
   );
 }
 
@@ -442,10 +476,21 @@ export async function fetchRealityCronEvents(
     const detail = await tmdbGet<ShowDetail>(`/tv/${item.id}`);
     if (!detail) continue;
 
+    const providers = await tmdbGet<TmdbWatchProviders>(
+      `/tv/${item.id}/watch/providers`
+    );
+    const providerNames = extractSpainProviderNames(providers);
+
     const showName = detail.name?.trim() || item.name?.trim() || "";
     if (isExcludedUsTvTitle(showName)) continue;
 
-    const event = eventFromNextEpisode(item.id, detail, item);
+    const event = eventFromNextEpisode(
+      item.id,
+      detail,
+      item,
+      undefined,
+      providerNames
+    );
     if (!event) continue;
     if (event.date < dateFrom || event.date > dateTo) continue;
     if (map.has(event.external_id)) continue;

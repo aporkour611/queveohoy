@@ -1,10 +1,19 @@
 export type LivePlayerKind =
   | "twitch"
   | "rtve"
+  | "atresplayer"
   | "gol"
   | "tv3"
   | "youtube"
   | "external";
+
+/** Canales con página /directo (embed o enlace oficial). */
+export function hasLiveWatchPage(channel: string): boolean {
+  const lower = channel.toLowerCase();
+  return /rtve|la\s*1|teledeporte|twitch|gol\s*play|^gol\b|tv3|ccma|3cat|youtube|antena|atresplayer/i.test(
+    lower
+  );
+}
 
 export type LivePlayerEmbed = {
   kind: LivePlayerKind;
@@ -82,6 +91,16 @@ export function resolveLivePlayerEmbed(
       embedSrc,
       externalUrl: "https://www.rtve.es/play/en-directo/",
       playerTitle: /la\s*1/.test(lower) ? "La 1 en directo" : "RTVE en directo",
+    };
+  }
+
+  if (/antena|atresplayer/.test(lower)) {
+    return {
+      kind: "atresplayer",
+      channel,
+      embedSrc: null,
+      externalUrl: "https://www.atresplayer.com/directos/antena3/",
+      playerTitle: "Antena 3 en directo · ATRESPLAYER TV",
     };
   }
 

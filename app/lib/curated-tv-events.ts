@@ -98,7 +98,7 @@ function normalizeShowEvent(
     time: show.airTime ?? event.time ?? "22:00",
     sport: "tv",
     competition: event.competition?.trim() || show.competition,
-    platform: event.platform?.trim() || show.platform,
+    platform: show.platform || event.platform?.trim() || "",
     source,
   };
 }

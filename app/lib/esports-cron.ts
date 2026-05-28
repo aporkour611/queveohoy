@@ -1,4 +1,5 @@
 import { eventHasPlaceholderTeams, isPlaceholderTeamName } from "./event-quality";
+import { isBlockedSport } from "./blocked-sports";
 
 /** Ligas / torneos menores que no queremos en BD (ruido en home y cron lento). */
 const ESPORTS_MINOR =
@@ -67,6 +68,7 @@ export function shouldPurgeStoredEsportsEvent(event: {
   away_team?: string | null;
 }): boolean {
   const sport = event.sport ?? "";
+  if (isBlockedSport(sport)) return true;
   if (!ESPORTS_SPORTS.has(sport)) return false;
   if (eventHasPlaceholderTeams(event)) return true;
 

@@ -17,9 +17,11 @@ const baseEvent: EventRow = {
 };
 
 describe("isFreeLiveChannel", () => {
-  it("incluye RTVE, La 1 y Twitch", () => {
+  it("incluye RTVE, La 1, Antena 3 y Twitch", () => {
     expect(isFreeLiveChannel("La 1")).toBe(true);
     expect(isFreeLiveChannel("RTVE Play")).toBe(true);
+    expect(isFreeLiveChannel("Antena 3")).toBe(true);
+    expect(isFreeLiveChannel("ATRESPLAYER TV")).toBe(true);
     expect(isFreeLiveChannel("Twitch · Ibai")).toBe(true);
     expect(isFreeLiveChannel("Movistar+")).toBe(false);
   });

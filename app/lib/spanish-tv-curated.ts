@@ -119,7 +119,7 @@ export const SPANISH_TV_FLAGSHIP: SpanishTvShow[] = [
     search: "Mask Singer",
     patterns: [/mask singer|the masked singer/i],
     competition: "Concurso · Mask Singer",
-    platform: "Antena 3 · Atresplayer",
+    platform: "Antena 3 · ATRESPLAYER TV",
     priority: 85,
     category: "concurso",
     localPosterPath: "/posters/mask-singer.png",

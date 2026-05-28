@@ -1,6 +1,11 @@
 import { addDaysToDateKey, getMadridWeekDates, toMadridDateKey } from "./madrid-time";
 import { CURATED_MOVIES } from "./movies-curated";
 import { formatSeriesEpisodeTitle } from "./series-display";
+import {
+  extractSpainProviderNames,
+  extractSpainTheatricalReleaseDate,
+  resolveSpainEpisodeSchedule,
+} from "./spain-air-schedule";
 import { isExcludedUsTvTitle } from "./spain-latam-media";
 import {
   BUZZ_SUFFIX,
@@ -54,6 +59,27 @@ type TmdbItem = {
   vote_average?: number;
 };
 
+type TmdbWatchProviders = {
+  results?: Record<
+    string,
+    {
+      flatrate?: Array<{ provider_name?: string }>;
+      buy?: Array<{ provider_name?: string }>;
+      rent?: Array<{ provider_name?: string }>;
+    }
+  >;
+};
+
+type TmdbMovieReleaseDates = {
+  results?: Array<{
+    iso_3166_1?: string;
+    release_dates?: Array<{
+      type?: number;
+      release_date?: string;
+    }>;
+  }>;
+};
+
 type TmdbShowDetail = {
   id: number;
   name?: string;
@@ -61,6 +87,7 @@ type TmdbShowDetail = {
   vote_count?: number;
   vote_average?: number;
   popularity?: number;
+  origin_country?: string[];
   networks?: { name?: string }[];
   next_episode_to_air?: {
     air_date?: string;
@@ -167,9 +194,14 @@ function defaultPlatformForMovie(): string {
   return "Cines";
 }
 
-function defaultPlatformForSeries(networks?: { name?: string }[]): string {
-  const name = networks?.[0]?.name?.trim();
-  return name ? `${name} · Streaming` : "TV y streaming";
+async function fetchSpainMovieReleaseDate(movieId: number): Promise<string | null> {
+  const data = await tmdbGet<TmdbMovieReleaseDates>(`/movie/${movieId}/release_dates`);
+  return extractSpainTheatricalReleaseDate(data);
+}
+
+async function fetchSpainProviderNames(showId: number): Promise<string[]> {
+  const data = await tmdbGet<TmdbWatchProviders>(`/tv/${showId}/watch/providers`);
+  return extractSpainProviderNames(data);
 }
 
 function passesQualityBar(
@@ -282,6 +314,9 @@ async function fetchEditorialMovies(
     const title =
       detail.title?.trim() || detail.original_title?.trim() || curated.title;
 
+    const spainRelease =
+      (await fetchSpainMovieReleaseDate(curated.tmdbId)) ?? curated.releaseDate;
+
     const score =
       tmdbBuzzScore({
         popularity: detail.popularity,
@@ -293,7 +328,7 @@ async function fetchEditorialMovies(
     events.push({
       external_id: `tmdb_movie_${curated.tmdbId}`,
       title,
-      date: curated.releaseDate,
+      date: spainRelease,
       sport: "cine",
       category: "cine",
       competition:
@@ -325,19 +360,18 @@ async function buildSeriesEvent(
   seen: Set<string>,
   options?: { skipQualityBar?: boolean }
 ): Promise<ScoredEvent | null> {
-  const detail = await tmdbGet<TmdbShowDetail>(`/tv/${showId}`);
+  const [detail, providerNames] = await Promise.all([
+    tmdbGet<TmdbShowDetail>(`/tv/${showId}`),
+    fetchSpainProviderNames(showId),
+  ]);
   if (!detail) return null;
   if (!options?.skipQualityBar && !passesQualityBar(detail, MIN_TV_VOTES)) {
     return null;
   }
 
   const next = detail.next_episode_to_air;
-  const airDate = next?.air_date;
-  if (!airDate || airDate < dateFrom || airDate > dateTo) return null;
-
-  const dedupeKey = `${showId}_${airDate}`;
-  if (seen.has(dedupeKey)) return null;
-  seen.add(dedupeKey);
+  const tmdbAirDate = next?.air_date;
+  if (!tmdbAirDate) return null;
 
   const showName = detail.name?.trim();
   if (!showName) return null;
@@ -345,6 +379,23 @@ async function buildSeriesEvent(
 
   const season = next?.season_number ?? 0;
   const episode = next?.episode_number ?? 0;
+
+  const schedule = resolveSpainEpisodeSchedule({
+    tmdbShowId: showId,
+    tmdbAirDate,
+    season,
+    episode,
+    originCountries: detail.origin_country,
+    networkNames: detail.networks?.map((network) => network.name ?? ""),
+    providerNames,
+  });
+
+  if (schedule.date < dateFrom || schedule.date > dateTo) return null;
+
+  const dedupeKey = `${showId}_${schedule.date}_s${season}e${episode}`;
+  if (seen.has(dedupeKey)) return null;
+  seen.add(dedupeKey);
+
   const title = formatSeriesEpisodeTitle(
     showName,
     season,
@@ -362,14 +413,14 @@ async function buildSeriesEvent(
   return {
     score,
     event: {
-      external_id: `tmdb_tv_${showId}_${airDate}_s${season}e${episode}`,
+      external_id: `tmdb_tv_${showId}_${schedule.date}_s${season}e${episode}`,
       title,
-      date: airDate,
-      time: "22:00",
+      date: schedule.date,
+      time: schedule.time,
       sport: "series",
       category: "cine",
       competition: seriesCompetitionLabel(season, episode, trendingRank),
-      platform: defaultPlatformForSeries(detail.networks),
+      platform: schedule.platform,
       source: encodeTmdbSource(detail.poster_path, score),
     },
   };

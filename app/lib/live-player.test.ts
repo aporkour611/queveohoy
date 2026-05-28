@@ -39,4 +39,11 @@ describe("resolveLivePlayerEmbed", () => {
     expect(player.embedSrc).toContain("rtve.es/play/embed");
     expect(player.embedSrc).toContain("la-1");
   });
+
+  it("enlaza Antena 3 al directo de ATRESPLAYER TV", () => {
+    const player = resolveLivePlayerEmbed("Antena 3", "https://queveohoy.es");
+
+    expect(player.kind).toBe("atresplayer");
+    expect(player.externalUrl).toContain("atresplayer.com/directos/antena3");
+  });
 });

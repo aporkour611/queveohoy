@@ -10,6 +10,7 @@ const CHANNEL_STYLES: { match: RegExp; style: Omit<ChannelStyle, "label" | "tier
   { match: /movistar|m\+/i, style: { bg: "#00a0e3", color: "#fff", border: "#0090cc" } },
   { match: /dazn/i, style: { bg: "#111", color: "#f5d020", border: "#333" } },
   { match: /la\s*1|rtve|teledeporte/i, style: { bg: "#e30613", color: "#fff", border: "#c90511" } },
+  { match: /antena|atresplayer/i, style: { bg: "#ff7328", color: "#fff", border: "#e56520" } },
   { match: /gol|vamos|orange/i, style: { bg: "#ff6b00", color: "#fff", border: "#e55f00" } },
   { match: /sky/i, style: { bg: "#0072c6", color: "#fff", border: "#0060a8" } },
   { match: /eurosport/i, style: { bg: "#003087", color: "#fff", border: "#00256a" } },
@@ -34,13 +35,13 @@ const PAID_DEFAULT: Omit<ChannelStyle, "label"> = {
 export function parseChannels(platform?: string | null): string[] {
   if (!platform?.trim()) return [];
   return platform
-    .split(/[,;|/]+/)
+    .split(/[,;|/·]+/)
     .map((c) => c.trim())
     .filter(Boolean);
 }
 
 export function isFreeTvChannel(name: string): boolean {
-  return /rtve\s*play|teledeporte|la\s*1\b|gol\s*play|tv3|esport\s*3|etb|ten\s*tv|^rtve$/i.test(
+  return /rtve\s*play|teledeporte|la\s*1\b|gol\s*play|tv3|esport\s*3|etb|ten\s*tv|^rtve$|antena\s*3|atresplayer/i.test(
     name.trim()
   );
 }

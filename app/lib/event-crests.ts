@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import { isBlockedSport } from "./blocked-sports";
 import { isImportantEvent } from "./featured";
 import { eventHasPlaceholderTeams } from "./event-quality";
 import { parseEsportsTeamLogos, isEsportsSport } from "./esports";
@@ -42,6 +43,7 @@ export function eventHasTeamCrests(e: EventRow): boolean {
 
 /** Visible en la app: equipos confirmados, escudos completos o evento importante */
 export function eventCanDisplay(e: EventRow): boolean {
+  if (isBlockedSport(e.sport)) return false;
   if (eventHasPlaceholderTeams(e)) return false;
   if (!isTeamCrestSport(e.sport ?? "")) return true;
   if (eventHasTeamCrests(e)) return true;

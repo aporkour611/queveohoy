@@ -33,6 +33,7 @@ import {
 import {
   indexDisplayEventsByDate,
   resolveDayEventsFromIndex,
+  resolveFeaturedHomeDayEvents,
   resolveHomeDayEvents,
 } from "../lib/upcoming-events";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
@@ -100,7 +101,9 @@ export function HomePage({
 
   const isFeaturedMode = selectedSports.length === 0;
   const deferredSports = useDeferredValue(selectedSports);
-  const deferredFeaturedMode = deferredSports.length === 0;
+  // Al volver a "Todo", no diferir: la vista ya estuvo calculada y montada.
+  const feedSports = isFeaturedMode ? selectedSports : deferredSports;
+  const feedFeaturedMode = feedSports.length === 0;
   const hasInitialData = initialEvents.length > 0;
 
   const loadEvents = useCallback(async (options?: {
@@ -278,10 +281,7 @@ export function HomePage({
     [displayEvents]
   );
 
-  const deferredSportSet = useMemo(
-    () => new Set(deferredSports),
-    [deferredSports]
-  );
+  const feedSportSet = useMemo(() => new Set(feedSports), [feedSports]);
 
   const activeDayMeta = displayDays[activeDay] ?? null;
   const todayKey = displayDays[0]?.date ?? "";
@@ -291,10 +291,10 @@ export function HomePage({
     return resolveDayEventsFromIndex(
       eventsByDate,
       activeDayMeta.date,
-      deferredSportSet,
-      deferredFeaturedMode
+      feedSportSet,
+      feedFeaturedMode
     );
-  }, [activeDayMeta, weekView, eventsByDate, deferredSportSet, deferredFeaturedMode]);
+  }, [activeDayMeta, weekView, eventsByDate, feedSportSet, feedFeaturedMode]);
 
   const activeHomeDay = useMemo(() => {
     if (!activeDayMeta || weekView) {
@@ -305,27 +305,35 @@ export function HomePage({
       };
     }
 
+    if (feedFeaturedMode) {
+      return resolveFeaturedHomeDayEvents(
+        eventsByDate,
+        activeDayMeta.date,
+        todayKey
+      );
+    }
+
     return resolveHomeDayEvents(
       eventsByDate,
       activeDayMeta.date,
       todayKey,
-      deferredSportSet,
-      deferredFeaturedMode
+      feedSportSet,
+      feedFeaturedMode
     );
   }, [
     activeDayMeta,
     weekView,
     eventsByDate,
     todayKey,
-    deferredSportSet,
-    deferredFeaturedMode,
+    feedSportSet,
+    feedFeaturedMode,
   ]);
 
   const hiddenOnActiveDay = useMemo(() => {
-    if (!deferredFeaturedMode || !activeDayMeta) return 0;
+    if (!feedFeaturedMode || !activeDayMeta) return 0;
     const rawDay = displayEvents.filter((e) => e.date === activeDayMeta.date);
     return countHiddenHomeEvents(rawDay, activeTodayEvents);
-  }, [deferredFeaturedMode, activeDayMeta, displayEvents, activeTodayEvents]);
+  }, [feedFeaturedMode, activeDayMeta, displayEvents, activeTodayEvents]);
 
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
@@ -523,13 +531,16 @@ export function HomePage({
         <div className="fh-container fh-main">
           <h1 className="sr-only">Qué ver hoy en TV</h1>
 
-          {isFeaturedMode ? children : null}
+          <div
+            className={isFeaturedMode ? undefined : "fh-feed-pane-hidden"}
+            aria-hidden={!isFeaturedMode}
+          >
+            {children}
 
-          {isFeaturedMode && (
             <FeedErrorBoundary>
               <DestacadosSection events={destacadosEvents} />
             </FeedErrorBoundary>
-          )}
+          </div>
 
           <FeedControls
             days={displayDays}
@@ -578,8 +589,8 @@ export function HomePage({
                           activeDay={activeDay}
                           isFeaturedMode={isFeaturedMode}
                           eventsByDate={eventsByDate}
-                          sportFilter={deferredSportSet}
-                          featuredMode={deferredFeaturedMode}
+                          sportFilter={feedSportSet}
+                          featuredMode={feedFeaturedMode}
                         />
                       ))}
                     </div>

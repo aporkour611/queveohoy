@@ -175,6 +175,36 @@ export type HomeDayEventsResult = {
   upcomingMessage: string | null;
 };
 
+const featuredHomeDayCache = new WeakMap<
+  Map<string, EventRow[]>,
+  Map<string, HomeDayEventsResult>
+>();
+
+function featuredHomeDayCacheKey(date: string, todayKey: string): string {
+  return `${date}\0${todayKey}`;
+}
+
+/** Igual que resolveHomeDayEvents, pero memoriza la vista destacada por índice de fechas. */
+export function resolveFeaturedHomeDayEvents(
+  byDate: Map<string, EventRow[]>,
+  date: string,
+  todayKey: string
+): HomeDayEventsResult {
+  let dayCache = featuredHomeDayCache.get(byDate);
+  if (!dayCache) {
+    dayCache = new Map();
+    featuredHomeDayCache.set(byDate, dayCache);
+  }
+
+  const key = featuredHomeDayCacheKey(date, todayKey);
+  const cached = dayCache.get(key);
+  if (cached) return cached;
+
+  const result = resolveHomeDayEvents(byDate, date, todayKey, new Set(), true);
+  dayCache.set(key, result);
+  return result;
+}
+
 /** Vista Hoy: si el día tiene pocos eventos, añade los próximos de la semana. */
 export function resolveHomeDayEvents(
   byDate: Map<string, EventRow[]>,

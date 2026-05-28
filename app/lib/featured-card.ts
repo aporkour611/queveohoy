@@ -93,10 +93,16 @@ export function getSpotlightCardModel(
   const date = event.date ?? "";
   const dateLabel = date ? formatDisplayDateLabel(date, timeZone) : "";
   const time = eventDisplayTime(event);
-  const channelList =
-    sport === "ufc" || sport === "series" || sport === "cine" || sport === "tv"
-      ? []
-      : resolveChannelsForEvent(event);
+  const channelList = (() => {
+    if (sport === "ufc" || sport === "series" || sport === "cine") return [];
+    if (sport === "tv") {
+      const mediaPlatform = resolveEventStreamingPlatform(event);
+      return mediaPlatform
+        ? [mediaPlatform.name]
+        : resolveChannelsForEvent(event);
+    }
+    return resolveChannelsForEvent(event);
+  })();
   const channels = channelList.join(" · ");
 
   if (sport === "ufc") {

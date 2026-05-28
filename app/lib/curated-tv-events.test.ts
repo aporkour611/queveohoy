@@ -21,5 +21,29 @@ describe("mergeCuratedSpanishTvEvents", () => {
     expect(maskSinger?.date).toBe("2026-05-27");
     expect(maskSinger?.time).toBe("23:00");
     expect(maskSinger?.platform).toContain("Antena 3");
+    expect(maskSinger?.platform).toContain("ATRESPLAYER TV");
+  });
+
+  it("prioriza plataforma curada sobre TMDB para Mask Singer", () => {
+    const events = mergeCuratedSpanishTvEvents(
+      [
+        {
+          id: 99,
+          external_id: "tmdb_tv_reality_1_2026-05-27_s1e1",
+          title: "Mask Singer",
+          date: "2026-05-27",
+          time: "22:00",
+          sport: "tv",
+          competition: "Reality",
+          platform: "Netflix",
+          source: "tmdb",
+        },
+      ],
+      "2026-05-27",
+      7
+    );
+    const maskSinger = events.find((event) => /mask singer/i.test(event.title ?? ""));
+
+    expect(maskSinger?.platform).toBe("Antena 3 · ATRESPLAYER TV");
   });
 });
