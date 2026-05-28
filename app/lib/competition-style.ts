@@ -4,7 +4,7 @@ import { isChampionsFinal } from "./event-card-stamp";
 export function competitionMatchClass(
   competition?: string | null,
   sport?: string | null,
-  event?: Pick<EventRow, "sport" | "competition" | "title" | "home_team" | "away_team"> | null
+  event?: EventRow | null
 ): string {
   if (sport === "formula1" || sport === "motos") return "fh-match_motor fh-match-solo";
   if (sport === "ciclismo") return "fh-match_ciclismo fh-match-solo";
