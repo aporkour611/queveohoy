@@ -5,7 +5,7 @@ import { FeedControlsShell } from "../components/FeedControlsShell";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
 import { HomeFeedGate } from "../components/HomeFeedGate";
-import { FEED_DAY_COUNT } from "../lib/events-feed";
+import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { HomeJsonLd } from "../components/HomeJsonLd";
 import { HomeLcpPreload } from "../components/HomeLcpPreload";
@@ -82,8 +82,8 @@ export default async function Page() {
   const { events, error, weekEvents } = await loadHomePageData();
   const ssrEvents = trimHomeSsrEvents(events);
   const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
-  const initialDay = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0];
-  const displayDays = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT);
+  const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
+  const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
 
   return (
     <>
@@ -101,7 +101,7 @@ export default async function Page() {
               </FeedErrorBoundary>
 
               <div className="qvh-home-feed-slot">
-                <FeedControlsShell days={displayDays} />
+                <FeedControlsShell days={shellDays} />
                 {initialDay ? (
                   <HomeFeedDayHeader
                     date={initialDay.date}

@@ -740,6 +740,10 @@ html {
   display: none !important;
 }
 
+#home-feed-day-ssr[hidden] {
+  display: none !important;
+}
+
 .fh-home-day-header-ssr .fh-matchday-header {
   margin-bottom: 0.5rem;
 }

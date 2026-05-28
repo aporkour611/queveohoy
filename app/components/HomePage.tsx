@@ -58,16 +58,11 @@ import {
 } from "../lib/upcoming-events";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 
-function setSsrTodayShellVisible(visible: boolean) {
+function setSsrDayHeaderVisible(visible: boolean) {
   const header = document.getElementById("home-day-header-ssr");
-  const feed = document.getElementById("home-feed-day-ssr");
-  if (header) {
-    if (visible) header.removeAttribute("hidden");
-    else header.setAttribute("hidden", "");
-  }
-  if (feed && !visible) {
-    feed.setAttribute("hidden", "");
-  }
+  if (!header) return;
+  if (visible) header.removeAttribute("hidden");
+  else header.setAttribute("hidden", "");
 }
 
 type Props = {
@@ -330,9 +325,7 @@ export function HomeFeed({
   }, []);
 
   const dayWindow =
-    weekView || hasFullWeek || fullWeekReady
-      ? FEED_DAY_COUNT
-      : HOME_SSR_DAY_COUNT;
+    weekView || hasFullWeek ? FEED_DAY_COUNT : HOME_SSR_DAY_COUNT;
 
   const feedEvents = useMemo(
     () => mergeFeedEvents(initialDestacadosEvents, events),
@@ -415,8 +408,6 @@ export function HomeFeed({
     isFeaturedMode &&
     activeDayMeta?.date === serverDayHeaderDate;
 
-  const useStaticDayFeed = useSsrDayHeader && hasInitialData;
-
   const lockScrollSpy = useCallback((ms = 900) => {
     scrollLockRef.current = true;
     if (scrollLockTimerRef.current !== null) {
@@ -475,22 +466,12 @@ export function HomeFeed({
   const showInitialLoading = loading && events.length === 0;
 
   useLayoutEffect(() => {
-    setSsrTodayShellVisible(useSsrDayHeader && !weekView);
+    document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
+  }, []);
+
+  useLayoutEffect(() => {
+    setSsrDayHeaderVisible(useSsrDayHeader && !weekView);
   }, [useSsrDayHeader, weekView]);
-
-  useEffect(() => {
-    const feed = document.getElementById("home-feed-day-ssr");
-    if (!feed) return;
-
-    if (useStaticDayFeed) {
-      feed.hidden = false;
-      return;
-    }
-
-    const showClientFeed =
-      !showInitialLoading && events.length > 0 && !weekView;
-    feed.hidden = showClientFeed;
-  }, [useStaticDayFeed, showInitialLoading, events.length, weekView]);
 
   const goToDay = useCallback(
     (index: number) => {
@@ -597,7 +578,7 @@ export function HomeFeed({
   }, [showInitialLoading, displayDays, weekView, invalidateScrollAnchorOffset]);
 
   const openWeekView = useCallback(() => {
-    setSsrTodayShellVisible(false);
+    setSsrDayHeaderVisible(false);
     pinScrollForViewToggle();
     startTransition(() => {
       setWeekView(true);
@@ -615,7 +596,7 @@ export function HomeFeed({
 
   useLayoutEffect(() => {
     if (!weekView && useSsrDayHeader) {
-      setSsrTodayShellVisible(true);
+      setSsrDayHeaderVisible(true);
     }
   }, [weekView, useSsrDayHeader]);
 
@@ -702,50 +683,48 @@ export function HomeFeed({
                     </div>
                   ) : activeDayMeta ? (
                     <div className="fh-feed-pane fh-feed-pane-today">
-                      {!useStaticDayFeed ? (
-                        <section
-                          id={`day-${activeDayMeta.date}`}
-                          className="fh-day-section fh-matchday"
-                          aria-labelledby={`day-title-${activeDayMeta.date}`}
-                        >
-                          {useSsrDayHeader ? null : (
-                            <h2
-                              id={`day-title-${activeDayMeta.date}`}
-                              className="fh-matchday-header"
-                            >
-                              {activeDayMeta.title}
-                              {isFeaturedMode && activeDay === 0 ? (
-                                <span className="fh-featured-badge">Destacados</span>
-                              ) : null}
-                            </h2>
-                          )}
+                      <section
+                        id={`day-${activeDayMeta.date}`}
+                        className="fh-day-section fh-matchday"
+                        aria-labelledby={`day-title-${activeDayMeta.date}`}
+                      >
+                        {useSsrDayHeader ? null : (
+                          <h2
+                            id={`day-title-${activeDayMeta.date}`}
+                            className="fh-matchday-header"
+                          >
+                            {activeDayMeta.title}
+                            {isFeaturedMode && activeDay === 0 ? (
+                              <span className="fh-featured-badge">Destacados</span>
+                            ) : null}
+                          </h2>
+                        )}
 
-                          <EventDaySections
-                            events={activeHomeDay.todayEvents}
-                            priority="high"
-                            emptyMessage={
-                              isFeaturedMode
-                                ? "Sin eventos este día."
-                                : "Sin eventos para estos filtros."
-                            }
-                          />
-                          {activeHomeDay.upcomingMessage ? (
-                            <p className="fh-upcoming-notice">{activeHomeDay.upcomingMessage}</p>
-                          ) : null}
-                          {activeHomeDay.upcomingEvents.length > 0 ? (
-                            <LazyMount minHeight={240} rootMargin="400px 0px">
-                              <EventDaySections events={activeHomeDay.upcomingEvents} />
-                            </LazyMount>
-                          ) : null}
-                          {hiddenOnActiveDay > 0 ? (
-                            <p className="fh-home-more-link">
-                              <Link href={partidosHoyDatePath(activeDayMeta.date)}>
-                                Ver todos los eventos ({hiddenOnActiveDay} más) →
-                              </Link>
-                            </p>
-                          ) : null}
-                        </section>
-                      ) : null}
+                        <EventDaySections
+                          events={activeHomeDay.todayEvents}
+                          priority="high"
+                          emptyMessage={
+                            isFeaturedMode
+                              ? "Sin eventos este día."
+                              : "Sin eventos para estos filtros."
+                          }
+                        />
+                        {activeHomeDay.upcomingMessage ? (
+                          <p className="fh-upcoming-notice">{activeHomeDay.upcomingMessage}</p>
+                        ) : null}
+                        {activeHomeDay.upcomingEvents.length > 0 ? (
+                          <LazyMount minHeight={240} rootMargin="400px 0px">
+                            <EventDaySections events={activeHomeDay.upcomingEvents} />
+                          </LazyMount>
+                        ) : null}
+                        {hiddenOnActiveDay > 0 ? (
+                          <p className="fh-home-more-link">
+                            <Link href={partidosHoyDatePath(activeDayMeta.date)}>
+                              Ver todos los eventos ({hiddenOnActiveDay} más) →
+                            </Link>
+                          </p>
+                        ) : null}
+                      </section>
                     </div>
                   ) : null}
                 </div>
