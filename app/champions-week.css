@@ -1,5 +1,92 @@
 /* ── Semana de Champions League (inspirado en identidad UCL, sin logos oficiales) ── */
 
+@keyframes qvh-cl-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+@keyframes qvh-cl-badge-glint {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(201, 162, 39, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 14px rgba(201, 162, 39, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+}
+
+@keyframes qvh-cl-hero-sheen {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+  45%,
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+@keyframes qvh-cl-emblem-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(201, 162, 39, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(201, 162, 39, 0.32);
+  }
+}
+
+@keyframes qvh-cl-trophy-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes qvh-cl-shell-border-pulse {
+  0%,
+  100% {
+    border-color: rgba(120, 140, 255, 0.18);
+    box-shadow:
+      0 8px 20px rgba(8, 6, 40, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  50% {
+    border-color: rgba(201, 162, 39, 0.42);
+    box-shadow:
+      0 12px 28px rgba(24, 10, 80, 0.38),
+      0 0 24px rgba(201, 162, 39, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .qvh-cl-week-shell {
+    animation: qvh-cl-shell-border-pulse 4.5s ease-in-out infinite;
+  }
+
+  .qvh-cl-week-trophy {
+    animation: qvh-cl-trophy-float 3.2s ease-in-out infinite;
+  }
+}
+
 .qvh-cl-week-shell {
   width: 100%;
   max-width: 100%;
@@ -25,6 +112,22 @@
   );
 }
 
+.qvh-cl-week-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 58%
+  );
+  transform: translateX(-120%);
+  animation: qvh-cl-hero-sheen 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
 .qvh-cl-week-hero-bg {
   position: absolute;
   inset: 0;
@@ -43,6 +146,8 @@
     rgba(120, 130, 255, 0.2),
     transparent 68%
   );
+  animation: qvh-cl-glow-breathe 7s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .qvh-cl-week-hero-inner {
@@ -66,6 +171,7 @@
   background: radial-gradient(circle at 50% 30%, rgba(201, 162, 39, 0.22), rgba(10, 6, 72, 0.6));
   border: 1px solid rgba(201, 162, 39, 0.28);
   box-shadow: 0 0 10px rgba(201, 162, 39, 0.15);
+  animation: qvh-cl-emblem-pulse 4.5s ease-in-out infinite;
 }
 
 .qvh-cl-week-trophy {
@@ -124,6 +230,7 @@
   color: #1a1028;
   background: linear-gradient(135deg, #f5e6a8 0%, #c9a227 45%, #e8d48a 100%);
   box-shadow: 0 0 8px rgba(201, 162, 39, 0.25);
+  animation: qvh-cl-badge-glint 3.5s ease-in-out infinite;
 }
 
 .qvh-cl-week-hero-detail {
@@ -287,6 +394,17 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qvh-cl-week-shell,
+  .qvh-cl-week-hero-glow,
+  .qvh-cl-week-emblem,
+  .qvh-cl-week-stage-badge,
+  .qvh-cl-week-hero::after,
+  .qvh-cl-week-trophy {
+    animation: none;
+  }
 }
 
 @media (min-width: 640px) {

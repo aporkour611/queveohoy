@@ -55,9 +55,6 @@ export const WeekDaySection = memo(function WeekDaySection({
     >
       <h2 id={`day-week-title-${day.date}`} className="fh-matchday-header">
         {day.title}
-        {isFeaturedMode && dayIndex === activeDay ? (
-          <span className="fh-featured-badge">Destacados</span>
-        ) : null}
       </h2>
 
       <div ref={ref}>

@@ -10,19 +10,21 @@ import { SEO_GUIDE_SLUGS } from "./seo-guides";
 import { SEO_HUB_SLUGS } from "./seo-hubs";
 import { siteUrl } from "./seo";
 
-export function getIndexNowKey(): string {
+export function getIndexNowKey(): string | null {
   const key = process.env.INDEXNOW_KEY?.trim();
   if (key) return key;
 
   if (process.env.NODE_ENV === "production") {
-    throw new Error("Falta INDEXNOW_KEY en producción.");
+    return null;
   }
 
   return "dev-indexnow-key";
 }
 
-export function getIndexNowKeyLocation(): string {
-  return `${siteUrl}/${getIndexNowKey()}.txt`;
+export function getIndexNowKeyLocation(): string | null {
+  const key = getIndexNowKey();
+  if (!key) return null;
+  return `${siteUrl}/${key}.txt`;
 }
 
 export async function collectIndexNowUrls(): Promise<string[]> {
@@ -62,6 +64,10 @@ export async function pingIndexNow(
   const list = urlList ?? (await collectIndexNowUrls());
   const key = getIndexNowKey();
 
+  if (!key) {
+    return { ok: false, skipped: true, error: "INDEXNOW_KEY missing" };
+  }
+
   if (!list.length) {
     return { ok: false, skipped: true, error: "empty url list" };
   }
@@ -73,6 +79,11 @@ export async function pingIndexNow(
     return { ok: false, error: "invalid siteUrl" };
   }
 
+  const keyLocation = getIndexNowKeyLocation();
+  if (!keyLocation) {
+    return { ok: false, skipped: true, error: "INDEXNOW_KEY missing" };
+  }
+
   try {
     const res = await fetch("https://api.indexnow.org/indexnow", {
       method: "POST",
@@ -80,7 +91,7 @@ export async function pingIndexNow(
       body: JSON.stringify({
         host,
         key,
-        keyLocation: getIndexNowKeyLocation(),
+        keyLocation,
         urlList: list.slice(0, 10_000),
       }),
       signal: AbortSignal.timeout(12_000),

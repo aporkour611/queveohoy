@@ -53,6 +53,10 @@ export function resolveEventPosterUrl(
 
   if (flagship?.localPosterPath) return flagship.localPosterPath;
 
+  if (event.sport === "series" && /mobland/i.test(`${event.title ?? ""} ${event.competition ?? ""}`)) {
+    return "/posters/mobland-s2.png";
+  }
+
   return null;
 }
 

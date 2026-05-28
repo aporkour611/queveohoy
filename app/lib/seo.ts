@@ -94,6 +94,12 @@ export const rootMetadata: Metadata = {
     languages: {
       "es-ES": siteUrl,
     },
+    types: {
+      "application/rss+xml": `${siteUrl}/feed.xml`,
+    },
+  },
+  verification: {
+    google: "googleedd0ce10b96abb56",
   },
   openGraph: {
     ...defaultOpenGraph,

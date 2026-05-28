@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import { resolveFeedSport } from "./anime-classify";
 import { matchesSpanishTvFlagship } from "./spanish-tv-curated";
 
 export type TvShowCategory = "reality" | "concurso" | "directo";
@@ -78,7 +79,7 @@ export function eventMatchesSportFilter(
   event: EventRow,
   filterId: string
 ): boolean {
-  const sport = event.sport ?? "";
+  const sport = resolveFeedSport(event);
   if (filterId === sport) return true;
   if (filterId === "tv" && sport === "tv") return true;
   if (sport !== "tv") return false;

@@ -63,6 +63,7 @@ type SpotlightCardContent = {
   showUfcDuel?: boolean;
   showTeamDuel?: boolean;
   showRolandGarrosDuel?: boolean;
+  showTennisDuel?: boolean;
   homeCrest?: string | null;
   awayCrest?: string | null;
   homeCrestUrls?: string[];
@@ -91,6 +92,7 @@ function SpotlightCardContent({
   showUfcDuel = false,
   showTeamDuel = false,
   showRolandGarrosDuel = false,
+  showTennisDuel = false,
   homeCrest,
   awayCrest,
   homeCrestUrls = [],
@@ -104,16 +106,22 @@ function SpotlightCardContent({
     showUfcDuel || Boolean(ufcF1Url || ufcF2Url || (ufcF1Name && ufcF2Name));
   const teamDuelActive =
     showTeamDuel || Boolean(homeCrest || awayCrest || (homeName && awayName));
-  const rgDuelActive =
-    showRolandGarrosDuel || Boolean(homeName && awayName && visualClass.includes("rg"));
+  const tennisDuelActive =
+    showTennisDuel ||
+    showRolandGarrosDuel ||
+    Boolean(
+      homeName &&
+        awayName &&
+        (visualClass.includes("tenis") || visualClass.includes("rg"))
+    );
 
   return (
     <>
       <div
         className={`fh-media-spotlight-visual ${visualClass}${
           ufcDuelActive ? " fh-media-spotlight-visual-ufc-duel" : ""
-        }${teamDuelActive ? " fh-media-spotlight-visual-team-duel" : ""}${
-          rgDuelActive ? " fh-media-spotlight-visual-rg-duel" : ""
+        }${teamDuelActive && !tennisDuelActive ? " fh-media-spotlight-visual-team-duel" : ""}${
+          tennisDuelActive ? " fh-media-spotlight-visual-rg-duel" : ""
         }${
           stampKind ? " fh-media-spotlight-visual-stamped" : ""
         }`}
@@ -127,7 +135,7 @@ function SpotlightCardContent({
             className="fh-media-spotlight-banner fh-media-spotlight-game-art"
           />
         ) : null}
-        {posterUrl && !ufcDuelActive && !teamDuelActive && !rgDuelActive ? (
+        {posterUrl && !ufcDuelActive && !teamDuelActive && !tennisDuelActive ? (
           <RemotePoster
             src={posterUrl}
             className="fh-media-spotlight-banner"
@@ -142,7 +150,7 @@ function SpotlightCardContent({
             f2Name={ufcF2Name}
           />
         ) : null}
-        {teamDuelActive && !ufcDuelActive && !rgDuelActive ? (
+        {teamDuelActive && !ufcDuelActive && !tennisDuelActive ? (
           <div className="fh-media-spotlight-duel" aria-hidden>
             <div className="fh-media-spotlight-duel-team">
               <TeamCrest
@@ -165,7 +173,7 @@ function SpotlightCardContent({
             </div>
           </div>
         ) : null}
-        {rgDuelActive && !ufcDuelActive ? (
+        {tennisDuelActive && !ufcDuelActive ? (
           <RolandGarrosDuelVisual
             homeName={homeName}
             awayName={awayName}
@@ -417,30 +425,35 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   }
 
   if (isUfc) {
-    const ufcBadgeLabel =
-      mediaTitle.startsWith("UFC") ? mediaTitle : ufcKindLabel(ufcKind ?? "other");
+    const card = getSpotlightCardModel(event, MADRID_TZ);
+    const ufcBadgeLabel = card.badge;
     const { f1, f2 } = parseUfcFighterImages(event.source);
     const matchup = parseUfcMainEventFighters(event.competition, event.title);
     const f1Name = event.home_team || matchup?.n1 || null;
     const f2Name = event.away_team || matchup?.n2 || null;
     const showUfcDuel = Boolean(f1 || f2 || (f1Name && f2Name));
+    const visualClass = (card.visualClass ?? "qvh-spotlight-visual-ufc").replace(
+      "qvh-spotlight-visual-",
+      "fh-media-spotlight-visual-"
+    );
 
     return cardShell(
       <SpotlightCardContent
-        visualClass="fh-media-spotlight-visual-ufc"
+        visualClass={visualClass}
         badgeClass="fh-media-spotlight-badge-ufc"
         badgeLabel={ufcBadgeLabel}
-        title={mediaTitle}
-        subtitle={mediaSubtitle}
-        posterUrl={showUfcDuel ? null : posterUrl}
+        title={card.headline}
+        subtitle={card.meta}
+        posterUrl={!showUfcDuel ? card.coverImage?.url ?? null : null}
+        posterObjectPosition={card.coverImage?.objectPosition}
         ufcF1Url={f1}
         ufcF2Url={f2}
         ufcF1Name={f1Name}
         ufcF2Name={f2Name}
         showUfcDuel={showUfcDuel}
-        dateLabel={dateLabel}
-        time={time}
-        channels={channels}
+        dateLabel={card.dateLabel}
+        time={card.time}
+        channels={card.channelList ?? channels}
         stampKind={stamp}
       />,
       "fh-match-media-spotlight"
@@ -448,6 +461,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   }
 
   if (event.sport === "tenis" && isRolandGarrosEvent(event)) {
+    const card = getSpotlightCardModel(event, MADRID_TZ);
     const rgKnockout = isRolandGarrosKnockout(event);
     const rgTitle = isTeamVersusEvent(event)
       ? `${home} vs ${away}`
@@ -464,6 +478,8 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         badgeLabel={compDisplay}
         title={rgTitle}
         subtitle={compFull.includes("·") ? compFull : null}
+        posterUrl={card.coverImage?.url ?? null}
+        posterObjectPosition={card.coverImage?.objectPosition}
         dateLabel={dateLabel}
         time={time}
         channels={channels}
@@ -473,6 +489,92 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         stampKind={stamp}
       />,
       "fh-match-media-spotlight fh-match_rolandgarros"
+    );
+  }
+
+  if (event.sport === "basket" && isTeamVersusEvent(event)) {
+    const card = getSpotlightCardModel(event, MADRID_TZ);
+    const visualClass = (card.visualClass ?? "qvh-spotlight-visual-basket").replace(
+      "qvh-spotlight-visual-",
+      "fh-media-spotlight-visual-"
+    );
+    const basketTitle = `${home} vs ${away}`;
+
+    return cardShell(
+      <SpotlightCardContent
+        visualClass={visualClass}
+        badgeClass="fh-media-spotlight-badge-basket"
+        badgeLabel={compDisplay}
+        title={basketTitle}
+        subtitle={compFull.includes("·") ? compFull.split(" · ").slice(1).join(" · ") : null}
+        gameArtUrl={card.coverImage?.local ? card.coverImage.url : null}
+        posterUrl={!card.coverImage?.local ? card.coverImage?.url ?? null : null}
+        posterObjectPosition={card.coverImage?.objectPosition}
+        dateLabel={dateLabel}
+        time={time}
+        channels={channels}
+        showTeamDuel
+        homeName={home || event.home_team}
+        awayName={away || event.away_team}
+        stampKind={stamp}
+      />,
+      "fh-match-media-spotlight fh-match_basket"
+    );
+  }
+
+  if (
+    event.sport === "futbol" ||
+    event.sport === "formula1" ||
+    event.sport === "motos" ||
+    event.sport === "ciclismo" ||
+    event.sport === "tenis"
+  ) {
+    const card = getSpotlightCardModel(event, MADRID_TZ);
+    const visualClass = (card.visualClass ?? "qvh-spotlight-visual-default").replace(
+      "qvh-spotlight-visual-",
+      "fh-media-spotlight-visual-"
+    );
+    const ids =
+      event.sport === "futbol"
+        ? parseFootballTeamIds(
+            event.external_id,
+            event.source,
+            event.home_team,
+            event.away_team
+          )
+        : null;
+
+    return cardShell(
+      <SpotlightCardContent
+        visualClass={visualClass}
+        badgeClass={
+          event.sport === "futbol" && /champions/i.test(compFull)
+            ? "fh-media-spotlight-badge-champions"
+            : event.sport === "futbol"
+              ? "fh-media-spotlight-badge-futbol"
+              : "fh-media-spotlight-badge-default"
+        }
+        badgeLabel={card.badge}
+        title={card.headline}
+        subtitle={card.meta !== card.badge ? card.meta : null}
+        gameArtUrl={card.coverImage?.local ? card.coverImage.url : null}
+        posterUrl={!card.coverImage?.local ? card.coverImage?.url ?? null : null}
+        posterObjectPosition={card.coverImage?.objectPosition}
+        dateLabel={card.dateLabel}
+        time={card.time}
+        channels={card.channelList ?? channels}
+        showTeamDuel={Boolean(ids || (home && away && event.sport === "futbol"))}
+        showTennisDuel={event.sport === "tenis" && Boolean(card.showTennisDuel)}
+        showRolandGarrosDuel={event.sport === "tenis" && Boolean(card.showRolandGarrosDuel)}
+        homeCrest={ids ? teamCrestUrl(ids.homeId) : undefined}
+        awayCrest={ids ? teamCrestUrl(ids.awayId) : undefined}
+        homeCrestUrls={homeCrestUrls}
+        awayCrestUrls={awayCrestUrls}
+        homeName={home || event.home_team}
+        awayName={away || event.away_team}
+        stampKind={stamp}
+      />,
+      `fh-match-media-spotlight fh-match_${event.sport}`
     );
   }
 

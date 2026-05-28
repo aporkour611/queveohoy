@@ -18,9 +18,8 @@ export function competitionMatchClass(
   if (event && sport === "tenis" && isRolandGarrosEvent(event)) {
     return "fh-match_rolandgarros fh-match-media";
   }
-  if (["tenis", "basket", "ciclismo"].includes(sport ?? "")) {
-    return "fh-match_default";
-  }
+  if (sport === "basket") return "fh-match_basket";
+  if (sport === "tenis") return "fh-match_default";
   if (sport && sport !== "futbol") return "fh-match_esports";
 
   const c = (competition ?? "").toLowerCase();

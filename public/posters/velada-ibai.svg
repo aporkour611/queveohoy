@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" role="img" aria-label="La Velada">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" role="img" aria-label="La Velada VI">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#9146ff"/>
@@ -12,8 +12,9 @@
   </defs>
   <rect width="400" height="225" fill="url(#bg)"/>
   <rect width="400" height="225" fill="url(#glow)"/>
-  <rect x="148" y="62" width="104" height="68" rx="8" fill="rgba(0,0,0,0.3)"/><path d="M168 96 L188 76 L188 116 Z" fill="#fff"/><rect x="198" y="76" width="36" height="8" rx="2" fill="#fff" opacity="0.8"/><rect x="198" y="92" width="28" height="8" rx="2" fill="#fff" opacity="0.55"/>
+  <rect x="118" y="48" width="164" height="92" rx="10" fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/><line x1="200" y1="48" x2="200" y2="140" stroke="rgba(255,255,255,0.12)" stroke-width="2"/><circle cx="168" cy="92" r="22" fill="rgba(255,255,255,0.08)"/><circle cx="232" cy="92" r="22" fill="rgba(255,255,255,0.08)"/><path d="M148 118 Q200 142 252 118" stroke="#ffd166" stroke-width="3" fill="none"/>
+  <rect x="20" y="148" width="52" height="14" rx="7" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)"/><text x="46" y="158" text-anchor="middle" fill="rgba(255,255,255,0.58)" font-family="Arial Narrow, Arial, sans-serif" font-size="7" font-weight="700" letter-spacing="0.8">TWITCH</text><rect x="77" y="148" width="52" height="14" rx="7" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)"/><text x="103" y="158" text-anchor="middle" fill="rgba(255,255,255,0.58)" font-family="Arial Narrow, Arial, sans-serif" font-size="7" font-weight="700" letter-spacing="0.8">KICK</text><rect x="134" y="148" width="74" height="14" rx="7" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)"/><text x="171" y="158" text-anchor="middle" fill="rgba(255,255,255,0.58)" font-family="Arial Narrow, Arial, sans-serif" font-size="7" font-weight="700" letter-spacing="0.8">EN DIRECTO</text>
   <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
-  <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">La Velada</text>
-  <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">TWITCH</text>
+  <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">La Velada VI</text>
+  <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">EN DIRECTO · STREAMING</text>
 </svg>

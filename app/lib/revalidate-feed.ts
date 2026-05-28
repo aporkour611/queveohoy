@@ -1,5 +1,9 @@
 import { revalidatePath, revalidateTag } from "next/cache";
-import { fetchFeedEvents, fetchHomeFeedEvents } from "./events-feed-server";
+import {
+  fetchDestacadosFeedEvents,
+  fetchFeedEvents,
+  fetchHomeFeedEvents,
+} from "./events-feed-server";
 
 /** Tras el cron: invalida cache y precarga el feed para que la home no espere a Supabase. */
 export async function warmFeedCacheAfterCron(): Promise<{
@@ -8,8 +12,13 @@ export async function warmFeedCacheAfterCron(): Promise<{
 }> {
   try {
     revalidateTag("feed", { expire: 0 });
-    await Promise.all([fetchHomeFeedEvents(), fetchFeedEvents()]);
+    await Promise.all([
+      fetchHomeFeedEvents(),
+      fetchFeedEvents(),
+      fetchDestacadosFeedEvents(),
+    ]);
     revalidatePath("/");
+    revalidatePath("/sitemap.xml");
     revalidatePath("/api/events");
     revalidatePath("/api/home-feed");
     return { ok: true };

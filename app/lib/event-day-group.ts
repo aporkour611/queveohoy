@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import { resolveFeedSport } from "./anime-classify";
 import { sportLabel } from "./filter-config";
 import { getTvShowCategory } from "./tv-show-category";
 
@@ -27,15 +28,17 @@ export function groupEventsForDisplay(events: EventRow[]): EventDayGroups {
   const tvDirecto: EventRow[] = [];
 
   for (const event of events) {
-    if (event.sport === "futbol") {
+    const sport = resolveFeedSport(event);
+
+    if (sport === "futbol") {
       const key = (event.competition || "Fútbol").split(" · ")[0];
       if (!football[key]) football[key] = [];
       football[key].push(event);
-    } else if (event.sport === "cine") {
+    } else if (sport === "cine") {
       cine.push(event);
-    } else if (event.sport === "series") {
+    } else if (sport === "series") {
       series.push(event);
-    } else if (event.sport === "anime") {
+    } else if (sport === "anime") {
       anime.push(event);
     } else if (event.sport === "tv") {
       const category = getTvShowCategory(event);

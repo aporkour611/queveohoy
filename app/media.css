@@ -219,6 +219,10 @@
   width: 168px;
 }
 
+.qvh-media-card-col-cine {
+  width: 182px;
+}
+
 .qvh-media-card-col-expanded {
   width: min(320px, 88vw);
 }
@@ -499,6 +503,10 @@
     width: 178px;
   }
 
+  .qvh-media-card-col-cine {
+    width: 208px;
+  }
+
   .qvh-media-section-title {
     font-size: 1.85rem;
   }
@@ -732,6 +740,99 @@
     rgba(0, 0, 0, 0.35) 55%,
     rgba(0, 0, 0, 0.82) 100%
   );
+}
+
+.fh-media-spotlight-visual-basket {
+  background:
+    radial-gradient(circle at 50% 110%, rgba(234, 88, 12, 0.28), transparent 52%),
+    linear-gradient(
+      180deg,
+      #1a1208 0%,
+      #2a1808 38%,
+      #120a04 72%,
+      #080604 100%
+    );
+}
+
+.fh-media-spotlight-visual-basket::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(180, 120, 60, 0.06) 0 2px,
+      transparent 2px 18px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(180, 120, 60, 0.04) 0 2px,
+      transparent 2px 18px
+    );
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.fh-media-spotlight-visual-basket-nba {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(29, 66, 138, 0.35), transparent 55%),
+    radial-gradient(circle at 50% 110%, rgba(234, 88, 12, 0.32), transparent 52%),
+    linear-gradient(180deg, #0a1028 0%, #1a1208 45%, #080604 100%);
+}
+
+.fh-media-spotlight-visual-tenis {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(132, 204, 22, 0.28), transparent 55%),
+    linear-gradient(180deg, #142810 0%, #060a04 100%);
+}
+
+.fh-media-spotlight-visual-ciclismo {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.28), transparent 55%),
+    linear-gradient(180deg, #0a1818 0%, #040808 100%);
+}
+
+.fh-media-spotlight-visual-giro {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 107, 157, 0.32), transparent 55%),
+    linear-gradient(180deg, #2a1020 0%, #0a0608 100%);
+}
+
+.fh-media-spotlight-visual-tdf,
+.fh-media-spotlight-visual-vuelta,
+.fh-media-spotlight-visual-mundial,
+.fh-media-spotlight-visual-copa-rey,
+.fh-media-spotlight-visual-ufc-329,
+.fh-media-spotlight-visual-esports {
+  background: #050505;
+}
+
+.fh-media-spotlight-badge-futbol {
+  background: rgba(93, 95, 239, 0.82);
+  border-color: rgba(160, 162, 255, 0.35);
+}
+
+.fh-media-spotlight-badge-champions {
+  background: rgba(26, 16, 96, 0.92);
+  border-color: rgba(201, 162, 39, 0.35);
+}
+
+.fh-media-spotlight-badge-default {
+  background: rgba(0, 0, 0, 0.55);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.fh-media-spotlight-badge-basket {
+  background: linear-gradient(135deg, #fb923c 0%, #ea580c 55%, #c2410c 100%);
+  color: #fff;
+  border-color: rgba(251, 146, 60, 0.45);
+}
+
+.fh-match_basket.fh-match-media-spotlight {
+  border-color: rgba(234, 88, 12, 0.35);
+  box-shadow:
+    0 10px 28px rgba(234, 88, 12, 0.14),
+    0 0 0 1px rgba(234, 88, 12, 0.12);
 }
 
 .fh-ufc-duel {

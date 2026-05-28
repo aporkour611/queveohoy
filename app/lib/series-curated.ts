@@ -46,6 +46,19 @@ export const CURATED_SERIES_EPISODES: CuratedSeriesEpisode[] = [
     posterPath: "/6Sdm5XwdCnspdEF8fTFx6UJrl7o.jpg",
     priority: 96,
   },
+  {
+    tmdbId: 250307,
+    title: "MobLand",
+    patterns: [/^mobland\b/i],
+    season: 2,
+    episode: 1,
+    episodeName: "Temporada 2",
+    airDate: "2026-06-15",
+    airTime: "09:00",
+    platform: "Paramount+",
+    competition: "Estreno · Temporada 2",
+    priority: 88,
+  },
 ];
 
 export function curatedSeriesByExternalId(

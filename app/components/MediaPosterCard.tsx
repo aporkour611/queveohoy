@@ -21,6 +21,8 @@ type Props = {
   event: EventRow;
   index?: number;
   compact?: boolean;
+  /** Tarjetas de cine: algo más grandes que series/anime, pero más compactas que antes. */
+  cine?: boolean;
 };
 
 function MediaDetailsPanel({ event }: { event: EventRow }) {
@@ -42,6 +44,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   event,
   index = 0,
   compact = false,
+  cine = false,
 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const sport =
@@ -103,7 +106,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
     <div
       className={`qvh-media-card-col${expanded ? " qvh-media-card-col-expanded" : ""}${
         compact ? " qvh-media-card-col-compact" : ""
-      }`}
+      }${cine ? " qvh-media-card-col-cine" : ""}`}
     >
       <div
         className={`qvh-media-card qvh-media-card-tilt${expanded ? " qvh-media-card-expanded" : ""}`}

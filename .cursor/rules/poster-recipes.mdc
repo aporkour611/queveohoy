@@ -1,0 +1,51 @@
+---
+description: Registro de fórmulas y reglas para portadas editoriales premium (400×600)
+globs: app/lib/poster-recipes.*,app/lib/flagship-covers.ts,scripts/generate-sport-posters.mjs,public/deportes/**,public/flagship/**,public/ciclismo/**
+alwaysApply: false
+---
+
+# Portadas editoriales — poster-recipes
+
+Fuente única: `app/lib/poster-recipes.json` (tokens visuales) + `app/lib/poster-recipes.ts` (reglas de matching).
+
+## Fórmula visual (spotlightPortrait 400×600)
+
+Capas en orden:
+1. **sky** — `linearGradient` vertical (identidad del deporte/evento)
+2. **glow** — `radialGradient` en zona superior
+3. **beam** — franja diagonal semitransparente
+4. **mark** — icono SVG hero (sin logos de terceros)
+5. **ground-curve** — curva oscura inferior
+6. **title-block** — título + subtítulo
+7. **sponsor-pills** — patrocinadores en texto (`Movistar · DAZN · …`)
+
+Generación: `npm run posters` lee `poster-recipes.json` vía `scripts/generate-sport-posters.mjs`.
+
+## Añadir un evento flagship nuevo
+
+1. Añadir receta en `poster-recipes.json` (`dir`, `tier`, `title`, `sky/glow/beam/mark`, `visualClass`, opcional `assetId`, `duel`).
+2. Añadir regla en `POSTER_MATCH_RULES` (`poster-recipes.ts`) con **prioridad alta** (≥85 flagship, ≥50 deporte genérico).
+3. Ejecutar `npm run posters` para generar PNG/SVG.
+4. Añadir PNG a `poster-assets.test.ts` si es asset requerido.
+
+## Reglas de matching (prioridad descendente)
+
+| Prioridad | Regla | Receta |
+|-----------|-------|--------|
+| 100 | UFC 329 / McGregor–Holloway | ufc-329 |
+| 95 | Mundial / World Cup 2026 | mundial |
+| 94–93 | Roland Garros (KO / general) | roland-garros-knockout / roland-garros |
+| 90–88 | Grand Tours (Giro, Tour, Vuelta) | giro-italia, tour-france, vuelta-espana |
+| 85 | Copa del Rey, MobLand | copa-rey, mobland-s2 |
+| 80 | Cualquier UFC PPV (`UFC \d+`, `kind:ppv`) | ufc-ppv |
+| 70 | NBA | baloncesto-nba |
+| 60 | F1, MotoGP | f1, motogp |
+| 50 | Deporte genérico | futbol, baloncesto, tenis, ciclismo |
+
+Runtime: `resolvePosterCover(event)` — primera regla que coincida gana.
+
+## No duplicar
+
+- No hardcodear URLs de portada en `featured-card.ts` ni `spotlight-art.ts`.
+- No duplicar arrays POSTERS en scripts; usar JSON compartido.
+- Duelos visuales (tenis/UFC): campo `duel` en receta + componentes existentes.

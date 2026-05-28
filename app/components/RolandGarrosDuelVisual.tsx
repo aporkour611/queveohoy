@@ -71,6 +71,9 @@ export function RolandGarrosDuelVisual({
         <FlagHalf code={homeCode} side="home" prefix={prefix} />
         <FlagHalf code={awayCode} side="away" prefix={prefix} />
         <div className={`${prefix}-flags-center`} />
+        <div className={`${prefix}-ball`} aria-hidden>
+          <span className={`${prefix}-ball-core`} />
+        </div>
       </div>
 
       <div className={`${prefix}-players`}>

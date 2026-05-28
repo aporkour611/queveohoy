@@ -1,0 +1,240 @@
+{
+  "formulas": {
+    "spotlightPortrait": {
+      "width": 400,
+      "height": 600,
+      "layout": "poster",
+      "objectPosition": "center top",
+      "layers": ["sky-gradient", "radial-glow", "diagonal-beam", "hero-mark", "ground-curve", "title-block", "sponsor-pills"]
+    },
+    "tvBanner": {
+      "width": 400,
+      "height": 225,
+      "layout": "poster",
+      "objectPosition": "center top",
+      "layers": ["linear-bg", "radial-glow", "hero-mark", "sponsor-pills", "title-block"]
+    }
+  },
+  "recipes": {
+    "futbol": {
+      "dir": "deportes",
+      "tier": "sport",
+      "title": "Fútbol",
+      "subtitle": "LaLiga · Champions · Copas",
+      "sponsors": "Movistar · DAZN · La 1",
+      "visualClass": "qvh-spotlight-visual-futbol",
+      "sky": "<stop offset=\"0%\" stop-color=\"#2a2460\"/><stop offset=\"55%\" stop-color=\"#1a1840\"/><stop offset=\"100%\" stop-color=\"#0a0818\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#5d5fef\" stop-opacity=\"0.42\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#7476ff\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<ellipse cx=\"200\" cy=\"250\" rx=\"120\" ry=\"78\" fill=\"none\" stroke=\"rgba(255,255,255,0.14)\" stroke-width=\"3\"/><circle cx=\"200\" cy=\"250\" r=\"46\" fill=\"none\" stroke=\"rgba(93,95,239,0.55)\" stroke-width=\"4\"/><line x1=\"200\" y1=\"204\" x2=\"200\" y2=\"296\" stroke=\"rgba(255,255,255,0.22)\" stroke-width=\"3\"/><line x1=\"154\" y1=\"250\" x2=\"246\" y2=\"250\" stroke=\"rgba(255,255,255,0.22)\" stroke-width=\"3\"/>"
+    },
+    "baloncesto": {
+      "dir": "deportes",
+      "tier": "sport",
+      "title": "Baloncesto",
+      "subtitle": "ACB · Euroliga",
+      "sponsors": "Movistar · DAZN · #0",
+      "visualClass": "qvh-spotlight-visual-basket",
+      "sky": "<stop offset=\"0%\" stop-color=\"#2a1808\"/><stop offset=\"100%\" stop-color=\"#080604\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#ea580c\" stop-opacity=\"0.38\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#fb923c\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<circle cx=\"200\" cy=\"248\" r=\"58\" fill=\"none\" stroke=\"#fb923c\" stroke-width=\"5\" opacity=\"0.85\"/><path d=\"M200 190 C170 220 170 276 200 306 C230 276 230 220 200 190Z\" fill=\"none\" stroke=\"rgba(255,255,255,0.18)\" stroke-width=\"2\"/><line x1=\"142\" y1=\"248\" x2=\"258\" y2=\"248\" stroke=\"rgba(255,255,255,0.12)\" stroke-width=\"2\"/>"
+    },
+    "baloncesto-nba": {
+      "dir": "deportes",
+      "tier": "sport",
+      "title": "NBA",
+      "subtitle": "Temporada regular · Playoffs",
+      "sponsors": "Movistar · DAZN · NBA League Pass",
+      "visualClass": "qvh-spotlight-visual-basket-nba",
+      "sky": "<stop offset=\"0%\" stop-color=\"#0a1028\"/><stop offset=\"55%\" stop-color=\"#1a1208\"/><stop offset=\"100%\" stop-color=\"#080604\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#1d428a\" stop-opacity=\"0.42\"/><stop offset=\"55%\" stop-color=\"#ea580c\" stop-opacity=\"0.28\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#3b82f6\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<rect x=\"128\" y=\"196\" width=\"144\" height=\"96\" rx=\"6\" fill=\"rgba(255,255,255,0.06)\" stroke=\"rgba(255,255,255,0.14)\"/><circle cx=\"200\" cy=\"244\" r=\"34\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"4\"/><text x=\"200\" y=\"252\" text-anchor=\"middle\" fill=\"#fff\" font-family=\"Arial Black, sans-serif\" font-size=\"22\" font-weight=\"900\">NBA</text>"
+    },
+    "tenis": {
+      "dir": "deportes",
+      "tier": "sport",
+      "title": "Tenis",
+      "subtitle": "ATP · WTA · Grand Slam",
+      "sponsors": "Movistar · DAZN · Eurosport",
+      "visualClass": "qvh-spotlight-visual-tenis",
+      "duel": "tennis",
+      "sky": "<stop offset=\"0%\" stop-color=\"#142810\"/><stop offset=\"100%\" stop-color=\"#060a04\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#84cc16\" stop-opacity=\"0.35\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#a3e635\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<circle cx=\"200\" cy=\"248\" r=\"52\" fill=\"#d9f99d\" opacity=\"0.92\"/><path d=\"M168 210 Q200 270 232 210\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M168 286 Q200 226 232 286\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\"/>"
+    },
+    "ciclismo": {
+      "dir": "deportes",
+      "tier": "sport",
+      "title": "Ciclismo",
+      "subtitle": "UCI World Tour · Etapas",
+      "sponsors": "Eurosport · GCN · RTVE",
+      "visualClass": "qvh-spotlight-visual-ciclismo",
+      "sky": "<stop offset=\"0%\" stop-color=\"#0a1818\"/><stop offset=\"100%\" stop-color=\"#040808\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#14b8a6\" stop-opacity=\"0.35\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#2dd4bf\" stop-opacity=\"0.1\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<path d=\"M110 310 Q170 180 200 210 T290 310\" fill=\"none\" stroke=\"rgba(20,184,166,0.35)\" stroke-width=\"3\"/><circle cx=\"158\" cy=\"286\" r=\"34\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3\" opacity=\"0.75\"/><circle cx=\"242\" cy=\"286\" r=\"34\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3\" opacity=\"0.75\"/><path d=\"M192 286 L208 286 M200 278 L200 294\" stroke=\"#14b8a6\" stroke-width=\"3\"/>"
+    },
+    "copa-rey": {
+      "dir": "deportes",
+      "tier": "flagship",
+      "title": "Copa del Rey",
+      "subtitle": "Eliminatorias · Final",
+      "sponsors": "Movistar · DAZN · La 1",
+      "visualClass": "qvh-spotlight-visual-copa-rey",
+      "sky": "<stop offset=\"0%\" stop-color=\"#2a0810\"/><stop offset=\"100%\" stop-color=\"#0a0406\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#8b2635\" stop-opacity=\"0.42\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#c9a227\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<path d=\"M168 310 V230 C168 198 184 178 200 178 C216 178 232 198 232 230 V310\" fill=\"url(#beam)\" stroke=\"#c9a227\" stroke-width=\"3\"/><path d=\"M152 310 H248 L238 330 H162 Z\" fill=\"#c9a227\"/><rect x=\"188\" y=\"210\" width=\"24\" height=\"36\" rx=\"4\" fill=\"rgba(255,255,255,0.18)\"/>"
+    },
+    "giro-italia": {
+      "dir": "ciclismo",
+      "tier": "flagship",
+      "title": "Giro d'Italia",
+      "subtitle": "Maglia rosa · Etapas de montaña",
+      "sponsors": "Eurosport · GCN · RTVE",
+      "visualClass": "qvh-spotlight-visual-giro",
+      "sky": "<stop offset=\"0%\" stop-color=\"#2a1020\"/><stop offset=\"100%\" stop-color=\"#0a0608\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#ff6b9d\" stop-opacity=\"0.45\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ff85b3\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<path d=\"M40 340 L120 210 L200 250 L280 190 L360 330 Z\" fill=\"rgba(255,107,157,0.12)\" stroke=\"rgba(255,133,179,0.35)\" stroke-width=\"2\"/><path d=\"M60 360 Q200 300 340 360\" fill=\"none\" stroke=\"#ff6b9d\" stroke-width=\"4\" stroke-linecap=\"round\"/>"
+    },
+    "tour-france": {
+      "dir": "ciclismo",
+      "tier": "flagship",
+      "title": "Tour de France",
+      "subtitle": "Maillot amarillo · Etapas",
+      "sponsors": "Eurosport · France TV · GCN",
+      "visualClass": "qvh-spotlight-visual-tdf",
+      "sky": "<stop offset=\"0%\" stop-color=\"#141008\"/><stop offset=\"100%\" stop-color=\"#080604\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#ffd700\" stop-opacity=\"0.38\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#f5c518\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<circle cx=\"200\" cy=\"210\" r=\"48\" fill=\"rgba(255,215,0,0.18)\" stroke=\"#ffd700\" stroke-width=\"3\"/><path d=\"M90 320 L160 240 L240 280 L310 220\" fill=\"none\" stroke=\"rgba(255,255,255,0.18)\" stroke-width=\"3\"/><circle cx=\"200\" cy=\"286\" r=\"30\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3\" opacity=\"0.7\"/>"
+    },
+    "vuelta-espana": {
+      "dir": "ciclismo",
+      "tier": "flagship",
+      "title": "Vuelta a España",
+      "subtitle": "La Roja · Puertos",
+      "sponsors": "Movistar · La 1 · Eurosport",
+      "visualClass": "qvh-spotlight-visual-vuelta",
+      "sky": "<stop offset=\"0%\" stop-color=\"#1a0808\"/><stop offset=\"100%\" stop-color=\"#080404\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#dc2626\" stop-opacity=\"0.4\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#c9a227\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<circle cx=\"200\" cy=\"210\" r=\"42\" fill=\"rgba(220,38,38,0.22)\" stroke=\"#dc2626\" stroke-width=\"3\"/><path d=\"M100 330 Q200 260 300 330\" fill=\"none\" stroke=\"#c9a227\" stroke-width=\"4\"/><circle cx=\"200\" cy=\"286\" r=\"30\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3\" opacity=\"0.65\"/>"
+    },
+    "mundial": {
+      "dir": "flagship",
+      "assetId": "mundial-2026",
+      "tier": "flagship",
+      "title": "Mundial 2026",
+      "subtitle": "México · EE.UU. · Canadá",
+      "sponsors": "Movistar · RTVE · DAZN",
+      "visualClass": "qvh-spotlight-visual-mundial",
+      "sky": "<stop offset=\"0%\" stop-color=\"#0a2818\"/><stop offset=\"45%\" stop-color=\"#102818\"/><stop offset=\"100%\" stop-color=\"#060a08\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#22c55e\" stop-opacity=\"0.32\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#c9a227\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<rect x=\"156\" y=\"188\" width=\"88\" height=\"120\" rx=\"44\" fill=\"none\" stroke=\"rgba(255,255,255,0.18)\" stroke-width=\"3\"/><path d=\"M200 188 C176 220 176 276 200 308 C224 276 224 220 200 188Z\" fill=\"rgba(255,255,255,0.08)\"/><polygon points=\"200,210 208,232 232,232 214,246 220,270 200,256 180,270 186,246 168,232 192,232\" fill=\"#c9a227\" opacity=\"0.85\"/>"
+    },
+    "ufc-ppv": {
+      "dir": "flagship",
+      "tier": "flagship",
+      "title": "UFC",
+      "subtitle": "Pay-Per-View · Main Card",
+      "sponsors": "Paramount+ · UFC Fight Pass",
+      "visualClass": "qvh-spotlight-visual-ufc-329",
+      "duel": "ufc",
+      "sky": "<stop offset=\"0%\" stop-color=\"#180606\"/><stop offset=\"100%\" stop-color=\"#060202\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#d41414\" stop-opacity=\"0.48\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ef4444\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<polygon points=\"200,170 260,290 140,290\" fill=\"none\" stroke=\"#d41414\" stroke-width=\"5\"/><polygon points=\"200,190 240,280 160,280\" fill=\"rgba(212,20,20,0.18)\"/><text x=\"200\" y=\"248\" text-anchor=\"middle\" fill=\"#fff\" font-family=\"Arial Black, sans-serif\" font-size=\"28\" font-weight=\"900\">UFC</text>"
+    },
+    "ufc-329": {
+      "dir": "flagship",
+      "tier": "flagship",
+      "title": "UFC 329",
+      "subtitle": "McGregor vs Holloway",
+      "sponsors": "Paramount+ · UFC Fight Pass",
+      "visualClass": "qvh-spotlight-visual-ufc-329",
+      "duel": "ufc",
+      "sky": "<stop offset=\"0%\" stop-color=\"#180606\"/><stop offset=\"100%\" stop-color=\"#060202\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#d41414\" stop-opacity=\"0.48\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ef4444\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<polygon points=\"200,170 260,290 140,290\" fill=\"none\" stroke=\"#d41414\" stroke-width=\"5\"/><polygon points=\"200,190 240,280 160,280\" fill=\"rgba(212,20,20,0.18)\"/><text x=\"200\" y=\"248\" text-anchor=\"middle\" fill=\"#fff\" font-family=\"Arial Black, sans-serif\" font-size=\"28\" font-weight=\"900\">329</text>"
+    },
+    "roland-garros": {
+      "dir": "flagship",
+      "tier": "flagship",
+      "title": "Roland Garros",
+      "subtitle": "Grand Slam · París",
+      "sponsors": "Movistar · DAZN · Eurosport",
+      "visualClass": "qvh-spotlight-visual-rg",
+      "duel": "tennis",
+      "sky": "<stop offset=\"0%\" stop-color=\"#2a1508\"/><stop offset=\"100%\" stop-color=\"#0a0604\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#c95a2c\" stop-opacity=\"0.42\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ea580c\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<rect x=\"72\" y=\"210\" width=\"256\" height=\"120\" rx=\"8\" fill=\"rgba(201,90,44,0.14)\" stroke=\"rgba(255,180,100,0.28)\" stroke-width=\"2\"/><line x1=\"72\" y1=\"270\" x2=\"328\" y2=\"270\" stroke=\"rgba(255,255,255,0.14)\" stroke-width=\"2\"/><circle cx=\"200\" cy=\"248\" r=\"28\" fill=\"rgba(255,180,100,0.22)\"/>"
+    },
+    "roland-garros-knockout": {
+      "dir": "flagship",
+      "tier": "flagship",
+      "title": "Roland Garros",
+      "subtitle": "Cuartos · Semis · Final",
+      "sponsors": "Movistar · DAZN · Eurosport",
+      "visualClass": "qvh-spotlight-visual-rg-knockout",
+      "duel": "tennis",
+      "sky": "<stop offset=\"0%\" stop-color=\"#3a1a08\"/><stop offset=\"100%\" stop-color=\"#0a0604\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#ffb464\" stop-opacity=\"0.48\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ffd166\" stop-opacity=\"0.16\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<rect x=\"72\" y=\"210\" width=\"256\" height=\"120\" rx=\"8\" fill=\"rgba(255,180,100,0.16)\" stroke=\"rgba(255,210,140,0.42)\" stroke-width=\"3\"/><text x=\"200\" y=\"278\" text-anchor=\"middle\" fill=\"#ffd166\" font-family=\"Arial Black, sans-serif\" font-size=\"26\" font-weight=\"900\">KO</text>"
+    },
+    "esports": {
+      "dir": "esports",
+      "tier": "sport",
+      "title": "E-Sports",
+      "subtitle": "CS2 · Valorant · LoL",
+      "sponsors": "Twitch · YouTube · Kick",
+      "visualClass": "qvh-spotlight-visual-esports",
+      "sky": "<stop offset=\"0%\" stop-color=\"#0a140a\"/><stop offset=\"100%\" stop-color=\"#050505\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#22c55e\" stop-opacity=\"0.38\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#4ade80\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<polygon points=\"200,180 260,260 230,320 170,320 140,260\" fill=\"none\" stroke=\"#22c55e\" stroke-width=\"4\"/><polygon points=\"200,205 240,255 220,295 180,295 160,255\" fill=\"rgba(34,197,94,0.16)\"/>"
+    },
+    "f1": {
+      "dir": "motor",
+      "tier": "sport",
+      "title": "Fórmula 1",
+      "subtitle": "Grandes Premios · Sprint",
+      "sponsors": "Movistar · DAZN F1 · F1 TV",
+      "visualClass": "qvh-spotlight-visual-f1",
+      "sky": "<stop offset=\"0%\" stop-color=\"#15151e\"/><stop offset=\"55%\" stop-color=\"#0a0a10\"/><stop offset=\"100%\" stop-color=\"#050508\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#e10600\" stop-opacity=\"0.45\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ef4444\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<text x=\"200\" y=\"268\" text-anchor=\"middle\" fill=\"#e10600\" font-family=\"Arial Black, sans-serif\" font-size=\"92\" font-weight=\"900\" letter-spacing=\"-4\">F1</text>"
+    },
+    "motogp": {
+      "dir": "motor",
+      "tier": "sport",
+      "title": "MotoGP",
+      "subtitle": "Carreras · Sprint",
+      "sponsors": "DAZN · Movistar · Videopass",
+      "visualClass": "qvh-spotlight-visual-motogp",
+      "sky": "<stop offset=\"0%\" stop-color=\"#15151e\"/><stop offset=\"100%\" stop-color=\"#08080c\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#e10600\" stop-opacity=\"0.42\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ef4444\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": "<path d=\"M130 300 C150 220 250 220 270 300\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" opacity=\"0.75\"/><circle cx=\"158\" cy=\"286\" r=\"28\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\"/><circle cx=\"242\" cy=\"286\" r=\"28\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\"/><rect x=\"168\" y=\"248\" width=\"64\" height=\"18\" rx=\"4\" fill=\"#e10600\"/>"
+    },
+    "mobland-s2": {
+      "dir": "posters",
+      "tier": "tv",
+      "title": "MobLand",
+      "subtitle": "Temporada 2 · Paramount+",
+      "sponsors": "Paramount+ · SkyShowtime",
+      "visualClass": "qvh-spotlight-visual-series",
+      "objectPosition": "center 20%",
+      "formula": "tvBanner"
+    }
+  }
+}

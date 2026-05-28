@@ -105,7 +105,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
           card.showUfcDuel ? " qvh-spotlight-visual-ufc-duel" : ""
-        }${card.showRolandGarrosDuel ? " qvh-spotlight-visual-rg-duel" : ""}${
+        }${card.showRolandGarrosDuel || card.showTennisDuel ? " qvh-spotlight-visual-rg-duel" : ""}${
           stamp ? " qvh-spotlight-visual-stamped" : ""
         }`}
       >
@@ -128,7 +128,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
             size="spotlight"
             eager={priority}
           />
-        ) : card.showRolandGarrosDuel ? (
+        ) : card.showRolandGarrosDuel || card.showTennisDuel ? (
           <RolandGarrosDuelVisual
             homeName={card.homeName}
             awayName={card.awayName}
@@ -164,7 +164,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
 
         <span
           className={`qvh-spotlight-badge qvh-spotlight-badge-${
-            card.showRolandGarrosDuel ? "rg" : card.badgeVariant
+            card.showRolandGarrosDuel || card.showTennisDuel ? "rg" : card.badgeVariant
           }`}
         >
           {card.badge}

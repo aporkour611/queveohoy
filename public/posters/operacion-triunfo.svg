@@ -13,6 +13,7 @@
   <rect width="400" height="225" fill="url(#bg)"/>
   <rect width="400" height="225" fill="url(#glow)"/>
   <polygon points="200,52 224,92 272,98 236,128 246,176 200,152 154,176 164,128 128,98 176,92" fill="rgba(255,255,255,0.18)"/>
+  
   <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
   <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">Operación Triunfo</text>
   <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">RTVE</text>

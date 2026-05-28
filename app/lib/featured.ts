@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import { resolveFeedSport } from "./anime-classify";
 import { sportFilterGroupId } from "./filter-config";
 import { eventCanDisplay } from "./event-crests";
 import {
@@ -258,7 +259,7 @@ function groupByCategory(events: EventRow[]): Map<string, EventRow[]> {
   const byCategory = new Map<string, EventRow[]>();
 
   for (const e of events) {
-    const cat = sportFilterGroupId(e.sport ?? "");
+    const cat = sportFilterGroupId(resolveFeedSport(e));
     if (!cat) continue;
     const list = byCategory.get(cat) ?? [];
     list.push(e);

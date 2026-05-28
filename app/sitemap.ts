@@ -31,7 +31,12 @@ async function fetchSitemapEvents(): Promise<EventRow[]> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const staticEntries = buildStaticSitemapEntries(now);
-  const events = await fetchSitemapEvents();
-  if (events.length === 0) return staticEntries;
-  return [...staticEntries, ...buildPartidoSitemapEntries(events, now)];
+
+  try {
+    const events = await fetchSitemapEvents();
+    if (events.length === 0) return staticEntries;
+    return [...staticEntries, ...buildPartidoSitemapEntries(events, now)];
+  } catch {
+    return staticEntries;
+  }
 }

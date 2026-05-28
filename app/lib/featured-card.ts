@@ -36,6 +36,11 @@ import {
   remoteSpotlightCover,
   type SpotlightCover,
 } from "./spotlight-art";
+import {
+  isNbaEvent,
+  resolveFlagshipCover,
+  resolvePosterCover,
+} from "./poster-recipes";
 import { eventDisplayTitle } from "./event-display";
 import { isChampionsFinal } from "./event-card-stamp";
 import { parseLeaguePoster } from "./thesportsdb-leagues";
@@ -78,7 +83,36 @@ export type SpotlightCardModel = {
   showTeamDuel?: boolean;
   showUfcDuel?: boolean;
   showRolandGarrosDuel?: boolean;
+  showTennisDuel?: boolean;
 };
+
+function sportPosterCover(
+  url: string,
+  visualClass: string,
+  objectPosition = "center top"
+): SpotlightCover {
+  return localSpotlightCover(url, "poster", objectPosition);
+}
+
+function applyFlagshipOrSportCover(
+  event: EventRow,
+  sport: string,
+  fallbackVisual: string
+): { coverImage?: SpotlightCover; visualClass: string } {
+  const cover = resolvePosterCover(event);
+  if (cover) {
+    return {
+      coverImage: sportPosterCover(
+        cover.url,
+        cover.visualClass,
+        cover.objectPosition
+      ),
+      visualClass: cover.visualClass,
+    };
+  }
+
+  return { visualClass: fallbackVisual };
+}
 
 function mediaCover(event: EventRow, sport: string): SpotlightCover {
   return buildEntertainmentCover({ ...event, sport });
@@ -124,6 +158,7 @@ export function getSpotlightCardModel(
     const matchup = parseUfcMainEventFighters(event.competition, event.title);
     const homeName = event.home_team || matchup?.n1;
     const awayName = event.away_team || matchup?.n2;
+    const flagship = resolveFlagshipCover(event);
 
     return {
       headline: eventName,
@@ -138,7 +173,10 @@ export function getSpotlightCardModel(
       awayCrest: f2,
       homeName: homeName ?? undefined,
       awayName: awayName ?? undefined,
-      visualClass: "qvh-spotlight-visual-ufc",
+      coverImage: flagship
+        ? sportPosterCover(flagship.url, flagship.visualClass, flagship.objectPosition)
+        : undefined,
+      visualClass: flagship?.visualClass ?? "qvh-spotlight-visual-ufc",
     };
   }
 
@@ -146,7 +184,10 @@ export function getSpotlightCardModel(
     const premiere = sport === "series" && isSeasonPremiereEvent(event);
     const curatedMovie = sport === "cine" ? curatedMovieByExternalId(event.external_id) : null;
     const competition = event.competition?.trim() || "";
-    const coverImage = mediaCover(event, sport);
+    const flagship = resolveFlagshipCover(event);
+    const coverImage = flagship
+      ? sportPosterCover(flagship.url, flagship.visualClass, flagship.objectPosition)
+      : mediaCover(event, sport);
 
     return {
       headline:
@@ -219,7 +260,7 @@ export function getSpotlightCardModel(
       meta: event.competition?.trim() || "Motor",
       platform: event.platform?.trim() || channels || "TV",
       channelList: channelList.length ? channelList : undefined,
-      coverImage: localSpotlightCover(motorArt.url, "emblem"),
+      coverImage: sportPosterCover(motorArt.url, motorArt.visualClass),
       visualClass: motorArt.visualClass,
     };
   }
@@ -227,6 +268,7 @@ export function getSpotlightCardModel(
   if (sport === "ciclismo") {
     const poster = parseLeaguePoster(event.source);
     const competition = event.competition?.split(" · ")[0]?.trim() || "Ciclismo";
+    const styled = applyFlagshipOrSportCover(event, sport, "qvh-spotlight-visual-ciclismo");
 
     return {
       headline: eventDisplayTitle(event),
@@ -237,11 +279,11 @@ export function getSpotlightCardModel(
       meta: competition,
       platform: event.platform?.trim() || channels || "TV",
       channelList: channelList.length ? channelList : undefined,
-      coverImage: poster
-        ? remoteSpotlightCover(poster, "poster")
-        : mediaFallbackCover(sport) ??
-          localSpotlightCover("/fallback/deportes.svg", "emblem"),
-      visualClass: "qvh-spotlight-visual-motor",
+      coverImage: styled.coverImage ??
+        (poster
+          ? remoteSpotlightCover(poster, "poster")
+          : sportPosterCover("/deportes/ciclismo.png", "qvh-spotlight-visual-ciclismo")),
+      visualClass: styled.visualClass,
     };
   }
 
@@ -282,6 +324,7 @@ export function getSpotlightCardModel(
     const awayName = event.away_team?.trim() || "";
     const competition = event.competition?.trim() || "Roland Garros";
     const isKnockout = isRolandGarrosKnockout(event);
+    const flagship = resolveFlagshipCover(event);
 
     return {
       headline: teamTitle(event) || event.title?.trim() || "Partido",
@@ -292,12 +335,66 @@ export function getSpotlightCardModel(
       meta: competition,
       platform: event.platform?.trim() || channels || "TV",
       channelList: channelList.length ? channelList : undefined,
+      coverImage: flagship
+        ? sportPosterCover(flagship.url, flagship.visualClass, flagship.objectPosition)
+        : undefined,
       visualClass: isKnockout
         ? "qvh-spotlight-visual-rg-knockout"
         : "qvh-spotlight-visual-rg",
       homeName: homeName || undefined,
       awayName: awayName || undefined,
       showRolandGarrosDuel: Boolean(homeName && awayName),
+    };
+  }
+
+  if (sport === "tenis") {
+    const styled = applyFlagshipOrSportCover(event, sport, "qvh-spotlight-visual-tenis");
+    const homeName = event.home_team?.trim() || "";
+    const awayName = event.away_team?.trim() || "";
+    const hasDuel = Boolean(homeName && awayName);
+
+    return {
+      headline: teamTitle(event) || event.title?.trim() || "Tenis",
+      badge: event.competition?.split(" · ")[0]?.trim() || "Tenis",
+      badgeVariant: "default",
+      dateLabel,
+      time,
+      meta: event.competition?.trim() || "Tenis",
+      platform: event.platform?.trim() || channels || "TV",
+      channelList: channelList.length ? channelList : undefined,
+      coverImage: styled.coverImage,
+      visualClass: styled.visualClass,
+      homeName: homeName || undefined,
+      awayName: awayName || undefined,
+      showTennisDuel: hasDuel,
+    };
+  }
+
+  if (sport === "basket") {
+    const homeName = shortTeamName(event.home_team);
+    const awayName = shortTeamName(event.away_team);
+    const styled = applyFlagshipOrSportCover(
+      event,
+      sport,
+      isNbaEvent(event)
+        ? "qvh-spotlight-visual-basket-nba"
+        : "qvh-spotlight-visual-basket"
+    );
+
+    return {
+      headline: teamTitle(event) || event.title?.trim() || "Baloncesto",
+      badge: event.competition?.split(" · ")[0]?.trim() || "Baloncesto",
+      badgeVariant: "default",
+      dateLabel,
+      time,
+      meta: event.competition?.trim() || "Baloncesto",
+      platform: event.platform?.trim() || channels || "TV",
+      channelList: channelList.length ? channelList : undefined,
+      coverImage: styled.coverImage,
+      visualClass: styled.visualClass,
+      homeName,
+      awayName,
+      showTeamDuel: Boolean(homeName && awayName),
     };
   }
 
@@ -313,6 +410,7 @@ export function getSpotlightCardModel(
     const competition = event.competition?.split(" · ")[0]?.trim() || "Fútbol";
     const isChampions = /champions/i.test(event.competition ?? "");
     const isClFinal = isChampions && isChampionsFinal(event);
+    const styled = applyFlagshipOrSportCover(event, sport, "qvh-spotlight-visual-futbol");
 
     return {
       headline: teamTitle(event) || event.title?.trim() || "Partido",
@@ -327,7 +425,12 @@ export function getSpotlightCardModel(
         ? "qvh-spotlight-visual-champions-final"
         : isChampions
           ? "qvh-spotlight-visual-champions"
-          : "qvh-spotlight-visual-futbol",
+          : styled.visualClass,
+      coverImage:
+        styled.coverImage ??
+        (!ids
+          ? sportPosterCover("/deportes/futbol.png", "qvh-spotlight-visual-futbol")
+          : undefined),
       homeCrest: ids ? teamCrestUrl(ids.homeId) : undefined,
       awayCrest: ids ? teamCrestUrl(ids.awayId) : undefined,
       homeName,
@@ -335,6 +438,8 @@ export function getSpotlightCardModel(
       showTeamDuel: Boolean(ids),
     };
   }
+
+  const styled = applyFlagshipOrSportCover(event, sport, "qvh-spotlight-visual-default");
 
   return {
     headline: eventDisplayTitle(event),
@@ -346,8 +451,9 @@ export function getSpotlightCardModel(
     platform: event.platform?.trim() || channels || "TV",
     channelList: channelList.length ? channelList : undefined,
     coverImage:
+      styled.coverImage ??
       mediaFallbackCover(sport) ??
-      localSpotlightCover("/fallback/deportes.svg", "emblem"),
-    visualClass: "qvh-spotlight-visual-default",
+      sportPosterCover("/deportes/futbol.png", "qvh-spotlight-visual-default"),
+    visualClass: styled.visualClass,
   };
 }

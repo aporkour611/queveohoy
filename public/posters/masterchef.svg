@@ -13,6 +13,7 @@
   <rect width="400" height="225" fill="url(#bg)"/>
   <rect width="400" height="225" fill="url(#glow)"/>
   <ellipse cx="200" cy="108" rx="62" ry="18" fill="rgba(0,0,0,0.25)"/><path d="M168 88 L200 58 L232 88 L220 118 L180 118 Z" fill="rgba(255,255,255,0.18)" stroke="#ffd166" stroke-width="2"/>
+  
   <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
   <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">MasterChef</text>
   <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">LA 1</text>

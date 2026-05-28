@@ -106,11 +106,21 @@ const SHOWS = [
   },
   {
     id: "velada-ibai",
-    title: "La Velada",
-    subtitle: "Twitch",
+    title: "La Velada VI",
+    subtitle: "En directo · Streaming",
     c1: "#9146ff",
     c2: "#140820",
-    mark: `<rect x="148" y="62" width="104" height="68" rx="8" fill="rgba(0,0,0,0.3)"/><path d="M168 96 L188 76 L188 116 Z" fill="#fff"/><rect x="198" y="76" width="36" height="8" rx="2" fill="#fff" opacity="0.8"/><rect x="198" y="92" width="28" height="8" rx="2" fill="#fff" opacity="0.55"/>`,
+    sponsors: "Twitch · Kick · En directo",
+    mark: `<rect x="118" y="48" width="164" height="92" rx="10" fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.18)" stroke-width="2"/><line x1="200" y1="48" x2="200" y2="140" stroke="rgba(255,255,255,0.12)" stroke-width="2"/><circle cx="168" cy="92" r="22" fill="rgba(255,255,255,0.08)"/><circle cx="232" cy="92" r="22" fill="rgba(255,255,255,0.08)"/><path d="M148 118 Q200 142 252 118" stroke="#ffd166" stroke-width="3" fill="none"/>`,
+  },
+  {
+    id: "mobland-s2",
+    title: "MobLand",
+    subtitle: "Temporada 2 · Paramount+",
+    c1: "#0f766e",
+    c2: "#0a0a0c",
+    sponsors: "Paramount+ · SkyShowtime",
+    mark: `<rect x="132" y="52" width="136" height="88" rx="8" fill="rgba(0,0,0,0.32)" stroke="rgba(201,162,39,0.35)" stroke-width="2"/><path d="M148 120 L200 58 L252 120 L230 132 H170 Z" fill="rgba(201,162,39,0.18)"/><rect x="176" y="96" width="48" height="8" rx="2" fill="#c9a227" opacity="0.75"/>`,
   },
   {
     id: "masterchef",
@@ -134,7 +144,21 @@ function escapeXml(value) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 }
 
-function buildPoster({ title, subtitle, c1, c2, mark }) {
+function sponsorPills(sponsors) {
+  if (!sponsors) return "";
+  const items = sponsors.split("·").map((s) => s.trim()).filter(Boolean);
+  let x = 20;
+  let markup = "";
+  for (const label of items) {
+    const w = Math.max(52, label.length * 5.8 + 16);
+    markup += `<rect x="${x}" y="148" width="${w}" height="14" rx="7" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)"/>`;
+    markup += `<text x="${x + w / 2}" y="158" text-anchor="middle" fill="rgba(255,255,255,0.58)" font-family="Arial Narrow, Arial, sans-serif" font-size="7" font-weight="700" letter-spacing="0.8">${escapeXml(label.toUpperCase())}</text>`;
+    x += w + 5;
+  }
+  return markup;
+}
+
+function buildPoster({ title, subtitle, c1, c2, mark, sponsors }) {
   const safeTitle = escapeXml(title);
   const safeSub = escapeXml(subtitle);
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -152,6 +176,7 @@ function buildPoster({ title, subtitle, c1, c2, mark }) {
   <rect width="400" height="225" fill="url(#bg)"/>
   <rect width="400" height="225" fill="url(#glow)"/>
   ${mark}
+  ${sponsorPills(sponsors)}
   <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
   <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">${safeTitle}</text>
   <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">${safeSub.toUpperCase()}</text>
@@ -166,7 +191,7 @@ async function main() {
     writeFileSync(join(OUT, `${show.id}.svg`), svg, "utf8");
     await sharp(Buffer.from(svg))
       .resize(PNG_WIDTH, PNG_HEIGHT)
-      .png({ compressionLevel: 9 })
+      .png({ compressionLevel: 9, palette: true, colors: 128, quality: 72, effort: 10 })
       .toFile(join(OUT, `${show.id}.png`));
   }
 

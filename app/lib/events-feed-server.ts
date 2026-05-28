@@ -2,6 +2,7 @@ import type { EventRow } from "../components/types";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import {
+  FEED_QUERY_ROW_LIMIT,
   FEED_QUERY_TIMEOUT_MS,
   FEED_REVALIDATE_SECONDS,
 } from "./cache-config";
@@ -13,25 +14,29 @@ import { createClient } from "./supabase/server";
 import {
   getEventsQueryDateRange,
   getEventsQueryDateRangeTight,
-  getWeekDatesInZone,
-  addDaysToDateKeyInZone,
-  MADRID_TZ,
 } from "./timezone";
 
 const CURATED_DESTACADOS_EXTERNAL_IDS = CURATED_MOVIES.map(
   (movie) => `tmdb_movie_${movie.tmdbId}`
 );
 
+/** Ventana semanal + estrenos editoriales (sin 21 días de histórico completo). */
 function getDestacadosQueryDateRange(): { from: string; to: string } {
-  const madridToday = getWeekDatesInZone(MADRID_TZ, 1)[0];
-  return {
-    from: addDaysToDateKeyInZone(madridToday, -21, MADRID_TZ),
-    to: addDaysToDateKeyInZone(
-      madridToday,
-      FEED_DAY_COUNT + 2,
-      MADRID_TZ
-    ),
-  };
+  return getEventsQueryDateRange(FEED_DAY_COUNT);
+}
+
+function feedQuerySignal(): AbortSignal | undefined {
+  if (typeof AbortSignal.timeout === "function") {
+    return AbortSignal.timeout(FEED_QUERY_TIMEOUT_MS);
+  }
+  return undefined;
+}
+
+function withFeedQuerySignal<T extends { abortSignal: (signal: AbortSignal) => T }>(
+  query: T
+): T {
+  const signal = feedQuerySignal();
+  return signal ? query.abortSignal(signal) : query;
 }
 
 async function queryDestacadosEvents(): Promise<{
@@ -46,17 +51,22 @@ async function queryDestacadosEvents(): Promise<{
   const supabase = createClient();
 
   const [rangeResult, curatedResult] = await Promise.all([
-    supabase
-      .from("events")
-      .select(FEED_EVENT_SELECT)
-      .gte("date", from)
-      .lte("date", to)
-      .order("date", { ascending: true })
-      .order("time", { ascending: true }),
-    supabase
-      .from("events")
-      .select(FEED_EVENT_SELECT)
-      .in("external_id", CURATED_DESTACADOS_EXTERNAL_IDS),
+    withFeedQuerySignal(
+      supabase
+        .from("events")
+        .select(FEED_EVENT_SELECT)
+        .gte("date", from)
+        .lte("date", to)
+        .order("date", { ascending: true })
+        .order("time", { ascending: true })
+        .limit(FEED_QUERY_ROW_LIMIT)
+    ),
+    withFeedQuerySignal(
+      supabase
+        .from("events")
+        .select(FEED_EVENT_SELECT)
+        .in("external_id", CURATED_DESTACADOS_EXTERNAL_IDS)
+    ),
   ]);
 
   if (rangeResult.error) {
@@ -129,13 +139,16 @@ async function queryFeedEvents(dayCount: number, tight: boolean): Promise<{
     : getEventsQueryDateRange(dayCount);
   const supabase = createClient();
 
-  const { data, error } = await supabase
-    .from("events")
-    .select(FEED_EVENT_SELECT)
-    .gte("date", from)
-    .lte("date", to)
-    .order("date", { ascending: true })
-    .order("time", { ascending: true });
+  const { data, error } = await withFeedQuerySignal(
+    supabase
+      .from("events")
+      .select(FEED_EVENT_SELECT)
+      .gte("date", from)
+      .lte("date", to)
+      .order("date", { ascending: true })
+      .order("time", { ascending: true })
+      .limit(FEED_QUERY_ROW_LIMIT)
+  );
 
   if (error) {
     return { events: [], error: error.message };

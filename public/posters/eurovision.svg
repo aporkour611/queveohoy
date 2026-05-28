@@ -13,6 +13,7 @@
   <rect width="400" height="225" fill="url(#bg)"/>
   <rect width="400" height="225" fill="url(#glow)"/>
   <circle cx="200" cy="96" r="48" fill="rgba(255,255,255,0.1)"/><path d="M152 96 H248 M200 48 V144" stroke="#fff" stroke-width="3" opacity="0.5"/><circle cx="200" cy="96" r="10" fill="#ffd166"/>
+  
   <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
   <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">Eurovisión</text>
   <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">RTVE</text>

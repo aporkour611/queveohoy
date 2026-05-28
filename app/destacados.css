@@ -649,6 +649,95 @@
   background: linear-gradient(135deg, #2d2d3a 0%, #4547c4 55%, #14141c 100%);
 }
 
+.qvh-spotlight-visual-tenis {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(132, 204, 22, 0.28), transparent 55%),
+    linear-gradient(180deg, #142810 0%, #060a04 100%);
+}
+
+.qvh-spotlight-visual-ciclismo {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.28), transparent 55%),
+    linear-gradient(180deg, #0a1818 0%, #040808 100%);
+}
+
+.qvh-spotlight-visual-basket,
+.qvh-spotlight-visual-basket-nba {
+  background:
+    radial-gradient(circle at 50% 110%, rgba(234, 88, 12, 0.28), transparent 52%),
+    linear-gradient(180deg, #1a1208 0%, #080604 100%);
+}
+
+.qvh-spotlight-visual-basket-nba {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(29, 66, 138, 0.35), transparent 55%),
+    radial-gradient(circle at 50% 110%, rgba(234, 88, 12, 0.28), transparent 52%),
+    linear-gradient(180deg, #0a1028 0%, #080604 100%);
+}
+
+.qvh-spotlight-visual-giro {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 107, 157, 0.32), transparent 55%),
+    linear-gradient(180deg, #2a1020 0%, #0a0608 100%);
+}
+
+.qvh-spotlight-visual-tdf {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.28), transparent 55%),
+    linear-gradient(180deg, #141008 0%, #080604 100%);
+}
+
+.qvh-spotlight-visual-vuelta {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.32), transparent 55%),
+    linear-gradient(180deg, #1a0808 0%, #080404 100%);
+}
+
+.qvh-spotlight-visual-mundial {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.28), transparent 55%),
+    linear-gradient(180deg, #0a2818 0%, #060a08 100%);
+}
+
+.qvh-spotlight-visual-copa-rey {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(139, 38, 53, 0.32), transparent 55%),
+    linear-gradient(180deg, #2a0810 0%, #0a0406 100%);
+}
+
+.qvh-spotlight-visual-ufc-329 {
+  background:
+    radial-gradient(circle at 18% 110%, rgba(212, 20, 20, 0.42), transparent 45%),
+    radial-gradient(circle at 82% 110%, rgba(212, 20, 20, 0.42), transparent 45%),
+    linear-gradient(180deg, #180606 0%, #060202 100%);
+}
+
+.qvh-spotlight-card:has(.qvh-spotlight-visual-giro) {
+  border-color: rgba(255, 107, 157, 0.4);
+  box-shadow: 0 8px 28px rgba(232, 67, 147, 0.2);
+}
+
+.qvh-spotlight-card:has(.qvh-spotlight-visual-mundial) {
+  border-color: rgba(34, 197, 94, 0.4);
+  box-shadow: 0 8px 28px rgba(22, 101, 52, 0.2);
+}
+
+.qvh-spotlight-card:has(.qvh-spotlight-visual-ufc-329) {
+  border-color: rgba(212, 20, 20, 0.45);
+  box-shadow: 0 8px 28px rgba(127, 29, 29, 0.24);
+}
+
+.qvh-spotlight-visual-futbol:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-tenis:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-ciclismo:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-basket:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-rg:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-rg-knockout:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-mundial:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-ufc-329:has(.qvh-spotlight-cover-poster) {
+  background: #101015;
+}
+
 .qvh-spotlight-overlay {
   position: absolute;
   inset: 0;

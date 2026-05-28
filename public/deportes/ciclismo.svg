@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Ciclismo">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#0a1818"/><stop offset="100%" stop-color="#040808"/></linearGradient>
+    <radialGradient id="glow" cx="50%" cy="22%" r="68%"><stop offset="0%" stop-color="#14b8a6" stop-opacity="0.35"/><stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <linearGradient id="beam" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="50%" stop-color="#2dd4bf" stop-opacity="0.1"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="16"/></filter>
+  </defs>
+  <rect width="400" height="600" fill="url(#sky)"/>
+  <rect width="400" height="600" fill="url(#glow)"/>
+  <rect x="-40" y="70" width="480" height="130" fill="url(#beam)" transform="rotate(-10 200 300)"/>
+  <path d="M110 310 Q170 180 200 210 T290 310" fill="none" stroke="rgba(20,184,166,0.35)" stroke-width="3"/><circle cx="158" cy="286" r="34" fill="none" stroke="#fff" stroke-width="3" opacity="0.75"/><circle cx="242" cy="286" r="34" fill="none" stroke="#fff" stroke-width="3" opacity="0.75"/><path d="M192 286 L208 286 M200 278 L200 294" stroke="#14b8a6" stroke-width="3"/>
+  <path d="M0 420 Q140 360 200 385 T400 405 V600 H0 Z" fill="#050505" opacity="0.82"/>
+  <rect x="0" y="468" width="400" height="132" fill="rgba(0,0,0,0.55)"/>
+  <text x="200" y="502" text-anchor="middle" fill="#ffffff" font-family="Arial Black, Helvetica, sans-serif" font-size="34" font-weight="900" letter-spacing="2">Ciclismo</text>
+  <text x="200" y="528" text-anchor="middle" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="4">UCI WORLD TOUR · ETAPAS</text>
+  
+  <rect x="20" y="548" width="73.80000000000001" height="18" rx="9" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.14)"/><text x="56.900000000000006" y="560" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-family="Arial Narrow, Arial, sans-serif" font-size="8" font-weight="700" letter-spacing="1">EUROSPORT</text><rect x="99.80000000000001" y="548" width="58" height="18" rx="9" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.14)"/><text x="128.8" y="560" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-family="Arial Narrow, Arial, sans-serif" font-size="8" font-weight="700" letter-spacing="1">GCN</text><rect x="163.8" y="548" width="58" height="18" rx="9" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.14)"/><text x="192.8" y="560" text-anchor="middle" fill="rgba(255,255,255,0.62)" font-family="Arial Narrow, Arial, sans-serif" font-size="8" font-weight="700" letter-spacing="1">RTVE</text>
+</svg>

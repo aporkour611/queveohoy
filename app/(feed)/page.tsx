@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { preload } from "react-dom";
 import { DestacadosSection } from "../components/DestacadosSection";
 import { FeedErrorBoundary } from "../components/FeedErrorBoundary";
 import { FeedControlsShell } from "../components/FeedControlsShell";
@@ -23,6 +22,52 @@ import { buildHomeMetadataTitle } from "../lib/seo-jsonld";
 import { defaultDescription, pageMetadata, seoKeywords } from "../lib/seo";
 
 export const revalidate = 900;
+export const maxDuration = 25;
+
+const PAGE_DATA_BUDGET_MS = 8_000;
+
+async function loadHomePageData(): Promise<{
+  events: Awaited<ReturnType<typeof getHomeFeedEventsForPage>>["events"];
+  error: string | null;
+  weekEvents: Awaited<ReturnType<typeof getDestacadosFeedEventsForPage>>["events"];
+}> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const budget = new Promise<{
+    events: [];
+    error: string;
+    weekEvents: [];
+  }>((resolve) => {
+    timeoutId = setTimeout(
+      () =>
+        resolve({
+          events: [],
+          error: "La agenda tardó demasiado en cargar.",
+          weekEvents: [],
+        }),
+      PAGE_DATA_BUDGET_MS
+    );
+  });
+
+  try {
+    const result = await Promise.race([
+      Promise.all([
+        getHomeFeedEventsForPage(),
+        getDestacadosFeedEventsForPage(),
+      ]),
+      budget,
+    ]);
+
+    if (Array.isArray(result)) {
+      const [{ events, error }, { events: weekEvents }] = result;
+      return { events, error, weekEvents };
+    }
+
+    return result;
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
 
 export function generateMetadata(): Metadata {
   return pageMetadata(
@@ -34,23 +79,11 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function Page() {
-  const [{ events, error }, { events: weekEvents }] = await Promise.all([
-    getHomeFeedEventsForPage(),
-    getDestacadosFeedEventsForPage(),
-  ]);
+  const { events, error, weekEvents } = await loadHomePageData();
   const ssrEvents = trimHomeSsrEvents(events);
   const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
   const initialDay = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0];
   const displayDays = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT);
-
-  for (const entry of lcpPreloadEntries) {
-    preload(entry.href, {
-      as: "image",
-      fetchPriority: "high",
-      imageSrcSet: entry.imageSrcSet,
-      imageSizes: entry.imageSizes,
-    });
-  }
 
   return (
     <>
@@ -87,14 +120,6 @@ export default async function Page() {
                   initialDestacadosEvents={weekEvents}
                   initialError={error}
                   serverDayHeaderDate={initialDay?.date ?? null}
-                  dayHeader={
-                    initialDay ? (
-                      <HomeFeedDayHeader
-                        date={initialDay.date}
-                        title={initialDay.title}
-                      />
-                    ) : null
-                  }
                 />
               </div>
             </div>

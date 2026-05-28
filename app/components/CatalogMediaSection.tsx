@@ -43,6 +43,7 @@ function CatalogRail({
             event={event}
             index={index}
             compact={accent === "anime"}
+            cine={accent === "cine"}
           />
         ))}
       </CategoryCarousel>

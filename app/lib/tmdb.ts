@@ -8,6 +8,7 @@ import {
   resolveSpainEpisodeSchedule,
 } from "./spain-air-schedule";
 import { isExcludedUsTvTitle } from "./spain-latam-media";
+import { isTmdbAnimeSeries } from "./anime-classify";
 import {
   encodeTmdbSource,
   parseTmdbBuzzScore,
@@ -40,7 +41,7 @@ export type TmdbCronEvent = {
   title: string;
   date: string;
   time?: string;
-  sport: "cine" | "series";
+  sport: "cine" | "series" | "anime";
   category: "cine";
   competition: string;
   platform: string;
@@ -89,6 +90,7 @@ type TmdbShowDetail = {
   vote_average?: number;
   popularity?: number;
   origin_country?: string[];
+  genres?: Array<{ id?: number; name?: string }>;
   networks?: { name?: string }[];
   next_episode_to_air?: {
     air_date?: string;
@@ -404,7 +406,7 @@ async function buildSeriesEvent(
       title,
       date: schedule.date,
       time: schedule.time,
-      sport: "series",
+      sport: isTmdbAnimeSeries(detail, showName) ? "anime" : "series",
       category: "cine",
       competition: seriesCompetitionLabel(season, episode, trendingRank),
       platform: schedule.platform,

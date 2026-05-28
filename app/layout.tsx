@@ -47,6 +47,12 @@ export default function RootLayout({
           href={`${siteUrl}/feed.xml`}
         />
         <link rel="manifest" href="/manifest.webmanifest" />
+        <link
+          rel="sitemap"
+          type="application/xml"
+          title="Sitemap"
+          href={`${siteUrl}/sitemap.xml`}
+        />
         <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/app-icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

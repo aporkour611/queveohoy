@@ -19,18 +19,13 @@ export function HomeFeedGate(props: HomeFeedProps) {
     const activate = () => {
       if (cancelled || ready) return;
       setReady(true);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
-        });
-      });
     };
 
     const idle =
       typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(activate, { timeout: 1600 })
+        ? window.requestIdleCallback(activate, { timeout: 4200 })
         : undefined;
-    const fallback = window.setTimeout(activate, 400);
+    const fallback = window.setTimeout(activate, 3200);
 
     const onInteract = () => activate();
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });

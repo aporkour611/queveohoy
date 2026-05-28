@@ -13,6 +13,7 @@
   <rect width="400" height="225" fill="url(#bg)"/>
   <rect width="400" height="225" fill="url(#glow)"/>
   <ellipse cx="200" cy="98" rx="52" ry="38" fill="rgba(0,0,0,0.22)"/><circle cx="168" cy="92" r="8" fill="#fff" opacity="0.9"/><circle cx="232" cy="92" r="8" fill="#fff" opacity="0.9"/><path d="M148 118 Q200 142 252 118" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M176 74 L200 52 L224 74 L214 98 L186 98 Z" fill="#ffd166"/>
+  
   <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
   <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">El Hormiguero</text>
   <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">ANTENA 3</text>

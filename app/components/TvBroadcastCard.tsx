@@ -63,12 +63,6 @@ export const TvBroadcastCard = memo(function TvBroadcastCard({
             onFailed={() => setPosterFailed(true)}
           />
         ) : null}
-        {category === "directo" ? (
-          <span className="qvh-tv-live-badge">
-            <span className="qvh-tv-live-dot" aria-hidden />
-            En vivo
-          </span>
-        ) : null}
       </div>
 
       <div className="qvh-tv-slot-body">

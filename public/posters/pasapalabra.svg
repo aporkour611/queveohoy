@@ -13,6 +13,7 @@
   <rect width="400" height="225" fill="url(#bg)"/>
   <rect width="400" height="225" fill="url(#glow)"/>
   <circle cx="200" cy="96" r="58" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="3"/><circle cx="200" cy="96" r="42" fill="rgba(255,255,255,0.08)"/><text x="200" y="108" text-anchor="middle" fill="#fff" font-family="Georgia, serif" font-size="42" font-weight="700">Ñ</text>
+  
   <rect x="0" y="164" width="400" height="61" fill="rgba(0,0,0,0.42)"/>
   <text x="20" y="192" fill="#ffffff" font-family="Arial Narrow, Arial, sans-serif" font-size="22" font-weight="700">Pasapalabra</text>
   <text x="20" y="214" fill="rgba(255,255,255,0.72)" font-family="Arial Narrow, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="2">CONCURSO</text>
