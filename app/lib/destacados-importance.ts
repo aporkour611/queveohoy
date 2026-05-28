@@ -32,7 +32,17 @@ const FINALES_SPORT_IDS = new Set([
   "motos",
 ]);
 
-const FOLLOWED_SERIES_PATTERNS = [/^FROM\b/i, /^Euphoria\b/i];
+export const FOLLOWED_SERIES_PATTERNS = [/^FROM\b/i, /^Euphoria\b/i];
+
+function flagshipSeriesKey(event: EventRow): string {
+  return (event.title ?? "").split(" — ")[0]?.trim().toLowerCase() ?? "";
+}
+
+function isPinnedFlagshipSeries(event: EventRow): boolean {
+  if (getDestacadoImportanceTier(event) !== "series") return false;
+  const title = event.title ?? "";
+  return FOLLOWED_SERIES_PATTERNS.some((pattern) => pattern.test(title));
+}
 
 /** Partidos de Champions en eliminatorias/final (no jornadas de fase de grupos). */
 export function isChampionsWeekDestacado(event: EventRow): boolean {
@@ -109,19 +119,44 @@ export function sortDestacadosByImportance(a: EventRow, b: EventRow): number {
   return compareDestacadosWithinTier(a, b);
 }
 
-/** Una sola ficha por categoría, ordenadas por importancia editorial. */
+/** Una ficha por categoría; FROM y Euphoria pueden coexistir en series. */
 export function pickOneDestacadoPerTier(events: EventRow[]): EventRow[] {
   const best = new Map<DestacadoImportanceTier, EventRow>();
+  const pinnedByShow = new Map<string, EventRow>();
 
   for (const event of events) {
     const tier = getDestacadoImportanceTier(event);
+    if (isPinnedFlagshipSeries(event)) {
+      const key = flagshipSeriesKey(event);
+      const current = pinnedByShow.get(key);
+      if (!current || compareDestacadosWithinTier(current, event) > 0) {
+        pinnedByShow.set(key, event);
+      }
+      continue;
+    }
     const current = best.get(tier);
     if (!current || compareDestacadosWithinTier(current, event) > 0) {
       best.set(tier, event);
     }
   }
 
-  return DESTACADO_IMPORTANCE_TIERS.filter((tier) => best.has(tier)).map(
-    (tier) => best.get(tier)!
-  );
+  const pinnedSorted = [...pinnedByShow.values()].sort(compareDestacadosWithinTier);
+  const pinnedIds = new Set(pinnedSorted.map((event) => event.id));
+  const result: EventRow[] = [];
+
+  for (const tier of DESTACADO_IMPORTANCE_TIERS) {
+    if (tier === "series" && pinnedSorted.length > 0) {
+      result.push(...pinnedSorted);
+      const genericSeries = best.get("series");
+      if (genericSeries && !pinnedIds.has(genericSeries.id)) {
+        result.push(genericSeries);
+      }
+      continue;
+    }
+    if (best.has(tier)) {
+      result.push(best.get(tier)!);
+    }
+  }
+
+  return result;
 }

@@ -30,7 +30,7 @@ export const CURATED_SERIES_EPISODES: CuratedSeriesEpisode[] = [
     platform: "HBO Max",
     competition: "Nuevo episodio",
     posterPath: "/pRtJagIxpfODzzb0T0NAvZSzErC.jpg",
-    priority: 95,
+    priority: 96,
   },
   {
     tmdbId: 85552,
@@ -70,4 +70,19 @@ export function curatedSeriesByExternalId(
       externalId ===
       `tmdb_tv_${episode.tmdbId}_${episode.airDate}_s${episode.season}e${episode.episode}`
   );
+}
+
+export function curatedSeriesPriorityForEvent(
+  event: { title?: string | null; external_id?: string | null; sport?: string | null }
+): number | null {
+  if (event.sport !== "series") return null;
+
+  const byId = curatedSeriesByExternalId(event.external_id);
+  if (byId) return byId.priority;
+
+  const showTitle = (event.title ?? "").split(" — ")[0]?.trim() ?? "";
+  const match = CURATED_SERIES_EPISODES.find((episode) =>
+    episode.patterns.some((pattern) => pattern.test(showTitle))
+  );
+  return match?.priority ?? null;
 }

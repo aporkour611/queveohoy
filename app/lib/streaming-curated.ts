@@ -14,7 +14,7 @@ export const STREAMING_PRIORITY_SHOWS: StreamingPriorityShow[] = [
   { tmdbId: 210879, title: "Machos Alfa", platform: "Netflix", priority: 94 },
   { tmdbId: 67006, title: "La que se avecina", platform: "Prime Video", priority: 93 },
   { tmdbId: 93405, title: "El juego del calamar", platform: "Netflix", priority: 90 },
-  { tmdbId: 124364, title: "FROM", platform: "HBO Max", priority: 95 },
+  { tmdbId: 124364, title: "FROM", platform: "HBO Max", priority: 96 },
   { tmdbId: 85552, title: "Euphoria", platform: "HBO Max", priority: 96 },
   { tmdbId: 250307, title: "MobLand", platform: "Paramount+", priority: 88 },
 ];

@@ -74,7 +74,17 @@ describe("destacados importance tiers", () => {
     expect(sorted.map((event) => event.id)).toEqual([1, 2, 3, 5]);
   });
 
-  it("devuelve solo una ficha por categoría", () => {
+  it("devuelve solo una ficha por categoría, salvo series flagship (FROM + Euphoria)", () => {
+    const euphoria: EventRow = {
+      id: 6,
+      title: "Euphoria — T3E8",
+      sport: "series",
+      date: "2026-06-01",
+      time: "03:00",
+      competition: "Final de temporada",
+      platform: "HBO Max",
+    };
+
     const picked = pickOneDestacadoPerTier([
       cine,
       { ...cine, id: 11, title: "Otra peli" },
@@ -82,9 +92,13 @@ describe("destacados importance tiers", () => {
       ufc,
       reality,
       series,
+      euphoria,
     ]);
 
-    expect(picked).toHaveLength(5);
+    expect(picked.filter((event) => event.sport === "series")).toHaveLength(2);
+    expect(picked.map((event) => event.id)).toEqual(
+      expect.arrayContaining([5, 6])
+    );
     expect(new Set(picked.map((event) => getDestacadoImportanceTier(event))).size).toBe(
       5
     );
@@ -93,13 +107,22 @@ describe("destacados importance tiers", () => {
 
 describe("pickWeekDestacados", () => {
   it("elige una ficha por categoría y las ordena cronológicamente", () => {
-    const week = pickWeekDestacados([cine, champions, ufc, reality, series], {
+    const euphoria: EventRow = {
+      id: 6,
+      title: "Euphoria — T3E8",
+      sport: "series",
+      date: "2026-06-01",
+      time: "03:00",
+      competition: "Final de temporada",
+      platform: "HBO Max",
+    };
+
+    const week = pickWeekDestacados([cine, champions, ufc, reality, series, euphoria], {
       todayKey: "2026-05-27",
       windowDays: 7,
     });
 
-    const tiers = week.map((event) => getDestacadoImportanceTier(event));
-    expect(new Set(tiers).size).toBe(tiers.length);
+    expect(week.filter((event) => event.sport === "series")).toHaveLength(2);
 
     for (let i = 1; i < week.length; i++) {
       expect(sortDestacadosBySoonest(week[i - 1], week[i])).toBeLessThanOrEqual(0);

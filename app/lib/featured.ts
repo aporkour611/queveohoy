@@ -15,7 +15,9 @@ import {
   MADRID_TZ,
 } from "./timezone";
 import { spanishTvPriorityBonus } from "./spanish-tv-curated";
+import { isCuratedSeriesEvent } from "./curated-series-events";
 import { curatedMovieByExternalId } from "./movies-curated";
+import { curatedSeriesPriorityForEvent } from "./series-curated";
 import { parseJikanBuzzScore } from "./jikan-client";
 import { parseTmdbBuzzScore } from "./tmdb-client";
 import {
@@ -146,6 +148,11 @@ export function eventPriority(e: EventRow): number {
     e.sport === "cine" ? curatedMovieByExternalId(e.external_id) : null;
   if (curatedMovie) score = Math.max(score, curatedMovie.priority);
 
+  const curatedSeriesPriority = curatedSeriesPriorityForEvent(e);
+  if (curatedSeriesPriority != null) {
+    score = Math.max(score, curatedSeriesPriority);
+  }
+
   const tvBonus = spanishTvPriorityBonus(e);
   if (tvBonus > 0) score = Math.max(score, tvBonus);
 
@@ -214,6 +221,8 @@ export function isSuperRelevantEvent(e: EventRow): boolean {
   if (e.sport === "tv" && spanishTvPriorityBonus(e) >= 90) return true;
 
   if (curatedMovieByExternalId(e.external_id)) return true;
+
+  if (isCuratedSeriesEvent(e)) return true;
 
   return false;
 }

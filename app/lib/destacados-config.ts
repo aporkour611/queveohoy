@@ -48,11 +48,8 @@ export const DESTACADOS_RULES: DestacadoRule[] = [
   },
 ];
 
-/** Cada nuevo episodio de estas series va a Destacados */
-export const DESTACADOS_SERIES_PATTERNS: RegExp[] = [
-  /^FROM\b/i,
-  /^Euphoria\b/i,
-];
+/** Cada nuevo episodio de estas series va a Destacados (siempre visibles, como Euphoria). */
+export { FOLLOWED_SERIES_PATTERNS as DESTACADOS_SERIES_PATTERNS } from "./destacados-importance";
 
 const MAX_DESTACADOS_TODAY = 10;
 const MAX_DESTACADOS_WEEK = 10;

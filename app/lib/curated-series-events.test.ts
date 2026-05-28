@@ -89,6 +89,27 @@ describe("stripStaleCuratedSeriesEvents", () => {
 });
 
 describe("pickWeekDestacados", () => {
+  it("incluye FROM y Euphoria el lunes a las 03:00", () => {
+    const week = pickWeekDestacados([], {
+      todayKey: "2026-05-27",
+      windowDays: 7,
+    });
+
+    const from = week.find((event) => /^from\b/i.test(event.title ?? ""));
+    const euphoria = week.find((event) => /^euphoria\b/i.test(event.title ?? ""));
+
+    expect(from).toMatchObject({
+      date: "2026-06-01",
+      time: "03:00",
+      platform: "HBO Max",
+    });
+    expect(euphoria).toMatchObject({
+      date: "2026-06-01",
+      time: "03:00",
+      platform: "HBO Max",
+    });
+  });
+
   it("ordena esta semana cronológicamente (1 por categoría)", () => {
     const week = pickWeekDestacados([], {
       todayKey: "2026-05-27",
@@ -100,6 +121,6 @@ describe("pickWeekDestacados", () => {
     }
 
     const seriesCount = week.filter((event) => event.sport === "series").length;
-    expect(seriesCount).toBeLessThanOrEqual(1);
+    expect(seriesCount).toBe(2);
   });
 });
