@@ -37,6 +37,7 @@ import {
   type SpotlightCover,
 } from "./spotlight-art";
 import { eventDisplayTitle } from "./event-display";
+import { isChampionsFinal } from "./event-card-stamp";
 import { parseLeaguePoster } from "./thesportsdb-leagues";
 import type { EventRow } from "../components/types";
 
@@ -281,6 +282,7 @@ export function getSpotlightCardModel(
     const awayName = shortTeamName(event.away_team);
     const competition = event.competition?.split(" · ")[0]?.trim() || "Fútbol";
     const isChampions = /champions/i.test(event.competition ?? "");
+    const isClFinal = isChampions && isChampionsFinal(event);
 
     return {
       headline: teamTitle(event) || event.title?.trim() || "Partido",
@@ -291,9 +293,11 @@ export function getSpotlightCardModel(
       meta: footballSpotlightMeta(event.competition),
       platform: channels || "TV y streaming",
       channelList: channelList.length ? channelList : undefined,
-      visualClass: isChampions
-        ? "qvh-spotlight-visual-champions"
-        : "qvh-spotlight-visual-futbol",
+      visualClass: isClFinal
+        ? "qvh-spotlight-visual-champions-final"
+        : isChampions
+          ? "qvh-spotlight-visual-champions"
+          : "qvh-spotlight-visual-futbol",
       homeCrest: ids ? teamCrestUrl(ids.homeId) : undefined,
       awayCrest: ids ? teamCrestUrl(ids.awayId) : undefined,
       homeName,

@@ -278,7 +278,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
       : resolveChannelsForEvent(event);
   const compFull = event.competition ?? "";
   const compDisplay = compFull.split(" · ")[0] || compFull;
-  const matchClass = competitionMatchClass(compDisplay, event.sport);
+  const matchClass = competitionMatchClass(compDisplay, event.sport, event);
   const stamp = getEventCardStamp(event);
 
   function toggleExpanded() {

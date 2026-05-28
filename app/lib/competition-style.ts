@@ -1,6 +1,10 @@
+import type { EventRow } from "../components/types";
+import { isChampionsFinal } from "./event-card-stamp";
+
 export function competitionMatchClass(
   competition?: string | null,
-  sport?: string | null
+  sport?: string | null,
+  event?: Pick<EventRow, "sport" | "competition" | "title" | "home_team" | "away_team"> | null
 ): string {
   if (sport === "formula1" || sport === "motos") return "fh-match_motor fh-match-solo";
   if (sport === "ciclismo") return "fh-match_ciclismo fh-match-solo";
@@ -16,7 +20,12 @@ export function competitionMatchClass(
   if (sport && sport !== "futbol") return "fh-match_esports";
 
   const c = (competition ?? "").toLowerCase();
-  if (c.includes("champions")) return "fh-match_championsleague";
+  if (c.includes("champions")) {
+    if (event && isChampionsFinal(event)) {
+      return "fh-match_championsleague fh-match_championsleague-final";
+    }
+    return "fh-match_championsleague";
+  }
   if (c.includes("europa") && !c.includes("conference")) return "fh-match_europa";
   if (c.includes("conference")) return "fh-match_europa";
   if (c.includes("premier")) return "fh-match_premierleague";

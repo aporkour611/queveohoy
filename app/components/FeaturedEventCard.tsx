@@ -3,7 +3,7 @@ import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import type { SpotlightCover } from "../lib/spotlight-art";
-import { getEventCardStamp } from "../lib/event-card-stamp";
+import { getEventCardStamp, isChampionsFinal } from "../lib/event-card-stamp";
 import { MADRID_TZ } from "../lib/timezone";
 import {
   buildSpotlightImageProps,
@@ -90,7 +90,14 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
 }: Props) {
   const card = getSpotlightCardModel(event, MADRID_TZ);
   const stamp = getEventCardStamp(event);
-  const rootClass = ["qvh-spotlight-card", className].filter(Boolean).join(" ");
+  const isClFinal = isChampionsFinal(event);
+  const rootClass = [
+    "qvh-spotlight-card",
+    isClFinal ? "qvh-spotlight-card--cl-final" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <article className={rootClass}>

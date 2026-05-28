@@ -1,0 +1,298 @@
+/* ── Semana de Champions League (inspirado en identidad UCL, sin logos oficiales) ── */
+
+.qvh-cl-week-shell {
+  margin: 0 calc(-1 * var(--qvh-layout-gutter)) 20px;
+  overflow: hidden;
+  border-radius: 0;
+  border: 1px solid rgba(120, 140, 255, 0.22);
+  border-left: none;
+  border-right: none;
+  box-shadow:
+    0 24px 60px rgba(8, 6, 40, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.qvh-cl-week-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    155deg,
+    #020218 0%,
+    #0a0648 28%,
+    #180a78 52%,
+    #0a0538 78%,
+    #030210 100%
+  );
+}
+
+.qvh-cl-week-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.qvh-cl-week-hero-rays {
+  position: absolute;
+  inset: -40% -20%;
+  background: conic-gradient(
+    from 200deg at 50% 120%,
+    transparent 0deg,
+    rgba(93, 95, 239, 0.14) 24deg,
+    transparent 48deg,
+    rgba(201, 162, 39, 0.1) 72deg,
+    transparent 96deg,
+    rgba(93, 95, 239, 0.12) 120deg,
+    transparent 360deg
+  );
+  opacity: 0.9;
+  animation: qvh-cl-rays-drift 18s linear infinite;
+}
+
+@keyframes qvh-cl-rays-drift {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.qvh-cl-week-hero-glow {
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  width: 120%;
+  height: 80%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse 55% 45% at 50% 0%,
+    rgba(120, 130, 255, 0.35),
+    transparent 68%
+  );
+}
+
+.qvh-cl-week-hero-inner {
+  position: relative;
+  z-index: 1;
+  padding: 28px var(--qvh-layout-gutter) 24px;
+  max-width: var(--qvh-layout-max);
+  margin: 0 auto;
+}
+
+.qvh-cl-week-hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.qvh-cl-week-starball {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  filter: drop-shadow(0 0 18px rgba(201, 162, 39, 0.35));
+}
+
+.qvh-cl-week-kicker {
+  margin: 0 0 2px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.qvh-cl-week-headline {
+  margin: 0;
+  font-family: var(--qvh-font-display);
+  font-size: clamp(1.85rem, 5.5vw, 2.65rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(93, 95, 239, 0.45);
+}
+
+.qvh-cl-week-stage {
+  margin: 8px 0 0;
+}
+
+.qvh-cl-week-stage-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #1a1028;
+  background: linear-gradient(135deg, #f5e6a8 0%, #c9a227 45%, #e8d48a 100%);
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.45);
+}
+
+.qvh-cl-week-matchup {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px 16px;
+  margin-bottom: 16px;
+  padding: 16px 14px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.qvh-cl-week-team {
+  min-width: 0;
+  text-align: center;
+}
+
+.qvh-cl-week-team-name {
+  display: block;
+  font-family: var(--qvh-font-display);
+  font-size: clamp(1rem, 3.2vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.qvh-cl-week-vs {
+  font-family: var(--qvh-font-display);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: rgba(201, 162, 39, 0.85);
+}
+
+.qvh-cl-week-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.qvh-cl-week-date,
+.qvh-cl-week-time {
+  font-family: var(--qvh-font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.qvh-cl-week-time {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.qvh-cl-week-destacados {
+  padding: 16px var(--qvh-layout-gutter) 14px;
+  background: linear-gradient(180deg, #07051e 0%, #0d0d12 100%);
+  border-top: 1px solid rgba(120, 140, 255, 0.12);
+}
+
+.qvh-cl-week-destacados .qvh-destacados-head {
+  margin-bottom: 12px;
+}
+
+.qvh-cl-week-destacados .qvh-destacados-title {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.05rem;
+}
+
+.qvh-cl-week-destacados .qvh-destacados-sub {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.qvh-cl-week-destacados .qvh-destacados-dot {
+  background: linear-gradient(135deg, #c9a227, #f5e6a8);
+  box-shadow: 0 0 12px rgba(201, 162, 39, 0.55);
+}
+
+/* Spotlight final */
+.qvh-spotlight-card--cl-final {
+  border-color: rgba(201, 162, 39, 0.55);
+  box-shadow:
+    0 12px 36px rgba(24, 10, 80, 0.45),
+    0 0 0 1px rgba(201, 162, 39, 0.2);
+}
+
+.qvh-spotlight-visual-champions-final {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(201, 162, 39, 0.28), transparent 52%),
+    radial-gradient(circle at 20% 80%, rgba(93, 95, 239, 0.22), transparent 45%),
+    radial-gradient(circle at 80% 70%, rgba(120, 140, 255, 0.15), transparent 40%),
+    linear-gradient(165deg, #0a0648 0%, #120878 40%, #060318 100%);
+}
+
+.qvh-spotlight-visual-champions-final::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 38%,
+    rgba(255, 255, 255, 0.03) 0deg 8deg,
+    transparent 8deg 16deg
+  );
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Feed block */
+.qvh-cl-week-feed-block {
+  margin: 0 calc(-1 * var(--qvh-layout-gutter)) 12px;
+  padding: 0 var(--qvh-layout-gutter) 12px;
+  border-radius: 0;
+  border: 1px solid rgba(120, 140, 255, 0.18);
+  border-left: none;
+  border-right: none;
+  background: linear-gradient(180deg, rgba(10, 6, 72, 0.35) 0%, transparent 100%);
+}
+
+.qvh-cl-week-feed-block .fh-comp-header {
+  margin: 0 calc(-1 * var(--qvh-layout-gutter));
+  padding: 14px var(--qvh-layout-gutter);
+  background: linear-gradient(90deg, #0a0648 0%, #180878 50%, #0a0648 100%);
+  border-bottom: 2px solid rgba(201, 162, 39, 0.65);
+}
+
+.qvh-cl-week-feed-block .fh-comp-header h3 {
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.qvh-cl-week-feed-block .fh-comp-header.fh-comp-purple {
+  background: linear-gradient(90deg, #0a0648 0%, #180878 50%, #0a0648 100%);
+}
+
+.fh-match_championsleague-final {
+  border: 2px solid rgba(201, 162, 39, 0.55);
+  background: linear-gradient(180deg, #dee7f6 0%, #c8d8f0 100%);
+  box-shadow: 0 8px 28px rgba(25, 48, 86, 0.25);
+}
+
+.fh-match_championsleague-final .fh-m-comp {
+  background: linear-gradient(90deg, #0a0648, #180878);
+  color: #f5e6a8;
+  border-color: #c9a227;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .qvh-cl-week-starball {
+    width: 88px;
+    height: 88px;
+  }
+
+  .qvh-cl-week-matchup {
+    padding: 20px 24px;
+  }
+}

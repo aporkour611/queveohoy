@@ -18,6 +18,10 @@ const MediaEntertainmentSection = dynamic(
 import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
 import { sportLabel } from "../lib/filter-config";
 import { getTvShowCategory } from "../lib/tv-show-category";
+import {
+  isChampionsCompetitionTitle,
+} from "../lib/champions-week";
+import { isChampionsFinal } from "../lib/event-card-stamp";
 
 function groupForDisplay(events: EventRow[]) {
   const football: Record<string, EventRow[]> = {};
@@ -78,13 +82,23 @@ function SportSectionBlock({
   accentClass,
   events,
   eager,
+  shellClassName,
 }: {
   title: string;
   accentClass: string;
   events: EventRow[];
   eager: boolean;
+  shellClassName?: string;
 }) {
   const sortedEvents = useMemo(() => sortEventsByPopularity(events), [events]);
+  const blockClass = [
+    "fh-section-block",
+    "qvh-feed-category-shell",
+    "qvh-content-auto",
+    shellClassName,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <LazyMount
@@ -92,7 +106,7 @@ function SportSectionBlock({
       minHeight={estimateBlockHeight(Math.min(events.length, 3))}
       rootMargin="560px 0px"
     >
-      <div className="fh-section-block qvh-feed-category-shell qvh-content-auto">
+      <div className={blockClass}>
         <div className={`fh-comp-header ${accentClass}`}>
           <h3>{title}</h3>
           <span className="fh-comp-count">{events.length}</span>
@@ -130,6 +144,9 @@ export const EventDaySections = memo(function EventDaySections({
       {Object.entries(sections.football).map(([comp, evs]) => {
         const eager = highPriority && blockIndex < 2;
         blockIndex += 1;
+        const isClWeekBlock =
+          isChampionsCompetitionTitle(comp) &&
+          evs.some((event) => isChampionsFinal(event));
         return (
           <SportSectionBlock
             key={comp}
@@ -137,6 +154,7 @@ export const EventDaySections = memo(function EventDaySections({
             accentClass={competitionAccentClass(comp)}
             events={evs}
             eager={eager}
+            shellClassName={isClWeekBlock ? "qvh-cl-week-feed-block" : undefined}
           />
         );
       })}

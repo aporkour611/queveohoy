@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   pickWeekDestacados,
-  sortDestacadosBySoonest,
 } from "./destacados-config";
+import {
+  getDestacadoImportanceTier,
+  tierRank,
+} from "./destacados-importance";
 import {
   mergeCuratedSeriesEvents,
   shouldSuppressCuratedSeriesStaleEvent,
@@ -89,22 +92,18 @@ describe("stripStaleCuratedSeriesEvents", () => {
 });
 
 describe("pickWeekDestacados", () => {
-  it("ordena esta semana cronológicamente (fecha y hora Madrid)", () => {
+  it("ordena esta semana por importancia editorial (1 por categoría)", () => {
     const week = pickWeekDestacados([], {
       todayKey: "2026-05-27",
       windowDays: 7,
     });
 
-    for (let i = 1; i < week.length; i++) {
-      expect(sortDestacadosBySoonest(week[i - 1], week[i])).toBeLessThanOrEqual(0);
+    const tiers = week.map((event) => getDestacadoImportanceTier(event));
+    for (let i = 1; i < tiers.length; i++) {
+      expect(tierRank(tiers[i])).toBeGreaterThanOrEqual(tierRank(tiers[i - 1]));
     }
 
-    const fromIndex = week.findIndex((event) => /^from\b/i.test(event.title ?? ""));
-    const euphoriaIndex = week.findIndex((event) =>
-      /^euphoria\b/i.test(event.title ?? "")
-    );
-
-    expect(fromIndex).toBeGreaterThanOrEqual(0);
-    expect(euphoriaIndex).toBeGreaterThanOrEqual(0);
+    const seriesCount = week.filter((event) => event.sport === "series").length;
+    expect(seriesCount).toBeLessThanOrEqual(1);
   });
 });

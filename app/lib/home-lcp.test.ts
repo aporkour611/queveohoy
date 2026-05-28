@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { EventRow } from "../components/types";
-import { DESTACADOS_VISIBLE_SLOTS, pickWeekDestacados } from "./destacados-config";
+import { DESTACADOS_VISIBLE_SLOTS } from "./destacados-config";
+import { getDestacadoImportanceTier } from "./destacados-importance";
 import { getSpotlightCardModel } from "./featured-card";
 import { buildOptimizedPreloadHref } from "./optimized-image";
 import { resolveHomeLcpPreloadEntries } from "./home-lcp";
@@ -31,12 +32,8 @@ describe("resolveHomeLcpPreloadEntries", () => {
     expect(buildOptimizedPreloadHref(cover.url)).toContain("/_next/image");
   });
 
-  it("includes mask singer in week destacados", () => {
-    const week = pickWeekDestacados([maskSingerEvent], { todayKey: "2026-05-27" });
-
-    expect(week.some((event) => /mask singer/i.test(event.title ?? ""))).toBe(
-      true
-    );
+  it("clasifica Mask Singer en la categoría rest de destacados", () => {
+    expect(getDestacadoImportanceTier(maskSingerEvent)).toBe("rest");
   });
 
   it("returns preload entries for visible destacados covers", () => {
