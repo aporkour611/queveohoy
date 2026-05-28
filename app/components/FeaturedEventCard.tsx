@@ -1,11 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { memo } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import type { SpotlightCover } from "../lib/spotlight-art";
 import { getEventCardStamp } from "../lib/event-card-stamp";
 import { MADRID_TZ } from "../lib/timezone";
+import { IMAGE_QUALITY, POSTER_SIZES } from "../lib/optimized-image";
 import { RemotePoster } from "./RemotePoster";
 import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
@@ -37,15 +39,17 @@ function SpotlightCoverArt({
         className={`qvh-spotlight-cover ${layoutClass}`}
         aria-hidden
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={cover.url}
           alt=""
+          fill
           className="qvh-spotlight-cover-img"
-          style={cover.objectPosition ? { objectPosition: cover.objectPosition } : undefined}
-          loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : "auto"}
-          decoding="async"
+          style={
+            cover.objectPosition ? { objectPosition: cover.objectPosition } : undefined
+          }
+          sizes={POSTER_SIZES.spotlight}
+          quality={IMAGE_QUALITY}
+          priority={priority}
         />
       </div>
     );
@@ -57,6 +61,7 @@ function SpotlightCoverArt({
       className={`qvh-spotlight-cover ${layoutClass}`}
       priority={priority}
       objectPosition={cover.objectPosition}
+      sizeVariant="spotlight"
     />
   );
 }

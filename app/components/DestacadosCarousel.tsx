@@ -93,7 +93,7 @@ export function DestacadosCarousel({
             <FeaturedEventCard
               key={event.id}
               event={event}
-              priority={index < 2}
+              priority={index === 0}
             />
           ))}
         </div>
@@ -131,7 +131,7 @@ export function DestacadosCarousel({
           <FeaturedEventCard
             key={event.id}
             event={event}
-            priority={clampedPage === 0 && index < 2}
+            priority={clampedPage === 0 && index === 0}
           />
         ))}
       </div>

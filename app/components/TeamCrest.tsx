@@ -1,7 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { teamInitials } from "../lib/football";
+import {
+  canOptimizeImageSrc,
+  IMAGE_QUALITY,
+  POSTER_SIZES,
+} from "../lib/optimized-image";
 import { normalizeRemoteImageUrl, safeRemoteImageUrl } from "../lib/remote-image";
 import { useLazyInView } from "../lib/use-lazy-in-view";
 
@@ -55,7 +61,9 @@ export function TeamCrest({
 
   const currentUrl = urls[urlIndex];
   const safeUrl = safeRemoteImageUrl(currentUrl);
-  const canLoadImage = Boolean(safeUrl && !failed && (eager || inView));
+  const optimizable = canOptimizeImageSrc(safeUrl);
+  const displaySrc = safeUrl ? crestSrc(safeUrl, retry) : null;
+  const canLoadImage = Boolean(displaySrc && !failed && (eager || inView));
   const wrapperClass = ["fh-team-crest", className].filter(Boolean).join(" ");
 
   function handleError() {
@@ -80,12 +88,24 @@ export function TeamCrest({
       style={{ width: size, height: size }}
       title={name ?? undefined}
     >
-      {canLoadImage ? (
-        // Escudos pequeños: img nativa lazy (sin pasar por /_next/image).
+      {canLoadImage && optimizable ? (
+        <Image
+          key={`${urlIndex}-${retry}`}
+          src={displaySrc!}
+          alt=""
+          width={size}
+          height={size}
+          className="fh-team-crest-img"
+          sizes={POSTER_SIZES.crest}
+          quality={IMAGE_QUALITY}
+          priority={eager}
+          onError={handleError}
+        />
+      ) : canLoadImage ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           key={`${urlIndex}-${retry}`}
-          src={crestSrc(safeUrl!, retry)}
+          src={displaySrc!}
           alt=""
           width={size}
           height={size}

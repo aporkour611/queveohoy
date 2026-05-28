@@ -1,4 +1,3 @@
-import { memo, useMemo } from "react";
 import type { EventRow } from "./types";
 import { pickWeekDestacados } from "../lib/destacados-config";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
@@ -46,16 +45,9 @@ function DestacadosRow({
   );
 }
 
-export const DestacadosSection = memo(function DestacadosSection({ events }: Props) {
-  const todayKey = useMemo(
-    () => buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "",
-    []
-  );
-
-  const weekFeatured = useMemo(
-    () => pickWeekDestacados(events, { todayKey }),
-    [events, todayKey]
-  );
+export function DestacadosSection({ events }: Props) {
+  const todayKey = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "";
+  const weekFeatured = pickWeekDestacados(events, { todayKey });
 
   if (weekFeatured.length === 0) return null;
 
@@ -70,4 +62,4 @@ export const DestacadosSection = memo(function DestacadosSection({ events }: Pro
       />
     </div>
   );
-});
+}

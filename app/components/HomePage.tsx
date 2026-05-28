@@ -15,11 +15,25 @@ import {
 } from "../lib/cookie-consent";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
 import dynamic from "next/dynamic";
-import { FeedControls } from "./FeedControls";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { LoadingState } from "./LoadingState";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
 import { useHomeReset } from "./HomeResetContext";
+
+const FeedControls = dynamic(
+  () => import("./FeedControls").then((mod) => mod.FeedControls),
+  { loading: () => null }
+);
+
+const EventDaySections = dynamic(
+  () => import("./EventDaySections").then((mod) => mod.EventDaySections),
+  { loading: () => null }
+);
+
+const LazyMount = dynamic(
+  () => import("./LazyMount").then((mod) => mod.LazyMount),
+  { loading: () => null }
+);
 
 const WeekDaySection = dynamic(
   () => import("./WeekDaySection").then((mod) => mod.WeekDaySection),
@@ -43,9 +57,6 @@ import {
   resolveHomeDayEvents,
 } from "../lib/upcoming-events";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
-import { EventDaySections } from "./EventDaySections";
-import { LazyMount } from "./LazyMount";
-
 type Props = {
   initialEvents?: EventRow[];
   initialDestacadosEvents?: EventRow[];

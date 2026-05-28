@@ -9,19 +9,20 @@ type Options = {
   rootMargin?: string;
 };
 
-const HAS_INTERSECTION_OBSERVER =
-  typeof IntersectionObserver !== "undefined";
-
 /** true cuando el elemento entra (o está cerca) del viewport. */
 export function useLazyInView(options: Options = {}) {
   const { eager = false, rootMargin = "200px 0px" } = options;
   const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(
-    () => eager || !HAS_INTERSECTION_OBSERVER
-  );
+  // SSR y primer paint: solo eager. Evita hidratar cientos de <img> fuera de pantalla.
+  const [inView, setInView] = useState(eager);
 
   useEffect(() => {
     if (eager || inView) return;
+
+    if (typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
 
     const el = ref.current;
     if (!el) return;
