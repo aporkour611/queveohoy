@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { preload } from "react-dom";
 import { DestacadosSection } from "../components/DestacadosSection";
 import { FeedErrorBoundary } from "../components/FeedErrorBoundary";
+import { FeedControlsShell } from "../components/FeedControlsShell";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeed } from "../components/HomePage";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
@@ -39,6 +40,7 @@ export default async function Page() {
   const ssrEvents = trimHomeSsrEvents(events);
   const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
   const initialDay = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0];
+  const displayDays = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT);
 
   for (const entry of lcpPreloadEntries) {
     preload(entry.href, {
@@ -70,6 +72,9 @@ export default async function Page() {
                   initialDestacadosEvents={weekEvents}
                   initialError={error}
                   serverDayHeaderDate={initialDay?.date ?? null}
+                  feedControlsShell={
+                    <FeedControlsShell days={displayDays} />
+                  }
                   dayHeader={
                     initialDay ? (
                       <HomeFeedDayHeader

@@ -21,11 +21,19 @@ export function CookieConsentBanner() {
     if (choice) return;
 
     const show = () => setReady(true);
-    const idle = window.requestIdleCallback?.(show, { timeout: 4000 });
+    const idle =
+      typeof window.requestIdleCallback === "function"
+        ? window.requestIdleCallback(show, { timeout: 4000 })
+        : undefined;
     const fallback = window.setTimeout(show, 3500);
 
     return () => {
-      if (idle !== undefined) window.cancelIdleCallback(idle);
+      if (
+        idle !== undefined &&
+        typeof window.cancelIdleCallback === "function"
+      ) {
+        window.cancelIdleCallback(idle);
+      }
       window.clearTimeout(fallback);
     };
   }, [choice]);

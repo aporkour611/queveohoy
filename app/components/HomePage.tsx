@@ -18,10 +18,11 @@ import { FeedControls } from "./FeedControls";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { LoadingState } from "./LoadingState";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
+import { EventDaySections } from "./EventDaySections";
 import { useHomeReset } from "./HomeResetContext";
 import dynamic from "next/dynamic";
 
-const EventDaySections = dynamic(
+const EventDaySectionsLazy = dynamic(
   () => import("./EventDaySections").then((mod) => mod.EventDaySections),
   { loading: () => <div className="qvh-feed-day-placeholder" aria-hidden /> }
 );
@@ -61,6 +62,8 @@ type Props = {
   serverDayHeaderDate?: string | null;
   /** Cabecera estática del día (server component). */
   dayHeader?: ReactNode;
+  /** Calendario estático antes de hidratar FeedControls. */
+  feedControlsShell?: ReactNode;
   children?: ReactNode;
 };
 
@@ -109,6 +112,7 @@ export function HomeFeed({
   initialError = null,
   serverDayHeaderDate = null,
   dayHeader,
+  feedControlsShell,
   children,
 }: Props = {}) {
   const [events, setEvents] = useState(() =>
@@ -432,12 +436,17 @@ export function HomeFeed({
   }, [displayDays.length]);
 
   const showInitialLoading = loading && events.length === 0;
+  const DaySections = hasInitialData ? EventDaySections : EventDaySectionsLazy;
 
   useEffect(() => {
     const el = document.getElementById("home-day-header-ssr");
     if (!el) return;
     el.hidden = !useSsrDayHeader;
   }, [useSsrDayHeader]);
+
+  useLayoutEffect(() => {
+    document.getElementById("feed-controls-ssr")?.setAttribute("hidden", "");
+  }, []);
 
   const goToDay = useCallback(
     (index: number) => {
@@ -534,7 +543,7 @@ export function HomeFeed({
       window.removeEventListener("resize", handleResize);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [showInitialLoading, displayDays, weekView]);
+  }, [showInitialLoading, displayDays, weekView, invalidateScrollAnchorOffset]);
 
   const openWeekView = useCallback(() => {
     pinScrollForViewToggle();
@@ -578,6 +587,8 @@ export function HomeFeed({
           >
             {children}
           </div>
+
+          {feedControlsShell}
 
           <FeedControls
             days={displayDays}
@@ -651,7 +662,7 @@ export function HomeFeed({
                           </h2>
                         )}
 
-                        <EventDaySections
+                        <DaySections
                           events={activeHomeDay.todayEvents}
                           priority="high"
                           emptyMessage={
@@ -665,7 +676,7 @@ export function HomeFeed({
                         ) : null}
                         {activeHomeDay.upcomingEvents.length > 0 ? (
                           <LazyMount minHeight={240} rootMargin="400px 0px">
-                            <EventDaySections events={activeHomeDay.upcomingEvents} />
+                            <DaySections events={activeHomeDay.upcomingEvents} />
                           </LazyMount>
                         ) : null}
                         {hiddenOnActiveDay > 0 ? (

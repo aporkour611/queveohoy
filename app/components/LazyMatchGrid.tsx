@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { EventRow } from "./types";
 import { MatchCard } from "./MatchCard";
 
@@ -13,28 +13,28 @@ type Props = {
   eager?: boolean;
 };
 
-type GridState = {
-  key: string;
-  count: number;
-};
+function buildEventsKey(events: EventRow[], eager: boolean): string {
+  return `${eager}:${events.map((event) => event.id).join(",")}`;
+}
 
-function buildGridState(events: EventRow[], eager: boolean): GridState {
-  const key = `${eager}:${events.map((event) => event.id).join(",")}`;
-  const count = eager ? events.length : Math.min(INITIAL_VISIBLE, events.length);
-  return { key, count };
+function initialVisibleCount(events: EventRow[], eager: boolean): number {
+  return eager ? events.length : Math.min(INITIAL_VISIBLE, events.length);
 }
 
 /** Grid que va pintando tarjetas a medida que te acercas al final (scroll infinito ligero). */
 export function LazyMatchGrid({ events, eager = false }: Props) {
-  const [grid, setGrid] = useState<GridState>(() => buildGridState(events, eager));
+  const eventsKey = useMemo(() => buildEventsKey(events, eager), [events, eager]);
+  const [visibleCount, setVisibleCount] = useState(() =>
+    initialVisibleCount(events, eager)
+  );
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const nextState = buildGridState(events, eager);
+  const prevEventsKeyRef = useRef(eventsKey);
 
-  if (grid.key !== nextState.key) {
-    setGrid(nextState);
-  }
-
-  const visibleCount = grid.count;
+  useEffect(() => {
+    if (prevEventsKeyRef.current === eventsKey) return;
+    prevEventsKeyRef.current = eventsKey;
+    setVisibleCount(initialVisibleCount(events, eager));
+  }, [eventsKey, events, eager]);
 
   useEffect(() => {
     if (eager || visibleCount >= events.length) return;
@@ -45,10 +45,9 @@ export function LazyMatchGrid({ events, eager = false }: Props) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
-        setGrid((current) => ({
-          ...current,
-          count: Math.min(current.count + LOAD_BATCH, events.length),
-        }));
+        setVisibleCount((current) =>
+          Math.min(current + LOAD_BATCH, events.length)
+        );
       },
       { rootMargin: "480px 0px" }
     );

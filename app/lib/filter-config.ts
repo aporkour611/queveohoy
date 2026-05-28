@@ -27,7 +27,7 @@ export const QUICK_FILTERS: QuickFilter[] = [
   { id: "tv", label: "TV y Twitch", sportIds: [...TV_SPORT_FILTER_IDS] },
   {
     id: "cine",
-    label: "Cine y series",
+    label: "Cine, series y anime",
     sportIds: ["cine", "series", "anime"],
   },
 ];
@@ -63,7 +63,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
   },
   {
     id: "cine",
-    label: "Cine & series",
+    label: "Cine, series y anime",
     options: [
       { id: "cine", label: "Cine" },
       { id: "series", label: "Series" },
@@ -108,6 +108,6 @@ export const LEGEND_ITEMS = [
   { label: "Deportes", dot: "qvh-dot-purple" },
   { label: "E-Sports", dot: "qvh-dot-green" },
   { label: "Coches & motos", dot: "qvh-dot-motor" },
-  { label: "Cine & series", dot: "qvh-dot-gold" },
+  { label: "Cine, series y anime", dot: "qvh-dot-gold" },
   { label: "TV y Twitch", dot: "qvh-dot-pink" },
 ] as const;

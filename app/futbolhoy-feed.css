@@ -447,48 +447,6 @@
 }
 
 /* ── Filtros de contenido ── */
-.fh-quick-filters {
-  display: flex;
-  gap: 8px;
-  padding: 10px 10px 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.fh-quick-filters::-webkit-scrollbar {
-  display: none;
-}
-
-.fh-quick-filter {
-  flex-shrink: 0;
-  padding: 7px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--qvh-border);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--qvh-text-muted);
-  font-family: var(--qvh-font-display);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.fh-quick-filter:hover {
-  color: var(--qvh-text);
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.fh-quick-filter.active {
-  background: var(--qvh-purple);
-  border-color: var(--qvh-purple);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(93, 95, 239, 0.35);
-}
-
 .fh-filters-panel {
   background: var(--qvh-bg-panel);
   border: 1px solid var(--qvh-border);
