@@ -62,7 +62,7 @@ function StaticCrest({ src, name }: { src?: string | null; name?: string | null 
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={safe} alt="" className="fh-crest-fallback" width={50} height={50} loading="lazy" />
+    <img src={safe} alt="" className="fh-crest-fallback fh-team-crest-img" loading="lazy" />
   );
 }
 

@@ -42,7 +42,9 @@ function StaticSportBlock({
       </div>
       <div className="qvh-category-carousel-cards fh-category-carousel-static">
         {sortedEvents.map((event) => (
-          <MatchCardStatic key={event.id} event={event} />
+          <div key={event.id} className="fh-cardcol">
+            <MatchCardStatic event={event} />
+          </div>
         ))}
       </div>
     </div>

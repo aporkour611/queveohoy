@@ -1189,6 +1189,29 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
   overflow: visible;
 }
 
+.fh-category-carousel-static {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fh-category-carousel-static .fh-cardcol {
+  flex: 0 0 calc((100% - 20px) / 3);
+  max-width: calc((100% - 20px) / 3);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 720px) {
+  .fh-category-carousel-static .fh-cardcol {
+    flex: 0 0 78%;
+    max-width: 78%;
+  }
+}
+
 /* ── Carrusel por categoría (3 ítems + flechas) ── */
 .qvh-category-carousel {
   position: relative;

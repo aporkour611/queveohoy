@@ -18,8 +18,12 @@ export function HomeFeedGate(props: HomeFeedProps) {
 
     const activate = () => {
       if (cancelled || ready) return;
-      document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
       setReady(true);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
+        });
+      });
     };
 
     const idle =

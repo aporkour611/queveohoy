@@ -107,8 +107,6 @@ export function TeamCrest({
           key={`${urlIndex}-${retry}`}
           src={displaySrc!}
           alt=""
-          width={size}
-          height={size}
           className="fh-team-crest-img"
           loading={eager ? "eager" : "lazy"}
           decoding="async"

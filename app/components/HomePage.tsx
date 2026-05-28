@@ -470,7 +470,6 @@ export function HomeFeed({
 
   useLayoutEffect(() => {
     document.getElementById("feed-controls-ssr")?.setAttribute("hidden", "");
-    document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
   }, []);
 
   const goToDay = useCallback(
