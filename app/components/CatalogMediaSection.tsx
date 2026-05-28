@@ -1,7 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import type { EventRow } from "./types";
+import { CategoryCarousel } from "./CategoryCarousel";
 import { MediaPosterCard } from "./MediaPosterCard";
+import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
 
 type Props = {
   cine: EventRow[];
@@ -20,10 +23,12 @@ function CatalogRail({
   count: number;
   events: EventRow[];
 }) {
+  const sortedEvents = useMemo(() => sortEventsByPopularity(events), [events]);
+
   if (events.length === 0) return null;
 
   return (
-    <div className="qvh-catalog-rail-block">
+    <div className="qvh-catalog-rail-block qvh-feed-category-shell">
       <div className="qvh-catalog-rail-head">
         <div className={`qvh-catalog-rail-accent qvh-catalog-rail-accent-${accent}`} />
         <div className="qvh-catalog-rail-copy">
@@ -31,13 +36,11 @@ function CatalogRail({
           <span className="qvh-catalog-rail-count">{count}</span>
         </div>
       </div>
-      <div className="qvh-catalog-rail-scroll">
-        <div className="qvh-catalog-rail-track">
-          {events.map((event, index) => (
-            <MediaPosterCard key={event.id} event={event} index={index} />
-          ))}
-        </div>
-      </div>
+      <CategoryCarousel ariaLabel={label} className="qvh-category-carousel-posters">
+        {sortedEvents.map((event, index) => (
+          <MediaPosterCard key={event.id} event={event} index={index} />
+        ))}
+      </CategoryCarousel>
     </div>
   );
 }

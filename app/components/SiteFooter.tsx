@@ -1,39 +1,36 @@
 import Link from "next/link";
-import { SEO_FOOTER_HUB_SLUGS, SEO_HUB_NAV_LINKS } from "../lib/seo-hub-nav";
+import { LogoMark } from "./LogoMark";
 
 export function SiteFooter() {
-  const featuredHubs = SEO_HUB_NAV_LINKS.filter((hub) =>
-    (SEO_FOOTER_HUB_SLUGS as readonly string[]).includes(hub.slug)
-  );
   const year = new Date().getFullYear();
 
   return (
     <footer className="qvh-site-footer">
-      <div className="qvh-site-footer-shell">
-        <div className="qvh-site-footer-grid">
-          <div className="qvh-site-footer-brand">
-            <p className="qvh-site-footer-eyebrow">Qué veo hoy</p>
-            <p className="qvh-site-footer-note">
-              ¿Qué ver hoy en la tele? Agenda de partidos, deportes y estrenos en
-              TV y streaming con horarios y canales. Puedes consultar y reutilizar
-              estos datos libremente citando queveohoy.es como fuente.
+      <div className="qvh-site-footer-aurora" aria-hidden>
+        <span className="qvh-site-footer-aurora-a" />
+        <span className="qvh-site-footer-aurora-b" />
+        <span className="qvh-site-footer-aurora-c" />
+      </div>
+      <div className="qvh-site-footer-rule" aria-hidden />
+
+      <div className="qvh-site-footer-inner">
+        <div className="qvh-site-footer-top">
+          <div className="qvh-site-footer-brand-block">
+            <Link
+              href="/"
+              className="qvh-logo-link qvh-logo-link--full qvh-site-footer-logo"
+              aria-label="Qué veo hoy — Inicio"
+            >
+              <LogoMark className="qvh-logo-svg qvh-logo-svg--full" />
+            </Link>
+            <p className="qvh-site-footer-tagline">
+              La agenda de España para saber qué ver hoy en TV, streaming y deportes.
             </p>
           </div>
 
-          <nav className="qvh-site-footer-seo" aria-label="Agendas destacadas">
-            <p className="qvh-site-footer-nav-title">Agendas</p>
-            <ul className="qvh-site-footer-linklist">
-              {featuredHubs.map((hub) => (
-                <li key={hub.slug}>
-                  <Link href={`/${hub.slug}`}>{hub.title}</Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <nav className="qvh-site-footer-legal" aria-label="Legal">
-            <p className="qvh-site-footer-nav-title">Información</p>
-            <ul className="qvh-site-footer-linklist">
+          <nav className="qvh-site-footer-nav" aria-label="Información legal">
+            <p className="qvh-site-footer-nav-kicker">Información</p>
+            <ul className="qvh-site-footer-nav-list">
               <li>
                 <Link href="/privacidad">Política de privacidad</Link>
               </li>
@@ -44,18 +41,15 @@ export function SiteFooter() {
           </nav>
         </div>
 
+        <div className="qvh-site-footer-divider" aria-hidden />
+
         <div className="qvh-site-footer-bottom">
-          <p className="qvh-site-footer-bottom-meta">
+          <p className="qvh-site-footer-meta">
             © {year} queveohoy.es · Horario: península y Baleares
           </p>
-          <ul className="qvh-site-footer-bottom-legal">
-            <li>
-              <Link href="/privacidad">Privacidad</Link>
-            </li>
-            <li>
-              <Link href="/cookies">Cookies</Link>
-            </li>
-          </ul>
+          <p className="qvh-site-footer-credit">
+            Datos abiertos con cita a queveohoy.es
+          </p>
         </div>
       </div>
     </footer>

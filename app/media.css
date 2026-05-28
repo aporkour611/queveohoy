@@ -620,6 +620,88 @@
 
 .fh-match-media-spotlight.fh-match_lol {
   border-color: rgba(200, 155, 60, 0.35);
+  box-shadow: 0 6px 22px rgba(120, 53, 15, 0.16);
+}
+
+.fh-match-media-spotlight.fh-match_cs2 {
+  box-shadow: 0 6px 22px rgba(180, 83, 9, 0.18);
+}
+
+.fh-match-media-spotlight.fh-match_valorant {
+  box-shadow: 0 6px 22px rgba(190, 24, 93, 0.16);
+}
+
+.fh-media-spotlight-visual-cs2,
+.fh-media-spotlight-visual-valorant,
+.fh-media-spotlight-visual-lol {
+  background: #050505;
+}
+
+.fh-media-spotlight-visual-cs2 {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.22), transparent 55%),
+    linear-gradient(180deg, #14100a 0%, #050505 100%);
+}
+
+.fh-media-spotlight-visual-valorant {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 70, 85, 0.24), transparent 55%),
+    linear-gradient(180deg, #16080c 0%, #050505 100%);
+}
+
+.fh-media-spotlight-visual-lol {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(200, 155, 60, 0.2), transparent 55%),
+    linear-gradient(180deg, #0a1428 0%, #050505 100%);
+}
+
+.fh-media-spotlight-game-art {
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0.92;
+}
+
+.fh-media-spotlight-duel {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px 34px;
+}
+
+.fh-media-spotlight-duel-team {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fh-media-spotlight-duel-name {
+  font-family: var(--qvh-font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.88);
+  text-align: center;
+  line-height: 1.15;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fh-media-spotlight-duel-vs {
+  flex-shrink: 0;
+  margin-bottom: 18px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .fh-media-spotlight-visual-ufc {
@@ -807,8 +889,27 @@
 .qvh-entertainment-stack {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  margin-top: 1.75rem;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.qvh-feed-surface .qvh-tv-section,
+.qvh-feed-surface .qvh-catalog-section {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.qvh-feed-surface .qvh-tv-hero,
+.qvh-feed-surface .qvh-catalog-hero {
+  margin-bottom: 12px;
+}
+
+.qvh-feed-surface .qvh-tv-hero-glow,
+.qvh-feed-surface .qvh-catalog-hero-glow {
+  opacity: 0.55;
 }
 
 /* TV y Twitch — parrilla horizontal tipo guía */

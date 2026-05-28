@@ -4,8 +4,10 @@ import "../futbolhoy-feed.css";
 import dynamic from "next/dynamic";
 import { memo, useMemo } from "react";
 import type { EventRow } from "./types";
-import { LazyMatchGrid } from "./LazyMatchGrid";
+import { CategoryCarousel } from "./CategoryCarousel";
+import { MatchCard } from "./MatchCard";
 import { LazyMount } from "./LazyMount";
+import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
 const MediaEntertainmentSection = dynamic(
   () =>
     import("./MediaEntertainmentSection").then(
@@ -16,8 +18,6 @@ const MediaEntertainmentSection = dynamic(
 import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
 import { sportLabel } from "../lib/filter-config";
 import { getTvShowCategory } from "../lib/tv-show-category";
-
-const INITIAL_GRID_EAGER_MAX = 8;
 
 function groupForDisplay(events: EventRow[]) {
   const football: Record<string, EventRow[]> = {};
@@ -84,20 +84,24 @@ function SportSectionBlock({
   events: EventRow[];
   eager: boolean;
 }) {
-  const gridEager = eager || events.length <= INITIAL_GRID_EAGER_MAX;
+  const sortedEvents = useMemo(() => sortEventsByPopularity(events), [events]);
 
   return (
     <LazyMount
       eager={eager}
-      minHeight={estimateBlockHeight(Math.min(events.length, 4))}
+      minHeight={estimateBlockHeight(Math.min(events.length, 3))}
       rootMargin="560px 0px"
     >
-      <div className="fh-section-block qvh-content-auto">
+      <div className="fh-section-block qvh-feed-category-shell qvh-content-auto">
         <div className={`fh-comp-header ${accentClass}`}>
           <h3>{title}</h3>
           <span className="fh-comp-count">{events.length}</span>
         </div>
-        <LazyMatchGrid events={events} eager={gridEager} />
+        <CategoryCarousel ariaLabel={title} className="qvh-category-carousel-cards">
+          {sortedEvents.map((event) => (
+            <MatchCard key={event.id} event={event} />
+          ))}
+        </CategoryCarousel>
       </div>
     </LazyMount>
   );

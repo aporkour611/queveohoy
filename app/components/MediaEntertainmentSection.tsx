@@ -29,7 +29,7 @@ export function MediaEntertainmentSection({
   if (!hasTv && !hasCatalog) return null;
 
   return (
-    <div className="qvh-entertainment-stack">
+    <div className="qvh-entertainment-stack qvh-feed-surface">
       <TvBroadcastSection
         tvReality={tvReality}
         tvConcurso={tvConcurso}

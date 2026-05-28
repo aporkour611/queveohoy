@@ -73,7 +73,12 @@ function readScrollAnchorOffset(): number {
   const navH = parseFloat(
     getComputedStyle(document.documentElement).getPropertyValue("--qvh-navbar-h")
   );
-  return (Number.isFinite(navH) ? navH : 64) + 12;
+  const controlsH = parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue("--qvh-feed-controls-h")
+  );
+  const nav = Number.isFinite(navH) ? navH : 64;
+  const controls = Number.isFinite(controlsH) ? controlsH : 112;
+  return nav + controls + 8;
 }
 
 function getScrollAnchorOffset(): number {

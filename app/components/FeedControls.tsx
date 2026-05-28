@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { DayTabs } from "./DayTabs";
 import { EventFilters } from "./EventFilters";
 
@@ -51,6 +51,23 @@ export function FeedControls({
   isFeaturedMode,
 }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = document.getElementById("feed-controls");
+    if (!el) return;
+
+    const syncHeight = () => {
+      document.documentElement.style.setProperty(
+        "--qvh-feed-controls-h",
+        `${el.offsetHeight}px`
+      );
+    };
+
+    syncHeight();
+    const observer = new ResizeObserver(syncHeight);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [filtersOpen]);
 
   return (
     <section

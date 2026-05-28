@@ -24,9 +24,9 @@
   --qvh-text-on-light: #14141c;
   --qvh-border: #2a2a38;
   --qvh-border-light: #e0e0e8;
-  --qvh-navbar-accent-h: 1px;
-  --qvh-navbar-padding-y: 8px;
-  --qvh-navbar-content-h: 44px;
+  --qvh-navbar-accent-h: 3px;
+  --qvh-navbar-padding-y: 10px;
+  --qvh-navbar-content-h: 50px;
   --qvh-navbar-h: calc(
     var(--qvh-navbar-accent-h) + var(--qvh-navbar-padding-y) * 2 +
       var(--qvh-navbar-content-h)
@@ -35,12 +35,13 @@
   --qvh-layout-max: 1060px;
   --qvh-layout-gutter: clamp(16px, 2.4vw, 28px);
   --qvh-prose-max: 42rem;
+  --qvh-feed-controls-h: 112px;
 }
 
 @media (max-width: 640px) {
   :root {
-    --qvh-navbar-padding-y: 7px;
-    --qvh-navbar-content-h: 40px;
+    --qvh-navbar-padding-y: 9px;
+    --qvh-navbar-content-h: 46px;
   }
 }
 
@@ -78,12 +79,12 @@
 }
 
 .fh-navbar .qvh-logo-svg {
-  height: 28px;
+  height: 34px;
 }
 
 @media (min-width: 768px) {
   .fh-navbar .qvh-logo-svg {
-    height: 30px;
+    height: 36px;
   }
 }
 
@@ -650,10 +651,13 @@
 
 /* ── Calendario unificado: días + vista + filtros ── */
 .qvh-feed-controls {
-  margin: 20px 0 16px;
+  position: sticky;
+  top: var(--qvh-navbar-h);
+  z-index: 920;
+  margin: 20px 0 12px;
   padding: 12px 12px 10px;
   border-radius: 12px;
-  background: var(--qvh-bg-panel);
+  background: rgba(10, 10, 16, 0.98);
   border: 1px solid var(--qvh-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
   overflow-anchor: none;
@@ -1183,4 +1187,60 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
   width: auto;
   height: auto;
   overflow: visible;
+}
+
+/* ── Carrusel por categoría (3 ítems + flechas) ── */
+.qvh-category-carousel {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.qvh-category-carousel-page {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.qvh-category-carousel-cards .fh-cardcol,
+.qvh-category-carousel-page > .fh-cardcol {
+  flex: 0 0 calc((100% - 20px) / 3);
+  max-width: calc((100% - 20px) / 3);
+  min-width: 0;
+}
+
+.qvh-category-carousel-tv .qvh-tv-slot,
+.qvh-category-carousel-posters .qvh-media-card-col {
+  flex: 0 0 calc((100% - 20px) / 3);
+  max-width: calc((100% - 20px) / 3);
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .qvh-category-carousel-cards .fh-cardcol,
+  .qvh-category-carousel-page > .fh-cardcol,
+  .qvh-category-carousel-tv .qvh-tv-slot,
+  .qvh-category-carousel-posters .qvh-media-card-col {
+    flex-basis: min(240px, 78vw);
+    max-width: min(240px, 78vw);
+  }
+
+  .qvh-category-carousel-page {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .qvh-category-carousel-page::-webkit-scrollbar {
+    display: none;
+  }
+
+  .qvh-category-carousel-cards .fh-cardcol,
+  .qvh-category-carousel-tv .qvh-tv-slot,
+  .qvh-category-carousel-posters .qvh-media-card-col {
+    scroll-snap-align: start;
+  }
 }

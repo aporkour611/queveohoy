@@ -46,10 +46,6 @@ html {
     );
 }
 
-.fh-body:has(.fh-header-ambient) .fh-content::before {
-  display: none;
-}
-
 .fh-container {
   position: relative;
   z-index: 1;
@@ -58,53 +54,7 @@ html {
   padding: 0 var(--qvh-layout-gutter);
 }
 
-/* ── Header ambient (home) ── */
-.fh-header-ambient {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 955;
-  height: min(320px, 42vh);
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.fh-header-ambient-wash {
-  position: absolute;
-  inset: -40% -8% 0;
-  background:
-    radial-gradient(
-      ellipse 52% 38% at 12% 8%,
-      rgba(93, 95, 239, 0.28) 0%,
-      rgba(93, 95, 239, 0) 68%
-    ),
-    radial-gradient(
-      ellipse 46% 34% at 88% 6%,
-      rgba(160, 74, 43, 0.2) 0%,
-      rgba(160, 74, 43, 0) 66%
-    ),
-    radial-gradient(
-      ellipse 38% 28% at 50% 0%,
-      rgba(31, 110, 67, 0.1) 0%,
-      rgba(31, 110, 67, 0) 62%
-    );
-  filter: blur(48px);
-  transform: translateY(-6%);
-  opacity: 0.92;
-}
-
-.fh-header-ambient-veil {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(6, 6, 10, 0) 0%,
-    rgba(13, 13, 18, 0.42) 58%,
-    var(--qvh-bg-elevated) 100%
-  );
-}
-
+/* ── Header ── */
 .fh-header-shell {
   position: fixed;
   top: 0;
@@ -115,30 +65,20 @@ html {
 
 /* ── Navbar ── */
 .fh-navbar {
-  background-color: rgba(6, 6, 10, 0.82) !important;
+  background-color: rgba(6, 6, 10, 0.96) !important;
   padding: 0;
   box-shadow: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
   width: 100%;
-  z-index: 960;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 .fh-header-shell .fh-navbar {
   position: relative;
-  background-color: rgba(6, 6, 10, 0.55) !important;
-  backdrop-filter: blur(20px) saturate(130%);
-  -webkit-backdrop-filter: blur(20px) saturate(130%);
-  border-bottom-color: rgba(255, 255, 255, 0.04);
 }
 
 .fh-navbar-elevated {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
 }
 
 .fh-navbar::before {
@@ -702,20 +642,28 @@ html {
 }
 
 .fh-matchday {
-  margin-bottom: 30px;
+  margin-bottom: 16px;
 }
 
 .fh-matchday-header {
+  position: sticky;
+  top: calc(var(--qvh-navbar-h) + var(--qvh-feed-controls-h));
+  z-index: 910;
   padding: 12px 10px;
   margin: 0 -15px 0.5rem;
   color: #fff;
   font-family: var(--qvh-font-display);
   text-align: center;
-  background: linear-gradient(90deg, var(--qvh-muted) 0%, #1a1a24 100%);
+  background: #1a1a24;
   font-size: 1.25em;
   font-weight: 600;
   border-bottom: 2px solid var(--qvh-purple);
   text-transform: capitalize;
+  scroll-margin-top: calc(var(--qvh-navbar-h) + var(--qvh-feed-controls-h) + 8px);
+}
+
+.fh-day-section {
+  scroll-margin-top: calc(var(--qvh-navbar-h) + var(--qvh-feed-controls-h) + 52px);
 }
 
 

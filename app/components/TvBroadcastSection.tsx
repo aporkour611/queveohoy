@@ -1,7 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import type { EventRow } from "./types";
+import { CategoryCarousel } from "./CategoryCarousel";
 import { TvBroadcastCard } from "./TvBroadcastCard";
+import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
 
 type Props = {
   tvReality?: EventRow[];
@@ -18,20 +21,22 @@ function TvBroadcastGroup({
   accent: "reality" | "concurso" | "directo";
   events: EventRow[];
 }) {
+  const sortedEvents = useMemo(() => sortEventsByPopularity(events), [events]);
+
   if (events.length === 0) return null;
 
   return (
-    <div className="qvh-tv-group">
+    <div className="qvh-tv-group qvh-feed-category-shell">
       <div className="qvh-tv-group-head">
         <span className={`qvh-tv-group-accent qvh-tv-group-accent-${accent}`} />
         <h4 className="qvh-tv-group-title">{label}</h4>
         <span className="qvh-tv-group-count">{events.length}</span>
       </div>
-      <div className="qvh-tv-slot-list">
-        {events.map((event, index) => (
+      <CategoryCarousel ariaLabel={label} className="qvh-category-carousel-tv">
+        {sortedEvents.map((event, index) => (
           <TvBroadcastCard key={event.id} event={event} index={index} />
         ))}
-      </div>
+      </CategoryCarousel>
     </div>
   );
 }

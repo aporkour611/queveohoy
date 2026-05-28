@@ -51,6 +51,8 @@ export function DestacadosCarousel({
     );
   };
   const showNav = childArray.length > DESTACADOS_VISIBLE_SLOTS;
+  const canGoPrev = clampedPage > 0;
+  const canGoNext = clampedPage < pageCount - 1;
   const start = clampedPage * pageSize;
   const visible = childArray.slice(start, start + pageSize);
 
@@ -102,12 +104,11 @@ export function DestacadosCarousel({
 
   return (
     <div className="qvh-destacados-carousel">
-      {showNav ? (
+      {showNav && canGoPrev ? (
         <button
           type="button"
           className="qvh-destacados-nav qvh-destacados-nav-prev"
           aria-label={`Ver destacados anteriores de ${ariaLabel}`}
-          disabled={clampedPage === 0}
           onClick={() => setPage(clampedPage - 1)}
         >
           <ChevronIcon direction="left" />
@@ -118,12 +119,11 @@ export function DestacadosCarousel({
         {visible}
       </div>
 
-      {showNav ? (
+      {showNav && canGoNext ? (
         <button
           type="button"
           className="qvh-destacados-nav qvh-destacados-nav-next"
           aria-label={`Ver los siguientes ${pageSize} destacados de ${ariaLabel}`}
-          disabled={clampedPage >= pageCount - 1}
           onClick={() => setPage(clampedPage + 1)}
         >
           <ChevronIcon direction="right" />
