@@ -1,0 +1,225 @@
+/* Roland Garros — banderas fusionadas en el centro */
+
+.fh-rg-duel,
+.qvh-rg-duel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.fh-rg-flags,
+.qvh-rg-flags {
+  position: absolute;
+  inset: 0;
+}
+
+.fh-rg-flag,
+.qvh-rg-flag {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 72%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.fh-rg-flag-home,
+.qvh-rg-flag-home {
+  left: 0;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 38%,
+    rgba(0, 0, 0, 0.55) 52%,
+    transparent 68%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 38%,
+    rgba(0, 0, 0, 0.55) 52%,
+    transparent 68%
+  );
+}
+
+.fh-rg-flag-away,
+.qvh-rg-flag-away {
+  right: 0;
+  -webkit-mask-image: linear-gradient(
+    to left,
+    #000 0%,
+    #000 38%,
+    rgba(0, 0, 0, 0.55) 52%,
+    transparent 68%
+  );
+  mask-image: linear-gradient(
+    to left,
+    #000 0%,
+    #000 38%,
+    rgba(0, 0, 0, 0.55) 52%,
+    transparent 68%
+  );
+}
+
+.fh-rg-flag-clay,
+.qvh-rg-flag-clay {
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 210, 150, 0.35), transparent 45%),
+    linear-gradient(160deg, #8b3a1f 0%, #c95a2c 42%, #a04420 100%);
+}
+
+.fh-rg-flag-away.fh-rg-flag-clay,
+.qvh-rg-flag-away.qvh-rg-flag-clay {
+  background:
+    radial-gradient(circle at 70% 20%, rgba(255, 210, 150, 0.35), transparent 45%),
+    linear-gradient(200deg, #8b3a1f 0%, #c95a2c 42%, #a04420 100%);
+}
+
+.fh-rg-flags-center,
+.qvh-rg-flags-center {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 38%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    rgba(201, 90, 44, 0.18) 0%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(201, 90, 44, 0.18) 100%
+  );
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.fh-rg-players,
+.qvh-rg-players {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 10px 34px;
+}
+
+.qvh-rg-players {
+  padding-bottom: 38px;
+}
+
+.fh-rg-player,
+.qvh-rg-player {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--qvh-font-display);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.85),
+    0 0 12px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fh-rg-player {
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.qvh-rg-player {
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+
+.fh-rg-vs,
+.qvh-rg-vs {
+  flex-shrink: 0;
+  margin-bottom: 2px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.qvh-rg-vs {
+  font-size: 0.68rem;
+}
+
+/* Feed cards */
+.fh-media-spotlight-visual-rg {
+  min-height: 148px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(201, 90, 44, 0.28), transparent 55%),
+    linear-gradient(180deg, #1a0f0a 0%, #0a0604 100%);
+}
+
+.fh-media-spotlight-visual-rg-knockout {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 180, 100, 0.32), transparent 50%),
+    linear-gradient(180deg, #2a1508 0%, #0a0604 100%);
+}
+
+.fh-media-spotlight-visual-rg .fh-media-spotlight-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.35) 45%,
+    rgba(0, 0, 0, 0.88) 100%
+  );
+}
+
+.fh-media-spotlight-badge-rg {
+  background: rgba(139, 58, 31, 0.92);
+  border-color: rgba(255, 200, 150, 0.35);
+  color: #fff;
+}
+
+.fh-match_rolandgarros.fh-match-media-spotlight {
+  border-color: rgba(201, 90, 44, 0.45);
+  box-shadow: 0 6px 22px rgba(139, 58, 31, 0.22);
+}
+
+/* Destacados spotlight */
+.qvh-spotlight-visual-rg {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(201, 90, 44, 0.32), transparent 55%),
+    linear-gradient(180deg, #1a0f0a 0%, #0a0604 100%);
+}
+
+.qvh-spotlight-visual-rg-knockout {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 180, 100, 0.35), transparent 50%),
+    linear-gradient(180deg, #2a1508 0%, #0a0604 100%);
+}
+
+.qvh-spotlight-visual-rg .qvh-spotlight-overlay,
+.qvh-spotlight-visual-rg-knockout .qvh-spotlight-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.38) 48%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+}
+
+.qvh-spotlight-badge-rg {
+  background: rgba(139, 58, 31, 0.92);
+  border-color: rgba(255, 200, 150, 0.35);
+  color: #fff;
+}
+
+.qvh-spotlight-card:has(.qvh-spotlight-visual-rg),
+.qvh-spotlight-card:has(.qvh-spotlight-visual-rg-knockout) {
+  border-color: rgba(201, 90, 44, 0.4);
+  box-shadow: 0 8px 28px rgba(139, 58, 31, 0.2);
+}

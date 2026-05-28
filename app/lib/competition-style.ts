@@ -1,5 +1,6 @@
 import type { EventRow } from "../components/types";
 import { isChampionsFinal } from "./event-card-stamp";
+import { isRolandGarrosEvent } from "./roland-garros";
 
 export function competitionMatchClass(
   competition?: string | null,
@@ -14,6 +15,9 @@ export function competitionMatchClass(
     return "fh-match_series fh-match-media";
   }
   if (sport === "tv") return "fh-match_tv fh-match-media";
+  if (event && sport === "tenis" && isRolandGarrosEvent(event)) {
+    return "fh-match_rolandgarros fh-match-media";
+  }
   if (["tenis", "basket", "ciclismo"].includes(sport ?? "")) {
     return "fh-match_default";
   }

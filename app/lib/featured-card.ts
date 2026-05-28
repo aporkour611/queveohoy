@@ -39,6 +39,10 @@ import {
 import { eventDisplayTitle } from "./event-display";
 import { isChampionsFinal } from "./event-card-stamp";
 import { parseLeaguePoster } from "./thesportsdb-leagues";
+import {
+  isRolandGarrosEvent,
+  isRolandGarrosKnockout,
+} from "./roland-garros";
 import type { EventRow } from "../components/types";
 
 export type SpotlightBadgeVariant =
@@ -73,6 +77,7 @@ export type SpotlightCardModel = {
   awayName?: string;
   showTeamDuel?: boolean;
   showUfcDuel?: boolean;
+  showRolandGarrosDuel?: boolean;
 };
 
 function mediaCover(event: EventRow, sport: string): SpotlightCover {
@@ -269,6 +274,30 @@ export function getSpotlightCardModel(
       homeName,
       awayName,
       showTeamDuel: hasDuel,
+    };
+  }
+
+  if (sport === "tenis" && isRolandGarrosEvent(event)) {
+    const homeName = event.home_team?.trim() || "";
+    const awayName = event.away_team?.trim() || "";
+    const competition = event.competition?.trim() || "Roland Garros";
+    const isKnockout = isRolandGarrosKnockout(event);
+
+    return {
+      headline: teamTitle(event) || event.title?.trim() || "Partido",
+      badge: competition,
+      badgeVariant: "default",
+      dateLabel,
+      time,
+      meta: competition,
+      platform: event.platform?.trim() || channels || "TV",
+      channelList: channelList.length ? channelList : undefined,
+      visualClass: isKnockout
+        ? "qvh-spotlight-visual-rg-knockout"
+        : "qvh-spotlight-visual-rg",
+      homeName: homeName || undefined,
+      awayName: awayName || undefined,
+      showRolandGarrosDuel: Boolean(homeName && awayName),
     };
   }
 

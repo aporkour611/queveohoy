@@ -1,6 +1,7 @@
 import "../futbolhoy-shell.css";
 import "../destacados.css";
 import "../champions-week.css";
+import "../roland-garros.css";
 
 const feedCriticalCss = `
 .qvh-spotlight-visual{position:relative;height:132px;overflow:hidden}

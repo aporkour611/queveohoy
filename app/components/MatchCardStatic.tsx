@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import "../roland-garros.css";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { partidoPath } from "../lib/event-slug";
 import {
@@ -9,6 +10,7 @@ import {
 import { safeRemoteImageUrl } from "../lib/remote-image";
 import { MADRID_TZ } from "../lib/timezone";
 import type { EventRow } from "./types";
+import { RolandGarrosDuelVisual } from "./RolandGarrosDuelVisual";
 
 type Props = {
   event: EventRow;
@@ -72,9 +74,16 @@ export function MatchCardStatic({ event }: Props) {
     "fh-media-spotlight-visual-"
   );
   const showTeamDuel = card.showTeamDuel && (card.homeName || card.awayName);
+  const showRolandGarrosDuel =
+    card.showRolandGarrosDuel && card.homeName && card.awayName;
 
   return (
-    <Link href={href} className="fh-match-card fh-match-media-spotlight">
+    <Link
+      href={href}
+      className={`fh-match-card fh-match-media-spotlight${
+        showRolandGarrosDuel ? " fh-match_rolandgarros" : ""
+      }`}
+    >
       <article className={`fh-media-spotlight ${visualClass}`}>
         <div className="fh-media-spotlight-body">
           <span className="fh-media-spotlight-badge">{card.badge}</span>
@@ -97,7 +106,19 @@ export function MatchCardStatic({ event }: Props) {
           ) : null}
         </div>
 
-        {showTeamDuel ? (
+        {showRolandGarrosDuel ? (
+          <div
+            className={`fh-media-spotlight-visual ${visualClass}`}
+            aria-hidden
+          >
+            <RolandGarrosDuelVisual
+              homeName={card.homeName}
+              awayName={card.awayName}
+              size="card"
+            />
+            <div className="fh-media-spotlight-overlay" />
+          </div>
+        ) : showTeamDuel ? (
           <div className="fh-m-logos fh-media-spotlight-duel" aria-hidden>
             <StaticCrest src={card.homeCrest} name={card.homeName} />
             <span className="fh-m-time">{card.time}</span>

@@ -92,6 +92,23 @@ try {
     if (tmdbJson[id]?.posterPath) pass(`Póster TMDB: ${id}`);
     else fail(`Póster TMDB: ${id}`);
   }
+
+  const rgCss = read("app/roland-garros.css");
+  if (rgCss.includes("fh-rg-flag-home") && rgCss.includes("fh-rg-flags-center"))
+    pass("Roland Garros banderas fusionadas");
+  else fail("Roland Garros banderas fusionadas");
+
+  const rgVisual = read("app/components/RolandGarrosDuelVisual.tsx");
+  if (rgVisual.includes("resolveTennisPlayerCountry"))
+    pass("Roland Garros visual por nacionalidad");
+  else fail("Roland Garros visual por nacionalidad");
+
+  if (
+    featured.includes("showRolandGarrosDuel") &&
+    featured.includes("qvh-spotlight-visual-rg")
+  )
+    pass("Roland Garros en destacados");
+  else fail("Roland Garros en destacados");
 } catch (error) {
   fail("Checklist ejecutado", error.message);
 }

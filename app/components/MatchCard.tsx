@@ -2,6 +2,7 @@
 
 import "../futbolhoy-feed.css";
 import "../media.css";
+import "../roland-garros.css";
 import { memo, startTransition, useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls, isEsportsSport } from "../lib/esports";
@@ -20,6 +21,7 @@ import {
 } from "../lib/thesportsdb-ufc-client";
 import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
+import { RolandGarrosDuelVisual } from "./RolandGarrosDuelVisual";
 import { ChannelBadges } from "./ChannelBadge";
 import { resolveChannelsForEvent } from "../lib/channels";
 import { partidoPath } from "../lib/event-slug";
@@ -32,6 +34,7 @@ import { competitionMatchClass } from "../lib/competition-style";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { eventDisplayTime } from "../lib/madrid-time";
 import { getEventCardStamp, type EventCardStampKind } from "../lib/event-card-stamp";
+import { isRolandGarrosEvent, isRolandGarrosKnockout } from "../lib/roland-garros";
 import { mediaBadgeForEvent } from "../lib/media-platform";
 import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 import Link from "next/link";
@@ -59,6 +62,7 @@ type SpotlightCardContent = {
   ufcF2Name?: string | null;
   showUfcDuel?: boolean;
   showTeamDuel?: boolean;
+  showRolandGarrosDuel?: boolean;
   homeCrest?: string | null;
   awayCrest?: string | null;
   homeCrestUrls?: string[];
@@ -86,6 +90,7 @@ function SpotlightCardContent({
   ufcF2Name,
   showUfcDuel = false,
   showTeamDuel = false,
+  showRolandGarrosDuel = false,
   homeCrest,
   awayCrest,
   homeCrestUrls = [],
@@ -99,6 +104,8 @@ function SpotlightCardContent({
     showUfcDuel || Boolean(ufcF1Url || ufcF2Url || (ufcF1Name && ufcF2Name));
   const teamDuelActive =
     showTeamDuel || Boolean(homeCrest || awayCrest || (homeName && awayName));
+  const rgDuelActive =
+    showRolandGarrosDuel || Boolean(homeName && awayName && visualClass.includes("rg"));
 
   return (
     <>
@@ -106,6 +113,8 @@ function SpotlightCardContent({
         className={`fh-media-spotlight-visual ${visualClass}${
           ufcDuelActive ? " fh-media-spotlight-visual-ufc-duel" : ""
         }${teamDuelActive ? " fh-media-spotlight-visual-team-duel" : ""}${
+          rgDuelActive ? " fh-media-spotlight-visual-rg-duel" : ""
+        }${
           stampKind ? " fh-media-spotlight-visual-stamped" : ""
         }`}
       >
@@ -118,7 +127,7 @@ function SpotlightCardContent({
             className="fh-media-spotlight-banner fh-media-spotlight-game-art"
           />
         ) : null}
-        {posterUrl && !ufcDuelActive && !teamDuelActive ? (
+        {posterUrl && !ufcDuelActive && !teamDuelActive && !rgDuelActive ? (
           <RemotePoster
             src={posterUrl}
             className="fh-media-spotlight-banner"
@@ -133,7 +142,7 @@ function SpotlightCardContent({
             f2Name={ufcF2Name}
           />
         ) : null}
-        {teamDuelActive && !ufcDuelActive ? (
+        {teamDuelActive && !ufcDuelActive && !rgDuelActive ? (
           <div className="fh-media-spotlight-duel" aria-hidden>
             <div className="fh-media-spotlight-duel-team">
               <TeamCrest
@@ -155,6 +164,13 @@ function SpotlightCardContent({
               <span className="fh-media-spotlight-duel-name">{awayName}</span>
             </div>
           </div>
+        ) : null}
+        {rgDuelActive && !ufcDuelActive ? (
+          <RolandGarrosDuelVisual
+            homeName={homeName}
+            awayName={awayName}
+            size="card"
+          />
         ) : null}
         <div className="fh-media-spotlight-overlay" aria-hidden />
         <span className={`fh-media-spotlight-badge ${badgeClass}`}>
@@ -428,6 +444,35 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         stampKind={stamp}
       />,
       "fh-match-media-spotlight"
+    );
+  }
+
+  if (event.sport === "tenis" && isRolandGarrosEvent(event)) {
+    const rgKnockout = isRolandGarrosKnockout(event);
+    const rgTitle = isTeamVersusEvent(event)
+      ? `${home} vs ${away}`
+      : soloTitle;
+
+    return cardShell(
+      <SpotlightCardContent
+        visualClass={
+          rgKnockout
+            ? "fh-media-spotlight-visual-rg fh-media-spotlight-visual-rg-knockout"
+            : "fh-media-spotlight-visual-rg"
+        }
+        badgeClass="fh-media-spotlight-badge-rg"
+        badgeLabel={compDisplay}
+        title={rgTitle}
+        subtitle={compFull.includes("·") ? compFull : null}
+        dateLabel={dateLabel}
+        time={time}
+        channels={channels}
+        showRolandGarrosDuel={Boolean(home && away)}
+        homeName={home || event.home_team}
+        awayName={away || event.away_team}
+        stampKind={stamp}
+      />,
+      "fh-match-media-spotlight fh-match_rolandgarros"
     );
   }
 

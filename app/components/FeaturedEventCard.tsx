@@ -13,6 +13,7 @@ import { safeRemoteImageUrl } from "../lib/remote-image";
 import { RemotePoster } from "./RemotePoster";
 import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
+import { RolandGarrosDuelVisual } from "./RolandGarrosDuelVisual";
 import { EventCardStamp } from "./EventCardStamp";
 import { ChannelBadges } from "./ChannelBadge";
 
@@ -104,7 +105,9 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
           card.showUfcDuel ? " qvh-spotlight-visual-ufc-duel" : ""
-        }${stamp ? " qvh-spotlight-visual-stamped" : ""}`}
+        }${card.showRolandGarrosDuel ? " qvh-spotlight-visual-rg-duel" : ""}${
+          stamp ? " qvh-spotlight-visual-stamped" : ""
+        }`}
       >
         {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
         {card.coverImage ? (
@@ -124,6 +127,12 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
             f2Name={card.awayName}
             size="spotlight"
             eager={priority}
+          />
+        ) : card.showRolandGarrosDuel ? (
+          <RolandGarrosDuelVisual
+            homeName={card.homeName}
+            awayName={card.awayName}
+            size="spotlight"
           />
         ) : card.showTeamDuel ? (
           <div className="qvh-spotlight-duel" aria-hidden>
@@ -154,7 +163,9 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
         ) : null}
 
         <span
-          className={`qvh-spotlight-badge qvh-spotlight-badge-${card.badgeVariant}`}
+          className={`qvh-spotlight-badge qvh-spotlight-badge-${
+            card.showRolandGarrosDuel ? "rg" : card.badgeVariant
+          }`}
         >
           {card.badge}
         </span>
