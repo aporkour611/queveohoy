@@ -85,8 +85,8 @@ export default async function Page() {
                   }
                 />
               </div>
-              <SiteFooter />
             </div>
+            <SiteFooter />
           </main>
         </HomeResetProvider>
       </div>

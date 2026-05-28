@@ -67,9 +67,8 @@ export function PartidoPage({ event }: Props) {
           <p className="fh-seo-hub-cta">
             <Link href="/">Ver toda la agenda de hoy →</Link>
           </p>
-
-          <SiteFooter />
         </div>
+        <SiteFooter />
       </main>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import type { EventRow } from "./types";
 import { RemotePoster } from "./RemotePoster";
 import { ChannelBadges } from "./ChannelBadge";
@@ -25,6 +25,12 @@ function categoryClass(category: TvShowCategory): string {
   return "qvh-tv-cat-reality";
 }
 
+function fallbackClass(category: TvShowCategory): string {
+  if (category === "directo") return "qvh-tv-slot-fallback-directo";
+  if (category === "concurso") return "qvh-tv-slot-fallback-concurso";
+  return "qvh-tv-slot-fallback-reality";
+}
+
 export const TvBroadcastCard = memo(function TvBroadcastCard({
   event,
   index = 0,
@@ -36,6 +42,8 @@ export const TvBroadcastCard = memo(function TvBroadcastCard({
   const posterObjectPosition = resolveEventPosterObjectPosition(event);
   const platform = resolveEventStreamingPlatform(event);
   const channels = resolveChannelsForEvent(event);
+  const [posterFailed, setPosterFailed] = useState(false);
+  const showPoster = Boolean(posterUrl) && !posterFailed;
   const metaParts = [
     time,
     platform?.name ?? event.platform?.trim(),
@@ -47,16 +55,19 @@ export const TvBroadcastCard = memo(function TvBroadcastCard({
       style={{ animationDelay: `${Math.min(index, 10) * 40}ms` }}
     >
       <div className="qvh-tv-slot-media">
-        {posterUrl ? (
+        <div
+          className={`qvh-tv-slot-fallback ${fallbackClass(category)}`}
+          aria-hidden
+        />
+        {showPoster ? (
           <RemotePoster
-            src={posterUrl}
+            src={posterUrl!}
             className="qvh-tv-slot-poster qvh-remote-poster"
             objectPosition={posterObjectPosition}
             sizeVariant="card"
+            onFailed={() => setPosterFailed(true)}
           />
-        ) : (
-          <div className="qvh-tv-slot-fallback" aria-hidden />
-        )}
+        ) : null}
         {category === "directo" ? (
           <span className="qvh-tv-live-badge">
             <span className="qvh-tv-live-dot" aria-hidden />

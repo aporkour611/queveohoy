@@ -19,6 +19,7 @@ type Props = {
   objectPosition?: string;
   /** Contexto responsive para `sizes` de next/image. */
   sizeVariant?: PosterSizeVariant;
+  onFailed?: () => void;
 };
 
 /** Poster remoto: next/image (AVIF/WebP vía sharp) cuando la URL es optimizable. */
@@ -28,14 +29,21 @@ export function RemotePoster({
   priority = false,
   objectPosition,
   sizeVariant = "card",
+  onFailed,
 }: Props) {
   const safeSrc = safeRemoteImageUrl(src);
   const optimizable = canOptimizeImageSrc(safeSrc);
+  const isSvg = Boolean(safeSrc?.toLowerCase().endsWith(".svg"));
   const { ref, inView } = useLazyInView({
     eager: priority,
     rootMargin: priority ? "0px" : "240px 0px",
   });
   const [failed, setFailed] = useState(false);
+
+  const handleError = () => {
+    setFailed(true);
+    onFailed?.();
+  };
 
   if (!safeSrc || failed) return null;
 
@@ -47,7 +55,19 @@ export function RemotePoster({
 
   return (
     <div ref={ref} className={className} aria-hidden>
-      {shouldLoad && optimizable ? (
+      {shouldLoad && isSvg ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={safeSrc}
+          alt=""
+          className="qvh-remote-poster-img"
+          style={imgStyle}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          decoding="async"
+          onError={handleError}
+        />
+      ) : shouldLoad && optimizable ? (
         <Image
           src={safeSrc}
           alt=""
@@ -58,7 +78,7 @@ export function RemotePoster({
           quality={quality}
           priority={priority}
           fetchPriority={priority ? "high" : undefined}
-          onError={() => setFailed(true)}
+          onError={handleError}
         />
       ) : shouldLoad ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -70,7 +90,7 @@ export function RemotePoster({
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : "auto"}
           decoding="async"
-          onError={() => setFailed(true)}
+          onError={handleError}
         />
       ) : null}
     </div>

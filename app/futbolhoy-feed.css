@@ -716,10 +716,13 @@
 
 .qvh-site-footer {
   position: relative;
-  margin-top: 48px;
+  width: 100%;
+  max-width: none;
+  margin: 48px 0 0;
   padding: 0;
   overflow: hidden;
-  background: #040406;
+  background: #0a0a10;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .qvh-site-footer-aurora {
@@ -779,8 +782,11 @@
 .qvh-site-footer-inner {
   position: relative;
   z-index: 2;
+  max-width: var(--qvh-shell-max);
+  margin: 0 auto;
   width: 100%;
-  padding: 40px clamp(20px, 4vw, 48px) 28px;
+  padding: 48px var(--qvh-layout-gutter) 36px;
+  box-sizing: border-box;
 }
 
 .qvh-site-footer-top {

@@ -92,8 +92,8 @@ export function SeoHubPage({ hub, events }: Props) {
 
             <HubFaq slug={hub.slug} />
             <SeoHubLinks current={hub.slug} />
-            <SiteFooter />
           </div>
+          <SiteFooter />
         </main>
       </div>
     </>

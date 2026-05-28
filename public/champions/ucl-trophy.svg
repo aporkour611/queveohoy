@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="ucl-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5e6a8"/>
+      <stop offset="45%" stop-color="#c9a227"/>
+      <stop offset="100%" stop-color="#8a6d12"/>
+    </linearGradient>
+    <linearGradient id="ucl-silver" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+    <radialGradient id="ucl-glow" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="60" cy="148" rx="34" ry="6" fill="rgba(0,0,0,0.35)"/>
+  <path d="M38 58c0-18 9.8-32 22-32s22 14 22 32v18c0 8-4 14-10 18l-4 34H52l-4-34c-6-4-10-10-10-18V58z" fill="url(#ucl-silver)" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>
+  <path d="M44 58c0-14 7.2-24 16-24s16 10 16 24v14c0 5.5-2.8 10-7 13l-3 27H54l-3-27c-4.2-3-7-7.5-7-13V58z" fill="url(#ucl-gold)"/>
+  <path d="M48 26h24l3 8H45l3-8z" fill="url(#ucl-gold)"/>
+  <path d="M42 34h36l-2 6H44l-2-6z" fill="url(#ucl-silver)"/>
+  <path d="M34 52c8-6 18-9 26-9s18 3 26 9" stroke="url(#ucl-gold)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M30 56c10-8 22-12 30-12s20 4 30 12" stroke="rgba(255,255,255,0.18)" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="60" cy="72" r="22" fill="url(#ucl-glow)"/>
+  <path d="M52 128h16v8c0 3-3.6 6-8 6s-8-3-8-6v-8z" fill="url(#ucl-gold)"/>
+  <rect x="46" y="136" width="28" height="5" rx="2.5" fill="url(#ucl-silver)"/>
+</svg>

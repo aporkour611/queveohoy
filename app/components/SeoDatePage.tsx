@@ -86,8 +86,8 @@ export function SeoDatePage({ dateKey, events }: Props) {
 
             <SeoDateNav current={dateKey} />
             <SeoHubLinks />
-            <SiteFooter />
           </div>
+          <SiteFooter />
         </main>
       </div>
     </>

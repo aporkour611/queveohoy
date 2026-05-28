@@ -29,7 +29,7 @@ html {
   top: 0;
   left: 50%;
   z-index: 0;
-  width: min(var(--qvh-layout-max), 100%);
+  width: min(var(--qvh-shell-max), 100%);
   height: min(360px, 46vh);
   transform: translateX(-50%);
   pointer-events: none;
@@ -49,23 +49,24 @@ html {
 .fh-container {
   position: relative;
   z-index: 1;
-  max-width: var(--qvh-layout-max);
+  max-width: var(--qvh-shell-max);
   margin: 0 auto;
   padding: 0 var(--qvh-layout-gutter);
 }
 
-/* ── Header ── */
+/* ── Header (full-bleed bar + inner shell tipo Letterboxd) ── */
 .fh-header-shell {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 960;
+  width: 100%;
 }
 
 /* ── Navbar ── */
 .fh-navbar {
-  background-color: rgba(6, 6, 10, 0.96) !important;
+  background-color: rgba(10, 10, 16, 0.98) !important;
   padding: 0;
   box-shadow: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -100,14 +101,14 @@ html {
 }
 
 .fh-navbar-inner {
-  max-width: var(--qvh-layout-max);
+  max-width: var(--qvh-shell-max);
   margin: 0 auto;
   padding: var(--qvh-navbar-padding-y) var(--qvh-layout-gutter);
   min-height: var(--qvh-navbar-content-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 20px;
 }
 
 .fh-nav-links {

@@ -38,7 +38,12 @@ function CatalogRail({
       </div>
       <CategoryCarousel ariaLabel={label} className="qvh-category-carousel-posters">
         {sortedEvents.map((event, index) => (
-          <MediaPosterCard key={event.id} event={event} index={index} />
+          <MediaPosterCard
+            key={event.id}
+            event={event}
+            index={index}
+            compact={accent === "anime"}
+          />
         ))}
       </CategoryCarousel>
     </div>

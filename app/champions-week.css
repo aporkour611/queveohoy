@@ -1,14 +1,13 @@
 /* ── Semana de Champions League (inspirado en identidad UCL, sin logos oficiales) ── */
 
 .qvh-cl-week-shell {
-  margin: 0 calc(-1 * var(--qvh-layout-gutter)) 20px;
+  max-width: min(var(--qvh-shell-max), calc(100% - 24px));
+  margin: 0 auto 16px;
   overflow: hidden;
-  border-radius: 0;
+  border-radius: 14px;
   border: 1px solid rgba(120, 140, 255, 0.22);
-  border-left: none;
-  border-right: none;
   box-shadow:
-    0 24px 60px rgba(8, 6, 40, 0.55),
+    0 18px 44px rgba(8, 6, 40, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
@@ -74,23 +73,34 @@
 .qvh-cl-week-hero-inner {
   position: relative;
   z-index: 1;
-  padding: 28px var(--qvh-layout-gutter) 24px;
-  max-width: var(--qvh-layout-max);
+  padding: 20px 18px 18px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
 .qvh-cl-week-hero-brand {
   display: flex;
   align-items: center;
-  gap: 18px;
-  margin-bottom: 22px;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
-.qvh-cl-week-starball {
+.qvh-cl-week-emblem {
   flex-shrink: 0;
-  width: 72px;
-  height: 72px;
-  filter: drop-shadow(0 0 18px rgba(201, 162, 39, 0.35));
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, rgba(201, 162, 39, 0.28), rgba(10, 6, 72, 0.6));
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  box-shadow: 0 0 24px rgba(201, 162, 39, 0.25);
+}
+
+.qvh-cl-week-trophy {
+  width: 42px;
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(201, 162, 39, 0.45));
 }
 
 .qvh-cl-week-kicker {
@@ -106,7 +116,7 @@
 .qvh-cl-week-headline {
   margin: 0;
   font-family: var(--qvh-font-display);
-  font-size: clamp(1.85rem, 5.5vw, 2.65rem);
+  font-size: clamp(1.55rem, 4.8vw, 2.15rem);
   font-weight: 800;
   letter-spacing: 0.04em;
   line-height: 0.95;
@@ -138,9 +148,9 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 12px 16px;
-  margin-bottom: 16px;
-  padding: 16px 14px;
+  gap: 10px 12px;
+  margin-bottom: 12px;
+  padding: 12px 12px;
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.28);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -191,7 +201,7 @@
 }
 
 .qvh-cl-week-destacados {
-  padding: 16px var(--qvh-layout-gutter) 14px;
+  padding: 14px 16px 12px;
   background: linear-gradient(180deg, #07051e 0%, #0d0d12 100%);
   border-top: 1px solid rgba(120, 140, 255, 0.12);
 }
@@ -287,12 +297,16 @@
 }
 
 @media (min-width: 768px) {
-  .qvh-cl-week-starball {
-    width: 88px;
-    height: 88px;
+  .qvh-cl-week-emblem {
+    width: 72px;
+    height: 72px;
+  }
+
+  .qvh-cl-week-trophy {
+    width: 48px;
   }
 
   .qvh-cl-week-matchup {
-    padding: 20px 24px;
+    padding: 16px 18px;
   }
 }

@@ -19,6 +19,7 @@ import { EventCardStamp } from "./EventCardStamp";
 type Props = {
   event: EventRow;
   index?: number;
+  compact?: boolean;
 };
 
 function MediaDetailsPanel({ event }: { event: EventRow }) {
@@ -39,6 +40,7 @@ function MediaDetailsPanel({ event }: { event: EventRow }) {
 export const MediaPosterCard = memo(function MediaPosterCard({
   event,
   index = 0,
+  compact = false,
 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const sport =
@@ -107,7 +109,9 @@ export const MediaPosterCard = memo(function MediaPosterCard({
 
   return (
     <div
-      className={`qvh-media-card-col${expanded ? " qvh-media-card-col-expanded" : ""}`}
+      className={`qvh-media-card-col${expanded ? " qvh-media-card-col-expanded" : ""}${
+        compact ? " qvh-media-card-col-compact" : ""
+      }`}
     >
       <div
         className={`qvh-media-card qvh-media-card-tilt${expanded ? " qvh-media-card-expanded" : ""}`}
@@ -127,15 +131,14 @@ export const MediaPosterCard = memo(function MediaPosterCard({
           className={`qvh-media-card-poster${stamp ? " qvh-media-card-poster-stamped" : ""}`}
         >
           {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
+          <div className="qvh-media-card-fallback" aria-hidden />
           {posterUrl ? (
             <RemotePoster
               src={posterUrl}
               className="qvh-media-card-image qvh-remote-poster"
               objectPosition={posterObjectPosition}
             />
-          ) : (
-            <div className="qvh-media-card-fallback" aria-hidden />
-          )}
+          ) : null}
           <div className="qvh-media-card-overlay" aria-hidden />
 
           <div className="qvh-media-card-top">
