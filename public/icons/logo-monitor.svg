@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <defs>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="0.6" flood-color="#fff" flood-opacity="0.45" />
+    </filter>
+  </defs>
+  <rect x="4" y="5" width="56" height="46" rx="7" fill="#2f3038" />
+  <rect x="7" y="8" width="50" height="38" rx="5" fill="#0c0e14" />
+  <rect x="9" y="10" width="21" height="15.5" rx="3.5" fill="#5d5fef" />
+  <rect x="33" y="10" width="21" height="15.5" rx="3.5" fill="#a04a2b" />
+  <rect x="9" y="28" width="45" height="15.5" rx="3.5" fill="#1f6e43" />
+  <text
+    x="19.5"
+    y="22"
+    text-anchor="middle"
+    fill="#fff"
+    font-family="'Barlow Condensed', Arial Narrow, Arial, sans-serif"
+    font-size="11"
+    font-weight="800"
+    filter="url(#glow)"
+  >
+    Q
+  </text>
+  <text
+    x="43.5"
+    y="22"
+    text-anchor="middle"
+    fill="#fff"
+    font-family="'Barlow Condensed', Arial Narrow, Arial, sans-serif"
+    font-size="11"
+    font-weight="800"
+    filter="url(#glow)"
+  >
+    V
+  </text>
+  <text
+    x="31.5"
+    y="39.5"
+    text-anchor="middle"
+    fill="#fff"
+    font-family="'Barlow Condensed', Arial Narrow, Arial, sans-serif"
+    font-size="8.5"
+    font-weight="800"
+    letter-spacing="0.08em"
+    filter="url(#glow)"
+  >
+    HOY
+  </text>
+  <rect x="4" y="51" width="56" height="7" fill="#2f3038" />
+  <circle cx="32" cy="54.5" r="1.6" fill="#34d399" />
+  <rect x="28" y="56" width="8" height="3.5" rx="1" fill="#2f3038" />
+  <rect x="21" y="60" width="22" height="3" rx="1.5" fill="#2f3038" />
+</svg>

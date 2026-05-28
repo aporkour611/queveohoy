@@ -79,6 +79,22 @@
   max-width: min(100%, 420px);
 }
 
+.qvh-logo-monitor-frame {
+  fill: #2f3038;
+}
+
+.qvh-logo-monitor-screen {
+  fill: #0c0e14;
+}
+
+.qvh-logo-monitor-chin {
+  fill: #2f3038;
+}
+
+.qvh-logo-monitor-led {
+  fill: #34d399;
+}
+
 .qvh-logo-tile-q {
   fill: var(--qvh-purple);
 }
@@ -87,15 +103,20 @@
   fill: var(--qvh-orange);
 }
 
-.qvh-logo-tile-h {
+.qvh-logo-tile-hoy {
   fill: var(--qvh-green);
 }
 
 .qvh-logo-tile-letter {
   fill: #fff;
   font-family: var(--qvh-font-display), "Inter", sans-serif;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 800;
+}
+
+.qvh-logo-tile-hoy-text {
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
 }
 
 .qvh-logo-text {
