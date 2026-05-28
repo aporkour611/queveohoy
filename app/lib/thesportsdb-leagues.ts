@@ -110,7 +110,7 @@ function parseVersusTitle(strEvent: string): {
   };
 }
 
-function normalizeLeagueEvent(
+export function normalizeLeagueEvent(
   raw: RawEvent,
   config: LeagueCronConfig,
   weekDates: string[]
@@ -161,21 +161,20 @@ function normalizeLeagueEvent(
       ? parseTennisMatchFromEventTitle(raw.strEvent)
       : parseVersusTitle(raw.strEvent);
 
+  const effectiveHome = home || parsed.home || null;
+  const effectiveAway = away || parsed.away || null;
+
   if (
-    isPlaceholderTeamName(home) ||
-    isPlaceholderTeamName(away) ||
-    isPlaceholderTeamName(parsed.home) ||
-    isPlaceholderTeamName(parsed.away)
+    isPlaceholderTeamName(effectiveHome) ||
+    isPlaceholderTeamName(effectiveAway)
   ) {
     return null;
   }
 
   const title =
-    home && away
-      ? `${home} vs ${away}`
-      : parsed.home && parsed.away
-        ? `${parsed.home} vs ${parsed.away}`
-        : parsed.title;
+    effectiveHome && effectiveAway
+      ? `${effectiveHome} vs ${effectiveAway}`
+      : parsed.title;
 
   const rgCompetition = formatRolandGarrosCompetition(raw.strEvent ?? title);
   const competition =
@@ -184,8 +183,8 @@ function normalizeLeagueEvent(
   return {
     external_id: `tsdb_${config.sport}_${raw.idEvent}`,
     title,
-    home_team: home || parsed.home || null,
-    away_team: away || parsed.away || null,
+    home_team: effectiveHome,
+    away_team: effectiveAway,
     date,
     time,
     sport: config.sport,
@@ -210,6 +209,7 @@ async function fetchJson<T>(path: string, retries = 2): Promise<T | null> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     const result = await fetchJsonWithTimeout<T>(url, {
       headers: TSDB_HEADERS,
+      cache: "no-store",
     });
 
     if (result.ok && result.data) return result.data;
@@ -237,6 +237,10 @@ async function fetchTennisEventsByDay(
     const data = await fetchJson<{ events?: RawEvent[] | null }>(
       `/eventsday.php?d=${date}&s=Tennis`
     );
+    const rawCount = data?.events?.length ?? 0;
+    if (!rawCount) {
+      console.warn(`TheSportsDB tennis ${date}: sin datos`);
+    }
 
     for (const raw of data?.events ?? []) {
       if (!raw.strEvent) continue;
@@ -290,12 +294,10 @@ export async function fetchTheSportsDbLeagueEvents(
   const nonTennisLeagues = THESPORTSDB_LEAGUES.filter(
     (config) => config.sport !== "tenis"
   );
-  const [batches, dayTennis] = await Promise.all([
-    Promise.all(
-      nonTennisLeagues.map((config) => fetchLeagueEvents(config, weekDates))
-    ),
-    fetchTennisEventsByDay(weekDates),
-  ]);
+  const dayTennis = await fetchTennisEventsByDay(weekDates);
+  const batches = await Promise.all(
+    nonTennisLeagues.map((config) => fetchLeagueEvents(config, weekDates))
+  );
 
   const map = new Map<string, LeagueCronEvent>();
   for (const batch of batches) {

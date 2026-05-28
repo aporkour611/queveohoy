@@ -218,7 +218,7 @@ async function fetchLeagueSports(): Promise<CountResult> {
     const events = await fetchTheSportsDbLeagueEvents(7);
     const upsertError = await upsertEvents(events);
     if (upsertError) return { count: events.length, error: upsertError };
-    console.log(`TheSportsDB ligas: ${events.length} eventos`);
+    console.log(`TheSportsDB ligas: ${events.length} eventos (${events.filter((e) => e.sport === "tenis").length} tenis)`);
     return { count: events.length, error: undefined };
   } catch (e) {
     console.error("Error fetching TheSportsDB leagues:", e);
