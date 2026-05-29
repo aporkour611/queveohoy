@@ -41,3 +41,10 @@ export function notifyCookieConsentChange(): void {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new Event(COOKIE_CONSENT_EVENT));
 }
+
+export function subscribeCookieConsent(onStoreChange: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+
+  window.addEventListener(COOKIE_CONSENT_EVENT, onStoreChange);
+  return () => window.removeEventListener(COOKIE_CONSENT_EVENT, onStoreChange);
+}

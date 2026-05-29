@@ -1,23 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import {
   clearPreferenceStorage,
-  COOKIE_CONSENT_EVENT,
   notifyCookieConsentChange,
   readCookieConsent,
+  subscribeCookieConsent,
   writeCookieConsent,
   type CookieConsentChoice,
 } from "../lib/cookie-consent";
 
 export function CookieConsentBanner() {
-  const [choice, setChoice] = useState<CookieConsentChoice | null>(null);
+  const choice = useSyncExternalStore(
+    subscribeCookieConsent,
+    readCookieConsent,
+    () => null
+  );
   const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setChoice(readCookieConsent());
-  }, []);
 
   useEffect(() => {
     if (choice) return;
@@ -40,21 +40,11 @@ export function CookieConsentBanner() {
     };
   }, [choice]);
 
-  useEffect(() => {
-    function sync() {
-      setChoice(readCookieConsent());
-    }
-
-    window.addEventListener(COOKIE_CONSENT_EVENT, sync);
-    return () => window.removeEventListener(COOKIE_CONSENT_EVENT, sync);
-  }, []);
-
   const respond = useCallback((next: CookieConsentChoice) => {
     writeCookieConsent(next);
     if (next === "rejected") {
       clearPreferenceStorage();
     }
-    setChoice(next);
     notifyCookieConsentChange();
   }, []);
 

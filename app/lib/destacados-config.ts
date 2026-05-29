@@ -1,5 +1,5 @@
 import type { EventRow } from "../components/types";
-import { addDaysToDateKey, getMadridWeekDates, toMadridDateKey } from "./madrid-time";
+import { addDaysToDateKey, toMadridDateKey } from "./madrid-time";
 import {
   curatedMovieByExternalId,
   isCuratedMovieEvent,

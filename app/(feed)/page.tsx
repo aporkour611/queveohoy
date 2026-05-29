@@ -63,72 +63,52 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function Page() {
-  try {
-    const { events, error, weekEvents } = await loadHomePageData();
-    const ssrEvents = trimHomeSsrEvents(events);
-    const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
-    const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
-    const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
+  const { events, error, weekEvents } = await loadHomePageData();
+  const ssrEvents = trimHomeSsrEvents(events);
+  const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
+  const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
+  const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
 
-    return (
-      <>
-        <HomeLcpPreload entries={lcpPreloadEntries} />
-        <HomeJsonLd events={ssrEvents} />
-        <div className="fh-body">
-          <HomeResetProvider>
-            <HomeNav />
-            <main id="main-content" className="fh-content">
-              <div className="fh-container fh-main">
-                <h1 className="sr-only">Qué ver hoy en TV</h1>
+  return (
+    <>
+      <HomeLcpPreload entries={lcpPreloadEntries} />
+      <HomeJsonLd events={ssrEvents} />
+      <div className="fh-body">
+        <HomeResetProvider>
+          <HomeNav />
+          <main id="main-content" className="fh-content">
+            <div className="fh-container fh-main">
+              <h1 className="sr-only">Qué ver hoy en TV</h1>
 
-                <DestacadosSection events={weekEvents} />
+              <DestacadosSection events={weekEvents} />
 
-                <div className="qvh-home-feed-slot">
-                  <FeedControlsShell days={shellDays} />
-                  {initialDay ? (
-                    <HomeFeedDayHeader
-                      date={initialDay.date}
-                      title={initialDay.title}
-                    />
-                  ) : null}
-                  {initialDay ? (
-                    <HomeFeedDayStatic
-                      initialEvents={ssrEvents}
-                      initialDestacadosEvents={weekEvents}
-                      dayDate={initialDay.date}
-                    />
-                  ) : null}
-                  <HomeFeedGate
+              <div className="qvh-home-feed-slot">
+                <FeedControlsShell days={shellDays} />
+                {initialDay ? (
+                  <HomeFeedDayHeader
+                    date={initialDay.date}
+                    title={initialDay.title}
+                  />
+                ) : null}
+                {initialDay ? (
+                  <HomeFeedDayStatic
                     initialEvents={ssrEvents}
                     initialDestacadosEvents={weekEvents}
-                    initialError={error}
-                    serverDayHeaderDate={initialDay?.date ?? null}
+                    dayDate={initialDay.date}
                   />
-                </div>
+                ) : null}
+                <HomeFeedGate
+                  initialEvents={ssrEvents}
+                  initialDestacadosEvents={weekEvents}
+                  initialError={error}
+                  serverDayHeaderDate={initialDay?.date ?? null}
+                />
               </div>
-              <SiteFooter />
-            </main>
-          </HomeResetProvider>
-        </div>
-      </>
-    );
-  } catch {
-    return (
-      <div className="fh-body">
-        <HomeNav />
-        <main id="main-content" className="fh-content">
-          <div className="fh-container fh-main">
-            <h1 className="sr-only">Qué ver hoy en TV</h1>
-            <HomeFeedGate
-              initialEvents={[]}
-              initialDestacadosEvents={[]}
-              initialError="La agenda tardó demasiado en cargar."
-              serverDayHeaderDate={null}
-            />
-          </div>
-          <SiteFooter />
-        </main>
+            </div>
+            <SiteFooter />
+          </main>
+        </HomeResetProvider>
       </div>
-    );
-  }
+    </>
+  );
 }
