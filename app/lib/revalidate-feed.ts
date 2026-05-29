@@ -5,18 +5,18 @@ import {
   fetchHomeFeedEvents,
 } from "./events-feed-server";
 
-/** Tras el cron: invalida cache y precarga el feed para que la home no espere a Supabase. */
+/** Tras el cron: precarga el feed y luego invalida HTML (evita ventana sin caché). */
 export async function warmFeedCacheAfterCron(): Promise<{
   ok: boolean;
   error?: string;
 }> {
   try {
-    revalidateTag("feed", { expire: 0 });
     await Promise.all([
       fetchHomeFeedEvents(),
       fetchFeedEvents(),
       fetchDestacadosFeedEvents(),
     ]);
+    revalidateTag("feed", { expire: 0 });
     revalidatePath("/");
     revalidatePath("/sitemap.xml");
     revalidatePath("/api/events");

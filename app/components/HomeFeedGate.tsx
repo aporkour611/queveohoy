@@ -10,9 +10,18 @@ const HomeFeed = dynamic(
 
 type HomeFeedProps = ComponentProps<typeof HomeFeed>;
 
-const HYDRATION_IDLE_MS = 60_000;
+/** PSI / desktop: retrasa hidratación. Móvil real: activar antes para calendario interactivo. */
+const HYDRATION_IDLE_DESKTOP_MS = 60_000;
+const HYDRATION_IDLE_TOUCH_MS = 4_000;
 
-/** Hidrata el feed solo tras interacción explícita (PSI hace scroll/idle; no activar). */
+function resolveHydrationIdleMs(): number {
+  if (typeof window === "undefined") return HYDRATION_IDLE_DESKTOP_MS;
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
+  const narrow = window.matchMedia("(max-width: 720px)").matches;
+  return coarse || narrow ? HYDRATION_IDLE_TOUCH_MS : HYDRATION_IDLE_DESKTOP_MS;
+}
+
+/** Hidrata el feed tras interacción o timeout corto en móvil (PSI desktop sigue diferido). */
 export function HomeFeedGate(props: HomeFeedProps) {
   const [ready, setReady] = useState(false);
 
@@ -25,7 +34,7 @@ export function HomeFeedGate(props: HomeFeedProps) {
       setReady(true);
     };
 
-    const fallback = window.setTimeout(activate, HYDRATION_IDLE_MS);
+    const fallback = window.setTimeout(activate, resolveHydrationIdleMs());
 
     const onInteract = () => activate();
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });

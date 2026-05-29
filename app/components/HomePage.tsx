@@ -54,6 +54,7 @@ import {
   resolveHomeDayEvents,
 } from "../lib/upcoming-events";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
+import { fetchClientJson } from "../lib/client-fetch-json";
 
 function setSsrDayHeaderVisible(visible: boolean) {
   const header = document.getElementById("home-day-header-ssr");
@@ -174,13 +175,12 @@ export function HomeFeed({
 
     try {
       const url = fullWeek ? "/api/events" : "/api/events?scope=home";
-      const res = await fetch(url);
-      const body = (await res.json()) as {
+      const { ok, body } = await fetchClientJson<{
         events?: EventRow[];
         error?: string;
-      };
+      }>(url);
 
-      if (!res.ok || body.error) {
+      if (!ok || body.error) {
         setLoadError(body.error ?? "No se pudieron cargar los eventos");
         if (!silent) setEvents([]);
       } else {
@@ -204,12 +204,12 @@ export function HomeFeed({
         err instanceof Error ? err.message : "No se pudieron cargar los eventos"
       );
       if (!silent) setEvents([]);
-    }
-
-    if (showLoader) {
-      setRefreshing(false);
-    } else if (!silent) {
-      setLoading(false);
+    } finally {
+      if (showLoader) {
+        setRefreshing(false);
+      } else if (!silent) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -478,8 +478,30 @@ export function HomeFeed({
     refreshing || showWeekLoader || filterSearching || showInitialLoading;
 
   useLayoutEffect(() => {
-    document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
-  }, []);
+    const ssr = document.getElementById("home-feed-day-ssr");
+    if (!ssr) return;
+
+    const clientHasContent = events.length > 0;
+    const clientSettledEmpty =
+      !loading &&
+      !refreshing &&
+      !filterSearching &&
+      (loadError != null || !hasInitialData);
+
+    if (clientHasContent || clientSettledEmpty) {
+      ssr.setAttribute("hidden", "");
+      return;
+    }
+
+    ssr.removeAttribute("hidden");
+  }, [
+    events.length,
+    loading,
+    refreshing,
+    filterSearching,
+    loadError,
+    hasInitialData,
+  ]);
 
   useLayoutEffect(() => {
     setSsrDayHeaderVisible(useSsrDayHeader && !weekView);
