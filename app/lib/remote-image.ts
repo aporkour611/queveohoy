@@ -7,6 +7,7 @@ export const REMOTE_IMAGE_HOSTS = new Set([
   "cdn.myanimelist.net",
   "r2.thesportsdb.com",
   "www.thesportsdb.com",
+  "a.espncdn.com",
 ]);
 
 /** Normaliza URLs de logos e-sports y evita hosts que rompen next/image. */

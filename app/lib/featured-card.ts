@@ -1,3 +1,7 @@
+import {
+  basketLogoFallbackUrls,
+  parseBasketTeamLogos,
+} from "./basketball";
 import { sportLabel } from "./filter-config";
 import { resolveChannelsForEvent } from "./channels";
 import { eventDisplayTime, MADRID_TZ } from "./madrid-time";
@@ -86,6 +90,11 @@ export type SpotlightCardModel = {
   showTennisDuel?: boolean;
   showBasketballDuel?: boolean;
 };
+
+export function spotlightHasCompleteTeamCover(card: SpotlightCardModel): boolean {
+  if (!card.showTeamDuel) return true;
+  return Boolean(card.homeCrest && card.awayCrest && card.coverImage);
+}
 
 function sportPosterCover(
   url: string,
@@ -293,7 +302,7 @@ export function getSpotlightCardModel(
     const logos = parseEsportsTeamLogos(event.source);
     const homeName = shortTeamName(event.home_team);
     const awayName = shortTeamName(event.away_team);
-    const hasDuel = Boolean(logos?.homeUrl || logos?.awayUrl);
+    const hasDuel = Boolean(logos?.homeUrl && logos?.awayUrl);
 
     return {
       headline: teamTitle(event) || event.title?.trim() || gameArt.label,
@@ -303,7 +312,7 @@ export function getSpotlightCardModel(
       time,
       meta: channels || event.competition?.trim() || gameArt.label,
       platform: event.platform?.trim() || channels || "Streaming",
-      coverImage: localSpotlightCover(gameArt.url, "poster"),
+      coverImage: hasDuel ? localSpotlightCover(gameArt.url, "poster") : undefined,
       visualClass: gameArt.visualClass,
       channelList: channelList.length ? channelList : undefined,
       homeCrest: logos?.homeUrl ?? undefined,
@@ -374,6 +383,8 @@ export function getSpotlightCardModel(
   if (sport === "basket") {
     const homeName = shortTeamName(event.home_team);
     const awayName = shortTeamName(event.away_team);
+    const logos = parseBasketTeamLogos(event.source, event.home_team, event.away_team);
+    const hasDuel = Boolean(logos?.homeUrl && logos?.awayUrl);
     const styled = applyFlagshipOrSportCover(
       event,
       sport,
@@ -391,11 +402,19 @@ export function getSpotlightCardModel(
       meta: event.competition?.trim() || "Baloncesto",
       platform: event.platform?.trim() || channels || "TV",
       channelList: channelList.length ? channelList : undefined,
-      coverImage: styled.coverImage,
+      coverImage: hasDuel ? styled.coverImage : undefined,
       visualClass: styled.visualClass,
+      homeCrest: logos?.homeUrl ?? undefined,
+      awayCrest: logos?.awayUrl ?? undefined,
+      homeCrestList: logos?.homeAbbr
+        ? basketLogoFallbackUrls(logos.homeAbbr)
+        : undefined,
+      awayCrestList: logos?.awayAbbr
+        ? basketLogoFallbackUrls(logos.awayAbbr)
+        : undefined,
       homeName,
       awayName,
-      showBasketballDuel: Boolean(homeName && awayName),
+      showTeamDuel: hasDuel,
     };
   }
 

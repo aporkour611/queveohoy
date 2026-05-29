@@ -123,7 +123,7 @@ describe("getSpotlightCardModel flagship posters", () => {
     expect(card.visualClass).toBe("qvh-spotlight-visual-rg-knockout");
   });
 
-  it("asigna portada baloncesto en lugar del fallback genérico", () => {
+  it("oculta portada baloncesto sin escudos resueltos", () => {
     const event: EventRow = {
       id: 6,
       title: "Barça vs Real Madrid",
@@ -136,8 +136,28 @@ describe("getSpotlightCardModel flagship posters", () => {
 
     const card = getSpotlightCardModel(event, MADRID_TZ);
 
-    expect(card.coverImage?.url).toBe("/deportes/baloncesto.png");
-    expect(card.visualClass).toBe("qvh-spotlight-visual-basket");
-    expect(card.showBasketballDuel).toBe(true);
+    expect(card.coverImage).toBeUndefined();
+    expect(card.showTeamDuel).toBe(false);
+  });
+
+  it("asigna portada NBA con escudos de equipo", () => {
+    const event: EventRow = {
+      id: 7,
+      title: "Los Angeles Lakers vs Boston Celtics",
+      sport: "basket",
+      date: "2026-05-28",
+      competition: "NBA",
+      home_team: "Los Angeles Lakers",
+      away_team: "Boston Celtics",
+      source: "bdl-logos:LAL::BOS",
+    };
+
+    const card = getSpotlightCardModel(event, MADRID_TZ);
+
+    expect(card.coverImage?.url).toBe("/deportes/baloncesto-nba.png");
+    expect(card.visualClass).toBe("qvh-spotlight-visual-basket-nba");
+    expect(card.showTeamDuel).toBe(true);
+    expect(card.homeCrest).toContain("lal.png");
+    expect(card.awayCrest).toContain("bos.png");
   });
 });

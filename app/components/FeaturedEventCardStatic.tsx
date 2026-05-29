@@ -93,6 +93,16 @@ function StaticSpotlightCover({
   );
 }
 
+function StaticTeamCrest({ src }: { src?: string | null }) {
+  const safe = safeRemoteImageUrl(src);
+  if (!safe) return null;
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={safe} alt="" className="qvh-spotlight-crest fh-team-crest-img" loading="lazy" />
+  );
+}
+
 /** Destacados SSR: sin client boundaries ni lazy observers. */
 export function FeaturedEventCardStatic({
   event,
@@ -103,6 +113,11 @@ export function FeaturedEventCardStatic({
   const stamp = getEventCardStamp(event);
   const isClFinal = isChampionsFinal(event);
   const href = partidoPath(event);
+  const showTeamDuel =
+    card.showTeamDuel && Boolean(card.homeCrest && card.awayCrest);
+  const showVisual = Boolean(
+    card.coverImage || card.showUfcDuel || card.showRolandGarrosDuel || showTeamDuel
+  );
   const rootClass = [
     "qvh-spotlight-card",
     isClFinal ? "qvh-spotlight-card--cl-final" : "",
@@ -113,19 +128,33 @@ export function FeaturedEventCardStatic({
 
   return (
     <Link href={href} className={rootClass}>
+      {showVisual ? (
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
-          stamp ? " qvh-spotlight-visual-stamped" : ""
-        }`}
+          showTeamDuel ? " fh-media-spotlight-visual-team-duel" : ""
+        }${stamp ? " qvh-spotlight-visual-stamped" : ""}`}
       >
         {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
-        {card.coverImage ? (
+        {card.coverImage && !showTeamDuel ? (
           <StaticSpotlightCover
             url={card.coverImage.url}
             local={card.coverImage.local}
             objectPosition={card.coverImage.objectPosition}
             priority={priority}
           />
+        ) : null}
+        {showTeamDuel ? (
+          <div className="qvh-spotlight-duel" aria-hidden>
+            <div className="qvh-spotlight-duel-team">
+              <StaticTeamCrest src={card.homeCrest} />
+              <span className="qvh-spotlight-duel-name">{card.homeName}</span>
+            </div>
+            <span className="qvh-spotlight-duel-vs">vs</span>
+            <div className="qvh-spotlight-duel-team">
+              <StaticTeamCrest src={card.awayCrest} />
+              <span className="qvh-spotlight-duel-name">{card.awayName}</span>
+            </div>
+          </div>
         ) : null}
         <div className="qvh-spotlight-overlay" aria-hidden />
         <span
@@ -140,6 +169,7 @@ export function FeaturedEventCardStatic({
           ) : null}
         </div>
       </div>
+      ) : null}
 
       <div className="qvh-spotlight-body">
         <h3 className="qvh-spotlight-headline">{card.headline}</h3>

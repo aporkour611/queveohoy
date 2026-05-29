@@ -1,3 +1,4 @@
+import { encodeBasketSource } from "./basketball";
 import {
   getMadridWeekDates,
   parseUtcIso,
@@ -37,10 +38,6 @@ type RawGame = {
   visitor_team?: { full_name?: string; abbreviation?: string };
 };
 
-function encodeBasketSource(home?: string, away?: string): string {
-  return `bdl:${home ?? ""}:${away ?? ""}`;
-}
-
 function normalizeGame(raw: RawGame, weekDates: string[]): BasketCronEvent | null {
   if (!raw.id) return null;
   if (raw.postponed) return null;
@@ -48,6 +45,8 @@ function normalizeGame(raw: RawGame, weekDates: string[]): BasketCronEvent | nul
 
   const home = raw.home_team?.full_name?.trim();
   const away = raw.visitor_team?.full_name?.trim();
+  const homeAbbr = raw.home_team?.abbreviation?.trim();
+  const awayAbbr = raw.visitor_team?.abbreviation?.trim();
   if (!home || !away) return null;
 
   const iso = raw.datetime || (raw.date ? `${raw.date}T00:00:00Z` : null);
@@ -71,7 +70,10 @@ function normalizeGame(raw: RawGame, weekDates: string[]): BasketCronEvent | nul
     category: "deportes",
     competition,
     platform: "NBA League Pass, Movistar+, DAZN",
-    source: encodeBasketSource(home, away),
+    source:
+      homeAbbr && awayAbbr
+        ? encodeBasketSource(homeAbbr, awayAbbr)
+        : `bdl:${home}:${away}`,
   };
 }
 

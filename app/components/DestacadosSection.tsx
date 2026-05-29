@@ -2,6 +2,10 @@ import type { EventRow } from "./types";
 import { pickWeekDestacados } from "../lib/destacados-config";
 import { resolveChampionsWeekContext } from "../lib/champions-week";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
+import {
+  getSpotlightCardModel,
+  spotlightHasCompleteTeamCover,
+} from "../lib/featured-card";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { ChampionsWeekHero } from "./ChampionsWeekHero";
 import { DestacadosStaticRow } from "./DestacadosStaticRow";
@@ -13,7 +17,9 @@ type Props = {
 
 export function DestacadosSection({ events }: Props) {
   const todayKey = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "";
-  const weekFeatured = pickWeekDestacados(events, { todayKey });
+  const weekFeatured = pickWeekDestacados(events, { todayKey }).filter((event) =>
+    spotlightHasCompleteTeamCover(getSpotlightCardModel(event, MADRID_TZ))
+  );
   const championsWeek = resolveChampionsWeekContext(
     events,
     todayKey,

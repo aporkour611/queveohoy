@@ -61,19 +61,13 @@ function StaticCover({
   );
 }
 
-function StaticCrest({ src, name }: { src?: string | null; name?: string | null }) {
+function StaticCrest({ src }: { src?: string | null }) {
   const safe = safeRemoteImageUrl(src);
-  if (!safe) {
-    return (
-      <span className="fh-crest-fallback" aria-hidden>
-        {(name ?? "?").slice(0, 2).toUpperCase()}
-      </span>
-    );
-  }
+  if (!safe) return null;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={safe} alt="" className="fh-crest-fallback fh-team-crest-img" loading="lazy" />
+    <img src={safe} alt="" className="fh-team-crest-img" loading="lazy" />
   );
 }
 
@@ -86,8 +80,7 @@ export function MatchCardStatic({ event, omitCover = false }: Props) {
   );
   const showTeamDuel =
     card.showTeamDuel &&
-    !card.showRolandGarrosDuel &&
-    (card.homeCrest || card.awayCrest || (card.homeName && card.awayName));
+    Boolean(card.homeCrest && card.awayCrest);
   const showRolandGarrosDuel =
     card.showRolandGarrosDuel && card.homeName && card.awayName;
   const showUfcDuel =
@@ -135,12 +128,12 @@ export function MatchCardStatic({ event, omitCover = false }: Props) {
         ) : showTeamDuel ? (
           <div className="fh-media-spotlight-duel" aria-hidden>
             <div className="fh-media-spotlight-duel-team">
-              <StaticCrest src={card.homeCrest} name={card.homeName} />
+              <StaticCrest src={card.homeCrest} />
               <span className="fh-media-spotlight-duel-name">{card.homeName}</span>
             </div>
             <span className="fh-media-spotlight-duel-vs">vs</span>
             <div className="fh-media-spotlight-duel-team">
-              <StaticCrest src={card.awayCrest} name={card.awayName} />
+              <StaticCrest src={card.awayCrest} />
               <span className="fh-media-spotlight-duel-name">{card.awayName}</span>
             </div>
           </div>

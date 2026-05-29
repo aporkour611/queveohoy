@@ -49,7 +49,7 @@ async function enrichEsportsEvent(e: EventRow): Promise<EventRow | null> {
   const homeLogo = homeCandidates[0] ?? pandascoreTeamLogo(homeOp);
   const awayLogo = awayCandidates[0] ?? pandascoreTeamLogo(awayOp);
 
-  if (!homeLogo && !awayLogo) return null;
+  if (!homeLogo || !awayLogo) return null;
 
   return {
     ...e,

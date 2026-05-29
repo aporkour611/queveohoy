@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
-import { teamInitials } from "../lib/football";
+import { useEffect, useMemo, useState } from "react";
 import {
   canOptimizeImageSrc,
   IMAGE_QUALITY,
@@ -19,6 +18,8 @@ type Props = {
   className?: string;
   /** Escudos above-the-fold (destacados). */
   eager?: boolean;
+  /** Si todos los intentos fallan, avisa al padre (sin placeholder provisional). */
+  onAllFailed?: () => void;
 };
 
 function crestSrc(src: string, attempt: number): string {
@@ -34,6 +35,7 @@ export function TeamCrest({
   size = 50,
   className,
   eager = false,
+  onAllFailed,
 }: Props) {
   const urls = useMemo(() => {
     const list = srcList?.length ? srcList : src ? [src] : [];
@@ -55,9 +57,11 @@ export function TeamCrest({
   const [retry, setRetry] = useState(0);
   const [failed, setFailed] = useState(false);
 
-  const initials = teamInitials(name);
-  const hue =
-    (name?.split("").reduce((a, c) => a + c.charCodeAt(0), 0) ?? 0) % 360;
+  useEffect(() => {
+    if (urls.length === 0) {
+      onAllFailed?.();
+    }
+  }, [urls.length, onAllFailed]);
 
   const currentUrl = urls[urlIndex];
   const safeUrl = safeRemoteImageUrl(currentUrl);
@@ -79,6 +83,19 @@ export function TeamCrest({
     }
 
     setFailed(true);
+    onAllFailed?.();
+  }
+
+  if (!urls.length || failed) {
+    return (
+      <div
+        ref={ref}
+        className={wrapperClass}
+        style={{ width: size, height: size }}
+        title={name ?? undefined}
+        aria-hidden
+      />
+    );
   }
 
   return (
@@ -112,17 +129,7 @@ export function TeamCrest({
           decoding="async"
           onError={handleError}
         />
-      ) : (
-        <div
-          className="fh-team-crest-placeholder"
-          style={{
-            background: `linear-gradient(135deg, hsl(${hue}, 55%, 42%), hsl(${hue}, 60%, 28%))`,
-            fontSize: size * 0.32,
-          }}
-        >
-          {initials}
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }

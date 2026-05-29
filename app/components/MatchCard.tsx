@@ -4,9 +4,10 @@ import "../futbolhoy-feed.css";
 import "../media.css";
 import "../roland-garros.css";
 import "../basket-duel.css";
-import { memo, startTransition, useMemo, useState, type ReactNode } from "react";
+import { memo, startTransition, useCallback, useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls, isEsportsSport } from "../lib/esports";
+import { parseBasketTeamLogos, basketLogoFallbackUrls } from "../lib/basketball";
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
 import { matchCardEntertainmentVisualClass } from "../lib/entertainment-art";
@@ -23,7 +24,6 @@ import {
 import { RemotePoster } from "./RemotePoster";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { RolandGarrosDuelVisual } from "./RolandGarrosDuelVisual";
-import { BasketballDuelVisual } from "./BasketballDuelVisual";
 import { ChannelBadges } from "./ChannelBadge";
 import { resolveChannelsForEvent } from "../lib/channels";
 import { partidoPath } from "../lib/event-slug";
@@ -66,7 +66,6 @@ type SpotlightCardContent = {
   showTeamDuel?: boolean;
   showRolandGarrosDuel?: boolean;
   showTennisDuel?: boolean;
-  showBasketballDuel?: boolean;
   homeCrest?: string | null;
   awayCrest?: string | null;
   homeCrestUrls?: string[];
@@ -96,7 +95,6 @@ function SpotlightCardContent({
   showTeamDuel = false,
   showRolandGarrosDuel = false,
   showTennisDuel = false,
-  showBasketballDuel = false,
   homeCrest,
   awayCrest,
   homeCrestUrls = [],
@@ -109,23 +107,38 @@ function SpotlightCardContent({
   const ufcDuelActive =
     showUfcDuel || Boolean(ufcF1Url || ufcF2Url || (ufcF1Name && ufcF2Name));
   const teamDuelActive =
-    showTeamDuel || Boolean(homeCrest || awayCrest || (homeName && awayName));
+    showTeamDuel && Boolean(homeCrest && awayCrest);
   const tennisDuelActive = showRolandGarrosDuel || showTennisDuel;
-  const basketballDuelActive = showBasketballDuel;
+  const requiresCrests = teamDuelActive;
+  const [crestsFailed, setCrestsFailed] = useState(false);
+  const handleCrestFailed = useCallback(() => setCrestsFailed(true), []);
+  const hideCover = requiresCrests && crestsFailed;
+
+  if (hideCover) {
+    return (
+      <div className="fh-media-spotlight-body">
+        <h4 className="fh-media-spotlight-title">{title}</h4>
+        {subtitle ? <p className="fh-media-spotlight-meta">{subtitle}</p> : null}
+        {channels.length > 0 ? (
+          <ChannelBadges channels={channels} prominent />
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <>
       <div
         className={`fh-media-spotlight-visual ${visualClass}${
           ufcDuelActive ? " fh-media-spotlight-visual-ufc-duel" : ""
-        }${teamDuelActive && !tennisDuelActive && !basketballDuelActive ? " fh-media-spotlight-visual-team-duel" : ""}${
+        }${teamDuelActive && !tennisDuelActive ? " fh-media-spotlight-visual-team-duel" : ""}${
           tennisDuelActive ? " fh-media-spotlight-visual-rg-duel" : ""
-        }${basketballDuelActive ? " fh-media-spotlight-visual-basket-duel" : ""}${
+        }${
           stampKind ? " fh-media-spotlight-visual-stamped" : ""
         }`}
       >
         {stampKind ? <EventCardStamp kind={stampKind} size="compact" /> : null}
-        {gameArtUrl && !posterUrl && !ufcDuelActive ? (
+        {gameArtUrl && !posterUrl && !ufcDuelActive && !teamDuelActive ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={gameArtUrl}
@@ -133,7 +146,7 @@ function SpotlightCardContent({
             className="fh-media-spotlight-banner fh-media-spotlight-game-art"
           />
         ) : null}
-        {posterUrl && !teamDuelActive && !tennisDuelActive && !basketballDuelActive ? (
+        {posterUrl && !teamDuelActive && !tennisDuelActive ? (
           <RemotePoster
             src={posterUrl}
             className={`fh-media-spotlight-banner${
@@ -150,7 +163,7 @@ function SpotlightCardContent({
             f2Name={ufcF2Name}
           />
         ) : null}
-        {teamDuelActive && !ufcDuelActive && !tennisDuelActive && !basketballDuelActive ? (
+        {teamDuelActive && !ufcDuelActive && !tennisDuelActive ? (
           <div className="fh-media-spotlight-duel" aria-hidden>
             <div className="fh-media-spotlight-duel-team">
               <TeamCrest
@@ -158,6 +171,7 @@ function SpotlightCardContent({
                 name={homeName ?? ""}
                 size={44}
                 className="fh-media-spotlight-crest"
+                onAllFailed={handleCrestFailed}
               />
               <span className="fh-media-spotlight-duel-name">{homeName}</span>
             </div>
@@ -168,20 +182,14 @@ function SpotlightCardContent({
                 name={awayName ?? ""}
                 size={44}
                 className="fh-media-spotlight-crest"
+                onAllFailed={handleCrestFailed}
               />
               <span className="fh-media-spotlight-duel-name">{awayName}</span>
             </div>
           </div>
         ) : null}
-        {tennisDuelActive && !ufcDuelActive && !basketballDuelActive ? (
+        {tennisDuelActive && !ufcDuelActive ? (
           <RolandGarrosDuelVisual
-            homeName={homeName}
-            awayName={awayName}
-            size="card"
-          />
-        ) : null}
-        {basketballDuelActive && !ufcDuelActive ? (
-          <BasketballDuelVisual
             homeName={homeName}
             awayName={awayName}
             size="card"
@@ -265,6 +273,10 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
       );
 
   const esportsLogos = parseEsportsTeamLogos(event.source);
+  const basketLogos =
+    event.sport === "basket"
+      ? parseBasketTeamLogos(event.source, event.home_team, event.away_team)
+      : null;
   const footballIds =
     event.sport === "futbol"
       ? parseFootballTeamIds(
@@ -277,21 +289,27 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
   const homeCrest =
     esportsLogos?.homeUrl ??
+    basketLogos?.homeUrl ??
     (footballIds ? teamCrestUrl(footballIds.homeId) : null);
   const awayCrest =
     esportsLogos?.awayUrl ??
+    basketLogos?.awayUrl ??
     (footballIds ? teamCrestUrl(footballIds.awayId) : null);
 
   const homeCrestUrls = esportsLogos?.homeUrl
     ? esportsLogoFallbackUrls(esportsLogos.homeUrl)
-    : homeCrest
-      ? [homeCrest]
-      : [];
+    : basketLogos?.homeAbbr
+      ? basketLogoFallbackUrls(basketLogos.homeAbbr)
+      : homeCrest
+        ? [homeCrest]
+        : [];
   const awayCrestUrls = esportsLogos?.awayUrl
     ? esportsLogoFallbackUrls(esportsLogos.awayUrl)
-    : awayCrest
-      ? [awayCrest]
-      : [];
+    : basketLogos?.awayAbbr
+      ? basketLogoFallbackUrls(basketLogos.awayAbbr)
+      : awayCrest
+        ? [awayCrest]
+        : [];
 
   const teams = eventVersusTeams(event);
   const home = teams ? shortTeamName(teams.home) : "";
@@ -396,6 +414,9 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
   if (isEsportsSport(event.sport)) {
     const card = getSpotlightCardModel(event, MADRID_TZ);
+    if (!card.showTeamDuel) {
+      // Sin escudos completos: cae al layout compacto del feed.
+    } else {
     const visualClass = (card.visualClass ?? "").replace(
       "qvh-spotlight-visual-",
       "fh-media-spotlight-visual-"
@@ -430,6 +451,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
       />,
       `fh-match-media-spotlight ${esportsShellClass}`
     );
+    }
   }
 
   if (isUfc) {
@@ -502,6 +524,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
   if (event.sport === "basket" && isTeamVersusEvent(event)) {
     const card = getSpotlightCardModel(event, MADRID_TZ);
+    if (card.showTeamDuel) {
     const visualClass = (card.visualClass ?? "qvh-spotlight-visual-basket").replace(
       "qvh-spotlight-visual-",
       "fh-media-spotlight-visual-"
@@ -520,13 +543,18 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         dateLabel={dateLabel}
         time={time}
         channels={channels}
-        showBasketballDuel
-        homeName={home || event.home_team}
-        awayName={away || event.away_team}
+        showTeamDuel
+        homeCrest={card.homeCrest}
+        awayCrest={card.awayCrest}
+        homeCrestUrls={card.homeCrestList}
+        awayCrestUrls={card.awayCrestList}
+        homeName={card.homeName}
+        awayName={card.awayName}
         stampKind={stamp}
       />,
       "fh-match-media-spotlight fh-match_basket"
     );
+    }
   }
 
   if (

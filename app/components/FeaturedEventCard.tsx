@@ -1,5 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import { memo } from "react";
+import { memo, useCallback, useState } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import type { SpotlightCover } from "../lib/spotlight-art";
@@ -14,7 +16,6 @@ import { RemotePoster } from "./RemotePoster";
 import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { RolandGarrosDuelVisual } from "./RolandGarrosDuelVisual";
-import { BasketballDuelVisual } from "./BasketballDuelVisual";
 import { EventCardStamp } from "./EventCardStamp";
 import { ChannelBadges } from "./ChannelBadge";
 
@@ -93,6 +94,10 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
   const card = getSpotlightCardModel(event, MADRID_TZ);
   const stamp = getEventCardStamp(event);
   const isClFinal = isChampionsFinal(event);
+  const requiresCrests = Boolean(card.showTeamDuel);
+  const [crestsFailed, setCrestsFailed] = useState(false);
+  const handleCrestFailed = useCallback(() => setCrestsFailed(true), []);
+  const hideCover = requiresCrests && crestsFailed;
   const rootClass = [
     "qvh-spotlight-card",
     isClFinal ? "qvh-spotlight-card--cl-final" : "",
@@ -103,11 +108,12 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
 
   return (
     <article className={rootClass}>
+      {!hideCover ? (
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
           card.showUfcDuel ? " qvh-spotlight-visual-ufc-duel" : ""
         }${card.showRolandGarrosDuel ? " qvh-spotlight-visual-rg-duel" : ""}${
-          card.showBasketballDuel ? " qvh-spotlight-visual-basket-duel" : ""
+          card.showTeamDuel ? " fh-media-spotlight-visual-team-duel" : ""
         }${
           stamp ? " qvh-spotlight-visual-stamped" : ""
         }`}
@@ -137,12 +143,6 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
             awayName={card.awayName}
             size="spotlight"
           />
-        ) : card.showBasketballDuel ? (
-          <BasketballDuelVisual
-            homeName={card.homeName}
-            awayName={card.awayName}
-            size="spotlight"
-          />
         ) : card.showTeamDuel ? (
           <div className="qvh-spotlight-duel" aria-hidden>
             <div className="qvh-spotlight-duel-team">
@@ -153,6 +153,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
                 size={48}
                 className="qvh-spotlight-crest"
                 eager={priority}
+                onAllFailed={handleCrestFailed}
               />
               <span className="qvh-spotlight-duel-name">{card.homeName}</span>
             </div>
@@ -165,6 +166,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
                 size={48}
                 className="qvh-spotlight-crest"
                 eager={priority}
+                onAllFailed={handleCrestFailed}
               />
               <span className="qvh-spotlight-duel-name">{card.awayName}</span>
             </div>
@@ -185,6 +187,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
           ) : null}
         </div>
       </div>
+      ) : null}
 
       <div className="qvh-spotlight-body">
         <h3 className="qvh-spotlight-headline">{card.headline}</h3>

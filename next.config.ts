@@ -107,6 +107,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "a.espncdn.com",
+      },
+      {
+        protocol: "https",
         hostname: "flagcdn.com",
       },
     ],

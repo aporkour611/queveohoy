@@ -1,4 +1,5 @@
 import type { EventRow } from "../components/types";
+import { parseBasketTeamLogos } from "./basketball";
 import { isBlockedSport } from "./blocked-sports";
 import { isImportantEvent } from "./featured";
 import { eventHasPlaceholderTeams } from "./event-quality";
@@ -7,6 +8,7 @@ import { parseFootballTeamIds } from "./football";
 
 const TEAM_CREST_SPORTS = new Set([
   "futbol",
+  "basket",
   "csgo",
   "valorant",
   "lol",
@@ -35,6 +37,11 @@ export function eventHasTeamCrests(e: EventRow): boolean {
 
   if (isEsportsSport(sport)) {
     const logos = parseEsportsTeamLogos(e.source);
+    return Boolean(logos?.homeUrl && logos?.awayUrl);
+  }
+
+  if (sport === "basket") {
+    const logos = parseBasketTeamLogos(e.source, e.home_team, e.away_team);
     return Boolean(logos?.homeUrl && logos?.awayUrl);
   }
 

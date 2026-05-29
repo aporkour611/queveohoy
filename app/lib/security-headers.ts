@@ -18,6 +18,7 @@ export function buildContentSecurityPolicy(isProduction: boolean): string {
       "https://cdn.myanimelist.net",
       "https://r2.thesportsdb.com",
       "https://www.thesportsdb.com",
+      "https://a.espncdn.com",
       "https://flagcdn.com",
     ].join(" "),
     "font-src 'self' data:",
