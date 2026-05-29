@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { DestacadosSection } from "../components/DestacadosSection";
-import { FeedErrorBoundary } from "../components/FeedErrorBoundary";
 import { FeedControlsShell } from "../components/FeedControlsShell";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
@@ -82,9 +81,7 @@ export default async function Page() {
               <div className="fh-container fh-main">
                 <h1 className="sr-only">Qué ver hoy en TV</h1>
 
-                <FeedErrorBoundary>
-                  <DestacadosSection events={weekEvents} />
-                </FeedErrorBoundary>
+                <DestacadosSection events={weekEvents} />
 
                 <div className="qvh-home-feed-slot">
                   <FeedControlsShell days={shellDays} />

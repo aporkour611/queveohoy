@@ -51,10 +51,21 @@
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.qvh-destacados-week-first {
-  padding-top: 0;
-  border-top: none;
+@media (max-width: 767px) {
+  .qvh-cl-week-shell {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .qvh-cl-week-hero {
+    order: 2;
+  }
+
+  .qvh-destacados-static.qvh-cl-week-destacados {
+    order: 1;
+  }
 }
+
 
 .qvh-destacados-week .qvh-destacados-dot {
   background: #c9a227;
@@ -710,7 +721,8 @@
     linear-gradient(180deg, #2a0810 0%, #0a0406 100%);
 }
 
-.qvh-spotlight-visual-ufc-329 {
+.qvh-spotlight-visual-ufc-329,
+.qvh-spotlight-visual-ufc-road {
   background:
     radial-gradient(circle at 18% 110%, rgba(212, 20, 20, 0.42), transparent 45%),
     radial-gradient(circle at 82% 110%, rgba(212, 20, 20, 0.42), transparent 45%),
@@ -727,7 +739,8 @@
   box-shadow: 0 8px 28px rgba(22, 101, 52, 0.2);
 }
 
-.qvh-spotlight-card:has(.qvh-spotlight-visual-ufc-329) {
+.qvh-spotlight-card:has(.qvh-spotlight-visual-ufc-329),
+.qvh-spotlight-card:has(.qvh-spotlight-visual-ufc-road) {
   border-color: rgba(212, 20, 20, 0.45);
   box-shadow: 0 8px 28px rgba(127, 29, 29, 0.24);
 }
@@ -739,7 +752,8 @@
 .qvh-spotlight-visual-rg:has(.qvh-spotlight-cover-poster),
 .qvh-spotlight-visual-rg-knockout:has(.qvh-spotlight-cover-poster),
 .qvh-spotlight-visual-mundial:has(.qvh-spotlight-cover-poster),
-.qvh-spotlight-visual-ufc-329:has(.qvh-spotlight-cover-poster) {
+.qvh-spotlight-visual-ufc-329:has(.qvh-spotlight-cover-poster),
+.qvh-spotlight-visual-ufc-road:has(.qvh-spotlight-cover-poster) {
   background: #101015;
 }
 

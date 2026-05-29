@@ -11,6 +11,8 @@ import { MatchCardStatic } from "./MatchCardStatic";
 type Props = {
   events: EventRow[];
   emptyMessage?: string;
+  /** Sin pósters en tarjetas (SSR home: protege LCP de destacados). */
+  omitCovers?: boolean;
 };
 
 function StaticSportBlock({
@@ -18,11 +20,13 @@ function StaticSportBlock({
   accentClass,
   events,
   shellClassName,
+  omitCovers = false,
 }: {
   title: string;
   accentClass: string;
   events: EventRow[];
   shellClassName?: string;
+  omitCovers?: boolean;
 }) {
   const sortedEvents = sortEventsByPopularity(events);
   const blockClass = [
@@ -43,7 +47,7 @@ function StaticSportBlock({
       <div className="qvh-category-carousel-cards fh-category-carousel-static">
         {sortedEvents.map((event) => (
           <div key={event.id} className="fh-cardcol">
-            <MatchCardStatic event={event} />
+            <MatchCardStatic event={event} omitCover={omitCovers} />
           </div>
         ))}
       </div>
@@ -55,18 +59,29 @@ function StaticMediaGroup({
   title,
   accentClass,
   events,
+  omitCovers = false,
 }: {
   title: string;
   accentClass: string;
   events: EventRow[];
+  omitCovers?: boolean;
 }) {
   if (events.length === 0) return null;
   return (
-    <StaticSportBlock title={title} accentClass={accentClass} events={events} />
+    <StaticSportBlock
+      title={title}
+      accentClass={accentClass}
+      events={events}
+      omitCovers={omitCovers}
+    />
   );
 }
 
-export function EventDaySectionsStatic({ events, emptyMessage }: Props) {
+export function EventDaySectionsStatic({
+  events,
+  emptyMessage,
+  omitCovers = false,
+}: Props) {
   if (events.length === 0) {
     return emptyMessage ? (
       <div className="fh-day-empty">
@@ -90,6 +105,7 @@ export function EventDaySectionsStatic({ events, emptyMessage }: Props) {
             accentClass={competitionAccentClass(comp)}
             events={evs}
             shellClassName={isClWeekBlock ? "qvh-cl-week-feed-block" : undefined}
+            omitCovers={omitCovers}
           />
         );
       })}
@@ -100,26 +116,30 @@ export function EventDaySectionsStatic({ events, emptyMessage }: Props) {
           title={label}
           accentClass={sportAccentClass(sportId)}
           events={evs}
+          omitCovers={omitCovers}
         />
       ))}
 
-      <StaticMediaGroup title="Cine" accentClass="fh-accent-cine" events={sections.cine} />
-      <StaticMediaGroup title="Series" accentClass="fh-accent-series" events={sections.series} />
-      <StaticMediaGroup title="Anime" accentClass="fh-accent-anime" events={sections.anime} />
+      <StaticMediaGroup title="Cine" accentClass="fh-accent-cine" events={sections.cine} omitCovers={omitCovers} />
+      <StaticMediaGroup title="Series" accentClass="fh-accent-series" events={sections.series} omitCovers={omitCovers} />
+      <StaticMediaGroup title="Anime" accentClass="fh-accent-anime" events={sections.anime} omitCovers={omitCovers} />
       <StaticMediaGroup
         title="Reality"
         accentClass="fh-accent-tv"
         events={sections.tvReality}
+        omitCovers={omitCovers}
       />
       <StaticMediaGroup
         title="Concursos"
         accentClass="fh-accent-tv"
         events={sections.tvConcurso}
+        omitCovers={omitCovers}
       />
       <StaticMediaGroup
         title="Directos"
         accentClass="fh-accent-tv"
         events={sections.tvDirecto}
+        omitCovers={omitCovers}
       />
     </>
   );

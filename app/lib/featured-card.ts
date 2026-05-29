@@ -84,6 +84,7 @@ export type SpotlightCardModel = {
   showUfcDuel?: boolean;
   showRolandGarrosDuel?: boolean;
   showTennisDuel?: boolean;
+  showBasketballDuel?: boolean;
 };
 
 function sportPosterCover(
@@ -394,7 +395,7 @@ export function getSpotlightCardModel(
       visualClass: styled.visualClass,
       homeName,
       awayName,
-      showTeamDuel: Boolean(homeName && awayName),
+      showBasketballDuel: Boolean(homeName && awayName),
     };
   }
 

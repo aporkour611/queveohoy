@@ -1,6 +1,9 @@
 /** Días que carga el servidor en la home (hoy + mañana, estilo futbolhoy). */
 export const HOME_SSR_DAY_COUNT = 2;
 
+/** Máximo de tarjetas en el HTML estático inicial (PSI / LCP). */
+export const HOME_SSR_EVENT_CAP = 10;
+
 /** Tope por bloque cuando hay finales, eliminatorias o torneos top. */
 export const HOME_SECTION_MAX_IMPORTANT = 6;
 

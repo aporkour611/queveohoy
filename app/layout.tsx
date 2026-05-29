@@ -12,10 +12,11 @@ export const preferredRegion = ["cdg1", "fra1"];
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["800"],
   preload: true,
   adjustFontFallback: true,
   display: "swap",
+  fallback: ["Arial Narrow", "Arial", "sans-serif"],
 });
 
 export const metadata: Metadata = rootMetadata;

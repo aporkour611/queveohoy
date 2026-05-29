@@ -23,6 +23,8 @@ type Props = {
   compact?: boolean;
   /** Tarjetas de cine: algo más grandes que series/anime, pero más compactas que antes. */
   cine?: boolean;
+  /** Misma altura que Destacados (132px) para series tipo Euphoria. */
+  spotlightAspect?: boolean;
 };
 
 function MediaDetailsPanel({ event }: { event: EventRow }) {
@@ -45,6 +47,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   index = 0,
   compact = false,
   cine = false,
+  spotlightAspect = false,
 }: Props) {
   const [expanded, setExpanded] = useState(false);
   const sport =
@@ -106,7 +109,9 @@ export const MediaPosterCard = memo(function MediaPosterCard({
     <div
       className={`qvh-media-card-col${expanded ? " qvh-media-card-col-expanded" : ""}${
         compact ? " qvh-media-card-col-compact" : ""
-      }${cine ? " qvh-media-card-col-cine" : ""}`}
+      }${cine ? " qvh-media-card-col-cine" : ""}${
+        spotlightAspect ? " qvh-media-card-col-spotlight" : ""
+      }`}
     >
       <div
         className={`qvh-media-card qvh-media-card-tilt${expanded ? " qvh-media-card-expanded" : ""}`}
@@ -123,7 +128,9 @@ export const MediaPosterCard = memo(function MediaPosterCard({
         }}
       >
         <div
-          className={`qvh-media-card-poster${stamp ? " qvh-media-card-poster-stamped" : ""}`}
+          className={`qvh-media-card-poster${
+            stamp ? " qvh-media-card-poster-stamped" : ""
+          }${spotlightAspect ? " qvh-media-card-poster-spotlight" : ""}`}
         >
           {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
           <div className="qvh-media-card-fallback" aria-hidden />

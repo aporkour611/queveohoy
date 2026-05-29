@@ -2,7 +2,10 @@
 
 import { useMemo } from "react";
 import type { EventRow } from "./types";
-import { CategoryCarousel } from "./CategoryCarousel";
+import {
+  CategoryCarousel,
+  CATEGORY_CAROUSEL_ANIME_SLOTS,
+} from "./CategoryCarousel";
 import { MediaPosterCard } from "./MediaPosterCard";
 import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
 
@@ -17,11 +20,19 @@ function CatalogRail({
   accent,
   count,
   events,
+  visibleSlots,
+  carouselClassName,
+  compact = false,
+  spotlightAspect = false,
 }: {
   label: string;
   accent: "cine" | "series" | "anime";
   count: number;
   events: EventRow[];
+  visibleSlots?: number;
+  carouselClassName?: string;
+  compact?: boolean;
+  spotlightAspect?: boolean;
 }) {
   const sortedEvents = useMemo(() => sortEventsByPopularity(events), [events]);
 
@@ -36,14 +47,21 @@ function CatalogRail({
           <span className="qvh-catalog-rail-count">{count}</span>
         </div>
       </div>
-      <CategoryCarousel ariaLabel={label} className="qvh-category-carousel-posters">
+      <CategoryCarousel
+        ariaLabel={label}
+        visibleSlots={visibleSlots}
+        className={["qvh-category-carousel-posters", carouselClassName]
+          .filter(Boolean)
+          .join(" ")}
+      >
         {sortedEvents.map((event, index) => (
           <MediaPosterCard
             key={event.id}
             event={event}
             index={index}
-            compact={accent === "anime"}
+            compact={compact}
             cine={accent === "cine"}
+            spotlightAspect={spotlightAspect}
           />
         ))}
       </CategoryCarousel>
@@ -82,8 +100,17 @@ export function CatalogMediaSection({
         accent="series"
         count={series.length}
         events={series}
+        spotlightAspect
       />
-      <CatalogRail label="Anime" accent="anime" count={anime.length} events={anime} />
+      <CatalogRail
+        label="Anime"
+        accent="anime"
+        count={anime.length}
+        events={anime}
+        visibleSlots={CATEGORY_CAROUSEL_ANIME_SLOTS}
+        carouselClassName="qvh-category-carousel-anime"
+        compact
+      />
     </section>
   );
 }

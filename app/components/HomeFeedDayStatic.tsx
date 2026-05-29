@@ -1,4 +1,3 @@
-import "../futbolhoy-feed.css";
 import { resolveStaticHomeFeedDay } from "../lib/home-feed-day-static";
 import type { EventRow } from "./types";
 import { EventDaySectionsStatic } from "./EventDaySectionsStatic";
@@ -35,12 +34,13 @@ export function HomeFeedDayStatic({
             <EventDaySectionsStatic
               events={day.todayEvents}
               emptyMessage="Sin eventos este día."
+              omitCovers
             />
             {day.upcomingMessage ? (
               <p className="fh-upcoming-notice">{day.upcomingMessage}</p>
             ) : null}
             {day.upcomingEvents.length > 0 ? (
-              <EventDaySectionsStatic events={day.upcomingEvents} />
+              <EventDaySectionsStatic events={day.upcomingEvents} omitCovers />
             ) : null}
           </section>
         </div>

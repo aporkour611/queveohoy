@@ -1,3 +1,6 @@
+import type { EventRow } from "../components/types";
+import { matchesSpanishTvFlagship } from "./spanish-tv-curated";
+
 export type EventRecord = {
   id?: number;
   title?: string;
@@ -11,6 +14,23 @@ export type EventRecord = {
   platform?: string | null;
   competition?: string | null;
 };
+
+function normalizeTime(time?: string | null) {
+  return time?.slice(0, 5) ?? "";
+}
+
+/** Título normalizado para deduplicar variantes (T12E1, subtítulos, etc.). */
+export function normalizeTitleDedupeKey(title?: string | null): string {
+  return (title ?? "")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/\s*[—–\-]\s*.+$/, "")
+    .replace(/\bT\d+E\d+\b/gi, "")
+    .replace(/\s*(episodio|cap[ií]tulo|cap\.?)\s*\d+.*/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 /** Clave estable para considerar dos filas el mismo evento */
 export function eventDedupeKey(e: EventRecord): string {
@@ -26,7 +46,14 @@ export function eventDedupeKey(e: EventRecord): string {
     return `${e.sport}|${e.date}|${normalizeTime(e.time)}|${teams}`;
   }
 
-  const titleKey = e.title?.toLowerCase().replace(/\s+/g, " ").trim();
+  if (e.sport === "tv") {
+    const show = matchesSpanishTvFlagship(e as EventRow);
+    if (show) {
+      return `tv|${show.id}|${e.date}|${normalizeTime(e.time)}`;
+    }
+  }
+
+  const titleKey = normalizeTitleDedupeKey(e.title);
   if (titleKey) {
     return `${e.sport}|${e.date}|${normalizeTime(e.time)}|${titleKey}`;
   }
@@ -34,10 +61,6 @@ export function eventDedupeKey(e: EventRecord): string {
   if (e.external_id) return `ext|${e.external_id}`;
 
   return `fallback|${e.id}`;
-}
-
-function normalizeTime(time?: string | null) {
-  return time?.slice(0, 5) ?? "";
 }
 
 /** Preferimos la fila más completa (escudos, canales, título corto) */

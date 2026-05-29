@@ -4,7 +4,7 @@ import { isAllowedRemoteImageUrl, safeRemoteImageUrl } from "./remote-image";
 export const IMAGE_QUALITY = 75;
 
 /** Destacados above-the-fold: tarjetas ~236–320px de ancho, visual 132px alto. */
-export const SPOTLIGHT_IMAGE_QUALITY = 68;
+export const SPOTLIGHT_IMAGE_QUALITY = 62;
 
 export const SPOTLIGHT_IMAGE_WIDTH = 320;
 export const SPOTLIGHT_IMAGE_HEIGHT = 132;
@@ -78,13 +78,20 @@ export function spotlightCoverImageStyle(objectPosition?: string) {
     : spotlightCoverLayoutStyle;
 }
 
-function buildNextImagePreloadHref(src: string): string {
+function buildNextImagePreloadHref(src: string, width = SPOTLIGHT_IMAGE_WIDTH): string {
   const params = new URLSearchParams({
     url: src,
-    w: String(SPOTLIGHT_IMAGE_WIDTH),
+    w: String(width),
     q: String(SPOTLIGHT_IMAGE_QUALITY),
   });
   return `/_next/image?${params.toString()}`;
+}
+
+function buildSpotlightPreloadSrcSet(src: string): string {
+  const widths = [384, 640];
+  return widths
+    .map((width) => `${buildNextImagePreloadHref(src, width)} ${width}w`)
+    .join(", ");
 }
 
 /** URL servida por `/_next/image` (AVIF/WebP) para `<link rel="preload">`. */
@@ -96,11 +103,17 @@ export function buildOptimizedPreloadHref(src: string): string | null {
 
 /** Preload LCP alineado con el `<Image>` de destacados. */
 export function buildSpotlightPreloadEntry(src: string): SpotlightPreloadEntry | null {
-  const href = buildOptimizedPreloadHref(src);
-  if (!href) return null;
+  const safe = safeRemoteImageUrl(src);
+  if (!safe || !canOptimizeImageSrc(safe)) {
+    const href = safeRemoteImageUrl(src);
+    return href ? { href } : null;
+  }
+
+  const href = buildNextImagePreloadHref(safe, 640);
 
   return {
     href,
+    imageSrcSet: buildSpotlightPreloadSrcSet(safe),
     imageSizes: POSTER_SIZES.spotlight,
   };
 }

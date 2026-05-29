@@ -24,18 +24,21 @@ describe("thesportsdb-leagues Roland Garros", () => {
     const config = THESPORTSDB_LEAGUES.find((c) => c.leagueId === "4517");
     expect(config).toBeTruthy();
 
+    const weekDates = getMadridWeekDates(7);
+    const dateEvent = weekDates[0]!;
+
     const event = normalizeLeagueEvent(
       {
         idEvent: "2477638",
         strEvent: "Roland Garros Emma Navarro vs Iva Jovic",
-        dateEvent: "2026-05-28",
+        dateEvent,
         strTime: "09:00:00",
         strHomeTeam: null,
         strAwayTeam: null,
         idLeague: "4517",
       },
       config!,
-      getMadridWeekDates(7)
+      weekDates
     );
 
     expect(event).toMatchObject({

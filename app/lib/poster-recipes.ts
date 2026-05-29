@@ -109,11 +109,22 @@ export const POSTER_MATCH_RULES: PosterMatchRule[] = [
     match: (event, blob) => {
       if (event.sport !== "ufc") return false;
       if (/ufc\s*329|\b329\b/.test(blob)) return false;
+      if (/kind:road/i.test(event.source ?? "") || /road to ufc/i.test(blob)) {
+        return false;
+      }
       return (
         /ufc\s*\d+|kind:ppv|pay.?per.?view|\bppv\b/i.test(blob) ||
         /kind:ppv/i.test(event.source ?? "")
       );
     },
+  },
+  {
+    id: "ufc-road",
+    recipeId: "ufc-road",
+    priority: 82,
+    match: (event, blob) =>
+      event.sport === "ufc" &&
+      (/kind:road/i.test(event.source ?? "") || /road to ufc/i.test(blob)),
   },
   {
     id: "ufc-default",

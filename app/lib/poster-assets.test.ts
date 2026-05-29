@@ -17,6 +17,7 @@ const REQUIRED_PNGS = [
   "flagship/mundial-2026.png",
   "flagship/ufc-329.png",
   "flagship/ufc-ppv.png",
+  "flagship/ufc-road.png",
   "flagship/roland-garros.png",
   "flagship/roland-garros-knockout.png",
   "esports/esports.png",

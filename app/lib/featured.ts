@@ -7,6 +7,7 @@ import {
   HOME_SECTION_MAX_DEFAULT,
   HOME_SECTION_MAX_IMPORTANT,
   HOME_SSR_DAY_COUNT,
+  HOME_SSR_EVENT_CAP,
 } from "./home-feed-config";
 import {
   buildDisplayDays,
@@ -348,5 +349,5 @@ export function trimHomeSsrEvents(events: EventRow[]): EventRow[] {
     }
   }
 
-  return [...byId.values()];
+  return sortByPriority([...byId.values()]).slice(0, HOME_SSR_EVENT_CAP);
 }

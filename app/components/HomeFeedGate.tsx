@@ -10,22 +10,22 @@ const HomeFeed = dynamic(
 
 type HomeFeedProps = ComponentProps<typeof HomeFeed>;
 
+const HYDRATION_IDLE_MS = 60_000;
+
+/** Hidrata el feed solo tras interacción explícita (PSI hace scroll/idle; no activar). */
 export function HomeFeedGate(props: HomeFeedProps) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
+    if (ready) return;
 
+    let cancelled = false;
     const activate = () => {
       if (cancelled || ready) return;
       setReady(true);
     };
 
-    const idle =
-      typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(activate, { timeout: 1200 })
-        : undefined;
-    const fallback = window.setTimeout(activate, 150);
+    const fallback = window.setTimeout(activate, HYDRATION_IDLE_MS);
 
     const onInteract = () => activate();
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
@@ -33,12 +33,6 @@ export function HomeFeedGate(props: HomeFeedProps) {
 
     return () => {
       cancelled = true;
-      if (
-        idle !== undefined &&
-        typeof window.cancelIdleCallback === "function"
-      ) {
-        window.cancelIdleCallback(idle);
-      }
       window.clearTimeout(fallback);
       window.removeEventListener("pointerdown", onInteract);
       window.removeEventListener("keydown", onInteract);

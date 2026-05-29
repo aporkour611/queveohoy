@@ -148,7 +148,9 @@ export function pickTodayDestacados(
   const today = options.todayKey ?? toMadridDateKey(new Date());
   const windowDays = options.windowDays ?? 7;
   const mergedEvents = mergeDestacadosEvents(events, today, windowDays);
-  const week = new Set(getMadridWeekDates(windowDays));
+  const week = new Set(
+    Array.from({ length: windowDays }, (_, i) => addDaysToDateKey(today, i))
+  );
   const todayPool = mergedEvents.filter(
     (event) => event.date === today && event.date && week.has(event.date)
   );

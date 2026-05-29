@@ -97,10 +97,13 @@
       "sponsors": "Eurosport · GCN · RTVE",
       "visualClass": "qvh-spotlight-visual-giro",
       "objectPosition": "center 36%",
+      "logoFile": "competition-logos/giro-italia.svg",
+      "logoWidth": 300,
+      "logoTop": 118,
       "sky": "<stop offset=\"0%\" stop-color=\"#2a1020\"/><stop offset=\"100%\" stop-color=\"#0a0608\"/>",
       "glow": "<stop offset=\"0%\" stop-color=\"#ff6b9d\" stop-opacity=\"0.45\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
       "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ff85b3\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
-      "mark": "<circle cx=\"200\" cy=\"228\" r=\"78\" fill=\"rgba(255,107,157,0.14)\" stroke=\"#ff6b9d\" stroke-width=\"4\"/><circle cx=\"200\" cy=\"204\" r=\"13\" fill=\"#fff\"/><path d=\"M200 217 L200 248\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M176 262 Q200 232 224 262\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"168\" cy=\"278\" r=\"24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\"/><circle cx=\"232\" cy=\"278\" r=\"24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\"/><line x1=\"188\" y1=\"262\" x2=\"212\" y2=\"262\" stroke=\"#ff6b9d\" stroke-width=\"4\" stroke-linecap=\"round\"/>"
+      "mark": ""
     },
     "tour-france": {
       "dir": "ciclismo",
@@ -147,10 +150,30 @@
       "sponsors": "Paramount+ · UFC Fight Pass",
       "visualClass": "qvh-spotlight-visual-ufc-329",
       "duel": "ufc",
+      "logoFile": "competition-logos/ufc.svg",
+      "logoWidth": 220,
+      "logoTop": 132,
       "sky": "<stop offset=\"0%\" stop-color=\"#180606\"/><stop offset=\"100%\" stop-color=\"#060202\"/>",
       "glow": "<stop offset=\"0%\" stop-color=\"#d41414\" stop-opacity=\"0.48\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
       "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ef4444\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
-      "mark": "<polygon points=\"200,170 260,290 140,290\" fill=\"none\" stroke=\"#d41414\" stroke-width=\"5\"/><polygon points=\"200,190 240,280 160,280\" fill=\"rgba(212,20,20,0.18)\"/><text x=\"200\" y=\"248\" text-anchor=\"middle\" fill=\"#fff\" font-family=\"Arial Black, sans-serif\" font-size=\"28\" font-weight=\"900\">UFC</text>"
+      "mark": ""
+    },
+    "ufc-road": {
+      "dir": "flagship",
+      "assetId": "ufc-road",
+      "tier": "flagship",
+      "title": "Road to UFC",
+      "subtitle": "Temporada · Episodios",
+      "sponsors": "UFC Fight Pass · ESPN",
+      "visualClass": "qvh-spotlight-visual-ufc-road",
+      "duel": "ufc",
+      "logoFile": "competition-logos/ufc.svg",
+      "logoWidth": 220,
+      "logoTop": 128,
+      "sky": "<stop offset=\"0%\" stop-color=\"#120608\"/><stop offset=\"100%\" stop-color=\"#060202\"/>",
+      "glow": "<stop offset=\"0%\" stop-color=\"#d41414\" stop-opacity=\"0.42\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
+      "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ef4444\" stop-opacity=\"0.12\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
+      "mark": ""
     },
     "ufc-329": {
       "dir": "flagship",
@@ -160,10 +183,13 @@
       "sponsors": "Paramount+ · UFC Fight Pass",
       "visualClass": "qvh-spotlight-visual-ufc-329",
       "duel": "ufc",
+      "logoFile": "competition-logos/ufc.svg",
+      "logoWidth": 200,
+      "logoTop": 118,
       "sky": "<stop offset=\"0%\" stop-color=\"#180606\"/><stop offset=\"100%\" stop-color=\"#060202\"/>",
       "glow": "<stop offset=\"0%\" stop-color=\"#d41414\" stop-opacity=\"0.48\"/><stop offset=\"100%\" stop-color=\"#000\" stop-opacity=\"0\"/>",
       "beam": "<stop offset=\"0%\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"50%\" stop-color=\"#ef4444\" stop-opacity=\"0.14\"/><stop offset=\"100%\" stop-color=\"#fff\" stop-opacity=\"0\"/>",
-      "mark": "<polygon points=\"200,170 260,290 140,290\" fill=\"none\" stroke=\"#d41414\" stroke-width=\"5\"/><polygon points=\"200,190 240,280 160,280\" fill=\"rgba(212,20,20,0.18)\"/><text x=\"200\" y=\"248\" text-anchor=\"middle\" fill=\"#fff\" font-family=\"Arial Black, sans-serif\" font-size=\"28\" font-weight=\"900\">329</text>"
+      "mark": "<text x=\"200\" y=\"292\" text-anchor=\"middle\" fill=\"#fff\" font-family=\"Arial Black, sans-serif\" font-size=\"42\" font-weight=\"900\" letter-spacing=\"-1\">329</text>"
     },
     "roland-garros": {
       "dir": "flagship",

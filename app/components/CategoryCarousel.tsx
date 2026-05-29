@@ -3,6 +3,7 @@
 import { Children, startTransition, useState, type ReactNode } from "react";
 
 export const CATEGORY_CAROUSEL_VISIBLE_SLOTS = 3;
+export const CATEGORY_CAROUSEL_ANIME_SLOTS = 5;
 
 type Props = {
   children: ReactNode;

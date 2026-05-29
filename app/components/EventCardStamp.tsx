@@ -1,4 +1,3 @@
-import "../event-stamp.css";
 import type { EventCardStampKind } from "../lib/event-card-stamp";
 
 type Props = {

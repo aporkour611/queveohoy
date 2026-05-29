@@ -9,7 +9,7 @@
   <rect width="400" height="600" fill="url(#sky)"/>
   <rect width="400" height="600" fill="url(#glow)"/>
   <rect x="-40" y="70" width="480" height="130" fill="url(#beam)" transform="rotate(-10 200 300)"/>
-  <polygon points="200,170 260,290 140,290" fill="none" stroke="#d41414" stroke-width="5"/><polygon points="200,190 240,280 160,280" fill="rgba(212,20,20,0.18)"/><text x="200" y="248" text-anchor="middle" fill="#fff" font-family="Arial Black, sans-serif" font-size="28" font-weight="900">329</text>
+  <text x="200" y="292" text-anchor="middle" fill="#fff" font-family="Arial Black, sans-serif" font-size="42" font-weight="900" letter-spacing="-1">329</text>
   <path d="M0 420 Q140 360 200 385 T400 405 V600 H0 Z" fill="#050505" opacity="0.82"/>
   <rect x="0" y="468" width="400" height="132" fill="rgba(0,0,0,0.55)"/>
   <text x="200" y="502" text-anchor="middle" fill="#ffffff" font-family="Arial Black, Helvetica, sans-serif" font-size="34" font-weight="900" letter-spacing="2">UFC 329</text>

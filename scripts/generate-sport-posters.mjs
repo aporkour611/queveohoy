@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync, existsSync, renameSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -66,7 +66,7 @@ function posterSvg({
 }
 
 const POSTERS = Object.entries(recipeData.recipes)
-  .filter(([, recipe]) => recipe.sky && recipe.mark)
+  .filter(([, recipe]) => recipe.sky && "mark" in recipe)
   .map(([id, recipe]) => ({
     id: recipe.assetId ?? id,
     dir: recipe.dir,
@@ -76,8 +76,37 @@ const POSTERS = Object.entries(recipeData.recipes)
     sky: recipe.sky,
     glow: recipe.glow,
     beam: recipe.beam,
-    mark: recipe.mark,
+    mark: recipe.mark ?? "",
+    logoFile: recipe.logoFile,
+    logoWidth: recipe.logoWidth ?? 240,
+    logoTop: recipe.logoTop ?? 130,
   }));
+
+async function compositeOfficialLogo(poster, pngPath) {
+  if (!poster.logoFile) return;
+
+  const logoPath = join(ROOT, "public", poster.logoFile);
+  if (!existsSync(logoPath)) {
+    console.warn(`Logo missing: ${poster.logoFile}`);
+    return;
+  }
+
+  const logoBuffer = await sharp(logoPath)
+    .resize(poster.logoWidth, null, { fit: "inside" })
+    .png()
+    .toBuffer();
+
+  const meta = await sharp(logoBuffer).metadata();
+  const left = Math.round((PNG_W - (meta.width ?? poster.logoWidth)) / 2);
+  const tmpPath = `${pngPath}.tmp`;
+
+  await sharp(pngPath)
+    .composite([{ input: logoBuffer, top: poster.logoTop, left }])
+    .png({ compressionLevel: 9, palette: true, quality: 82 })
+    .toFile(tmpPath);
+
+  renameSync(tmpPath, pngPath);
+}
 
 async function writePoster(poster) {
   const outDir = join(ROOT, "public", poster.dir);
@@ -85,10 +114,13 @@ async function writePoster(poster) {
   const svg = posterSvg(poster);
   const base = join(outDir, poster.id);
   writeFileSync(`${base}.svg`, svg, "utf8");
+  const pngPath = `${base}.png`;
   await sharp(Buffer.from(svg))
     .resize(PNG_W, PNG_H)
     .png({ compressionLevel: 9, palette: true, quality: 80 })
-    .toFile(`${base}.png`);
+    .toFile(pngPath);
+
+  await compositeOfficialLogo(poster, pngPath);
 }
 
 async function main() {

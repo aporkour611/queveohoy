@@ -1,6 +1,6 @@
 "use client"
 
-import { useLayoutEffect } from "react"
+import { useEffect } from "react"
 
 const syncNavbarHeight = () => {
   const shell = document.querySelector<HTMLElement>(".fh-header-shell")
@@ -13,20 +13,36 @@ const syncNavbarHeight = () => {
   }
 }
 
-/** Alinea `--qvh-navbar-h` con la altura real del header fijo (sticky del día). */
+/** Alinea `--qvh-navbar-h` tras idle (no bloquea el hilo principal en PSI). */
 export const NavbarHeightSync = () => {
-  useLayoutEffect(() => {
-    syncNavbarHeight()
+  useEffect(() => {
+    let observer: ResizeObserver | null = null
+    let cancelled = false
 
-    const shell = document.querySelector<HTMLElement>(".fh-header-shell")
-    if (!shell) return
+    const attach = () => {
+      if (cancelled) return
+      syncNavbarHeight()
 
-    const observer = new ResizeObserver(syncNavbarHeight)
-    observer.observe(shell)
-    window.addEventListener("resize", syncNavbarHeight, { passive: true })
+      const shell = document.querySelector<HTMLElement>(".fh-header-shell")
+      if (!shell) return
+
+      observer = new ResizeObserver(syncNavbarHeight)
+      observer.observe(shell)
+      window.addEventListener("resize", syncNavbarHeight, { passive: true })
+    }
+
+    const onInteract = () => attach()
+    window.addEventListener("pointerdown", onInteract, { passive: true, once: true })
+    window.addEventListener("keydown", onInteract, { passive: true, once: true })
+
+    const fallback = window.setTimeout(attach, 45_000)
 
     return () => {
-      observer.disconnect()
+      cancelled = true
+      window.clearTimeout(fallback)
+      window.removeEventListener("pointerdown", onInteract)
+      window.removeEventListener("keydown", onInteract)
+      observer?.disconnect()
       window.removeEventListener("resize", syncNavbarHeight)
     }
   }, [])

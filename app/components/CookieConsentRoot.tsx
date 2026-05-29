@@ -31,21 +31,16 @@ export function CookieConsentRoot({ children }: { children: ReactNode }) {
       if (!cancelled) setPromptsReady(true);
     };
 
-    const idle =
-      typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(activate, { timeout: 4500 })
-        : undefined;
-    const fallback = window.setTimeout(activate, 3500);
+    const onInteract = () => activate();
+    window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
+    window.addEventListener("keydown", onInteract, { passive: true, once: true });
+    const fallback = window.setTimeout(activate, 45_000);
 
     return () => {
       cancelled = true;
-      if (
-        idle !== undefined &&
-        typeof window.cancelIdleCallback === "function"
-      ) {
-        window.cancelIdleCallback(idle);
-      }
       window.clearTimeout(fallback);
+      window.removeEventListener("pointerdown", onInteract);
+      window.removeEventListener("keydown", onInteract);
     };
   }, []);
 

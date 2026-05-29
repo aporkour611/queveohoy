@@ -281,7 +281,7 @@ export function HomeFeed({
       typeof window.requestIdleCallback === "function"
         ? window.requestIdleCallback(run, { timeout: 6000 })
         : undefined;
-    const fallback = window.setTimeout(run, 5000);
+    const fallback = window.setTimeout(run, 15000);
 
     return () => {
       if (
@@ -703,7 +703,7 @@ export function HomeFeed({
 
                         <EventDaySections
                           events={activeHomeDay.todayEvents}
-                          priority="high"
+                          priority="normal"
                           emptyMessage={
                             isFeaturedMode
                               ? "Sin eventos este día."

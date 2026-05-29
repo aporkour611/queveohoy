@@ -1,0 +1,268 @@
+/* SSR home feed — subset of futbolhoy-feed + media (below the fold, sin bloquear todo el bundle) */
+
+.fh-comp-header {
+  padding: 10px 14px;
+  margin: 0 -15px 0.2rem;
+  min-height: 45px;
+  color: #fff;
+  font-family: var(--qvh-font-display);
+  text-align: center;
+  background-color: var(--qvh-purple-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.fh-comp-header.fh-comp-purple {
+  background: linear-gradient(90deg, var(--qvh-purple-dim), var(--qvh-purple));
+}
+
+.fh-comp-header.fh-comp-orange {
+  background: linear-gradient(90deg, #7a3820, var(--qvh-orange));
+}
+
+.fh-comp-header.fh-comp-green {
+  background: linear-gradient(90deg, #155a35, var(--qvh-green));
+}
+
+.fh-comp-header.fh-comp-blue {
+  background: linear-gradient(90deg, #1e4a9e, var(--qvh-blue));
+}
+
+.fh-comp-header.fh-comp-motor {
+  background: linear-gradient(90deg, var(--qvh-motor-dim), var(--qvh-motor));
+}
+
+.fh-comp-header.fh-comp-ufc {
+  background: linear-gradient(90deg, #8b0f0f, var(--qvh-ufc));
+}
+
+.fh-comp-header.fh-comp-gold {
+  background: linear-gradient(90deg, #8a6914, var(--qvh-gold));
+  color: #1a1a1a;
+}
+
+.fh-comp-header.fh-comp-pink {
+  background: linear-gradient(90deg, #9d1fb8, var(--qvh-pink));
+}
+
+.fh-comp-count {
+  font-size: 0.75em;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 8px;
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+
+.fh-section-block {
+  margin-bottom: 10px;
+}
+
+.qvh-feed-category-shell {
+  padding: 12px 10px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(
+    180deg,
+    rgba(16, 16, 24, 0.72) 0%,
+    rgba(10, 10, 14, 0.88) 100%
+  );
+}
+
+.fh-upcoming-notice {
+  margin: 12px 0 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: var(--qvh-text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fh-day-empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--qvh-text-muted);
+}
+
+.fh-match {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.fh-match-media-spotlight {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--qvh-border-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.fh-media-spotlight-visual {
+  position: relative;
+  height: 132px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2a2a38 0%, #1a1a24 100%);
+  background-size: cover;
+  background-position: center top;
+}
+
+.qvh-home-feed-day-ssr {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
+.fh-media-spotlight-visual .qvh-remote-poster-img,
+.fh-media-spotlight-visual .qvh-spotlight-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.fh-media-spotlight-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.72) 100%
+  );
+}
+
+.fh-media-spotlight-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.fh-media-spotlight-when {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fh-media-spotlight-date {
+  font-family: var(--qvh-font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.fh-media-spotlight-time {
+  font-family: var(--qvh-font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.fh-media-spotlight-body {
+  padding: 10px 12px 12px;
+}
+
+.fh-media-spotlight-title {
+  margin: 0 0 4px;
+  font-family: var(--qvh-font-display);
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #212529;
+}
+
+.fh-media-spotlight-meta {
+  margin: 0;
+  font-family: var(--qvh-font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--qvh-text-muted);
+}
+
+.fh-media-spotlight-duel {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px 34px;
+}
+
+.fh-media-spotlight-duel-team {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fh-media-spotlight-duel-name {
+  font-family: var(--qvh-font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.88);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.fh-media-spotlight-duel-vs {
+  flex-shrink: 0;
+  margin-bottom: 18px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.fh-crest-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.fh-team-crest-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.fh-media-spotlight-visual-futbol {
+  background: linear-gradient(135deg, #2a2460 0%, #5d5fef 55%, #1a1840 100%);
+}
+
+.fh-media-spotlight-visual-champions,
+.fh-media-spotlight-visual-champions-final {
+  background: linear-gradient(135deg, #0a0a2e 0%, #1a1060 40%, #050518 100%);
+}

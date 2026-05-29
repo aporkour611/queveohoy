@@ -14,6 +14,7 @@ import { RemotePoster } from "./RemotePoster";
 import { TeamCrest } from "./TeamCrest";
 import { UfcFightVisual } from "./UfcFightVisual";
 import { RolandGarrosDuelVisual } from "./RolandGarrosDuelVisual";
+import { BasketballDuelVisual } from "./BasketballDuelVisual";
 import { EventCardStamp } from "./EventCardStamp";
 import { ChannelBadges } from "./ChannelBadge";
 
@@ -106,6 +107,8 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
           card.showUfcDuel ? " qvh-spotlight-visual-ufc-duel" : ""
         }${card.showRolandGarrosDuel ? " qvh-spotlight-visual-rg-duel" : ""}${
+          card.showBasketballDuel ? " qvh-spotlight-visual-basket-duel" : ""
+        }${
           stamp ? " qvh-spotlight-visual-stamped" : ""
         }`}
       >
@@ -130,6 +133,12 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
           />
         ) : card.showRolandGarrosDuel || card.showTennisDuel ? (
           <RolandGarrosDuelVisual
+            homeName={card.homeName}
+            awayName={card.awayName}
+            size="spotlight"
+          />
+        ) : card.showBasketballDuel ? (
+          <BasketballDuelVisual
             homeName={card.homeName}
             awayName={card.awayName}
             size="spotlight"

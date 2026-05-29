@@ -4,8 +4,8 @@ import { eventPriority } from "./featured";
 import { isCuratedSeriesEvent } from "./curated-series-events";
 import { isCuratedMovieEvent } from "./movies-curated";
 import { isRolandGarrosWeekDestacado } from "./roland-garros";
+import { matchesSpanishTvFlagship } from "./spanish-tv-curated";
 import { getTvShowCategory } from "./tv-show-category";
-
 /** Orden editorial de categorías en destacados (1 ficha por categoría). */
 export const DESTACADO_IMPORTANCE_TIERS = [
   "cine",
@@ -33,6 +33,14 @@ const FINALES_SPORT_IDS = new Set([
 ]);
 
 export const FOLLOWED_SERIES_PATTERNS = [/^FROM\b/i, /^Euphoria\b/i];
+
+const PINNED_DIRECTO_SHOW_IDS = new Set(["el-hormiguero", "la-revuelta"]);
+
+function isPinnedDirectoTalkShow(event: EventRow): boolean {
+  if (event.sport !== "tv") return false;
+  const show = matchesSpanishTvFlagship(event);
+  return Boolean(show && PINNED_DIRECTO_SHOW_IDS.has(show.id));
+}
 
 function flagshipSeriesKey(event: EventRow): string {
   return (event.title ?? "").split(" — ")[0]?.trim().toLowerCase() ?? "";
@@ -119,10 +127,11 @@ export function sortDestacadosByImportance(a: EventRow, b: EventRow): number {
   return compareDestacadosWithinTier(a, b);
 }
 
-/** Una ficha por categoría; FROM y Euphoria pueden coexistir en series. */
+/** Una ficha por categoría; FROM/Euphoria y Hormiguero/Revuelta pueden coexistir. */
 export function pickOneDestacadoPerTier(events: EventRow[]): EventRow[] {
   const best = new Map<DestacadoImportanceTier, EventRow>();
   const pinnedByShow = new Map<string, EventRow>();
+  const pinnedDirectos = new Map<string, EventRow>();
 
   for (const event of events) {
     const tier = getDestacadoImportanceTier(event);
@@ -134,6 +143,15 @@ export function pickOneDestacadoPerTier(events: EventRow[]): EventRow[] {
       }
       continue;
     }
+    if (isPinnedDirectoTalkShow(event)) {
+      const show = matchesSpanishTvFlagship(event);
+      const key = show?.id ?? event.title ?? "";
+      const current = pinnedDirectos.get(key);
+      if (!current || compareDestacadosWithinTier(current, event) > 0) {
+        pinnedDirectos.set(key, event);
+      }
+      continue;
+    }
     const current = best.get(tier);
     if (!current || compareDestacadosWithinTier(current, event) > 0) {
       best.set(tier, event);
@@ -141,7 +159,12 @@ export function pickOneDestacadoPerTier(events: EventRow[]): EventRow[] {
   }
 
   const pinnedSorted = [...pinnedByShow.values()].sort(compareDestacadosWithinTier);
-  const pinnedIds = new Set(pinnedSorted.map((event) => event.id));
+  const pinnedDirectosSorted = [...pinnedDirectos.values()].sort(
+    compareDestacadosWithinTier
+  );
+  const pinnedIds = new Set(
+    [...pinnedSorted, ...pinnedDirectosSorted].map((event) => event.id)
+  );
   const result: EventRow[] = [];
 
   for (const tier of DESTACADO_IMPORTANCE_TIERS) {
@@ -150,6 +173,14 @@ export function pickOneDestacadoPerTier(events: EventRow[]): EventRow[] {
       const genericSeries = best.get("series");
       if (genericSeries && !pinnedIds.has(genericSeries.id)) {
         result.push(genericSeries);
+      }
+      continue;
+    }
+    if (tier === "directos" && pinnedDirectosSorted.length > 0) {
+      result.push(...pinnedDirectosSorted);
+      const genericDirecto = best.get("directos");
+      if (genericDirecto && !pinnedIds.has(genericDirecto.id)) {
+        result.push(genericDirecto);
       }
       continue;
     }

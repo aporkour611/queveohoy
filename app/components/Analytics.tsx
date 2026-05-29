@@ -28,24 +28,20 @@ export function Analytics() {
     if (!enabled) return;
 
     let cancelled = false;
-    const schedule = () =>
-      deferClientStateUpdate(() => {
-        if (!cancelled) setReady(true);
-      });
+    const activate = () => {
+      if (!cancelled) setReady(true);
+    };
 
-    if (typeof requestIdleCallback === "function") {
-      const id = requestIdleCallback(schedule, { timeout: 3500 });
-      return () => {
-        cancelled = true;
-        cancelIdleCallback(id);
-        deferClientStateUpdate(() => setReady(false));
-      };
-    }
+    const onInteract = () => activate();
+    window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
+    window.addEventListener("keydown", onInteract, { passive: true, once: true });
+    const fallback = window.setTimeout(activate, 45_000);
 
-    const timer = setTimeout(schedule, 1800);
     return () => {
       cancelled = true;
-      clearTimeout(timer);
+      window.clearTimeout(fallback);
+      window.removeEventListener("pointerdown", onInteract);
+      window.removeEventListener("keydown", onInteract);
       deferClientStateUpdate(() => setReady(false));
     };
   }, [enabled]);

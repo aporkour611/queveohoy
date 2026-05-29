@@ -18,6 +18,7 @@ export function HomeLcpPreload({ entries }: Props) {
           imageSrcSet={entry.imageSrcSet}
           imageSizes={entry.imageSizes}
           fetchPriority="high"
+          crossOrigin={entry.href.startsWith("http") ? "anonymous" : undefined}
         />
       ))}
     </>

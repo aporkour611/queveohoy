@@ -1272,6 +1272,16 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
   max-width: min(168px, calc((100% - 20px) / 3));
 }
 
+.qvh-category-carousel-anime .qvh-media-card-col-compact {
+  flex: 0 0 calc((100% - 40px) / 5);
+  max-width: calc((100% - 40px) / 5);
+}
+
+.qvh-category-carousel-posters .qvh-media-card-col-spotlight {
+  flex: 0 0 calc((100% - 20px) / 3);
+  max-width: calc((100% - 20px) / 3);
+}
+
 .qvh-category-carousel-posters .qvh-media-card-col-cine {
   flex: 0 0 min(182px, calc((100% - 20px) / 3));
   max-width: min(182px, calc((100% - 20px) / 3));
@@ -1289,6 +1299,11 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
   .qvh-category-carousel-posters .qvh-media-card-col-compact {
     flex-basis: min(168px, 72vw);
     max-width: min(168px, 72vw);
+  }
+
+  .qvh-category-carousel-anime .qvh-media-card-col-compact {
+    flex-basis: min(132px, 42vw);
+    max-width: min(132px, 42vw);
   }
 
   .qvh-category-carousel-posters .qvh-media-card-col-cine {

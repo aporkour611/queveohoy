@@ -49,6 +49,17 @@ describe("poster recipe matching", () => {
     expect(resolvePosterCover(event)?.recipeId).toBe("ufc-ppv");
   });
 
+  it("asigna portada Road to UFC con logo oficial", () => {
+    const event: EventRow = {
+      id: 22,
+      title: "Road to UFC Season 3 Episode 5",
+      sport: "ufc",
+      source: "ufc|kind:road",
+    };
+    expect(resolvePosterCover(event)?.url).toBe("/flagship/ufc-road.png");
+    expect(resolvePosterCover(event)?.recipeId).toBe("ufc-road");
+  });
+
   it("asigna portada UFC genérica a Fight Night", () => {
     const event: EventRow = {
       id: 21,
@@ -127,5 +138,6 @@ describe("getSpotlightCardModel flagship posters", () => {
 
     expect(card.coverImage?.url).toBe("/deportes/baloncesto.png");
     expect(card.visualClass).toBe("qvh-spotlight-visual-basket");
+    expect(card.showBasketballDuel).toBe(true);
   });
 });

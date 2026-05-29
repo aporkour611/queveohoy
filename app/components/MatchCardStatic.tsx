@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import "../roland-garros.css";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { partidoPath } from "../lib/event-slug";
 import {
@@ -15,20 +14,24 @@ import { UfcFightVisual } from "./UfcFightVisual";
 
 type Props = {
   event: EventRow;
+  /** Sin póster en HTML estático (evita imágenes lazy que roban LCP). */
+  omitCover?: boolean;
 };
 
 function StaticCover({
   url,
   local,
   objectPosition,
+  priority = false,
 }: {
   url: string;
   local: boolean;
   objectPosition?: string;
+  priority?: boolean;
 }) {
   const imgClass = local ? "qvh-spotlight-cover-img" : "qvh-remote-poster-img";
   const style = spotlightCoverImageStyle(objectPosition);
-  const built = buildSpotlightImageProps(url, false);
+  const built = buildSpotlightImageProps(url, priority);
 
   if (built) {
     return (
@@ -37,7 +40,8 @@ function StaticCover({
         alt=""
         className={imgClass}
         style={style}
-        loading="lazy"
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : undefined}
       />
     );
   }
@@ -52,7 +56,8 @@ function StaticCover({
       alt=""
       className={imgClass}
       style={style}
-      loading="lazy"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
       decoding="async"
     />
   );
@@ -74,7 +79,7 @@ function StaticCrest({ src, name }: { src?: string | null; name?: string | null 
   );
 }
 
-export function MatchCardStatic({ event }: Props) {
+export function MatchCardStatic({ event, omitCover = false }: Props) {
   const card = getSpotlightCardModel(event, MADRID_TZ);
   const href = partidoPath(event);
   const visualClass = (card.visualClass ?? "").replace(
@@ -109,7 +114,7 @@ export function MatchCardStatic({ event }: Props) {
           showTeamDuel ? " fh-media-spotlight-visual-team-duel" : ""
         }`}
       >
-        {card.coverImage && !showTeamDuel && !showRolandGarrosDuel ? (
+        {card.coverImage && !showTeamDuel && !showRolandGarrosDuel && !omitCover ? (
           <StaticCover
             url={card.coverImage.url}
             local={card.coverImage.local}

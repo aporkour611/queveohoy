@@ -263,6 +263,11 @@
   background: #101015;
 }
 
+.qvh-media-card-poster-spotlight {
+  aspect-ratio: auto;
+  height: 132px;
+}
+
 .qvh-media-card-image,
 .qvh-remote-poster-img {
   width: 100%;
@@ -829,6 +834,7 @@
 .fh-media-spotlight-visual-mundial,
 .fh-media-spotlight-visual-copa-rey,
 .fh-media-spotlight-visual-ufc-329,
+.fh-media-spotlight-visual-ufc-road,
 .fh-media-spotlight-visual-esports {
   background: #050505;
 }
