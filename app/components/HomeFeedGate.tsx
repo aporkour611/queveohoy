@@ -29,12 +29,14 @@ export function HomeFeedGate(props: HomeFeedProps) {
 
     const onInteract = () => activate();
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
+    window.addEventListener("touchstart", onInteract, { passive: true, once: true });
     window.addEventListener("keydown", onInteract, { passive: true, once: true });
 
     return () => {
       cancelled = true;
       window.clearTimeout(fallback);
       window.removeEventListener("pointerdown", onInteract);
+      window.removeEventListener("touchstart", onInteract);
       window.removeEventListener("keydown", onInteract);
     };
   }, [ready]);

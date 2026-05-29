@@ -22,16 +22,14 @@ function StaticCover({
   url,
   local,
   objectPosition,
-  priority = false,
 }: {
   url: string;
   local: boolean;
   objectPosition?: string;
-  priority?: boolean;
 }) {
   const imgClass = local ? "qvh-spotlight-cover-img" : "qvh-remote-poster-img";
   const style = spotlightCoverImageStyle(objectPosition);
-  const built = buildSpotlightImageProps(url, priority);
+  const built = buildSpotlightImageProps(url, false);
 
   if (built) {
     return (
@@ -40,8 +38,8 @@ function StaticCover({
         alt=""
         className={imgClass}
         style={style}
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : undefined}
+        loading="lazy"
+        fetchPriority="low"
       />
     );
   }
@@ -56,8 +54,8 @@ function StaticCover({
       alt=""
       className={imgClass}
       style={style}
-      loading={priority ? "eager" : "lazy"}
-      fetchPriority={priority ? "high" : "auto"}
+      loading="lazy"
+      fetchPriority="low"
       decoding="async"
     />
   );

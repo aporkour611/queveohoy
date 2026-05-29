@@ -34,13 +34,12 @@ export function HomeFeedDayStatic({
             <EventDaySectionsStatic
               events={day.todayEvents}
               emptyMessage="Sin eventos este día."
-              omitCovers
             />
             {day.upcomingMessage ? (
               <p className="fh-upcoming-notice">{day.upcomingMessage}</p>
             ) : null}
             {day.upcomingEvents.length > 0 ? (
-              <EventDaySectionsStatic events={day.upcomingEvents} omitCovers />
+              <EventDaySectionsStatic events={day.upcomingEvents} />
             ) : null}
           </section>
         </div>

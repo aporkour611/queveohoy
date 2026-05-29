@@ -1,6 +1,8 @@
 import "../futbolhoy-shell.css";
 import "../destacados.css";
 import "../champions-week.css";
+import "../roland-garros.css";
+import "../basket-duel.css";
 import "../home-feed-ssr.css";
 import "../event-stamp.css";
 const feedCriticalCss = `
