@@ -1,7 +1,7 @@
 import type { EventRow } from "../components/types";
 import { parseChannels, resolveChannelsForEvent } from "./channels";
 import { parseTmdbEpisodeMeta } from "./tmdb-client";
-import { getTvShowCategory } from "./tv-show-category";
+import { getTvShowCategory, isTvFictionSeriesEvent } from "./tv-show-category";
 
 export type MediaPlatformStyle = {
   name: string;
@@ -151,6 +151,9 @@ export function mediaBadgeForEvent(
   isPremiere = false
 ): { label: string; tone: MediaBadgeTone } {
   if (event.sport === "tv") {
+    if (isTvFictionSeriesEvent(event as EventRow)) {
+      return { label: "Serie", tone: "news" };
+    }
     const category = getTvShowCategory(event as EventRow);
     if (category === "concurso") return { label: "Concurso", tone: "heat" };
     if (category === "directo") return { label: "TV", tone: "trending" };

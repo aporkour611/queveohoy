@@ -48,12 +48,25 @@ function isDirectoPlatform(platform?: string | null): boolean {
   return /twitch|kick|youtube/i.test(platform ?? "");
 }
 
-export function getTvShowCategory(event: EventRow): TvShowCategory | null {
-  if (event.sport !== "tv") return null;
+/** Telenovelas / ficción diaria en TV lineal → bloque Series, no Reality. */
+export function isTvFictionSeriesEvent(event: EventRow): boolean {
+  if (event.sport !== "tv") return false;
 
   const curated = matchesSpanishTvFlagship(event);
-  if (curated?.category === "ficcion") return "reality";
-  if (curated?.category) return curated.category;
+  if (curated?.category === "ficcion") return true;
+
+  const blob = `${event.competition ?? ""} ${event.title ?? ""}`;
+  return FICCION_PATTERNS.some((pattern) => pattern.test(blob));
+}
+
+export function getTvShowCategory(event: EventRow): TvShowCategory | null {
+  if (event.sport !== "tv") return null;
+  if (isTvFictionSeriesEvent(event)) return null;
+
+  const curated = matchesSpanishTvFlagship(event);
+  if (curated?.category && curated.category !== "ficcion") {
+    return curated.category;
+  }
 
   const blob = `${event.competition ?? ""} ${event.title ?? ""} ${event.platform ?? ""}`;
   if (
@@ -63,10 +76,9 @@ export function getTvShowCategory(event: EventRow): TvShowCategory | null {
     return "directo";
   }
   if (CONCURSO_PATTERNS.some((pattern) => pattern.test(blob))) return "concurso";
-  if (FICCION_PATTERNS.some((pattern) => pattern.test(blob))) return "reality";
   if (REALITY_PATTERNS.some((pattern) => pattern.test(blob))) return "reality";
 
-  return "reality";
+  return null;
 }
 
 export function tvCategoryLabel(category: TvShowCategory): string {
@@ -81,8 +93,10 @@ export function eventMatchesSportFilter(
 ): boolean {
   const sport = resolveFeedSport(event);
   if (filterId === sport) return true;
+  if (filterId === "series" && isTvFictionSeriesEvent(event)) return true;
   if (filterId === "tv" && sport === "tv") return true;
   if (sport !== "tv") return false;
+  if (isTvFictionSeriesEvent(event)) return false;
 
   const category = getTvShowCategory(event);
   if (filterId === "tv-reality") return category === "reality";

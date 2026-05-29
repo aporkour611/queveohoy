@@ -7,12 +7,47 @@ import {
   CATEGORY_CAROUSEL_ANIME_SLOTS,
 } from "./CategoryCarousel";
 import { MediaPosterCard } from "./MediaPosterCard";
-import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
+import { formatMediaGroupLabel, isMediaSportId } from "../lib/filter-config";
+import {
+  sortEventsByPopularity,
+  sortSeriesCatalogEvents,
+} from "../lib/sort-events-by-priority";
+
+function MediaSectionTitle({ title }: { title: string }) {
+  if (title === "Cine, series & anime") {
+    return (
+      <>
+        Cine, series <span className="qvh-catalog-hero-amp">&</span> anime
+      </>
+    );
+  }
+
+  const parts = title.split(" & ");
+  if (parts.length === 1) return <>{title}</>;
+
+  return (
+    <>
+      {parts.map((part, index) => (
+        <span key={part}>
+          {index > 0 ? (
+            <>
+              {" "}
+              <span className="qvh-catalog-hero-amp">&</span>{" "}
+            </>
+          ) : null}
+          {part}
+        </span>
+      ))}
+    </>
+  );
+}
 
 type Props = {
   cine: EventRow[];
   series: EventRow[];
   anime?: EventRow[];
+  appliedSports?: string[];
+  isFeaturedMode?: boolean;
 };
 
 function CatalogRail({
@@ -24,6 +59,7 @@ function CatalogRail({
   carouselClassName,
   compact = false,
   spotlightAspect = false,
+  sortSeries = false,
 }: {
   label: string;
   accent: "cine" | "series" | "anime";
@@ -33,8 +69,12 @@ function CatalogRail({
   carouselClassName?: string;
   compact?: boolean;
   spotlightAspect?: boolean;
+  sortSeries?: boolean;
 }) {
-  const sortedEvents = useMemo(() => sortEventsByPopularity(events), [events]);
+  const sortedEvents = useMemo(
+    () => (sortSeries ? sortSeriesCatalogEvents(events) : sortEventsByPopularity(events)),
+    [events, sortSeries]
+  );
 
   if (events.length === 0) return null;
 
@@ -73,13 +113,30 @@ export function CatalogMediaSection({
   cine,
   series,
   anime = [],
+  appliedSports = [],
+  isFeaturedMode = true,
 }: Props) {
-  if (cine.length === 0 && series.length === 0 && anime.length === 0) {
+  const showCine = isFeaturedMode || appliedSports.includes("cine");
+  const showSeries = isFeaturedMode || appliedSports.includes("series");
+  const showAnime = isFeaturedMode || appliedSports.includes("anime");
+  const visibleCine = showCine ? cine : [];
+  const visibleSeries = showSeries ? series : [];
+  const visibleAnime = showAnime ? anime : [];
+
+  if (
+    visibleCine.length === 0 &&
+    visibleSeries.length === 0 &&
+    visibleAnime.length === 0
+  ) {
     return null;
   }
 
+  const sectionTitle = isFeaturedMode
+    ? "Cine, series & anime"
+    : formatMediaGroupLabel(appliedSports.filter(isMediaSportId));
+
   return (
-    <section className="qvh-catalog-section" aria-label="Cine, series y anime">
+    <section className="qvh-catalog-section" aria-label={sectionTitle}>
       <header className="qvh-catalog-hero">
         <div className="qvh-catalog-hero-glow" aria-hidden />
         <div className="qvh-catalog-hero-inner">
@@ -88,25 +145,26 @@ export function CatalogMediaSection({
             Streaming
           </p>
           <h3 className="qvh-catalog-hero-title">
-            Cine, series <span className="qvh-catalog-hero-amp">&</span> anime
+            <MediaSectionTitle title={sectionTitle} />
           </h3>
         </div>
         <div className="qvh-catalog-hero-rule" aria-hidden />
       </header>
 
-      <CatalogRail label="En cines" accent="cine" count={cine.length} events={cine} />
+      <CatalogRail label="En cines" accent="cine" count={visibleCine.length} events={visibleCine} />
       <CatalogRail
         label="Capítulos y series"
         accent="series"
-        count={series.length}
-        events={series}
+        count={visibleSeries.length}
+        events={visibleSeries}
         spotlightAspect
+        sortSeries
       />
       <CatalogRail
         label="Anime"
         accent="anime"
-        count={anime.length}
-        events={anime}
+        count={visibleAnime.length}
+        events={visibleAnime}
         visibleSlots={CATEGORY_CAROUSEL_ANIME_SLOTS}
         carouselClassName="qvh-category-carousel-anime"
         compact

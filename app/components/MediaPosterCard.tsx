@@ -13,6 +13,7 @@ import {
 import { isSeasonPremiereEvent } from "../lib/tmdb-client";
 import { resolveEventPosterObjectPosition, resolveEventPosterUrl } from "../lib/event-poster";
 import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
+import { isTvFictionSeriesEvent } from "../lib/tv-show-category";
 import { getEventCardStamp } from "../lib/event-card-stamp";
 import type { EventRow } from "./types";
 import { EventCardStamp } from "./EventCardStamp";
@@ -50,14 +51,17 @@ export const MediaPosterCard = memo(function MediaPosterCard({
   spotlightAspect = false,
 }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const isLinearSeries = isTvFictionSeriesEvent(event);
   const sport =
     event.sport === "cine"
       ? "cine"
-      : event.sport === "tv"
-        ? "tv"
+      : event.sport === "series" || isLinearSeries
+        ? "series"
         : event.sport === "anime"
           ? "anime"
-          : "series";
+          : event.sport === "tv"
+            ? "tv"
+            : "series";
   const title =
     sport === "series"
       ? displaySeriesTitle(event)

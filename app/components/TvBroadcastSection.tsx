@@ -60,7 +60,7 @@ export function TvBroadcastSection({
         </p>
         <h3 className="qvh-tv-hero-title">TV y Twitch</h3>
         <p className="qvh-tv-hero-lead">
-          Reality, concursos y directos con horario en España
+          Reality, concursos y programas en directo con horario en España
         </p>
       </header>
 

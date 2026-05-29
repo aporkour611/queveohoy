@@ -1,5 +1,10 @@
 import type { EventRow } from "../components/types";
 import { parseTmdbEpisodeMeta } from "./tmdb-client";
+import { isTvFictionSeriesEvent } from "./tv-show-category";
+
+function isSeriesStyleEvent(event: EventRow): boolean {
+  return event.sport === "series" || isTvFictionSeriesEvent(event);
+}
 
 function isRedundantEpisodeName(
   episode: number,
@@ -34,7 +39,8 @@ export function formatSeriesEpisodeTitle(
 /** Limpia títulos ya guardados con "T4E6: Episodio 6". */
 export function displaySeriesTitle(event: EventRow): string {
   const title = event.title?.trim();
-  if (!title || event.sport !== "series") return title || "Sin título";
+  if (!title) return "Sin título";
+  if (!isSeriesStyleEvent(event)) return title;
 
   const meta = parseTmdbEpisodeMeta(event.external_id);
   if (!meta) return title;
@@ -54,10 +60,11 @@ export function displaySeriesTitle(event: EventRow): string {
 }
 
 export function displaySeriesSubtitle(event: EventRow): string | null {
-  if (event.sport !== "series") return null;
+  if (!isSeriesStyleEvent(event)) return null;
 
   const competition = event.competition?.trim();
   if (competition) return competition;
+  if (event.sport !== "series") return null;
 
   const meta = parseTmdbEpisodeMeta(event.external_id);
   if (!meta) return null;

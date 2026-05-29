@@ -12,7 +12,7 @@ import {
   teamCrestUrl,
   footballSpotlightMeta,
 } from "./football";
-import { getTvShowCategory, tvCategoryLabel } from "./tv-show-category";
+import { getTvShowCategory, isTvFictionSeriesEvent, tvCategoryLabel } from "./tv-show-category";
 import { displaySeriesSubtitle, displaySeriesTitle } from "./series-display";
 import { resolveEventChannelList } from "./media-platform";
 import { isSeasonPremiereEvent } from "./tmdb-client";
@@ -236,8 +236,24 @@ export function getSpotlightCardModel(
   }
 
   if (sport === "tv") {
+    if (isTvFictionSeriesEvent(event)) {
+      const coverImage = mediaCover(event, "series");
+      return {
+        headline: displaySeriesTitle(event),
+        badge: "Serie",
+        badgeVariant: "media",
+        dateLabel,
+        time,
+        meta: displaySeriesSubtitle(event) || event.competition?.trim() || "Nuevo episodio",
+        platform: channelList[0] || event.platform?.trim() || "TV y streaming",
+        coverImage,
+        visualClass: entertainmentSpotlightVisualClass("series", coverImage),
+        channelList: channelList.length ? channelList : undefined,
+      };
+    }
+
     const category = getTvShowCategory(event);
-    const badge = category ? tvCategoryLabel(category) : "Reality";
+    const badge = category ? tvCategoryLabel(category) : "TV";
     const coverImage = mediaCover(event, sport);
 
     return {

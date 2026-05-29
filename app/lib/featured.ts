@@ -313,13 +313,13 @@ export function pickFeaturedEvents(dayEvents: EventRow[]): EventRow[] {
   return pickTopPerCategory(dayEvents, true);
 }
 
-/** Al filtrar: mismos topes por bloque que en vista destacada. */
+/** Al filtrar: todos los eventos del deporte/categoría (sin recorte de portada). */
 export function pickFilteredEvents(events: EventRow[]): EventRow[] {
   if (events.length === 0) return [];
-  return pickHomePageEvents(events);
+  return sortByPriority(events);
 }
 
-/** Próximos al filtrar: ordenados por importancia, sin exigir escudo */
+/** Próximos al filtrar: mismo criterio, sin tope de destacados. */
 export function pickUpcomingFilteredEvents(events: EventRow[]): EventRow[] {
   return pickFilteredEvents(events);
 }

@@ -7,6 +7,10 @@ import "../home-feed-ssr.css";
 import "../event-stamp.css";
 const feedCriticalCss = `
 .qvh-spotlight-visual{position:relative;height:132px;overflow:hidden}
+.qvh-spotlight-cover{position:absolute;inset:0;overflow:hidden}
+.qvh-spotlight-cover-poster .qvh-spotlight-cover-img,.qvh-spotlight-cover-poster .qvh-remote-poster-img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.qvh-media-card-poster{position:relative;aspect-ratio:2/3;overflow:hidden}
+.qvh-media-card-poster-spotlight{aspect-ratio:auto;height:132px}
 .qvh-destacados-stack{min-height:200px}
 .qvh-cl-week-shell{min-height:min(720px,88vh)}
 @media (min-width:768px){.qvh-cl-week-shell{min-height:480px}}

@@ -131,6 +131,7 @@ export function HomeFeed({
   const [activeDay, setActiveDay] = useState(0);
   const [weekView, setWeekView] = useState(false);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
+  const [filterSearching, setFilterSearching] = useState(false);
   const [hasFullWeek, setHasFullWeek] = useState(false);
   const [fullWeekReady, setFullWeekReady] = useState(
     () => initialDestacadosEvents.length > 0
@@ -448,12 +449,23 @@ export function HomeFeed({
     });
   }, [flushPinnedScroll]);
 
-  const handleFilterChange = useCallback((ids: string[]) => {
+  const handleFilterSearch = useCallback(async (ids: string[]) => {
+    setFilterSearching(true);
     startTransition(() => {
       setSelectedSports(ids);
       setActiveDay(0);
     });
-  }, []);
+
+    try {
+      await loadEvents({
+        silent: true,
+        fullWeek: true,
+        expandTabs: true,
+      });
+    } finally {
+      setFilterSearching(false);
+    }
+  }, [loadEvents]);
 
   useEffect(() => {
     deferClientStateUpdate(() =>
@@ -464,7 +476,7 @@ export function HomeFeed({
   const showInitialLoading = loading && events.length === 0;
   const showWeekLoader = weekView && !fullWeekReady;
   const showFeedLoader =
-    (refreshing || showWeekLoader) && !showInitialLoading;
+    (refreshing || showWeekLoader || filterSearching) && !showInitialLoading;
 
   useLayoutEffect(() => {
     document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
@@ -639,8 +651,9 @@ export function HomeFeed({
             onSelectWeekView={openWeekView}
             onPrefetchWeekView={prefetchFullWeek}
             selectedSports={selectedSports}
-            onFilterChange={handleFilterChange}
+            onFilterSearch={handleFilterSearch}
             isFeaturedMode={isFeaturedMode}
+            filterSearching={filterSearching}
           />
 
           <div className="fh-feed-area">
@@ -679,6 +692,7 @@ export function HomeFeed({
                           eventsByDate={eventsByDate}
                           sportFilter={feedSportSet}
                           featuredMode={isFeaturedMode}
+                          appliedSports={selectedSports}
                         />
                       ))}
                     </div>
@@ -704,6 +718,8 @@ export function HomeFeed({
                         <EventDaySections
                           events={activeHomeDay.todayEvents}
                           priority="normal"
+                          appliedSports={selectedSports}
+                          isFeaturedMode={isFeaturedMode}
                           emptyMessage={
                             isFeaturedMode
                               ? "Sin eventos este día."
@@ -715,7 +731,11 @@ export function HomeFeed({
                         ) : null}
                         {activeHomeDay.upcomingEvents.length > 0 ? (
                           <LazyMount minHeight={240} rootMargin="400px 0px">
-                            <EventDaySections events={activeHomeDay.upcomingEvents} />
+                            <EventDaySections
+                              events={activeHomeDay.upcomingEvents}
+                              appliedSports={selectedSports}
+                              isFeaturedMode={isFeaturedMode}
+                            />
                           </LazyMount>
                         ) : null}
                         {hiddenOnActiveDay > 0 ? (

@@ -27,8 +27,7 @@ const spotlightCoverLayoutStyle = {
   width: "100%",
   height: "100%",
   objectFit: "cover" as const,
-  position: "absolute" as const,
-  inset: 0,
+  display: "block" as const,
 };
 
 export function canOptimizeImageSrc(src?: string | null): boolean {

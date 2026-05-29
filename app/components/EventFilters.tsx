@@ -1,63 +1,82 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
-import { FILTER_GROUPS, QUICK_FILTERS, sportLabel } from "../lib/filter-config";
+import { memo, useEffect, useMemo, useState } from "react";
+import {
+  FILTER_GROUPS,
+  QUICK_FILTERS,
+  formatFilterSummary,
+  sportLabel,
+} from "../lib/filter-config";
 
 type Props = {
   selected: string[];
-  onChange: (ids: string[]) => void;
+  onSearch: (ids: string[]) => void;
   isFeaturedMode: boolean;
   variant?: "panel" | "toolbar";
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  searching?: boolean;
+  highlightDiscover?: boolean;
 };
 
-function filterSummary(selected: string[]): string {
-  if (selected.length === 0) return "";
-  if (selected.length <= 3) {
-    return selected.map(sportLabel).join(", ");
-  }
-  return `${selected.slice(0, 2).map(sportLabel).join(", ")} +${selected.length - 2}`;
+function sameSelection(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  const setB = new Set(b);
+  return a.every((id) => setB.has(id));
 }
 
 export const EventFilters = memo(function EventFilters({
   selected,
-  onChange,
+  onSearch,
   isFeaturedMode,
   variant = "panel",
   open: controlledOpen,
   onOpenChange,
+  searching = false,
+  highlightDiscover = false,
 }: Props) {
   const [internalOpen, setInternalOpen] = useState(false);
+  const [draft, setDraft] = useState(selected);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
+
+  useEffect(() => {
+    setDraft(selected);
+  }, [selected]);
 
   const setOpen = (next: boolean) => {
     if (!isControlled) setInternalOpen(next);
     onOpenChange?.(next);
   };
-  const selectedSet = useMemo(() => new Set(selected), [selected]);
+  const draftSet = useMemo(() => new Set(draft), [draft]);
   const isToolbar = variant === "toolbar";
+  const hasPendingChanges = !sameSelection(draft, selected);
+  const canSearch = draft.length > 0 || hasPendingChanges;
 
   function toggle(id: string) {
-    if (selectedSet.has(id)) {
-      onChange(selected.filter((s) => s !== id));
-    } else {
-      onChange([...selected, id]);
+    if (draftSet.has(id)) {
+      setDraft(draft.filter((s) => s !== id));
+      return;
     }
+    setDraft([...draft, id]);
   }
 
-  function clearAll() {
-    onChange([]);
+  function handleSearch() {
+    onSearch(draft);
     setOpen(false);
   }
 
-  const summary = filterSummary(selected);
+  function clearAll() {
+    setDraft([]);
+    onSearch([]);
+  }
+
+  const summary = formatFilterSummary(selected);
 
   function isQuickFilterActive(sportIds: string[]): boolean {
     if (sportIds.length === 0) return selected.length === 0;
     if (sportIds.length !== selected.length) return false;
-    return sportIds.every((id) => selectedSet.has(id));
+    return sportIds.every((id) => selected.includes(id));
   }
 
   const quickFilters = (
@@ -75,8 +94,11 @@ export const EventFilters = memo(function EventFilters({
           }`}
           aria-pressed={isQuickFilterActive(quick.sportIds)}
           onClick={() => {
-            onChange(quick.sportIds);
-            setOpen(false);
+            if (quick.sportIds.length === 0) {
+              clearAll();
+              return;
+            }
+            setDraft(quick.sportIds);
           }}
         >
           {quick.label}
@@ -84,7 +106,9 @@ export const EventFilters = memo(function EventFilters({
       ))}
       <button
         type="button"
-        className={`fh-quick-filter fh-quick-filter-more${open ? " active is-collapsed-target" : ""}`}
+        className={`fh-quick-filter fh-quick-filter-more${
+          open ? " active is-collapsed-target" : ""
+        }${highlightDiscover ? " is-discoverable" : ""}`}
         aria-expanded={open}
         aria-controls="fh-filters-body"
         onClick={() => setOpen(!open)}
@@ -97,6 +121,17 @@ export const EventFilters = memo(function EventFilters({
     </div>
   );
 
+  const searchButton = (
+    <button
+      type="button"
+      className="fh-filters-search fh-filters-search-inline"
+      onClick={handleSearch}
+      disabled={searching || !canSearch}
+    >
+      Buscar
+    </button>
+  );
+
   const activeFilters =
     !isFeaturedMode && selected.length > 0 ? (
       <div className="fh-active-filters">
@@ -107,7 +142,11 @@ export const EventFilters = memo(function EventFilters({
               type="button"
               className="fh-active-pill"
               data-sport={id}
-              onClick={() => toggle(id)}
+              onClick={() => {
+                const next = selected.filter((item) => item !== id);
+                setDraft(next);
+                onSearch(next);
+              }}
               title="Quitar filtro"
             >
               {sportLabel(id)} ×
@@ -121,6 +160,7 @@ export const EventFilters = memo(function EventFilters({
         >
           Limpiar
         </button>
+        {searchButton}
       </div>
     ) : null;
 
@@ -132,8 +172,8 @@ export const EventFilters = memo(function EventFilters({
     >
       {isFeaturedMode && (
         <p className="fh-filters-hint">
-          Ajusta el calendario por deporte o sección. Sin filtros, ves lo más
-          relevante del día.
+          Ajusta el calendario por deporte o sección. Elige categorías y pulsa
+          Buscar para ver el calendario filtrado.
         </p>
       )}
 
@@ -144,7 +184,7 @@ export const EventFilters = memo(function EventFilters({
           </span>
           <div className="fh-filter-chips">
             {group.options.map((opt) => {
-              const on = selectedSet.has(opt.id);
+              const on = draftSet.has(opt.id);
               return (
                 <button
                   key={opt.id}
@@ -162,19 +202,40 @@ export const EventFilters = memo(function EventFilters({
         </div>
       ))}
 
-      {selected.length > 0 && (
-        <button type="button" className="fh-filters-clear" onClick={clearAll}>
-          Eliminar filtros
+      <div className="fh-filters-actions">
+        {(draft.length > 0 || selected.length > 0) && (
+          <button
+            type="button"
+            className="fh-filters-clear"
+            onClick={clearAll}
+          >
+            Eliminar filtros
+          </button>
+        )}
+        <button
+          type="button"
+          className="fh-filters-search"
+          onClick={handleSearch}
+          disabled={searching || !canSearch}
+        >
+          Buscar
         </button>
-      )}
+      </div>
     </div>
   );
 
   if (isToolbar) {
     return (
-      <div className={`qvh-feed-filters ${open ? "is-open" : ""}`}>
+      <div
+        className={`qvh-feed-filters${open ? " is-open" : ""}${
+          highlightDiscover ? " is-discoverable" : ""
+        }`}
+      >
         {quickFilters}
         {activeFilters}
+        {draft.length > 0 && (isFeaturedMode || selected.length === 0) ? (
+          <div className="fh-active-filters">{searchButton}</div>
+        ) : null}
         {filterBody}
       </div>
     );
@@ -207,7 +268,7 @@ export const EventFilters = memo(function EventFilters({
             <span className="fh-filters-trigger-sub">
               {isFeaturedMode
                 ? open
-                  ? "Elige categorías abajo"
+                  ? "Elige categorías abajo y pulsa Buscar"
                   : "Calendario con lo más importante · pulsa para afinar"
                 : summary || `${selected.length} seleccionado${selected.length !== 1 ? "s" : ""}`}
             </span>

@@ -85,12 +85,48 @@ export const ALL_SPORT_IDS = FILTER_GROUPS.flatMap((g) =>
   g.options.map((o) => o.id)
 );
 
+export const MEDIA_SPORT_IDS = ["cine", "series", "anime"] as const;
+
+export type MediaSportId = (typeof MEDIA_SPORT_IDS)[number];
+
+export function isMediaSportId(id: string): id is MediaSportId {
+  return (MEDIA_SPORT_IDS as readonly string[]).includes(id);
+}
+
 export function sportLabel(sportId: string): string {
   for (const g of FILTER_GROUPS) {
     const opt = g.options.find((o) => o.id === sportId);
     if (opt) return opt.label;
   }
   return sportId;
+}
+
+/** Título del bloque cine/series/anime según la subselección activa. */
+export function formatMediaGroupLabel(selectedIds: string[]): string {
+  const selected = MEDIA_SPORT_IDS.filter((id) => selectedIds.includes(id));
+  if (selected.length === 0 || selected.length === MEDIA_SPORT_IDS.length) {
+    return "Cine, series & anime";
+  }
+  const labels = selected.map((id) => sportLabel(id).toLowerCase());
+  labels[0] = labels[0].charAt(0).toUpperCase() + labels[0].slice(1);
+  return labels.join(" & ");
+}
+
+/** Resumen de filtros activos (agrupa cine/series/anime cuando aplica). */
+export function formatFilterSummary(selectedIds: string[]): string {
+  if (selectedIds.length === 0) return "";
+
+  const mediaSelected = MEDIA_SPORT_IDS.filter((id) => selectedIds.includes(id));
+  const otherIds = selectedIds.filter((id) => !isMediaSportId(id));
+  const parts: string[] = [];
+
+  if (mediaSelected.length > 0) {
+    parts.push(formatMediaGroupLabel(selectedIds));
+  }
+  parts.push(...otherIds.map(sportLabel));
+
+  if (parts.length <= 3) return parts.join(", ");
+  return `${parts.slice(0, 2).join(", ")} +${parts.length - 2}`;
 }
 
 export function sportFilterGroupId(sportId: string): string | null {

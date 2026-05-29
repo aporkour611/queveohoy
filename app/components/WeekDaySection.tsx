@@ -22,6 +22,7 @@ type Props = {
   eventsByDate: Map<string, EventRow[]>;
   sportFilter: Set<string>;
   featuredMode: boolean;
+  appliedSports?: string[];
 };
 
 export const WeekDaySection = memo(function WeekDaySection({
@@ -32,6 +33,7 @@ export const WeekDaySection = memo(function WeekDaySection({
   eventsByDate,
   sportFilter,
   featuredMode,
+  appliedSports = [],
 }: Props) {
   const eager = dayIndex === 0 || dayIndex === activeDay || dayIndex === activeDay + 1;
   const { ref, inView } = useLazyInView({ eager, rootMargin: "720px 0px" });
@@ -62,6 +64,8 @@ export const WeekDaySection = memo(function WeekDaySection({
           <EventDaySections
             events={events}
             priority={dayIndex === activeDay ? "high" : "normal"}
+            appliedSports={appliedSports}
+            isFeaturedMode={isFeaturedMode}
             emptyMessage={
               isFeaturedMode
                 ? "Sin eventos este día."

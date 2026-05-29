@@ -5,7 +5,7 @@ import { isCuratedSeriesEvent } from "./curated-series-events";
 import { isCuratedMovieEvent } from "./movies-curated";
 import { isRolandGarrosWeekDestacado } from "./roland-garros";
 import { matchesSpanishTvFlagship } from "./spanish-tv-curated";
-import { getTvShowCategory } from "./tv-show-category";
+import { getTvShowCategory, isTvFictionSeriesEvent } from "./tv-show-category";
 /** Orden editorial de categorías en destacados (1 ficha por categoría). */
 export const DESTACADO_IMPORTANCE_TIERS = [
   "cine",
@@ -89,7 +89,9 @@ export function getDestacadoImportanceTier(
   if (event.sport === "ufc") return "ufc";
   if (isRolandGarrosWeekDestacado(event)) return "roland-garros";
 
-  if (event.sport === "tv") {
+  if (isTvFictionSeriesEvent(event)) return "rest";
+
+  if (event.sport === "tv" && !isTvFictionSeriesEvent(event)) {
     const category = getTvShowCategory(event);
     if (category === "reality") return "reality";
     if (category === "directo") return "directos";

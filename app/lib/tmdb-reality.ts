@@ -501,6 +501,8 @@ async function fetchCuratedSpanishTvEvents(
   const seenShows = new Set<number>();
 
   for (const curated of SPANISH_TV_FLAGSHIP) {
+    if (curated.category === "ficcion") continue;
+
     if (curated.manualSlots?.length) {
       events.push(...buildManualEvents(curated, dateFrom, dateTo));
     }
@@ -585,6 +587,9 @@ export async function fetchRealityCronEvents(
 
     const showName = detail.name?.trim() || item.name?.trim() || "";
     if (isExcludedUsTvTitle(showName)) continue;
+
+    const flagship = SPANISH_TV_FLAGSHIP.find((show) => show.tmdbId === item.id);
+    if (flagship?.category === "ficcion") continue;
 
     const event = eventFromNextEpisode(
       item.id,

@@ -31,6 +31,8 @@ type Props = {
   emptyMessage?: string;
   /** Above-the-fold: monta las primeras secciones al instante. */
   priority?: "high" | "normal";
+  appliedSports?: string[];
+  isFeaturedMode?: boolean;
 };
 
 function estimateBlockHeight(eventCount: number): number {
@@ -85,6 +87,8 @@ export const EventDaySections = memo(function EventDaySections({
   events,
   emptyMessage,
   priority = "normal",
+  appliedSports = [],
+  isFeaturedMode = true,
 }: Props) {
   const sections = useMemo(() => groupForDisplay(events), [events]);
   const highPriority = priority === "high";
@@ -145,6 +149,8 @@ export const EventDaySections = memo(function EventDaySections({
           tvReality={sections.tvReality}
           tvConcurso={sections.tvConcurso}
           tvDirecto={sections.tvDirecto}
+          appliedSports={appliedSports}
+          isFeaturedMode={isFeaturedMode}
         />
       </LazyMount>
     </>

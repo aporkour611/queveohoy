@@ -1,8 +1,10 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { DayTabs } from "./DayTabs";
 import { EventFilters } from "./EventFilters";
+
+const FILTER_NUDGE_KEY = "qvh_filter_nudge_dismissed_v2";
 
 type DayTab = {
   date: string;
@@ -20,21 +22,57 @@ type Props = {
   onSelectWeekView: () => void;
   onPrefetchWeekView?: () => void;
   selectedSports: string[];
-  onFilterChange: (ids: string[]) => void;
+  onFilterSearch: (ids: string[]) => void;
   isFeaturedMode: boolean;
+  filterSearching?: boolean;
 };
 
 function CollapseFiltersIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden>
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden>
       <path
-        d="M7 14l5-5 5 5"
+        d="M14 7l-5 5 5 5"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="2.25"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
+  );
+}
+
+function FilterDiscoverNudge({
+  onOpen,
+  onDismiss,
+}: {
+  onOpen: () => void;
+  onDismiss: () => void;
+}) {
+  return (
+    <div
+      className="qvh-filter-nudge"
+      role="dialog"
+      aria-labelledby="qvh-filter-nudge-title"
+      aria-describedby="qvh-filter-nudge-text"
+    >
+      <button
+        type="button"
+        className="qvh-filter-nudge-dismiss"
+        onClick={onDismiss}
+        aria-label="Cerrar aviso de filtros"
+      >
+        ×
+      </button>
+      <p id="qvh-filter-nudge-title" className="qvh-filter-nudge-title">
+        ¿Qué quieres ver hoy?
+      </p>
+      <p id="qvh-filter-nudge-text" className="qvh-filter-nudge-text">
+        Filtra deportes, series, TV y más para ver solo lo que te interesa.
+      </p>
+      <button type="button" className="qvh-filter-nudge-cta" onClick={onOpen}>
+        Elegir filtros
+      </button>
+    </div>
   );
 }
 
@@ -47,10 +85,24 @@ export function FeedControls({
   onSelectWeekView,
   onPrefetchWeekView,
   selectedSports,
-  onFilterChange,
+  onFilterSearch,
   isFeaturedMode,
+  filterSearching = false,
 }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [nudgeReady, setNudgeReady] = useState(false);
+  const [nudgeDismissed, setNudgeDismissed] = useState(true);
+
+  useEffect(() => {
+    try {
+      setNudgeDismissed(localStorage.getItem(FILTER_NUDGE_KEY) === "1");
+    } catch {
+      setNudgeDismissed(false);
+    }
+
+    const timer = window.setTimeout(() => setNudgeReady(true), 1200);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useLayoutEffect(() => {
     const el = document.getElementById("feed-controls");
@@ -69,7 +121,27 @@ export function FeedControls({
     const observer = new ResizeObserver(syncHeight);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [filtersOpen]);
+  }, [filtersOpen, nudgeReady, nudgeDismissed]);
+
+  const handleDismissNudge = () => {
+    setNudgeDismissed(true);
+    try {
+      localStorage.setItem(FILTER_NUDGE_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const handleOpenFiltersFromNudge = () => {
+    handleDismissNudge();
+    setFiltersOpen(true);
+  };
+
+  const showDiscoverNudge =
+    nudgeReady && !nudgeDismissed && !filtersOpen && isFeaturedMode;
+
+  const highlightDiscover =
+    nudgeReady && !nudgeDismissed && !filtersOpen && isFeaturedMode;
 
   return (
     <section
@@ -119,20 +191,32 @@ export function FeedControls({
               title="Ocultar filtros"
             >
               <CollapseFiltersIcon />
+              <span className="qvh-feed-filters-collapse-label">Ocultar</span>
             </button>
           ) : null}
         </div>
 
         <div className="qvh-feed-controls-divider" aria-hidden />
 
-        <EventFilters
-          variant="toolbar"
-          selected={selectedSports}
-          onChange={onFilterChange}
-          isFeaturedMode={isFeaturedMode}
-          open={filtersOpen}
-          onOpenChange={setFiltersOpen}
-        />
+        <div className="qvh-feed-filters-wrap">
+          {showDiscoverNudge ? (
+            <FilterDiscoverNudge
+              onOpen={handleOpenFiltersFromNudge}
+              onDismiss={handleDismissNudge}
+            />
+          ) : null}
+
+          <EventFilters
+            variant="toolbar"
+            selected={selectedSports}
+            onSearch={onFilterSearch}
+            isFeaturedMode={isFeaturedMode}
+            open={filtersOpen}
+            onOpenChange={setFiltersOpen}
+            searching={filterSearching}
+            highlightDiscover={highlightDiscover}
+          />
+        </div>
       </div>
     </section>
   );

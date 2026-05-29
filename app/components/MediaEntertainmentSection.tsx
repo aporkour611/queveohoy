@@ -12,6 +12,8 @@ type Props = {
   tvReality?: EventRow[];
   tvConcurso?: EventRow[];
   tvDirecto?: EventRow[];
+  appliedSports?: string[];
+  isFeaturedMode?: boolean;
 };
 
 export function MediaEntertainmentSection({
@@ -21,6 +23,8 @@ export function MediaEntertainmentSection({
   tvReality = [],
   tvConcurso = [],
   tvDirecto = [],
+  appliedSports = [],
+  isFeaturedMode = true,
 }: Props) {
   const hasTv =
     tvReality.length > 0 || tvConcurso.length > 0 || tvDirecto.length > 0;
@@ -35,7 +39,13 @@ export function MediaEntertainmentSection({
         tvConcurso={tvConcurso}
         tvDirecto={tvDirecto}
       />
-      <CatalogMediaSection cine={cine} series={series} anime={anime} />
+      <CatalogMediaSection
+        cine={cine}
+        series={series}
+        anime={anime}
+        appliedSports={appliedSports}
+        isFeaturedMode={isFeaturedMode}
+      />
     </div>
   );
 }

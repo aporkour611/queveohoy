@@ -355,15 +355,13 @@ type PandaScoreMatch = {
   tournament?: { name?: string; tier?: string };
 };
 
-const ESPORTS_MAX_PER_GAME = 35;
+const ESPORTS_GAME_CONFIG = [
+  { slug: "cs-go", sport: "csgo", maxPerGame: 35, perPage: 50, pages: 1 },
+  { slug: "valorant", sport: "valorant", maxPerGame: 60, perPage: 100, pages: 2 },
+  { slug: "league-of-legends", sport: "lol", maxPerGame: 35, perPage: 50, pages: 1 },
+] as const;
 
 async function fetchEsports(): Promise<CountResult> {
-  const games = [
-    { slug: "cs-go", sport: "csgo" },
-    { slug: "valorant", sport: "valorant" },
-    { slug: "league-of-legends", sport: "lol" },
-  ];
-
   const { dates, from: dateFrom, to: dateTo } = madridWeekUtcRange(7);
   const events: CronEventInput[] = [];
   const errors: string[] = [];
@@ -374,21 +372,28 @@ async function fetchEsports(): Promise<CountResult> {
   }
 
   const results = await Promise.allSettled(
-    games.map(async (game) => {
-      const result = await fetchJsonWithTimeout<PandaScoreMatch[]>(
-        `https://api.pandascore.co/matches?filter[videogame]=${game.slug}&range[begin_at]=${dateFrom},${dateTo}&per_page=50`,
-        { headers: { Authorization: `Bearer ${token}` } },
-        18_000
-      );
+    ESPORTS_GAME_CONFIG.map(async (game) => {
+      const matches: PandaScoreMatch[] = [];
 
-      if (!result.ok || !Array.isArray(result.data)) {
-        errors.push(`${game.slug}: ${result.error ?? "sin datos"}`);
-        return;
+      for (let page = 1; page <= game.pages; page += 1) {
+        const result = await fetchJsonWithTimeout<PandaScoreMatch[]>(
+          `https://api.pandascore.co/matches?filter[videogame]=${game.slug}&range[begin_at]=${dateFrom},${dateTo}&per_page=${game.perPage}&page=${page}`,
+          { headers: { Authorization: `Bearer ${token}` } },
+          18_000
+        );
+
+        if (!result.ok || !Array.isArray(result.data)) {
+          errors.push(`${game.slug} p${page}: ${result.error ?? "sin datos"}`);
+          break;
+        }
+
+        matches.push(...result.data);
+        if (result.data.length < game.perPage) break;
       }
 
       let ingested = 0;
-      for (const match of result.data) {
-        if (ingested >= ESPORTS_MAX_PER_GAME) break;
+      for (const match of matches) {
+        if (ingested >= game.maxPerGame) break;
         if (!match.begin_at) continue;
         if (!shouldIngestPandascoreMatch(match)) continue;
 
