@@ -398,20 +398,33 @@
   color: var(--qvh-text-muted);
 }
 
-/* Overlay al cargar semana completa / refresh silencioso */
+/* Overlay fijo al cargar / filtrar / refrescar feed */
 .qvh-feed-loader {
+  z-index: 960;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: qvh-feed-loader-in 0.22s ease-out;
+}
+
+.qvh-feed-loader-fixed {
+  position: fixed;
+  inset: 0;
+  padding: max(16px, env(safe-area-inset-top)) 16px 16px;
+  background: rgba(6, 6, 10, 0.48);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.qvh-feed-loader-anchored {
   position: absolute;
   inset: 0;
-  z-index: 3;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
   padding-top: 48px;
+  align-items: flex-start;
   background: rgba(0, 0, 0, 0.42);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  pointer-events: none;
-  animation: qvh-feed-loader-in 0.18s ease-out;
 }
 
 .qvh-feed-loader-centered {
@@ -420,27 +433,81 @@
   min-height: min(62vh, 560px);
 }
 
+.qvh-page-logo-loader-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 16px;
+  isolation: isolate;
+}
+
 .qvh-page-logo-loader-mark {
   display: block;
   width: min(280px, 72vw);
   height: auto;
-  animation: qvh-page-logo-loader-pulse 1.15s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
-.fh-loading-logo .qvh-page-logo-loader-mark {
+.qvh-page-logo-loader-glow {
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  width: 42%;
+  left: -55%;
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(93, 95, 239, 0.12) 18%,
+    rgba(255, 255, 255, 0.72) 50%,
+    rgba(93, 95, 239, 0.12) 82%,
+    transparent 100%
+  );
+  filter: blur(14px);
+  opacity: 0;
+  animation: qvh-logo-glow-sweep 1.75s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.fh-loading-logo .qvh-page-logo-loader-wrap {
   margin: 0 auto 14px;
 }
 
-@keyframes qvh-page-logo-loader-pulse {
-  0%,
+@media (prefers-reduced-motion: reduce) {
+  .qvh-page-logo-loader-glow {
+    animation: none;
+    opacity: 0.35;
+    left: 0;
+    width: 100%;
+  }
+
+  .qvh-feed-loader {
+    animation: none;
+  }
+}
+
+@keyframes qvh-logo-glow-sweep {
+  0% {
+    left: -58%;
+    opacity: 0;
+  }
+  14% {
+    opacity: 0.95;
+  }
+  86% {
+    opacity: 0.95;
+  }
   100% {
-    opacity: 0.55;
-    transform: scale(0.96);
+    left: 112%;
+    opacity: 0;
   }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
+}
+
+.qvh-feed-loading-shell {
+  min-height: min(62vh, 560px);
 }
 
 @keyframes qvh-feed-loader-in {
@@ -456,10 +523,14 @@
   display: flex;
   gap: 6px;
   padding: 14px 18px;
-  border-radius: 12px;
-  background: rgba(20, 20, 28, 0.92);
-  border: 1px solid var(--qvh-border);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  border-radius: 16px;
+  background: rgba(16, 16, 24, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(93, 95, 239, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .qvh-feed-loader-brand .qvh-brand-loader {
@@ -728,8 +799,24 @@
 
 /* Evita CLS al hidratar calendario + primer día del feed bajo Destacados */
 .qvh-home-feed-slot {
+  display: flex;
+  flex-direction: column;
   min-height: 420px;
   overflow-anchor: none;
+}
+
+#feed-controls-ssr,
+#feed-controls {
+  order: 1;
+}
+
+.fh-home-day-header-ssr:not([hidden]) {
+  order: 2;
+}
+
+#home-feed-day-ssr,
+.fh-feed-area {
+  order: 3;
 }
 
 .qvh-feed-controls-ssr {

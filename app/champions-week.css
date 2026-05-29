@@ -260,6 +260,24 @@
 
 .qvh-cl-week-crest {
   flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+@media (hover: hover) {
+  .qvh-cl-week-matchup:hover .qvh-cl-week-crest {
+    animation: qvh-cl-crest-pulse 0.75s ease-in-out infinite;
+  }
+}
+
+@keyframes qvh-cl-crest-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.14);
+  }
 }
 
 .qvh-cl-week-team-name {
@@ -402,8 +420,10 @@
   .qvh-cl-week-emblem,
   .qvh-cl-week-stage-badge,
   .qvh-cl-week-hero::after,
-  .qvh-cl-week-trophy {
+  .qvh-cl-week-trophy,
+  .qvh-cl-week-matchup:hover .qvh-cl-week-crest {
     animation: none;
+  }
   }
 }
 

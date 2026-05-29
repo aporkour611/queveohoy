@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import type { EventRow } from "./types";
 import { CategoryCarousel } from "./CategoryCarousel";
 import { TvBroadcastCard } from "./TvBroadcastCard";
-import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
+import { sortEventsChronologically } from "../lib/sort-events-by-priority";
+import { hasSpanishDisplayTitle } from "../lib/spanish-display-title";
 
 type Props = {
   tvReality?: EventRow[];
@@ -21,9 +22,15 @@ function TvBroadcastGroup({
   accent: "reality" | "concurso" | "directo";
   events: EventRow[];
 }) {
-  const sortedEvents = useMemo(() => sortEventsByPopularity(events), [events]);
+  const sortedEvents = useMemo(
+    () =>
+      sortEventsChronologically(
+        events.filter((event) => hasSpanishDisplayTitle(event.title))
+      ),
+    [events]
+  );
 
-  if (events.length === 0) return null;
+  if (sortedEvents.length === 0) return null;
 
   return (
     <div className="qvh-tv-group qvh-feed-category-shell">

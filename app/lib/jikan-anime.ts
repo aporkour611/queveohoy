@@ -3,6 +3,7 @@ import { fetchJsonWithTimeout } from "./fetch-json";
 import { addDaysToDateKey, getMadridWeekDates, toMadridDateKey, toMadridTime } from "./madrid-time";
 import { isoWeekdayFromDateKey } from "./curated-tv-events";
 import { encodeJikanSource } from "./jikan-client";
+import { resolveSpanishDisplayTitle } from "./spanish-display-title";
 
 const JIKAN_BASE = "https://api.jikan.moe/v4";
 const JIKAN_REQUEST_GAP_MS = 400;
@@ -103,10 +104,8 @@ function isBlockedAnime(anime: JikanAnime): boolean {
   return /hentai|erotica/i.test(genres);
 }
 
-function animeDisplayTitle(anime: JikanAnime): string {
-  const english = anime.title_english?.trim();
-  const base = anime.title?.trim();
-  return english || base || "Anime";
+function animeDisplayTitle(anime: JikanAnime): string | null {
+  return resolveSpanishDisplayTitle([anime.title_english]);
 }
 
 function animeBuzzScore(anime: JikanAnime): number {
@@ -206,6 +205,9 @@ function buildWeeklyEpisodeEvents(
   dateFrom: string,
   dateTo: string
 ): CronEventInput[] {
+  const title = animeDisplayTitle(anime);
+  if (!title) return [];
+
   const broadcastDay = normalizeBroadcastDay(anime.broadcast?.day);
   const broadcastTime = anime.broadcast?.time?.trim();
   if (!broadcastDay || !broadcastTime) return [];
@@ -224,7 +226,7 @@ function buildWeeklyEpisodeEvents(
 
       events.push({
         external_id: `jikan_anime_${anime.mal_id}_${madrid.date}`,
-        title: animeDisplayTitle(anime),
+        title,
         date: madrid.date,
         time: madrid.time,
         sport: "anime",
@@ -249,11 +251,14 @@ function buildSeasonPremiereEvent(
   const from = anime.aired?.from?.slice(0, 10);
   if (!from || from < dateFrom || from > dateTo) return null;
 
+  const title = animeDisplayTitle(anime);
+  if (!title) return null;
+
   const buzz = animeBuzzScore(anime) + 12;
 
   return {
     external_id: `jikan_premiere_${anime.mal_id}_${from}`,
-    title: animeDisplayTitle(anime),
+    title,
     date: from,
     time: "22:00",
     sport: "anime",

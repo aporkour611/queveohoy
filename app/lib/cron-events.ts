@@ -5,6 +5,7 @@ import {
   isTeamCrestSport,
 } from "./event-crests";
 import { enrichEventCrests } from "./event-enrich";
+import { isEsportsSport } from "./esports";
 import { isImportantEvent } from "./featured";
 import { eventHasPlaceholderTeams, isPublishableTeamEvent } from "./event-quality";
 
@@ -28,7 +29,7 @@ function asScorable(e: CronEventInput): EventRow {
   return e as unknown as EventRow;
 }
 
-/** Importación: descarta menores sin escudo; reintenta importantes hasta obtener logos */
+/** Importación: e-sports siempre; resto de deportes de equipo exige escudo o importancia. */
 export async function prepareEventsForImport<T extends CronEventInput>(
   events: T[]
 ): Promise<T[]> {
@@ -40,6 +41,16 @@ export async function prepareEventsForImport<T extends CronEventInput>(
 
     const e = asScorable(raw);
     const sport = e.sport ?? "";
+
+    if (isEsportsSport(sport)) {
+      let row = raw;
+      if (!eventHasTeamCrests(e)) {
+        const enriched = await enrichEventCrests(e, ENRICH_RETRIES);
+        if (enriched) row = { ...raw, ...enriched } as T;
+      }
+      out.push(row);
+      continue;
+    }
 
     if (!isTeamCrestSport(sport)) {
       out.push(raw);

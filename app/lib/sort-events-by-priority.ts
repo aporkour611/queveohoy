@@ -2,6 +2,16 @@ import type { EventRow } from "../components/types";
 import { eventPriority } from "./featured";
 import { isTvFictionSeriesEvent } from "./tv-show-category";
 
+/** Orden cronológico de izquierda a derecha (fecha + hora Madrid). */
+export function sortEventsChronologically(events: EventRow[]): EventRow[] {
+  return [...events].sort(
+    (a, b) =>
+      (a.date ?? "").localeCompare(b.date ?? "") ||
+      (a.time ?? "99:99").localeCompare(b.time ?? "99:99") ||
+      (a.title ?? "").localeCompare(b.title ?? "", "es")
+  );
+}
+
 /** Ordena eventos por relevancia editorial (más populares primero). */
 export function sortEventsByPopularity(events: EventRow[]): EventRow[] {
   return [...events].sort(

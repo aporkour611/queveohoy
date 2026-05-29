@@ -57,6 +57,13 @@ export function eventCanDisplay(e: EventRow): boolean {
   return isImportantEvent(e);
 }
 
+/** Publicables en BD / vista filtrada: sin deportes bloqueados ni equipos TBD. */
+export function filterPublishableEvents<T extends EventRow>(events: T[]): T[] {
+  return events.filter(
+    (e) => !isBlockedSport(e.sport) && !eventHasPlaceholderTeams(e)
+  );
+}
+
 /** Oculta partidos de equipo sin escudos, salvo eventos importantes */
 export function filterEventsForDisplay<T extends EventRow>(events: T[]): T[] {
   return events.filter(eventCanDisplay);

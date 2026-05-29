@@ -9,9 +9,9 @@ import {
 import { MediaPosterCard } from "./MediaPosterCard";
 import { formatMediaGroupLabel, isMediaSportId } from "../lib/filter-config";
 import {
-  sortEventsByPopularity,
-  sortSeriesCatalogEvents,
+  sortEventsChronologically,
 } from "../lib/sort-events-by-priority";
+import { hasSpanishDisplayTitle } from "../lib/spanish-display-title";
 
 function MediaSectionTitle({ title }: { title: string }) {
   if (title === "Cine, series & anime") {
@@ -55,28 +55,21 @@ function CatalogRail({
   accent,
   count,
   events,
-  visibleSlots,
-  carouselClassName,
-  compact = false,
-  spotlightAspect = false,
-  sortSeries = false,
 }: {
   label: string;
   accent: "cine" | "series" | "anime";
   count: number;
   events: EventRow[];
-  visibleSlots?: number;
-  carouselClassName?: string;
-  compact?: boolean;
-  spotlightAspect?: boolean;
-  sortSeries?: boolean;
 }) {
   const sortedEvents = useMemo(
-    () => (sortSeries ? sortSeriesCatalogEvents(events) : sortEventsByPopularity(events)),
-    [events, sortSeries]
+    () =>
+      sortEventsChronologically(
+        events.filter((event) => hasSpanishDisplayTitle(event.title))
+      ),
+    [events]
   );
 
-  if (events.length === 0) return null;
+  if (sortedEvents.length === 0) return null;
 
   return (
     <div className="qvh-catalog-rail-block qvh-feed-category-shell">
@@ -89,19 +82,15 @@ function CatalogRail({
       </div>
       <CategoryCarousel
         ariaLabel={label}
-        visibleSlots={visibleSlots}
-        className={["qvh-category-carousel-posters", carouselClassName]
-          .filter(Boolean)
-          .join(" ")}
+        visibleSlots={CATEGORY_CAROUSEL_ANIME_SLOTS}
+        className="qvh-category-carousel-posters qvh-category-carousel-anime"
       >
         {sortedEvents.map((event, index) => (
           <MediaPosterCard
             key={event.id}
             event={event}
             index={index}
-            compact={compact}
-            cine={accent === "cine"}
-            spotlightAspect={spotlightAspect}
+            compact
           />
         ))}
       </CategoryCarousel>
@@ -157,17 +146,12 @@ export function CatalogMediaSection({
         accent="series"
         count={visibleSeries.length}
         events={visibleSeries}
-        spotlightAspect
-        sortSeries
       />
       <CatalogRail
         label="Anime"
         accent="anime"
         count={visibleAnime.length}
         events={visibleAnime}
-        visibleSlots={CATEGORY_CAROUSEL_ANIME_SLOTS}
-        carouselClassName="qvh-category-carousel-anime"
-        compact
       />
     </section>
   );

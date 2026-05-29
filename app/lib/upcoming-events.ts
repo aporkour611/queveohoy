@@ -1,5 +1,9 @@
 import type { EventRow } from "../components/types";
-import { filterEventsForDisplay } from "./event-crests";
+import {
+  eventCanDisplay,
+  filterEventsForDisplay,
+  filterPublishableEvents,
+} from "./event-crests";
 import { eventMatchesSportFilters } from "./tv-show-category";
 import {
   HOME_DAILY_EVENT_CAP,
@@ -57,7 +61,9 @@ export function resolveVisibleEvents(
   }
 
   const forDay = pickFilteredEvents(
-    crestedDay.filter((e) => eventMatchesSportFilters(e, selectedSports))
+    filterPublishableEvents(dayEvents).filter((e) =>
+      eventMatchesSportFilters(e, selectedSports)
+    )
   );
 
   if (forDay.length > 0) {
@@ -65,7 +71,7 @@ export function resolveVisibleEvents(
   }
 
   const upcoming = pickUpcomingFilteredEvents(
-    crestedAll.filter(
+    filterPublishableEvents(allEvents).filter(
       (e) =>
         eventMatchesSportFilters(e, selectedSports) &&
         e.date &&
@@ -105,7 +111,11 @@ export function resolveDayEventsAllFromIndex(
 ): EventRow[] {
   let dayEvents = byDate.get(date) ?? [];
 
-  if (!isFeaturedMode && selectedSports.size > 0) {
+  if (isFeaturedMode) {
+    return pickHomePageEvents(dayEvents.filter(eventCanDisplay));
+  }
+
+  if (selectedSports.size > 0) {
     dayEvents = dayEvents.filter((event) =>
       eventMatchesSportFilters(event, selectedSports)
     );
@@ -121,10 +131,10 @@ export function resolveDayEventsForFeed(
   selectedSports: string[],
   isFeaturedMode: boolean
 ): EventRow[] {
-  const dayEvents = filterEventsForDisplay(allEvents).filter((e) => e.date === date);
+  const dayEvents = filterPublishableEvents(allEvents).filter((e) => e.date === date);
 
   if (isFeaturedMode) {
-    return pickHomePageEvents(dayEvents);
+    return pickHomePageEvents(dayEvents.filter(eventCanDisplay));
   }
 
   return pickFilteredEvents(
@@ -132,13 +142,13 @@ export function resolveDayEventsForFeed(
   );
 }
 
-/** Indexa eventos visibles por fecha (una sola pasada). */
+/** Indexa eventos publicables por fecha (el recorte de destacados se aplica al renderizar). */
 export function indexDisplayEventsByDate(
   events: EventRow[]
 ): Map<string, EventRow[]> {
   const byDate = new Map<string, EventRow[]>();
 
-  for (const event of filterEventsForDisplay(events)) {
+  for (const event of filterPublishableEvents(events)) {
     if (!event.date) continue;
     const list = byDate.get(event.date);
     if (list) list.push(event);
@@ -157,7 +167,7 @@ export function resolveDayEventsFromIndex(
   const dayEvents = byDate.get(date) ?? [];
 
   if (isFeaturedMode) {
-    return pickHomePageEvents(dayEvents);
+    return pickHomePageEvents(dayEvents.filter(eventCanDisplay));
   }
 
   if (selectedSports.size === 0) {

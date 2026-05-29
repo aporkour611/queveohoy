@@ -1,20 +1,24 @@
 import { eventHasPlaceholderTeams, isPlaceholderTeamName } from "./event-quality";
 import { isBlockedSport } from "./blocked-sports";
 
-/** Ligas / torneos menores que no queremos en BD (ruido en home y cron lento). */
-const ESPORTS_MINOR =
-  /challenger|open qualifier|qualifier|academy|regional|circuit\s*x|division\s*[234]|div\s*[234]|emea\s*open|nacl|university|cbLOL|open\s*qual|road\s*of|prime\s*league\s*2|lidl|nexus|\bsplit\s*(?:[2-9]|\d{2,})\b/i;
-
-/** Torneos de primer nivel que sí queremos. */
-const ESPORTS_MAJOR =
-  /lec|lck|lpl|lcs|vct|champions|masters|major|iem|blast|pgl|esl pro league|worlds|msi|emea|champions tour|cs2|counter-strike|cdl|call of duty league/i;
-
 export type PandascoreMatchMeta = {
   league?: { name?: string | null; tier?: string | null } | null;
   serie?: { full_name?: string | null; tier?: string | null } | null;
   tournament?: { name?: string | null; tier?: string | null } | null;
   opponents?: Array<{ opponent?: { name?: string | null } | null }> | null;
 };
+
+export const PANDASCORE_ESPORTS_GAMES = [
+  { slug: "cs-go", sport: "csgo" },
+  { slug: "valorant", sport: "valorant" },
+  { slug: "league-of-legends", sport: "lol" },
+] as const;
+
+export const PANDASCORE_PER_PAGE = 100;
+/** Tope de seguridad por juego (100 × 10 = 1000 partidos / semana). */
+export const PANDASCORE_MAX_PAGES = 10;
+
+const ESPORTS_SPORTS = new Set(["csgo", "valorant", "lol"]);
 
 function opponentsConfirmed(match: PandascoreMatchMeta): boolean {
   const names = (match.opponents ?? [])
@@ -25,41 +29,26 @@ function opponentsConfirmed(match: PandascoreMatchMeta): boolean {
   return names.every((name) => !isPlaceholderTeamName(name));
 }
 
-export function shouldIngestPandascoreMatch(match: PandascoreMatchMeta): boolean {
-  if (!opponentsConfirmed(match)) return false;
-
-  const comp = [
-    match.league?.name,
-    match.serie?.full_name,
-    match.tournament?.name,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  if (!comp.trim()) return false;
-
-  if (ESPORTS_MAJOR.test(comp)) return true;
-
-  const tier =
-    match.serie?.tier?.toLowerCase() ??
-    match.league?.tier?.toLowerCase() ??
-    match.tournament?.tier?.toLowerCase();
-  if (tier === "s" || tier === "a" || tier === "b") return true;
-  if (tier === "c" || tier === "d") return false;
-
-  if (ESPORTS_MINOR.test(comp)) return false;
-
-  const teamBlob = (match.opponents ?? [])
-    .map((o) => o.opponent?.name ?? "")
-    .join(" ");
-  if (ESPORTS_MAJOR.test(teamBlob)) return true;
-
-  return false;
+/** Ingesta: solo exige dos equipos confirmados (sin filtrar por tier o liga). */
+export function isValidPandascoreMatchForImport(match: PandascoreMatchMeta): boolean {
+  return opponentsConfirmed(match);
 }
 
-const ESPORTS_SPORTS = new Set(["csgo", "valorant", "lol"]);
+export function pandascoreMatchCompetition(match: PandascoreMatchMeta): string {
+  return (
+    match.league?.name?.trim() ||
+    match.serie?.full_name?.trim() ||
+    match.tournament?.name?.trim() ||
+    "E-Sports"
+  );
+}
 
-/** Eventos esports ya en BD que deberían eliminarse (ligas menores). */
+/** @deprecated Usar isValidPandascoreMatchForImport */
+export function shouldIngestPandascoreMatch(match: PandascoreMatchMeta): boolean {
+  return isValidPandascoreMatchForImport(match);
+}
+
+/** Solo purga placeholders o deportes bloqueados; no por liga menor. */
 export function shouldPurgeStoredEsportsEvent(event: {
   sport?: string | null;
   competition?: string | null;
@@ -70,16 +59,5 @@ export function shouldPurgeStoredEsportsEvent(event: {
   const sport = event.sport ?? "";
   if (isBlockedSport(sport)) return true;
   if (!ESPORTS_SPORTS.has(sport)) return false;
-  if (eventHasPlaceholderTeams(event)) return true;
-
-  const comp = event.competition ?? "";
-  if (!comp.trim()) return true;
-  if (ESPORTS_MAJOR.test(comp)) return false;
-  if (ESPORTS_MINOR.test(comp)) return true;
-
-  return !shouldIngestPandascoreMatch({
-    league: { name: comp },
-    serie: { full_name: comp },
-    tournament: { name: comp },
-  });
+  return eventHasPlaceholderTeams(event);
 }

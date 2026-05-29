@@ -13,7 +13,6 @@ import {
 } from "../lib/cookie-consent";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
-import { LoadingState } from "./LoadingState";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
 import { useHomeReset } from "./HomeResetContext";
 import dynamic from "next/dynamic";
@@ -476,7 +475,7 @@ export function HomeFeed({
   const showInitialLoading = loading && events.length === 0;
   const showWeekLoader = weekView && !fullWeekReady;
   const showFeedLoader =
-    (refreshing || showWeekLoader || filterSearching) && !showInitialLoading;
+    refreshing || showWeekLoader || filterSearching || showInitialLoading;
 
   useLayoutEffect(() => {
     document.getElementById("home-feed-day-ssr")?.setAttribute("hidden", "");
@@ -633,6 +632,8 @@ export function HomeFeed({
 
   return (
     <>
+          {showFeedLoader ? <FeedRefreshLoader /> : null}
+
           <div
             className={isFeaturedMode ? undefined : "fh-feed-pane-hidden"}
             aria-hidden={!isFeaturedMode}
@@ -657,10 +658,8 @@ export function HomeFeed({
           />
 
           <div className="fh-feed-area">
-            {showFeedLoader ? <FeedRefreshLoader /> : null}
-
             {showInitialLoading ? (
-              <LoadingState />
+              <div className="qvh-feed-loading-shell" aria-hidden />
             ) : loadError && events.length === 0 ? (
               <div className="fh-empty">
                 <p>No se pudieron cargar los eventos.</p>

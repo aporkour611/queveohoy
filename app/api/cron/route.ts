@@ -13,7 +13,13 @@ import { dedupeEvents, findDuplicateIdsToRemove, type EventRecord } from "@/app/
 import { eventHasTeamCrests } from "@/app/lib/event-crests";
 import { enrichEventCrests } from "@/app/lib/event-enrich";
 import { ensureEventsDateIndex } from "@/app/lib/ensure-db-index";
-import { shouldIngestPandascoreMatch } from "@/app/lib/esports-cron";
+import {
+  isValidPandascoreMatchForImport,
+  pandascoreMatchCompetition,
+  PANDASCORE_ESPORTS_GAMES,
+  PANDASCORE_MAX_PAGES,
+  PANDASCORE_PER_PAGE,
+} from "@/app/lib/esports-cron";
 import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
 import { fetchJsonWithTimeout } from "@/app/lib/fetch-json";
 import { fetchJikanAnimeEventsForWeek } from "@/app/lib/jikan-anime";
@@ -355,11 +361,7 @@ type PandaScoreMatch = {
   tournament?: { name?: string; tier?: string };
 };
 
-const ESPORTS_GAME_CONFIG = [
-  { slug: "cs-go", sport: "csgo", maxPerGame: 35, perPage: 50, pages: 1 },
-  { slug: "valorant", sport: "valorant", maxPerGame: 60, perPage: 100, pages: 2 },
-  { slug: "league-of-legends", sport: "lol", maxPerGame: 35, perPage: 50, pages: 1 },
-] as const;
+const ESPORTS_GAME_CONFIG = PANDASCORE_ESPORTS_GAMES;
 
 async function fetchEsports(): Promise<CountResult> {
   const { dates, from: dateFrom, to: dateTo } = madridWeekUtcRange(7);
@@ -375,9 +377,9 @@ async function fetchEsports(): Promise<CountResult> {
     ESPORTS_GAME_CONFIG.map(async (game) => {
       const matches: PandaScoreMatch[] = [];
 
-      for (let page = 1; page <= game.pages; page += 1) {
+      for (let page = 1; page <= PANDASCORE_MAX_PAGES; page += 1) {
         const result = await fetchJsonWithTimeout<PandaScoreMatch[]>(
-          `https://api.pandascore.co/matches?filter[videogame]=${game.slug}&range[begin_at]=${dateFrom},${dateTo}&per_page=${game.perPage}&page=${page}`,
+          `https://api.pandascore.co/matches?filter[videogame]=${game.slug}&range[begin_at]=${dateFrom},${dateTo}&per_page=${PANDASCORE_PER_PAGE}&page=${page}`,
           { headers: { Authorization: `Bearer ${token}` } },
           18_000
         );
@@ -388,14 +390,12 @@ async function fetchEsports(): Promise<CountResult> {
         }
 
         matches.push(...result.data);
-        if (result.data.length < game.perPage) break;
+        if (result.data.length < PANDASCORE_PER_PAGE) break;
       }
 
-      let ingested = 0;
       for (const match of matches) {
-        if (ingested >= game.maxPerGame) break;
         if (!match.begin_at) continue;
-        if (!shouldIngestPandascoreMatch(match)) continue;
+        if (!isValidPandascoreMatchForImport(match)) continue;
 
         const { date, time } = splitToMadrid(parseUtcIso(String(match.begin_at)));
         if (!dates.includes(date)) continue;
@@ -423,11 +423,10 @@ async function fetchEsports(): Promise<CountResult> {
           time,
           sport: game.sport,
           category: "esports",
-          competition: match.league?.name || match.serie?.full_name || "",
+          competition: pandascoreMatchCompetition(match),
           platform: "Twitch, YouTube",
           source: encodeEsportsSource(homeLogo, awayLogo),
         });
-        ingested += 1;
       }
     })
   );

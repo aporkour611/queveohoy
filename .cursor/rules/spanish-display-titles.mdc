@@ -1,0 +1,31 @@
+---
+description: Títulos visibles solo en castellano (o latín); sin traducción no se muestra
+globs: app/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Títulos en castellano
+
+Qué Ver Hoy es para audiencia en España. **Todo texto visible al usuario debe estar en castellano** (o al menos en alfabeto latino con traducción reconocible).
+
+## Regla
+
+1. **Nunca** mostrar títulos en chino, japonés, coreano u otros scripts no latinos (p. ej. `总裁大人他有读心术`).
+2. Si no hay traducción al castellano/latín disponible, **omitir el evento** (no mostrar tarjeta ni fila).
+3. Prioridad de candidatos: título ES → título EN latino → omitir. No usar el título original en CJK como fallback.
+
+## Implementación
+
+- Utilidad: `app/lib/spanish-display-title.ts` (`hasSpanishDisplayTitle`, `resolveSpanishDisplayTitle`).
+- Filtrar en **ingesta** (cron/API) y en **render** como red de seguridad.
+- Tests en `app/lib/spanish-display-title.test.ts`.
+
+## Ejemplos
+
+```typescript
+// ❌ Fallback al título japonés/chino
+return english || base || "Anime";
+
+// ✅ Solo latín; si no hay, null y no crear evento
+return resolveSpanishDisplayTitle([anime.title_english, anime.title_spanish]);
+```
