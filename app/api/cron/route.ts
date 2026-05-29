@@ -33,7 +33,9 @@ import {
   madridWeekUtcRange,
   parseUtcIso,
   splitToMadrid,
+  toMadridDateKey,
 } from "@/app/lib/madrid-time";
+import { purgePastDayEvents } from "@/app/lib/purge-past-events";
 
 function getSupabase() {
   return createSupabaseAdmin();
@@ -715,6 +717,22 @@ export async function GET(request: Request) {
     console.warn("DB index error:", e);
   }
 
+  let pastDayPurge: Awaited<ReturnType<typeof purgePastDayEvents>> = {
+    purged: 0,
+    todayKey: toMadridDateKey(new Date()),
+  };
+  try {
+    pastDayPurge = await purgePastDayEvents(getSupabase());
+    if (pastDayPurge.purged > 0) {
+      console.log(
+        `✓ Eventos anteriores a ${pastDayPurge.todayKey} eliminados: ${pastDayPurge.purged}`
+      );
+    }
+  } catch (e) {
+    console.error("✗ Purge past day error:", e);
+    pastDayPurge.error = String(e);
+  }
+
   let football = { count: 0, dateFrom: "", dateTo: "", errors: [] as string[] };
   let esports: CountResult = { count: 0 };
   let f1: CountResult = { count: 0 };
@@ -834,6 +852,9 @@ export async function GET(request: Request) {
     ok: true,
     timestamp: new Date().toISOString(),
     dbIndex,
+    pastDayPurged: pastDayPurge.purged,
+    pastDayPurgeDate: pastDayPurge.todayKey,
+    pastDayPurgeError: pastDayPurge.error,
     indexNow,
     feedCache,
     football,

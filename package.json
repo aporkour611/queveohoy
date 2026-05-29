@@ -18,7 +18,10 @@
     "icons:app": "node scripts/generate-app-icons.mjs",
     "posters:tv": "node scripts/generate-tv-posters.mjs",
     "posters:sport": "node scripts/generate-sport-posters.mjs",
-    "posters": "node scripts/generate-tv-posters.mjs && node scripts/generate-sport-posters.mjs"
+    "posters:sync": "node scripts/sync-tv-tmdb-posters.mjs",
+    "posters:all": "npm run posters:sync && npm run posters",
+    "posters": "node scripts/generate-tv-posters.mjs && node scripts/generate-sport-posters.mjs",
+    "midnight": "node scripts/midnight-madrid.mjs"
   },
   "browserslist": [
     "chrome >= 111",
