@@ -5,6 +5,7 @@ import type { EventRow } from "./types";
 import { CategoryCarousel } from "./CategoryCarousel";
 import { TvBroadcastCard } from "./TvBroadcastCard";
 import { CategoryIcon } from "./CategoryIcon";
+import { FeedSectionHero } from "./FeedSectionHero";
 import { sortEventsChronologically } from "../lib/sort-events-by-priority";
 import { hasSpanishDisplayTitle } from "../lib/spanish-display-title";
 
@@ -69,17 +70,12 @@ export function TvBroadcastSection({
 
   return (
     <section className="qvh-tv-section" aria-label="TV y Twitch">
-      <header className="qvh-tv-hero">
-        <div className="qvh-tv-hero-glow" aria-hidden />
-        <p className="qvh-tv-hero-eyebrow">
-          <span className="qvh-tv-hero-dot" aria-hidden />
-          Televisión
-        </p>
-        <h3 className="qvh-tv-hero-title">TV y Twitch</h3>
-        <p className="qvh-tv-hero-lead">
-          Reality, concursos y programas en directo con horario en España
-        </p>
-      </header>
+      <FeedSectionHero
+        variant="tv"
+        eyebrow="Televisión"
+        title="TV y Twitch"
+        lead="Reality, concursos y programas en directo con horario en España"
+      />
 
       <TvBroadcastGroup label="TV" accent="directo" events={tvDirecto} />
       <TvBroadcastGroup label="Concursos" accent="concurso" events={tvConcurso} />

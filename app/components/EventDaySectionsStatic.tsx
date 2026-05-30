@@ -1,13 +1,11 @@
-import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
-import {
-  isChampionsCompetitionTitle,
-} from "../lib/champions-week";
-import { isChampionsFinal } from "../lib/event-card-stamp";
+import { sportAccentClass } from "../lib/sport-accent";
 import { groupEventsForDisplay } from "../lib/event-day-group";
+import { splitMotorFromSportsEsports } from "../lib/event-day-sports-split";
 import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
 import type { EventRow } from "./types";
 import { MatchCardStatic } from "./MatchCardStatic";
 import { CategorySectionHeader } from "./CategorySectionHeader";
+import { SportsEsportsFeedSectionStatic } from "./SportsEsportsFeedSectionStatic";
 
 type Props = {
   events: EventRow[];
@@ -16,33 +14,24 @@ type Props = {
   omitCovers?: boolean;
 };
 
-function StaticSportBlock({
+function StaticMotorBlock({
   title,
   accentClass,
   events,
-  shellClassName,
   omitCovers = false,
   iconId,
 }: {
   title: string;
   accentClass: string;
   events: EventRow[];
-  shellClassName?: string;
   omitCovers?: boolean;
   iconId: string;
 }) {
   const sortedEvents = sortEventsByPopularity(events);
-  const blockClass = [
-    "fh-section-block",
-    "qvh-feed-category-shell",
-    "qvh-content-auto",
-    shellClassName,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  if (sortedEvents.length === 0) return null;
 
   return (
-    <div className={blockClass}>
+    <div className="fh-section-block qvh-feed-category-shell qvh-content-auto">
       <div className={`fh-comp-header ${accentClass}`}>
         <CategorySectionHeader
           title={title}
@@ -76,7 +65,7 @@ function StaticMediaGroup({
 }) {
   if (events.length === 0) return null;
   return (
-    <StaticSportBlock
+    <StaticMotorBlock
       title={title}
       accentClass={accentClass}
       events={events}
@@ -100,28 +89,18 @@ export function EventDaySectionsStatic({
   }
 
   const sections = groupEventsForDisplay(events);
+  const { motor, sportsEsports } = splitMotorFromSportsEsports(sections.bySport);
 
   return (
     <>
-      {Object.entries(sections.football).map(([comp, evs]) => {
-        const isClWeekBlock =
-          isChampionsCompetitionTitle(comp) &&
-          evs.some((event) => isChampionsFinal(event));
-        return (
-          <StaticSportBlock
-            key={comp}
-            title={comp}
-            iconId="futbol"
-            accentClass={competitionAccentClass(comp)}
-            events={evs}
-            shellClassName={isClWeekBlock ? "qvh-cl-week-feed-block" : undefined}
-            omitCovers={omitCovers}
-          />
-        );
-      })}
+      <SportsEsportsFeedSectionStatic
+        football={sections.football}
+        sportsEsports={sportsEsports}
+        omitCovers={omitCovers}
+      />
 
-      {Object.values(sections.bySport).map(({ label, sportId, events: evs }) => (
-        <StaticSportBlock
+      {Object.values(motor).map(({ label, sportId, events: evs }) => (
+        <StaticMotorBlock
           key={sportId}
           title={label}
           iconId={sportId}

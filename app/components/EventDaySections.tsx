@@ -7,7 +7,12 @@ import { CategoryCarousel } from "./CategoryCarousel";
 import { CategorySectionHeader } from "./CategorySectionHeader";
 import { MatchCard } from "./MatchCard";
 import { LazyMount } from "./LazyMount";
+import { SportsEsportsFeedSection } from "./SportsEsportsFeedSection";
 import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
+import { sportAccentClass } from "../lib/sport-accent";
+import { groupEventsForDisplay } from "../lib/event-day-group";
+import { splitMotorFromSportsEsports } from "../lib/event-day-sports-split";
+
 const MediaEntertainmentSection = dynamic(
   () =>
     import("./MediaEntertainmentSection").then(
@@ -15,54 +20,25 @@ const MediaEntertainmentSection = dynamic(
     ),
   { loading: () => null }
 );
-import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
-import { groupEventsForDisplay } from "../lib/event-day-group";
-import {
-  isChampionsCompetitionTitle,
-} from "../lib/champions-week";
-import { isChampionsFinal } from "../lib/event-card-stamp";
-
-function groupForDisplay(events: EventRow[]) {
-  return groupEventsForDisplay(events);
-}
-
-type Props = {
-  events: EventRow[];
-  emptyMessage?: string;
-  /** Above-the-fold: monta las primeras secciones al instante. */
-  priority?: "high" | "normal";
-  appliedSports?: string[];
-  isFeaturedMode?: boolean;
-};
 
 function estimateBlockHeight(eventCount: number): number {
   return Math.min(720, 96 + eventCount * 88);
 }
 
-function SportSectionBlock({
+function MotorSectionBlock({
   title,
   accentClass,
   events,
   eager,
-  shellClassName,
   iconId,
 }: {
   title: string;
   accentClass: string;
   events: EventRow[];
   eager: boolean;
-  shellClassName?: string;
   iconId: string;
 }) {
   const sortedEvents = useMemo(() => sortEventsByPopularity(events), [events]);
-  const blockClass = [
-    "fh-section-block",
-    "qvh-feed-category-shell",
-    "qvh-content-auto",
-    shellClassName,
-  ]
-    .filter(Boolean)
-    .join(" ");
 
   return (
     <LazyMount
@@ -70,7 +46,7 @@ function SportSectionBlock({
       minHeight={estimateBlockHeight(Math.min(events.length, 3))}
       rootMargin="560px 0px"
     >
-      <div className={blockClass}>
+      <div className="fh-section-block qvh-feed-category-shell qvh-content-auto">
         <div className={`fh-comp-header ${accentClass}`}>
           <CategorySectionHeader
             title={title}
@@ -88,6 +64,14 @@ function SportSectionBlock({
   );
 }
 
+type Props = {
+  events: EventRow[];
+  emptyMessage?: string;
+  priority?: "high" | "normal";
+  appliedSports?: string[];
+  isFeaturedMode?: boolean;
+};
+
 export const EventDaySections = memo(function EventDaySections({
   events,
   emptyMessage,
@@ -95,7 +79,12 @@ export const EventDaySections = memo(function EventDaySections({
   appliedSports = [],
   isFeaturedMode = true,
 }: Props) {
-  const sections = useMemo(() => groupForDisplay(events), [events]);
+  const sections = useMemo(() => groupEventsForDisplay(events), [events]);
+  const { motor, sportsEsports } = useMemo(
+    () => splitMotorFromSportsEsports(sections.bySport),
+    [sections.bySport]
+  );
+  const motorBlocks = useMemo(() => Object.values(motor), [motor]);
   const highPriority = priority === "high";
 
   if (events.length === 0) {
@@ -106,46 +95,27 @@ export const EventDaySections = memo(function EventDaySections({
     ) : null;
   }
 
-  let blockIndex = 0;
-
   return (
     <>
-      {Object.entries(sections.football).map(([comp, evs]) => {
-        const eager = highPriority && blockIndex < 2;
-        blockIndex += 1;
-        const isClWeekBlock =
-          isChampionsCompetitionTitle(comp) &&
-          evs.some((event) => isChampionsFinal(event));
-        return (
-          <SportSectionBlock
-            key={comp}
-            title={comp}
-            iconId="futbol"
-            accentClass={competitionAccentClass(comp)}
-            events={evs}
-            eager={eager}
-            shellClassName={isClWeekBlock ? "qvh-cl-week-feed-block" : undefined}
-          />
-        );
-      })}
+      <SportsEsportsFeedSection
+        football={sections.football}
+        sportsEsports={sportsEsports}
+        priority={priority}
+      />
 
-      {Object.values(sections.bySport).map(({ label, sportId, events: evs }) => {
-        const eager = highPriority && blockIndex < 2;
-        blockIndex += 1;
-        return (
-          <SportSectionBlock
-            key={sportId}
-            title={label}
-            iconId={sportId}
-            accentClass={sportAccentClass(sportId)}
-            events={evs}
-            eager={eager}
-          />
-        );
-      })}
+      {motorBlocks.map(({ label, sportId, events: evs }, index) => (
+        <MotorSectionBlock
+          key={sportId}
+          title={label}
+          iconId={sportId}
+          accentClass={sportAccentClass(sportId)}
+          events={evs}
+          eager={highPriority && index < 2}
+        />
+      ))}
 
       <LazyMount
-        eager={highPriority && blockIndex === 0}
+        eager={highPriority && motorBlocks.length === 0}
         minHeight={220}
         rootMargin="480px 0px"
       >
