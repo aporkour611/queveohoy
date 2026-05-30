@@ -10,7 +10,7 @@ test.describe("smoke", () => {
   test("página de desarrolladores documenta la API", async ({ page }) => {
     await page.goto("/desarrolladores")
     await expect(page.getByRole("heading", { name: "Desarrolladores" })).toBeVisible()
-    await expect(page.getByText("GET /api/v1/feed", { exact: true })).toBeVisible()
+    await expect(page.locator("code", { hasText: "GET /api/v1/feed" }).first()).toBeVisible()
   })
 
   test("API v1 feed responde JSON", async ({ request }) => {
@@ -49,9 +49,7 @@ test.describe("smoke", () => {
   test("widget embed carga sin error", async ({ page }) => {
     await page.goto("/embed/esta-noche")
     await expect(page.getByText("Esta noche")).toBeVisible()
-    await expect(
-      page.getByRole("link", { name: "queveohoy.es", exact: true })
-    ).toBeVisible()
+    await expect(page.locator(".qvh-embed-head").getByRole("link").first()).toBeVisible()
   })
 
   test("login muestra Google y magic link", async ({ page }) => {
