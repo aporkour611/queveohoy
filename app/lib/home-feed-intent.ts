@@ -1,3 +1,5 @@
+import { prefetchHomeFeedWeekOnce } from "./perf-prefetch";
+
 /** Activa la hidratación del feed interactivo (desde el shell SSR). */
 export const HOME_FEED_ACTIVATE_EVENT = "qvh-activate-home-feed";
 
@@ -7,15 +9,7 @@ export const HOME_FEED_WEEK_INTENT_KEY = "qvh-home-feed-week-intent";
 export const HOME_FEED_WEEK_PREFETCH_URL = "/api/events?scope=week";
 
 export function prefetchHomeFeedWeek(): void {
-  if (typeof window === "undefined") return;
-  try {
-    void fetch(HOME_FEED_WEEK_PREFETCH_URL, {
-      priority: "low",
-      credentials: "same-origin",
-    });
-  } catch {
-    /* ignore */
-  }
+  prefetchHomeFeedWeekOnce();
 }
 
 export function markHomeFeedWeekIntent(): void {

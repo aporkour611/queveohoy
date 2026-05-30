@@ -1,5 +1,3 @@
-"use client"
-
 type Props = {
   homeName?: string | null
   awayName?: string | null

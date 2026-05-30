@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import "./theme.css";
-import "./explorar.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { SupabaseBrowserConfig } from "./components/SupabaseBrowserConfig";
 import { ThemeProvider } from "./components/ThemeProvider";

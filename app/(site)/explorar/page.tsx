@@ -5,6 +5,7 @@ import { Logo } from "@/app/components/Logo"
 import { SiteFooter } from "@/app/components/SiteFooter"
 import { pageMetadata } from "@/app/lib/seo"
 import "@/app/category-groups.css"
+import "@/app/explorar.css"
 
 export const metadata: Metadata = pageMetadata(
   "/explorar",

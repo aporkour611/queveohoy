@@ -2,6 +2,23 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [13.0.0] - 2026-05-30
+
+### Added
+- `app/components/duel-visuals-static.tsx` — visuales UFC/RG server-only
+- `TonightForYouSectionStatic` + `TonightForYouPersonalizer` (idle, solo con plataformas)
+- `FeedFreshnessSlot` — frescura del feed diferida
+- `app/lib/perf-prefetch.ts` — dedup prefetch semanal
+- `app/site-shell.css` — CSS ligero para rutas `(site)`
+- `docs/ROADMAP-13.0.md`, `verify:prod:v13`, presupuesto Lighthouse v13
+
+### Changed
+- Versión del producto: `13.0.0`
+- `ChannelBadge`, `BasketballDuelVisual`, `RolandGarrosDuelVisual` sin `"use client"`
+- `MatchCardStatic` usa duel visuals estáticos (menos JS en SSR)
+- Critical CSS ampliado; explorar.css solo en rutas que lo necesitan
+- Warm cache semanal: `<link prefetch>` + una petición JS como máximo
+
 ## [12.0.0] - 2026-05-30
 
 ### Added

@@ -9,8 +9,10 @@ import {
 import { safeRemoteImageUrl } from "../lib/remote-image";
 import { MADRID_TZ } from "../lib/timezone";
 import type { EventRow } from "./types";
-import { RolandGarrosDuelVisual } from "./RolandGarrosDuelVisual";
-import { UfcFightVisual } from "./UfcFightVisual";
+import {
+  StaticRolandGarrosDuelVisual,
+  StaticUfcFightVisual,
+} from "./duel-visuals-static";
 
 type Props = {
   event: EventRow;
@@ -113,14 +115,15 @@ export function MatchCardStatic({ event, omitCover = false }: Props) {
           />
         ) : null}
         {showUfcDuel ? (
-          <UfcFightVisual
+          <StaticUfcFightVisual
             f1Url={card.homeCrest}
             f2Url={card.awayCrest}
             f1Name={card.homeName}
             f2Name={card.awayName}
+            size="card"
           />
         ) : showRolandGarrosDuel ? (
-          <RolandGarrosDuelVisual
+          <StaticRolandGarrosDuelVisual
             homeName={card.homeName}
             awayName={card.awayName}
             size="card"

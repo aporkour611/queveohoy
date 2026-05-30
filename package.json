@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -20,6 +20,7 @@
     "verify:prod:v10": "node scripts/verify-prod-v10.mjs",
     "verify:prod:v11": "node scripts/verify-prod-v11.mjs",
     "verify:prod:v12": "node scripts/verify-prod-v12.mjs",
+    "verify:prod:v13": "node scripts/verify-prod-v13.mjs",
     "perf:budget": "node scripts/perf-budget.mjs",
     "posters:compress": "node scripts/compress-posters.mjs",
     "ping-search": "node scripts/ping-indexnow.mjs",

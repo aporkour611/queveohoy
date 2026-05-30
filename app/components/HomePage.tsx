@@ -55,6 +55,7 @@ import { useUserPlatforms } from "../lib/use-user-platforms";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { fetchClientJson } from "../lib/client-fetch-json";
 import { HOME_FEED_WEEK_PREFETCH_URL } from "../lib/home-feed-intent";
+import { prefetchHomeFeedWeekOnce } from "../lib/perf-prefetch";
 
 function setSsrDayHeaderVisible(visible: boolean) {
   const header = document.getElementById("home-day-header-ssr");
@@ -257,6 +258,11 @@ export function HomeFeed({
     return fullWeekLoadRef.current;
   }, [fullWeekReady, hasFullWeek, loadEvents]);
 
+  const warmWeekCache = useCallback(() => {
+    if (fullWeekReady) return;
+    prefetchHomeFeedWeekOnce();
+  }, [fullWeekReady]);
+
   const prefetchFullWeek = useCallback(() => {
     if (fullWeekReady || fullWeekLoadRef.current) return;
     fullWeekLoadRef.current = loadEvents({
@@ -318,7 +324,7 @@ export function HomeFeed({
   useEffect(() => {
     if (fullWeekReady) return;
 
-    const run = () => prefetchFullWeek();
+    const run = () => warmWeekCache();
     const idle =
       typeof window.requestIdleCallback === "function"
         ? window.requestIdleCallback(run, { timeout: 2_500 })
@@ -334,7 +340,7 @@ export function HomeFeed({
       }
       window.clearTimeout(fallback);
     };
-  }, [fullWeekReady, prefetchFullWeek]);
+  }, [fullWeekReady, warmWeekCache]);
 
   useEffect(() => {
     if (!initialWeekView) return;

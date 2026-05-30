@@ -8,6 +8,21 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "13.0.0",
+    date: "2026-05-30",
+    title: "Performance engineering — v13",
+    highlights: [
+      "Arquitectura islands: SSR estático + hidratación diferida por zona",
+      "TonightForYouSectionStatic — prime time sin JS en camino crítico",
+      "Duel visuals (UFC/RG) y ChannelBadge como Server Components",
+      "Prefetch semanal deduplicado; warm cache sin triple fetch",
+      "site-shell.css — páginas legales sin feed-bundle completo",
+      "FeedFreshness y meta API montados tras requestIdleCallback",
+      "Presupuesto Lighthouse v13: perf ≥92, LCP ≤2.0s, CLS ≤0.08",
+      "docs/ROADMAP-13.0.md y verify:prod:v13",
+    ],
+  },
+  {
     version: "12.0.0",
     date: "2026-05-30",
     title: "Observabilidad y ecosistema — v12",

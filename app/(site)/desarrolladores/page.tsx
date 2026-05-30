@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import "@/app/explorar.css"
 import { Logo } from "../../components/Logo"
 import { SiteFooter } from "../../components/SiteFooter"
 import { MAIN_CATEGORY_GROUPS } from "../../lib/filter-groups-design"

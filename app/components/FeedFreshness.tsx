@@ -9,6 +9,10 @@ type FeedMeta = {
   revalidateSeconds: number
 }
 
+type Props = {
+  initialEventCount?: number
+}
+
 function formatAge(iso: string, nowMs: number): string {
   const diffMs = nowMs - new Date(iso).getTime()
   const minutes = Math.max(0, Math.floor(diffMs / 60_000))
@@ -27,12 +31,13 @@ function buildDisplay(body: FeedMeta, nowMs: number) {
   }
 }
 
-export function FeedFreshness() {
+export function FeedFreshness({ initialEventCount = 0 }: Props) {
   const [meta, setMeta] = useState<FeedMeta | null>(null)
   const [display, setDisplay] = useState<{ label: string; stale: boolean } | null>(
     null
   )
   const metaRef = useRef<FeedMeta | null>(null)
+  const fetchedRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -44,31 +49,51 @@ export function FeedFreshness() {
     }
 
     const load = async () => {
+      if (fetchedRef.current) return
+      fetchedRef.current = true
       try {
         const res = await fetch("/api/feed-meta", { cache: "no-store" })
         if (!res.ok) return
         const body = (await res.json()) as FeedMeta
         if (!cancelled) syncDisplay(body)
       } catch {
-        /* ignore */
+        fetchedRef.current = false
       }
     }
 
-    void load()
-    const timer = window.setInterval(() => {
+    const idle =
+      typeof window.requestIdleCallback === "function"
+        ? window.requestIdleCallback(() => void load(), { timeout: 6_000 })
+        : null
+    const fallback = window.setTimeout(() => void load(), 5_000)
+
+    const tick = window.setInterval(() => {
       if (metaRef.current) {
         setDisplay(buildDisplay(metaRef.current, Date.now()))
       }
-      void load()
     }, 120_000)
 
     return () => {
       cancelled = true
-      window.clearInterval(timer)
+      if (idle !== null && typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(idle)
+      }
+      window.clearTimeout(fallback)
+      window.clearInterval(tick)
     }
   }, [])
 
-  if (!meta?.generatedAt || !display) return null
+  if (!display) {
+    if (initialEventCount <= 0) return null
+    return (
+      <p className="qvh-feed-freshness" aria-live="polite">
+        <span className="qvh-feed-freshness-dot" aria-hidden />
+        {initialEventCount} eventos en ventana
+      </p>
+    )
+  }
+
+  if (!meta?.generatedAt) return null
 
   return (
     <p
@@ -82,5 +107,4 @@ export function FeedFreshness() {
   )
 }
 
-/** Constante exportada para tests. */
 export const FEED_FRESHNESS_DEFAULT_REVALIDATE = FEED_REVALIDATE_SECONDS

@@ -8,9 +8,9 @@ import { readFileSync } from "node:fs";
 
 const url = process.env.PERF_URL ?? "http://127.0.0.1:3000";
 const budgets = {
-  performance: 90,
-  lcpMs: 2500,
-  cls: 0.1,
+  performance: 92,
+  lcpMs: 2000,
+  cls: 0.08,
 };
 
 const npx = process.platform === "win32" ? "npx.cmd" : "npx";
@@ -24,7 +24,7 @@ const result = spawnSync(
     "--only-categories=performance",
     "--form-factor=mobile",
     "--output=json",
-    "--output-path=./lighthouse-v7-budget.json",
+    "--output-path=./lighthouse-v13-budget.json",
   ],
   { stdio: "inherit", shell: process.platform === "win32" }
 );
@@ -50,5 +50,5 @@ console.log(
 );
 console.log(`LCP: ${(lcp / 1000).toFixed(2)}s (meta ≤${budgets.lcpMs / 1000}s)`);
 console.log(`CLS: ${cls.toFixed(3)} (meta ≤${budgets.cls})`);
-console.log(ok ? "\n✓ Presupuesto v7 OK" : "\n✗ Presupuesto v7 incumplido");
+console.log(ok ? "\n✓ Presupuesto v13 OK" : "\n✗ Presupuesto v13 incumplido");
 process.exit(ok ? 0 : 1);

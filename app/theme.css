@@ -58,3 +58,81 @@ html[data-theme="dark"] .qvh-theme-toggle {
   background: #1a1a24;
   color: #f0f0f8;
 }
+
+.qvh-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.qvh-theme-toggle:hover {
+  transform: scale(1.05);
+}
+
+.qvh-theme-toggle:focus-visible {
+  outline: 2px solid #7c6cff;
+  outline-offset: 2px;
+}
+
+.fh-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fh-nav-explorar-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c8c8d8;
+  text-decoration: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.fh-nav-explorar-link:hover {
+  border-color: #3a3a48;
+  color: #fff;
+}
+
+html[data-theme="light"] .fh-nav-explorar-link {
+  color: #333348;
+}
+
+html[data-theme="light"] .fh-nav-explorar-link:hover {
+  border-color: #ccc;
+  color: #12121a;
+}
+
+.qvh-feed-freshness {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  color: #8888a0;
+}
+
+.qvh-feed-freshness-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+}
+
+.qvh-feed-freshness.is-stale .qvh-feed-freshness-dot {
+  background: #fbbf24;
+}
+
+html[data-theme="light"] .qvh-feed-freshness {
+  color: #555568;
+}
