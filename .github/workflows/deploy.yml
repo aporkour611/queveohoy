@@ -144,14 +144,17 @@ jobs:
               echo "::warning::Feed vacío (0 eventos). Comprueba SUPABASE_URL/SUPABASE_ANON_KEY en Vercel y ejecuta el cron."
             fi
           fi
-          curl -sf "https://queveohoy.es/" -o /dev/null
-          echo "Home precalentada"
           if [ -n "${{ secrets.CRON_SECRET }}" ]; then
             echo "Invalidando caché del feed y la home…"
             curl -sf "https://queveohoy.es/api/indexing/ping" \
               -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
               -o /tmp/revalidate.json || echo "::warning::indexing/ping falló"
             node -e "try{const d=require('/tmp/revalidate.json');console.log('revalidate',d.feedCache?.ok??d.ok)}catch(e){console.log('revalidate skip')}" || true
+          fi
+          home_code=$(curl -s --max-time 45 -o /dev/null -w "%{http_code}" "https://queveohoy.es/" || echo "000")
+          echo "Home HTTP $home_code"
+          if [ "$home_code" != "200" ]; then
+            echo "::warning::Home respondió $home_code (ISR puede regenerarse en segundo plano)"
           fi
           if [ "$events" = "0" ]; then
             echo "Ejecutando cron para repoblar eventos…"

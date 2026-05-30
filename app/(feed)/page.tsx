@@ -28,8 +28,6 @@ import { defaultDescription, pageMetadata, seoKeywords } from "../lib/seo";
 
 export const revalidate = 900;
 export const maxDuration = 25;
-/** Evita home estática vacía si el build no alcanza a leer Supabase. */
-export const dynamic = "force-dynamic";
 
 const PAGE_DATA_BUDGET_MS = 8_000;
 
