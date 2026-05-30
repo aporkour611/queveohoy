@@ -73,6 +73,7 @@ Ingesta: fútbol, F1, MotoGP, UFC, baloncesto, e-sports, TMDB, TV española, etc
 
 - **PR → main:** lint + tests (`.github/workflows/validate.yml`)
 - **Push → main:** lint + tests + `vercel build` + deploy prebuilt (`.github/workflows/deploy.yml`)
+- Los deploys automáticos de la integración Git de Vercel están desactivados (`git.deploymentEnabled: false` en `vercel.json`); solo despliega GitHub Actions.
 
 ## Licencia
 
