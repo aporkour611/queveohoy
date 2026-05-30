@@ -28,8 +28,8 @@ else fail("HTTP 200 home", String(homeRes.status))
 if (versionPattern.test(homeHtml)) pass("Footer versión 2.0.x / 1.9+")
 else fail("Footer versión", "Despliegue pendiente o caché antigua")
 
-if (homeHtml.includes("2.0.0")) pass("Footer muestra 2.0.0")
-else fail("Footer muestra 2.0.0", "Sigue versión anterior en HTML")
+if (/2\.0\.\d/.test(homeHtml)) pass("Footer muestra 2.0.x")
+else fail("Footer muestra 2.0.x", "Sigue versión anterior en HTML")
 
 if (homeHtml.includes("data-qvh-filter-intent"))
   pass("Intent prefetch filtros en shell")
@@ -39,8 +39,8 @@ const { res: healthRes, text: healthText } = await fetchText("/api/health")
 if (healthRes.ok) pass("GET /api/health")
 else fail("GET /api/health", String(healthRes.status))
 
-if (healthText.includes("2.0.0")) pass("Health versión 2.0.0")
-else fail("Health versión 2.0.0", healthText.slice(0, 120))
+if (/2\.0\.\d/.test(healthText)) pass("Health versión 2.0.x")
+else fail("Health versión 2.0.x", healthText.slice(0, 120))
 
 const metaRes = await fetch(`${BASE}/api/feed-meta`, { cache: "no-store" })
 if (metaRes.ok) pass("GET /api/feed-meta")

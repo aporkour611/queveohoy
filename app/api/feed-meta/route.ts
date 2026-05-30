@@ -5,7 +5,8 @@ import { fetchFeedEvents } from "@/app/lib/events-feed-server"
 import { getMadridTodayKey } from "@/app/lib/seo-date"
 import { MADRID_TZ } from "@/app/lib/timezone"
 
-export const dynamic = "force-dynamic"
+/** Frescura del feed: CDN 60s (evitar force-dynamic que pisa Cache-Control). */
+export const revalidate = 60
 
 export async function GET(request: Request) {
   const rate = await enforceApiRateLimit(request, "feed-meta")
