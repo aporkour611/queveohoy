@@ -9,7 +9,11 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 - Tabla `user_preferences` y API `PATCH /api/cuenta/preferences` (plataformas, prime time)
 - `GET /api/v1/search?q=` con paginación y rate limit compartido con API pública
 - Paginación `limit` + `cursor` en `GET /api/v1/feed`
+- Export RGPD: `GET /api/cuenta/export` (JSON descargable desde pestaña Cuenta)
+- Badge «Tus plataformas» en tarjetas del feed según preferencias guardadas
+- Checklist de despliegue `docs/ACCIONES-MANUALES-4.0.md`
 - Roadmap estratégico `docs/ROADMAP-4.0.md`
+- Script `npm run validate` y `npm run verify:prod:v4`
 
 ### Changed
 - Búsqueda en agenda: coincidencia por tokens (todas las palabras)

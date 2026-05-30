@@ -22,6 +22,30 @@ test.describe("smoke", () => {
     expect(response.headers()["access-control-allow-origin"]).toBe("*")
   })
 
+  test("API v1 search responde JSON", async ({ request }) => {
+    const response = await request.get("/api/v1/search?q=real&limit=5")
+    expect(response.ok()).toBeTruthy()
+    const body = await response.json()
+    expect(body.version).toBe("1")
+    expect(body.query).toBe("real")
+    expect(Array.isArray(body.events)).toBeTruthy()
+  })
+
+  test("API v1 feed pagina con cursor", async ({ request }) => {
+    const first = await request.get("/api/v1/feed?limit=2")
+    expect(first.ok()).toBeTruthy()
+    const page = await first.json()
+    expect(page.events.length).toBeLessThanOrEqual(2)
+    if (page.nextCursor) {
+      const second = await request.get(
+        `/api/v1/feed?limit=2&cursor=${page.nextCursor}`
+      )
+      expect(second.ok()).toBeTruthy()
+      const next = await second.json()
+      expect(next.events[0]?.id).not.toBe(page.events[0]?.id)
+    }
+  })
+
   test("widget embed carga sin error", async ({ page }) => {
     await page.goto("/embed/esta-noche")
     await expect(page.getByText("Esta noche")).toBeVisible()

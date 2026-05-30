@@ -139,7 +139,8 @@ Estas piezas están en el roadmap simulado; **no están en el código aún**.
 
 ### 16. RGPD
 
-- [ ] Revisar [/privacidad](https://queveohoy.es/privacidad) menciona exportación de datos (ya disponible en cuenta)
+- [x] Exportación de datos disponible en `/cuenta` → Cuenta → Descargar mis datos
+- [x] [/privacidad](https://queveohoy.es/privacidad) menciona exportación y `user_preferences`
 - [ ] DPO / registro tratamientos si escala usuarios registrados
 - [ ] Cookie consent: revisar categorías si añades PostHog marketing
 
@@ -184,6 +185,7 @@ Estas piezas están en el roadmap simulado; **no están en el código aún**.
 - API `GET /api/v1/search` + paginación en feed
 - Final PSG–Arsenal 30 may 18:00 + hover escudos
 - Tests (181), lint, build, push a `main`
+- Script `npm run validate` y verificación prod `npm run verify:prod:v4`
 - Documentación: CHANGELOG, API.md, ROADMAP-4.0.md
 
 ---

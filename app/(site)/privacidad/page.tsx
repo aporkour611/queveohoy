@@ -20,7 +20,7 @@ export default function PrivacidadPage() {
       <main className="qvh-legal-page">
         <div className="fh-container">
           <h1>Política de privacidad</h1>
-          <p className="qvh-legal-updated">Última actualización: 27 de mayo de 2026</p>
+          <p className="qvh-legal-updated">Última actualización: 30 de mayo de 2026</p>
 
           <section>
             <h2>Responsable</h2>
@@ -43,10 +43,11 @@ export default function PrivacidadPage() {
               no identifican por sí solas a una persona concreta. Si activas
               avisos push, almacenamos un identificador de suscripción y tus
               categorías preferidas (fútbol, UFC, series, motor) para enviarte
-              como máximo 2 avisos al día. Si creas una cuenta con enlace
-              mágico, guardamos tu correo en Supabase Auth y los eventos que
+              como máximo 2 avisos al día.               Si creas una cuenta con enlace
+              mágico o Google, guardamos tu correo en Supabase Auth, los eventos que
               marques como favoritos en la tabla <code>favorites</code>,
-              vinculados a tu usuario.
+              vinculados a tu usuario, y tus preferencias (plataformas de
+              streaming, prime time) en <code>user_preferences</code>.
             </p>
           </section>
 
@@ -70,9 +71,10 @@ export default function PrivacidadPage() {
               </li>
               <li>
                 <strong>Cuenta y favoritos (opcional)</strong> — correo para
-                autenticación y lista de eventos guardados. Base: ejecución del
-                servicio solicitado. Puedes eliminar favoritos o cerrar sesión
-                desde <Link href="/cuenta">Mi cuenta</Link>.
+                autenticación, plataformas donde ves, lista de eventos guardados.
+                Base: ejecución del servicio solicitado. Puedes eliminar favoritos,
+                descargar tus datos o cerrar sesión desde{" "}
+                <Link href="/cuenta">Mi cuenta</Link>.
               </li>
             </ul>
           </section>
@@ -102,8 +104,10 @@ export default function PrivacidadPage() {
             <h2>Tus derechos</h2>
             <p>
               Puedes acceder, rectificar o suprimir tus datos, limitar u oponerte
-              a determinados tratamientos cuando corresponda. Para ejercer estos
-              derechos, escribe a{" "}
+              a determinados tratamientos cuando corresponda. Desde{" "}
+              <Link href="/cuenta">Mi cuenta</Link> → pestaña Cuenta puedes
+              descargar un JSON con tu correo, perfil, favoritos y preferencias
+              (derecho de acceso). Para otras solicitudes, escribe a{" "}
               <a href="mailto:contacto@queveohoy.es">contacto@queveohoy.es</a>.
               Tienes derecho a reclamar ante la Agencia Española de Protección de
               Datos (
