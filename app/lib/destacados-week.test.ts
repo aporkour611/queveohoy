@@ -16,10 +16,10 @@ describe("pickWeekDestacados", () => {
       title: "Paris Saint-Germain vs Arsenal",
       home_team: "Paris Saint-Germain",
       away_team: "Arsenal",
-      date: "2026-05-31",
-      time: "21:00",
+      date: "2026-05-30",
+      time: "18:00",
       sport: "futbol",
-      competition: "UEFA Champions League · Semifinal",
+      competition: "UEFA Champions League · Final",
       platform: "Movistar+, La 1",
     };
 

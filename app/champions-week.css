@@ -269,26 +269,22 @@
     box-shadow: inset 0 0 48px rgba(93, 95, 239, 0.12);
   }
 
-  .qvh-cl-week-hero:hover .qvh-cl-week-emblem {
+  .qvh-cl-week-emblem:hover {
     animation: qvh-cl-emblem-pulse 1.2s ease-in-out infinite;
   }
 
-  .qvh-cl-week-hero:hover .qvh-cl-week-trophy {
+  .qvh-cl-week-emblem:hover .qvh-cl-week-trophy {
     animation: qvh-cl-trophy-float 2.4s ease-in-out infinite;
   }
 
-  .qvh-cl-week-hero:hover .qvh-cl-week-crest {
+  .qvh-cl-week-crest:hover {
     animation: qvh-cl-crest-pulse 0.75s ease-in-out infinite;
     filter: drop-shadow(0 0 10px rgba(201, 162, 39, 0.45));
   }
 
-  .qvh-cl-week-hero:hover .qvh-cl-week-team-name {
+  .qvh-cl-week-team:hover .qvh-cl-week-team-name {
     color: #fff;
     text-shadow: 0 0 12px rgba(201, 162, 39, 0.35);
-  }
-
-  .qvh-cl-week-matchup:hover .qvh-cl-week-crest {
-    animation: qvh-cl-crest-pulse 0.75s ease-in-out infinite;
   }
 }
 
@@ -581,7 +577,7 @@
   .qvh-cl-week-stage-badge,
   .qvh-cl-week-hero::after,
   .qvh-cl-week-trophy,
-  .qvh-cl-week-matchup:hover .qvh-cl-week-crest,
+  .qvh-cl-week-crest:hover,
   .qvh-countdown-digit,
   .qvh-countdown-live {
     animation: none;

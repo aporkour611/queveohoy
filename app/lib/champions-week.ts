@@ -68,7 +68,7 @@ export const CHAMPIONS_FINAL_FALLBACK = {
     id: -9001,
     title: "Paris Saint-Germain vs Arsenal",
     sport: "futbol",
-    date: "2026-05-31",
+    date: "2026-05-30",
     time: "18:00",
     competition: "UEFA Champions League · Final",
     home_team: "Paris Saint-Germain",

@@ -32,7 +32,7 @@ describe("resolveChampionsWeekContext", () => {
     id: 10,
     title: "Paris Saint-Germain vs Arsenal",
     sport: "futbol",
-    date: "2026-05-31",
+    date: "2026-05-30",
     time: "18:00",
     competition: "UEFA Champions League · Final",
     home_team: "Paris Saint-Germain",
@@ -70,7 +70,7 @@ describe("resolveChampionsWeekContext", () => {
     expect(context?.headline).toBe("Champions League");
     expect(context?.homeTeam).toContain("Paris");
     expect(context?.awayTeam).toBe("Arsenal");
-    expect(context?.eventDate).toBe("2026-05-31");
+    expect(context?.eventDate).toBe("2026-05-30");
     expect(context?.eventTime).toBe("18:00");
   });
 
@@ -100,7 +100,7 @@ describe("resolveChampionsWeekContext", () => {
     const context = resolveChampionsWeekContext([], "2026-06-03", 7);
 
     expect(context?.awayTeam).toBe("Arsenal");
-    expect(context?.eventDate).toBe("2026-05-31");
+    expect(context?.eventDate).toBe("2026-05-30");
   });
 
   it("desactiva la ventana editorial tras el 5 de junio", () => {
@@ -115,7 +115,7 @@ describe("resolveChampionsWeekContext", () => {
     ).getTime();
 
     expect(context?.eventTime).toBe("18:00");
-    expect(kickoff).toBeGreaterThan(Date.parse("2026-05-31T15:00:00Z"));
-    expect(kickoff).toBeLessThan(Date.parse("2026-05-31T17:00:00Z"));
+    expect(kickoff).toBeGreaterThan(Date.parse("2026-05-30T15:00:00Z"));
+    expect(kickoff).toBeLessThan(Date.parse("2026-05-30T17:00:00Z"));
   });
 });

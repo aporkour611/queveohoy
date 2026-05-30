@@ -23,9 +23,9 @@ const champions: EventRow = {
   home_team: "PSG",
   away_team: "Arsenal",
   sport: "futbol",
-  date: "2026-05-31",
-  time: "21:00",
-  competition: "UEFA Champions League · Semifinal",
+  date: "2026-05-30",
+  time: "18:00",
+  competition: "UEFA Champions League · Final",
   platform: "Movistar+",
 };
 
