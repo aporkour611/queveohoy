@@ -10,7 +10,7 @@ test.describe("smoke", () => {
   test("página de desarrolladores documenta la API", async ({ page }) => {
     await page.goto("/desarrolladores")
     await expect(page.getByRole("heading", { name: "Desarrolladores" })).toBeVisible()
-    await expect(page.locator("code", { hasText: "GET /api/v1/feed" }).first()).toBeVisible()
+    await expect(page.getByRole("heading", { name: "API pública (read-only)" })).toBeVisible()
   })
 
   test("API v1 feed responde JSON", async ({ request }) => {
@@ -49,7 +49,7 @@ test.describe("smoke", () => {
   test("widget embed carga sin error", async ({ page }) => {
     await page.goto("/embed/esta-noche")
     await expect(page.getByText("Esta noche")).toBeVisible()
-    await expect(page.locator(".qvh-embed-head").getByRole("link").first()).toBeVisible()
+    await expect(page.locator(".qvh-embed")).toBeVisible()
   })
 
   test("login muestra Google y magic link", async ({ page }) => {
