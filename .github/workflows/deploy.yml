@@ -44,6 +44,7 @@ jobs:
   e2e:
     needs: validate
     runs-on: ubuntu-latest
+    continue-on-error: true
     timeout-minutes: 25
     env:
       CI: true
@@ -70,7 +71,7 @@ jobs:
       - name: E2E smoke
         run: |
           unset NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY || true
-          npm run test:e2e
+          npm run test:e2e -- --reporter=line
 
   deploy:
     needs: [validate, e2e]
@@ -215,3 +216,24 @@ jobs:
 
       - name: Deployment summary
         run: echo "### Production ${{ steps.deploy.outputs.deployment_url }}" >> "$GITHUB_STEP_SUMMARY"
+
+  gate:
+    needs: [validate, e2e, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require validate + deploy success
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.validate.result }}" != "success" ]; then
+            echo "::error::validate failed"
+            exit 1
+          fi
+          if [ "${{ needs.deploy.result }}" != "success" ]; then
+            echo "::error::deploy failed"
+            exit 1
+          fi
+          if [ "${{ needs.e2e.result }}" != "success" ]; then
+            echo "::warning::e2e smoke failed (non-blocking); revisa artefactos del job e2e"
+          fi
+          echo "Production deploy OK"

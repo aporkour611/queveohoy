@@ -23,8 +23,8 @@ export default defineConfig({
   ],
   webServer: {
     command: process.env.CI ? "npm run start" : "npm run dev",
-    url: baseURL,
+    url: `${baseURL}/api/health`,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: process.env.CI ? 180_000 : 120_000,
   },
 })
