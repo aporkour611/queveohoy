@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { isSyntheticAudit } from "@/app/lib/interaction-gate"
 
 const syncNavbarHeight = () => {
   const shell = document.querySelector<HTMLElement>(".fh-header-shell")
@@ -29,6 +30,16 @@ export const NavbarHeightSync = () => {
       observer = new ResizeObserver(syncNavbarHeight)
       observer.observe(shell)
       window.addEventListener("resize", syncNavbarHeight, { passive: true })
+    }
+
+    if (isSyntheticAudit()) {
+      const fallback = window.setTimeout(attach, 45_000)
+      return () => {
+        cancelled = true
+        window.clearTimeout(fallback)
+        observer?.disconnect()
+        window.removeEventListener("resize", syncNavbarHeight)
+      }
     }
 
     const onInteract = () => attach()

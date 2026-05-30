@@ -5,12 +5,8 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import {
   consumeHomeFeedWeekIntent,
-  dispatchHomeFeedActivate,
   HOME_FEED_ACTIVATE_EVENT,
-  markHomeFeedWeekIntent,
-  prefetchHomeFeedWeek,
 } from "@/app/lib/home-feed-intent";
-import { subscribeFeedScopedGate } from "@/app/lib/interaction-gate";
 import { EventDrawerProvider } from "./EventDrawerProvider";
 import { HomeResetProvider } from "./HomeResetContext";
 
@@ -20,62 +16,20 @@ const HomeFeed = dynamic(
   { ssr: false, loading: () => null }
 );
 
-type HomeFeedProps = ComponentProps<typeof HomeFeed> & {
-  eager?: boolean;
-};
+type HomeFeedProps = ComponentProps<typeof HomeFeed>;
 
-/** Hidrata HomeFeed solo con interacción en el área del feed (PSI-safe). */
-export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
-  const [ready, setReady] = useState(false);
+/** Montado solo tras FeedClientRoots — sin gate duplicado. */
+export function HomeFeedGate(props: HomeFeedProps) {
   const [initialWeekView, setInitialWeekView] = useState(false);
 
   useEffect(() => {
-    if (ready) return;
-
-    const activate = (weekView = false) => {
-      if (weekView) setInitialWeekView(true);
-      setReady(true);
+    const onActivateFeed = () => {
+      if (consumeHomeFeedWeekIntent()) setInitialWeekView(true);
     };
-
-    const onActivateFeed = () => activate(consumeHomeFeedWeekIntent());
-
-    const handleWeekIntent = () => {
-      markHomeFeedWeekIntent();
-      prefetchHomeFeedWeek();
-      dispatchHomeFeedActivate();
-    };
-
-    const shell = document.getElementById("feed-controls-ssr");
-    const handleShellPointer = (event: Event) => {
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-      if (!target.closest("[data-qvh-week-view]")) return;
-      event.preventDefault();
-      handleWeekIntent();
-    };
-
-    shell?.addEventListener("click", handleShellPointer);
-    shell?.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter" && event.key !== " ") return;
-      handleShellPointer(event);
-    });
 
     window.addEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
-
-    const cleanupGate = subscribeFeedScopedGate({
-      eager,
-      desktopIdleMs: 1_200,
-      onActivate: () => activate(false),
-    });
-
-    return () => {
-      cleanupGate();
-      window.removeEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
-      shell?.removeEventListener("click", handleShellPointer);
-    };
-  }, [ready, eager]);
-
-  if (!ready) return null;
+    return () => window.removeEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
+  }, []);
 
   return (
     <HomeResetProvider>

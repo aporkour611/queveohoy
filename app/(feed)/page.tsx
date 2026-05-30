@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
-import { FeedFreshnessSlot } from "../components/FeedFreshnessSlot";
 import { FeedControlsShell } from "../components/FeedControlsShell";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
-import { HomeFeedGate } from "../components/HomeFeedGate";
-import { TonightForYouPersonalizer } from "../components/TonightForYouPersonalizer";
 import { TonightForYouSectionStatic } from "../components/TonightForYouSectionStatic";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
@@ -25,6 +22,13 @@ import { raceWithTimeout } from "../lib/race-with-timeout";
 import { resolveHomeLcpPreloadEntries } from "../lib/home-lcp";
 import { buildHomeMetadataDescription, buildHomeMetadataTitle } from "../lib/seo-jsonld";
 import { defaultDescription, pageMetadata, seoKeywords } from "../lib/seo";
+import { pickWeekDestacados } from "../lib/destacados-config";
+import { resolveChampionsWeekContext } from "../lib/champions-week";
+import { FEED_DAY_COUNT } from "../lib/events-feed";
+import {
+  getSpotlightCardModel,
+  spotlightHasCompleteTeamCover,
+} from "../lib/featured-card";
 
 const HomeFaq = dynamic(
   () => import("../components/HomeFaq").then((mod) => mod.HomeFaq),
@@ -35,6 +39,7 @@ const SeoGuidesPromo = dynamic(
     import("../components/SeoGuidesPromo").then((mod) => mod.SeoGuidesPromo),
   { ssr: true }
 );
+import { FeedHydrationBootstrap } from "../components/FeedHydrationBootstrap";
 
 export const revalidate = 900;
 export const maxDuration = 25;
@@ -85,6 +90,41 @@ async function loadHomePageData(): Promise<{
   );
 }
 
+function resolveDestacadosEnhancerProps(
+  weekEvents: EventRow[],
+  todayKey: string
+) {
+  const championsWeek = resolveChampionsWeekContext(
+    weekEvents,
+    todayKey,
+    FEED_DAY_COUNT
+  );
+  const championsFinalId = championsWeek?.finalEvent.id;
+
+  const weekFeatured = pickWeekDestacados(weekEvents, { todayKey }).filter(
+    (event) => {
+      if (championsFinalId != null && event.id === championsFinalId) return true;
+      return spotlightHasCompleteTeamCover(getSpotlightCardModel(event, MADRID_TZ));
+    }
+  );
+
+  if (weekFeatured.length === 0) return null;
+
+  const subtitle = championsWeek
+    ? "La gran final y lo más esperado del fin de semana"
+    : "Estrenos, finales y series que marcan la semana";
+
+  return {
+    title: "Esta semana",
+    subtitle,
+    items: weekFeatured,
+    ariaLabel: "Destacados de la semana",
+    className: `qvh-destacados-week qvh-destacados-week-first${
+      championsWeek ? " qvh-cl-week-destacados" : ""
+    }`,
+  };
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const { events, weekEvents } = await loadHomePageData();
   const merged = mergeFeedEvents(events, weekEvents);
@@ -110,6 +150,8 @@ export default async function Page() {
   const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
   const tonightEvents = mergeFeedEvents(ssrEvents, weekEvents);
   const todayKey = initialDay?.date ?? "";
+  const destacadosEnhancer = resolveDestacadosEnhancerProps(weekEvents, todayKey);
+  const eagerFeed = ssrEvents.length === 0 || Boolean(error);
 
   return (
     <>
@@ -124,10 +166,13 @@ export default async function Page() {
                 <DestacadosSection events={weekEvents} />
 
                 <TonightForYouSectionStatic events={tonightEvents} todayKey={todayKey} />
-                <TonightForYouPersonalizer events={tonightEvents} todayKey={todayKey} />
 
                 <div className="qvh-home-feed-slot">
-                  <FeedFreshnessSlot initialEventCount={ssrEvents.length} />
+                  {ssrEvents.length > 0 ? (
+                    <p className="qvh-feed-freshness qvh-feed-freshness-ssr" aria-hidden>
+                      {`${ssrEvents.length} eventos en ventana`}
+                    </p>
+                  ) : null}
                   <FeedControlsShell days={shellDays} />
                   {initialDay ? (
                     <HomeFeedDayHeader
@@ -142,12 +187,16 @@ export default async function Page() {
                       dayDate={initialDay.date}
                     />
                   ) : null}
-                  <HomeFeedGate
+                  <FeedHydrationBootstrap
                     initialEvents={ssrEvents}
                     initialDestacadosEvents={weekEvents}
                     initialError={error}
                     serverDayHeaderDate={initialDay?.date ?? null}
-                    eager={ssrEvents.length === 0 || Boolean(error)}
+                    initialEventCount={ssrEvents.length}
+                    tonightEvents={tonightEvents}
+                    todayKey={todayKey}
+                    destacadosEnhancer={destacadosEnhancer}
+                    eagerFeed={eagerFeed}
                   />
                 </div>
             </div>

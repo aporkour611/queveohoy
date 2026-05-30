@@ -1,8 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-import { subscribeFeedScopedGate } from "@/app/lib/interaction-gate";
 import type { EventRow } from "./types";
 
 type RowProps = {
@@ -21,17 +19,7 @@ const DestacadosEnhancer = dynamic(
   { ssr: false, loading: () => null }
 );
 
+/** Montado solo tras FeedClientRoots (gate externo). */
 export function DestacadosEnhancerSlot(props: RowProps) {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    return subscribeFeedScopedGate({
-      desktopIdleMs: 2_000,
-      onActivate: () => setReady(true),
-    });
-  }, []);
-
-  if (!ready) return null;
-
   return <DestacadosEnhancer {...props} />;
 }

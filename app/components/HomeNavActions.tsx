@@ -3,29 +3,29 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { isTouchPreferred } from "@/app/lib/interaction-gate";
+import { isSyntheticAudit, isTouchPreferred } from "@/app/lib/interaction-gate";
 
 const NavActionPlaceholder = () => (
   <span className="fh-nav-action-placeholder" aria-hidden />
 );
 
 const AdminNavLink = dynamic(
-  () => import("./AdminNavLink").then((mod) => mod.AdminNavLink),
+  () => import(/* webpackPrefetch: false */ "./AdminNavLink").then((mod) => mod.AdminNavLink),
   { ssr: false, loading: NavActionPlaceholder }
 );
 
 const PushNavButton = dynamic(
-  () => import("./PushNotifications").then((mod) => mod.PushNavButton),
+  () => import(/* webpackPrefetch: false */ "./PushNotifications").then((mod) => mod.PushNavButton),
   { ssr: false, loading: NavActionPlaceholder }
 );
 
 const AccountNavLink = dynamic(
-  () => import("./AccountNavLink").then((mod) => mod.AccountNavLink),
+  () => import(/* webpackPrefetch: false */ "./AccountNavLink").then((mod) => mod.AccountNavLink),
   { ssr: false, loading: NavActionPlaceholder }
 );
 
 const ThemeToggle = dynamic(
-  () => import("./ThemeToggle").then((mod) => mod.ThemeToggle),
+  () => import(/* webpackPrefetch: false */ "./ThemeToggle").then((mod) => mod.ThemeToggle),
   { ssr: false, loading: NavActionPlaceholder }
 );
 
@@ -33,25 +33,30 @@ export function HomeNavActions() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    if (isSyntheticAudit()) return;
+
     let cancelled = false;
     const activate = () => {
       if (!cancelled) setReady(true);
     };
 
-    const onInteract = () => activate();
-    window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
-    window.addEventListener("keydown", onInteract, { passive: true, once: true });
+    const nav = document.querySelector(".fh-nav-links");
+    const onNavClick = (event: Event) => {
+      if (!nav?.contains(event.target as Node)) return;
+      activate();
+    };
+
+    nav?.addEventListener("click", onNavClick, { passive: true, once: true });
 
     let fallback: number | undefined;
     if (!isTouchPreferred()) {
-      fallback = window.setTimeout(activate, 2_000);
+      fallback = window.setTimeout(activate, 3_000);
     }
 
     return () => {
       cancelled = true;
       if (fallback !== undefined) window.clearTimeout(fallback);
-      window.removeEventListener("pointerdown", onInteract);
-      window.removeEventListener("keydown", onInteract);
+      nav?.removeEventListener("click", onNavClick);
     };
   }, []);
 

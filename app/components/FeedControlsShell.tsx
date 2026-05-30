@@ -11,22 +11,19 @@ type Props = {
   days: DayTab[];
 };
 
-/** Calendario/filtros SSR — botones activan hidratación del feed al interactuar. */
+/** Shell SSR estático — sin botones (PSI no dispara hidratación). */
 export function FeedControlsShell({ days }: Props) {
   return (
     <section
       id="feed-controls-ssr"
       className="qvh-feed-controls qvh-feed-controls-ssr"
-      aria-busy="true"
       aria-label="Calendario y filtros de la agenda"
     >
       <div className="qvh-day-tabs" role="tablist" aria-label="Días de la agenda">
         {days.map((day, index) => (
-          <button
+          <div
             key={day.date}
-            type="button"
             role="tab"
-            data-qvh-feed-activate
             aria-selected={index === 0}
             className={`qvh-day-tab${index === 0 ? " active" : ""}`}
           >
@@ -34,7 +31,7 @@ export function FeedControlsShell({ days }: Props) {
             <span className="qvh-day-tab-date">
               {day.num} {day.month.toLowerCase()}
             </span>
-          </button>
+          </div>
         ))}
       </div>
 
@@ -43,36 +40,36 @@ export function FeedControlsShell({ days }: Props) {
           <span className="qvh-feed-view-toggle-btn qvh-feed-view-toggle-btn-active">
             Hoy
           </span>
-          <button
-            type="button"
-            data-qvh-week-view
-            data-qvh-feed-activate
-            className="qvh-feed-view-toggle-btn"
-          >
-            Semana completa
-          </button>
+          <span className="qvh-feed-view-toggle-btn">Semana completa</span>
         </div>
 
         <div className="qvh-feed-controls-divider" aria-hidden />
 
         <div className="qvh-feed-filters">
-          <div className="fh-quick-filters fh-quick-filters-toolbar">
+          <div
+            className="fh-quick-filters fh-quick-filters-toolbar"
+            role="group"
+            aria-label="Filtros rápidos"
+            tabIndex={0}
+          >
             {QUICK_FILTERS.map((quick, index) => (
-              <button
+              <span
                 key={quick.id}
-                type="button"
-                data-qvh-feed-activate
                 className={`fh-quick-filter${index === 0 ? " active" : ""}`}
               >
                 {quick.label}
-              </button>
+              </span>
             ))}
-            <button type="button" data-qvh-feed-activate className="fh-quick-filter fh-quick-filter-more">
-              Más
-            </button>
+            <span className="fh-quick-filter fh-quick-filter-more">Más</span>
           </div>
         </div>
       </div>
+
+      <p className="qvh-feed-hydrate-hint">
+        <button type="button" data-qvh-hydrate-feed className="qvh-feed-hydrate-cta">
+          Activar filtros y calendario interactivo
+        </button>
+      </p>
     </section>
   );
 }

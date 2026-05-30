@@ -883,6 +883,17 @@
   user-select: none;
 }
 
+.qvh-feed-controls-ssr .fh-quick-filters {
+  overflow-x: visible;
+  flex-wrap: wrap;
+}
+
+.qvh-feed-controls-ssr .qvh-feed-hydrate-hint,
+.qvh-feed-controls-ssr .qvh-feed-hydrate-cta {
+  pointer-events: auto;
+  user-select: auto;
+}
+
 #feed-controls-ssr:not([hidden]) + #feed-controls {
   display: none !important;
 }

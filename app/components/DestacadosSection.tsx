@@ -9,7 +9,6 @@ import {
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { ChampionsWeekHero } from "./ChampionsWeekHero";
 import { DestacadosStaticRow } from "./DestacadosStaticRow";
-import { DestacadosEnhancerSlot } from "./DestacadosEnhancerSlot";
 
 type Props = {
   events: EventRow[];
@@ -51,17 +50,11 @@ export function DestacadosSection({ events }: Props) {
         <div className="qvh-cl-week-shell">
           <ChampionsWeekHero context={championsWeek} />
           {weekFeatured.length > 0 ? (
-            <>
-              <DestacadosStaticRow {...rowProps} />
-              <DestacadosEnhancerSlot {...rowProps} />
-            </>
+            <DestacadosStaticRow {...rowProps} />
           ) : null}
         </div>
       ) : (
-        <>
-          <DestacadosStaticRow {...rowProps} />
-          <DestacadosEnhancerSlot {...rowProps} />
-        </>
+        <DestacadosStaticRow {...rowProps} />
       )}
     </div>
   );

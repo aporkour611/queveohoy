@@ -4,7 +4,6 @@ import dynamic from "next/dynamic"
 import { useEffect, useState } from "react"
 import type { EventRow } from "./types"
 import { hasPreferenceConsent } from "../lib/cookie-consent"
-import { subscribeFeedScopedGate } from "../lib/interaction-gate"
 import { readStoredUserPlatforms } from "../lib/user-platforms-client"
 
 const TonightForYouSection = dynamic(
@@ -23,18 +22,13 @@ function readStoredPlatforms(): string[] {
   return readStoredUserPlatforms()
 }
 
-export function TonightForYouPersonalizer({ events, todayKey }: Props) {
-  const [personalize, setPersonalize] = useState(false)
+function hasStoredPlatforms(): boolean {
+  return readStoredPlatforms().length > 0
+}
 
-  useEffect(() => {
-    return subscribeFeedScopedGate({
-      desktopIdleMs: 4_000,
-      onActivate: () => {
-        const platforms = readStoredPlatforms()
-        if (platforms.length > 0) setPersonalize(true)
-      },
-    })
-  }, [])
+/** Montado solo tras FeedClientRoots (gate externo). */
+export function TonightForYouPersonalizer({ events, todayKey }: Props) {
+  const [personalize] = useState(hasStoredPlatforms)
 
   useEffect(() => {
     if (!personalize) return
