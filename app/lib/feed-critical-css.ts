@@ -42,8 +42,6 @@ html{overflow-anchor:none;background:#0a0a10}
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
-@media (min-width:768px){.qvh-cl-week-shell{min-height:480px}}
-
 @media (min-width:1024px){
 
 .qvh-destacados-page-static{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;overflow-x:visible;scroll-snap-type:none;touch-action:auto;padding-bottom:0;margin-inline:0;padding-inline:0}

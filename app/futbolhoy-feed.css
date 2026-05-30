@@ -775,14 +775,108 @@
 }
 
 .fh-filter-group-label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--qvh-font-display);
   font-size: 0.85em;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--qvh-text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.fh-filter-chips-icon {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 8px;
+}
+
+.fh-filter-chip.fh-filter-chip-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  min-height: 96px;
+  padding: 10px 8px 8px;
+  border-radius: 10px;
+  border: 1.5px solid var(--qvh-border);
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+}
+
+.fh-filter-chip.fh-filter-chip-icon:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+  color: inherit;
+}
+
+.fh-filter-chip-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.fh-filter-chip-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #d8d8e4;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fh-filter-chip-group {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--qvh-cat-group-color, var(--qvh-text-muted));
+  margin-top: auto;
+}
+
+.fh-filter-chip.fh-filter-chip-icon.active {
+  border-color: var(--qvh-cat-group-color, var(--qvh-purple));
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--qvh-cat-group-color, var(--qvh-purple)) 35%, transparent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.fh-filter-chip.fh-filter-chip-icon.active .fh-filter-chip-label {
+  color: #fff;
+}
+
+.fh-comp-header-icon {
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.fh-active-pill-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.fh-quick-filter-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fh-quick-filter-icon svg {
+  flex-shrink: 0;
 }
 
 .fh-filter-chips {

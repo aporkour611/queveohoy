@@ -1,12 +1,18 @@
 "use client";
 
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
   FILTER_GROUPS,
   QUICK_FILTERS,
   formatFilterSummary,
   sportLabel,
 } from "../lib/filter-config";
+import {
+  categoryGroupId,
+  categoryGroupLabelColor,
+  categoryGroupShortLabel,
+} from "../lib/category-visuals";
+import { CategoryIcon } from "./CategoryIcon";
 
 type Props = {
   selected: string[];
@@ -89,9 +95,10 @@ export const EventFilters = memo(function EventFilters({
         <button
           key={quick.id}
           type="button"
-          className={`fh-quick-filter ${
+          className={`fh-quick-filter fh-quick-filter-icon ${
             isQuickFilterActive(quick.sportIds) ? "active" : ""
           }`}
+          data-quick={quick.id}
           aria-pressed={isQuickFilterActive(quick.sportIds)}
           onClick={() => {
             if (quick.sportIds.length === 0) {
@@ -101,7 +108,8 @@ export const EventFilters = memo(function EventFilters({
             setDraft(quick.sportIds);
           }}
         >
-          {quick.label}
+          <CategoryIcon id={quick.id} size={16} />
+          <span>{quick.label}</span>
         </button>
       ))}
       <button
@@ -140,7 +148,7 @@ export const EventFilters = memo(function EventFilters({
             <button
               key={id}
               type="button"
-              className="fh-active-pill"
+              className="fh-active-pill fh-active-pill-icon"
               data-sport={id}
               onClick={() => {
                 const next = selected.filter((item) => item !== id);
@@ -149,7 +157,8 @@ export const EventFilters = memo(function EventFilters({
               }}
               title="Quitar filtro"
             >
-              {sportLabel(id)} ×
+              <CategoryIcon id={id} size={14} />
+              <span>{sportLabel(id)} ×</span>
             </button>
           ))}
         </div>
@@ -178,23 +187,36 @@ export const EventFilters = memo(function EventFilters({
       )}
 
       {FILTER_GROUPS.map((group) => (
-        <div key={group.id} className="fh-filter-group">
+        <div key={group.id} className="fh-filter-group" data-group={group.id}>
           <span className="fh-filter-group-label" data-group={group.id}>
+            <CategoryIcon id={group.id} size={18} />
             {group.label}
           </span>
-          <div className="fh-filter-chips">
+          <div className="fh-filter-chips fh-filter-chips-icon">
             {group.options.map((opt) => {
               const on = draftSet.has(opt.id);
+              const groupLabel = categoryGroupShortLabel(categoryGroupId(opt.id));
+              const groupColor = categoryGroupLabelColor(opt.id);
               return (
                 <button
                   key={opt.id}
                   type="button"
                   data-sport={opt.id}
-                  className={`fh-filter-chip ${on ? "active" : ""}`}
+                  data-group={group.id}
+                  className={`fh-filter-chip fh-filter-chip-icon ${on ? "active" : ""}`}
+                  style={
+                    {
+                      "--qvh-cat-group-color": groupColor,
+                    } as CSSProperties
+                  }
                   onClick={() => toggle(opt.id)}
                   aria-pressed={on}
                 >
-                  {opt.label}
+                  <span className="fh-filter-chip-icon-wrap">
+                    <CategoryIcon id={opt.id} size={28} />
+                  </span>
+                  <span className="fh-filter-chip-label">{opt.label}</span>
+                  <span className="fh-filter-chip-group">{groupLabel}</span>
                 </button>
               );
             })}

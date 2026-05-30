@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { memo, useMemo } from "react";
 import type { EventRow } from "./types";
 import { CategoryCarousel } from "./CategoryCarousel";
+import { CategorySectionHeader } from "./CategorySectionHeader";
 import { MatchCard } from "./MatchCard";
 import { LazyMount } from "./LazyMount";
 import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
@@ -44,12 +45,14 @@ function SportSectionBlock({
   events,
   eager,
   shellClassName,
+  iconId,
 }: {
   title: string;
   accentClass: string;
   events: EventRow[];
   eager: boolean;
   shellClassName?: string;
+  iconId: string;
 }) {
   const sortedEvents = useMemo(() => sortEventsByPopularity(events), [events]);
   const blockClass = [
@@ -69,8 +72,11 @@ function SportSectionBlock({
     >
       <div className={blockClass}>
         <div className={`fh-comp-header ${accentClass}`}>
-          <h3>{title}</h3>
-          <span className="fh-comp-count">{events.length}</span>
+          <CategorySectionHeader
+            title={title}
+            iconId={iconId}
+            count={events.length}
+          />
         </div>
         <CategoryCarousel ariaLabel={title} className="qvh-category-carousel-cards">
           {sortedEvents.map((event) => (
@@ -114,6 +120,7 @@ export const EventDaySections = memo(function EventDaySections({
           <SportSectionBlock
             key={comp}
             title={comp}
+            iconId="futbol"
             accentClass={competitionAccentClass(comp)}
             events={evs}
             eager={eager}
@@ -129,6 +136,7 @@ export const EventDaySections = memo(function EventDaySections({
           <SportSectionBlock
             key={sportId}
             title={label}
+            iconId={sportId}
             accentClass={sportAccentClass(sportId)}
             events={evs}
             eager={eager}

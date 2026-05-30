@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import type { EventRow } from "./types";
 import { CategoryCarousel } from "./CategoryCarousel";
 import { TvBroadcastCard } from "./TvBroadcastCard";
+import { CategoryIcon } from "./CategoryIcon";
 import { sortEventsChronologically } from "../lib/sort-events-by-priority";
 import { hasSpanishDisplayTitle } from "../lib/spanish-display-title";
 
@@ -22,6 +23,12 @@ function TvBroadcastGroup({
   accent: "reality" | "concurso" | "directo";
   events: EventRow[];
 }) {
+  const iconId =
+    accent === "reality"
+      ? "tv-reality"
+      : accent === "concurso"
+        ? "tv-concurso"
+        : "tv-directo";
   const sortedEvents = useMemo(
     () =>
       sortEventsChronologically(
@@ -37,6 +44,7 @@ function TvBroadcastGroup({
       className={`qvh-tv-group qvh-feed-category-shell qvh-tv-group-accented-${accent}`}
     >
       <div className="qvh-tv-group-head">
+        <CategoryIcon id={iconId} size={20} className="qvh-tv-group-icon" />
         <span className={`qvh-tv-group-accent qvh-tv-group-accent-${accent}`} />
         <h4 className="qvh-tv-group-title">{label}</h4>
         <span className="qvh-tv-group-count">{sortedEvents.length}</span>

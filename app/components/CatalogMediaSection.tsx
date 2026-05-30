@@ -7,6 +7,7 @@ import {
   CATEGORY_CAROUSEL_ANIME_SLOTS,
 } from "./CategoryCarousel";
 import { MediaPosterCard } from "./MediaPosterCard";
+import { CategoryIcon } from "./CategoryIcon";
 import { formatMediaGroupLabel, isMediaSportId } from "../lib/filter-config";
 import {
   sortEventsChronologically,
@@ -82,6 +83,7 @@ function CatalogRail({
       className={`qvh-catalog-rail-block qvh-feed-category-shell qvh-catalog-rail-accented-${accent}`}
     >
       <div className="qvh-catalog-rail-head">
+        <CategoryIcon id={accent} size={20} className="qvh-catalog-rail-icon" />
         <div className={`qvh-catalog-rail-accent qvh-catalog-rail-accent-${accent}`} />
         <div className="qvh-catalog-rail-copy">
           <h4 className="qvh-catalog-rail-title">{label}</h4>

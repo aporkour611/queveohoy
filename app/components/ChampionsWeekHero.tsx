@@ -55,7 +55,7 @@ export function ChampionsWeekHero({ context }: Props) {
                 <TeamCrest
                   src={homeCrest}
                   name={homeTeam}
-                  size={36}
+                  size={28}
                   className="qvh-cl-week-crest"
                   eager
                 />
@@ -66,7 +66,7 @@ export function ChampionsWeekHero({ context }: Props) {
                 <TeamCrest
                   src={awayCrest}
                   name={awayTeam}
-                  size={36}
+                  size={28}
                   className="qvh-cl-week-crest"
                   eager
                 />
@@ -80,6 +80,7 @@ export function ChampionsWeekHero({ context }: Props) {
                 time={eventTime}
                 className="qvh-cl-week-countdown"
                 liveLabel="¡Arranca la final!"
+                compact
               />
               {dateLabel ? (
                 <span className="qvh-cl-week-date">{dateLabel}</span>

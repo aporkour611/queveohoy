@@ -8,6 +8,7 @@ type Props = {
   time?: string | null;
   className?: string;
   liveLabel?: string;
+  compact?: boolean;
 };
 
 type CountdownParts = {
@@ -56,6 +57,7 @@ export function EventCountdown({
   time,
   className = "",
   liveLabel = "¡Ya!",
+  compact = false,
 }: Props) {
   const targetMs = useMemo(
     () => madridDateTimeToUtc(date, time?.trim() || "00:00").getTime(),
@@ -74,34 +76,50 @@ export function EventCountdown({
 
   if (!parts) {
     return (
-      <p className={`qvh-countdown qvh-countdown-live ${className}`.trim()} role="status">
+      <p
+        className={`qvh-countdown qvh-countdown-live ${compact ? "qvh-countdown-compact " : ""}${className}`.trim()}
+        role="status"
+      >
         {liveLabel}
       </p>
     );
   }
 
   const showDays = parts.days > 0;
+  const rootClass = [
+    "qvh-countdown",
+    compact ? "qvh-countdown-compact" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div
-      className={`qvh-countdown ${className}`.trim()}
+      className={rootClass}
       role="timer"
       aria-live="polite"
       aria-label={`Comienza en ${parts.days} días, ${parts.hours} horas, ${parts.minutes} minutos y ${parts.seconds} segundos`}
     >
-      <span className="qvh-countdown-kicker">Comienza en</span>
+      {!compact ? (
+        <span className="qvh-countdown-kicker">Comienza en</span>
+      ) : null}
       <div className="qvh-countdown-grid">
         {showDays ? (
-          <CountdownUnit label="días" value={String(parts.days)} />
+          <CountdownUnit label={compact ? "d" : "días"} value={String(parts.days)} />
         ) : null}
         <CountdownUnit label="h" value={pad(parts.hours)} />
-        <span className="qvh-countdown-sep" aria-hidden>
-          :
-        </span>
+        {!compact ? (
+          <span className="qvh-countdown-sep" aria-hidden>
+            :
+          </span>
+        ) : null}
         <CountdownUnit label="m" value={pad(parts.minutes)} />
-        <span className="qvh-countdown-sep" aria-hidden>
-          :
-        </span>
+        {!compact ? (
+          <span className="qvh-countdown-sep" aria-hidden>
+            :
+          </span>
+        ) : null}
         <CountdownUnit label="s" value={pad(parts.seconds)} />
       </div>
     </div>

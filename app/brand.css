@@ -179,37 +179,12 @@
   border-color: var(--qvh-pink);
 }
 
-.fh-filter-group-label[data-group="motor"]::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: var(--qvh-motor);
-  border-radius: 2px;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
-.fh-filter-group-label[data-group="cine"]::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: var(--qvh-gold);
-  border-radius: 2px;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
-.fh-filter-group-label[data-group="tv"]::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: var(--qvh-pink);
-  border-radius: 2px;
-  margin-right: 6px;
-  vertical-align: middle;
+.fh-filter-group-label[data-group="motor"]::before,
+.fh-filter-group-label[data-group="cine"]::before,
+.fh-filter-group-label[data-group="tv"]::before,
+.fh-filter-group-label[data-group="deportes"]::before,
+.fh-filter-group-label[data-group="esports"]::before {
+  display: none;
 }
 
 .fh-filter-chip[data-sport="csgo"].active,
@@ -219,26 +194,9 @@
   border-color: var(--qvh-green);
 }
 
-.fh-filter-group-label[data-group="deportes"]::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: var(--qvh-purple);
-  border-radius: 2px;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
+.fh-filter-group-label[data-group="deportes"]::before,
 .fh-filter-group-label[data-group="esports"]::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background: var(--qvh-green);
-  border-radius: 2px;
-  margin-right: 6px;
-  vertical-align: middle;
+  display: none;
 }
 
 /* ── Hero (navbar) ── */
@@ -1406,28 +1364,22 @@
 .qvh-feed-filters .fh-filter-group-label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding-inline-start: 0;
 }
 
 .qvh-feed-filters .fh-filter-group-label::before {
-  margin-right: 0;
-  flex-shrink: 0;
+  display: none;
 }
 
-.qvh-feed-filters .fh-filter-chips {
+.qvh-feed-filters .fh-filter-chips-icon {
   padding-inline-start: 0;
   margin-inline-start: 0;
 }
 
-.qvh-feed-filters .fh-filter-chip {
-  padding: 7px 14px;
-  border-width: 1px;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--qvh-text-muted);
+.qvh-feed-filters .fh-filter-chip-icon {
+  min-height: 88px;
+  padding: 8px 6px 7px;
 }
 
 .qvh-feed-filters .fh-active-filters {

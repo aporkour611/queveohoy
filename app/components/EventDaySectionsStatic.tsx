@@ -7,6 +7,7 @@ import { groupEventsForDisplay } from "../lib/event-day-group";
 import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
 import type { EventRow } from "./types";
 import { MatchCardStatic } from "./MatchCardStatic";
+import { CategorySectionHeader } from "./CategorySectionHeader";
 
 type Props = {
   events: EventRow[];
@@ -21,12 +22,14 @@ function StaticSportBlock({
   events,
   shellClassName,
   omitCovers = false,
+  iconId,
 }: {
   title: string;
   accentClass: string;
   events: EventRow[];
   shellClassName?: string;
   omitCovers?: boolean;
+  iconId: string;
 }) {
   const sortedEvents = sortEventsByPopularity(events);
   const blockClass = [
@@ -41,8 +44,11 @@ function StaticSportBlock({
   return (
     <div className={blockClass}>
       <div className={`fh-comp-header ${accentClass}`}>
-        <h3>{title}</h3>
-        <span className="fh-comp-count">{events.length}</span>
+        <CategorySectionHeader
+          title={title}
+          iconId={iconId}
+          count={events.length}
+        />
       </div>
       <div className="qvh-category-carousel-cards fh-category-carousel-static">
         {sortedEvents.map((event) => (
@@ -60,11 +66,13 @@ function StaticMediaGroup({
   accentClass,
   events,
   omitCovers = false,
+  iconId,
 }: {
   title: string;
   accentClass: string;
   events: EventRow[];
   omitCovers?: boolean;
+  iconId: string;
 }) {
   if (events.length === 0) return null;
   return (
@@ -73,6 +81,7 @@ function StaticMediaGroup({
       accentClass={accentClass}
       events={events}
       omitCovers={omitCovers}
+      iconId={iconId}
     />
   );
 }
@@ -102,6 +111,7 @@ export function EventDaySectionsStatic({
           <StaticSportBlock
             key={comp}
             title={comp}
+            iconId="futbol"
             accentClass={competitionAccentClass(comp)}
             events={evs}
             shellClassName={isClWeekBlock ? "qvh-cl-week-feed-block" : undefined}
@@ -114,32 +124,36 @@ export function EventDaySectionsStatic({
         <StaticSportBlock
           key={sportId}
           title={label}
+          iconId={sportId}
           accentClass={sportAccentClass(sportId)}
           events={evs}
           omitCovers={omitCovers}
         />
       ))}
 
-      <StaticMediaGroup title="Cine" accentClass="fh-accent-cine" events={sections.cine} omitCovers={omitCovers} />
-      <StaticMediaGroup title="Series" accentClass="fh-accent-series" events={sections.series} omitCovers={omitCovers} />
-      <StaticMediaGroup title="Anime" accentClass="fh-accent-anime" events={sections.anime} omitCovers={omitCovers} />
+      <StaticMediaGroup title="Cine" accentClass="fh-accent-cine" events={sections.cine} omitCovers={omitCovers} iconId="cine" />
+      <StaticMediaGroup title="Series" accentClass="fh-accent-series" events={sections.series} omitCovers={omitCovers} iconId="series" />
+      <StaticMediaGroup title="Anime" accentClass="fh-accent-anime" events={sections.anime} omitCovers={omitCovers} iconId="anime" />
       <StaticMediaGroup
         title="Reality"
         accentClass="fh-accent-tv"
         events={sections.tvReality}
         omitCovers={omitCovers}
+        iconId="tv-reality"
       />
       <StaticMediaGroup
         title="Concursos"
         accentClass="fh-accent-tv"
         events={sections.tvConcurso}
         omitCovers={omitCovers}
+        iconId="tv-concurso"
       />
       <StaticMediaGroup
         title="Directos"
         accentClass="fh-accent-tv"
         events={sections.tvDirecto}
         omitCovers={omitCovers}
+        iconId="tv-directo"
       />
     </>
   );
