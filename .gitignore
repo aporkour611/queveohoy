@@ -40,6 +40,8 @@ build.log
 .env*
 !.env.example
 .env.production.import
+IMPORTAR-EN-VERCEL.env
+SOLO-ADMIN-SECRET.env
 
 # vercel
 .vercel
