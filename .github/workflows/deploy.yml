@@ -5,10 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Un solo deploy a la vez; no cancelar en curso (evita bucles al cancelar manualmente).
+# Un deploy a la vez; cancelar runs colgados al llegar un push nuevo.
 concurrency:
   group: production-deploy
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   VERCEL_ORG_ID: team_4aqwN7f100zOxDc6ABydAWAq
@@ -75,7 +75,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
         run: |
           set -euo pipefail
-          if ! vercel deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}" 2>&1 | tee /tmp/vercel-deploy.log; then
+          if ! vercel deploy --prebuilt --prod --no-wait --token="${{ secrets.VERCEL_TOKEN }}" 2>&1 | tee /tmp/vercel-deploy.log; then
             echo "::error::Vercel deploy failed"
             if grep -q "api-deployments-free-per-day" /tmp/vercel-deploy.log; then
               echo "::warning::Cuota diaria de deploys de Vercel agotada (100/día). Reintenta mañana o redeploy manual desde el dashboard."
