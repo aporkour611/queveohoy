@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import {
   applyThemeToDocument,
   readStoredThemePreference,
@@ -24,11 +24,9 @@ function nextPreference(current: ThemePreference): ThemePreference {
 
 /** Toggle de tema sin ThemeProvider en el root (menos hidratación). */
 export function ThemeToggle() {
-  const [preference, setPreference] = useState<ThemePreference>("system")
-
-  useEffect(() => {
-    setPreference(readStoredThemePreference())
-  }, [])
+  const [preference, setPreference] = useState<ThemePreference>(() =>
+    typeof window === "undefined" ? "system" : readStoredThemePreference()
+  )
 
   const handleCycle = useCallback(() => {
     setPreference((current) => {

@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { isTouchPreferred, subscribeFeedScopedGate } from "@/app/lib/interaction-gate";
+import { subscribeFeedScopedGate } from "@/app/lib/interaction-gate";
 import type { EventRow } from "./types";
 
 type RowProps = {
