@@ -110,6 +110,7 @@ export default async function Page() {
                     initialDestacadosEvents={weekEvents}
                     initialError={error}
                     serverDayHeaderDate={initialDay?.date ?? null}
+                    eager={ssrEvents.length === 0 || Boolean(error)}
                   />
                 </div>
             </div>

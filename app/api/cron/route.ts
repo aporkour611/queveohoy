@@ -854,7 +854,8 @@ export async function GET(request: Request) {
   }
 
   const supabaseConfigured = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+    (process.env.SUPABASE_URL?.trim() ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()) &&
       process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
   );
 
@@ -902,7 +903,7 @@ export async function GET(request: Request) {
     duplicatesRemoved: dedupe.removed,
     dedupeError: dedupe.error,
     hint: !supabaseConfigured
-      ? "Configura NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en Vercel (Production)."
+      ? "Configura SUPABASE_URL (o NEXT_PUBLIC_SUPABASE_URL) y SUPABASE_SERVICE_ROLE_KEY en Vercel (Production)."
       : football.count === 0
         ? "La API respondió pero no hay partidos en este rango de fechas (fin de temporada). Prueba otro día en la UI."
         : undefined,

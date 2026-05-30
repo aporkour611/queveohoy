@@ -62,6 +62,29 @@ jobs:
           VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
 
+      - name: Verify Supabase env for build
+        run: |
+          set -euo pipefail
+          env_file=".vercel/.env.production.local"
+          if [ ! -f "$env_file" ]; then
+            echo "::error::No se generó $env_file tras vercel pull"
+            exit 1
+          fi
+          missing=0
+          for key in NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
+            if ! grep -q "^${key}=" "$env_file"; then
+              echo "::warning::Falta $key en el entorno de producción de Vercel"
+              missing=$((missing + 1))
+            fi
+          done
+          if ! grep -qE "^(NEXT_PUBLIC_SUPABASE_ANON_KEY|SUPABASE_ANON_KEY)=" "$env_file"; then
+            echo "::warning::Falta clave anon/publishable de Supabase en Vercel"
+            missing=$((missing + 1))
+          fi
+          if [ "$missing" -gt 0 ]; then
+            echo "::warning::Añade SUPABASE_URL y SUPABASE_ANON_KEY (runtime) en Vercel si el feed sale vacío tras deploy prebuilt"
+          fi
+
       - name: Build (una sola vez)
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
@@ -98,11 +121,27 @@ jobs:
           for i in $(seq 1 30); do
             code=$(curl -s -o /dev/null -w "%{http_code}" "https://queveohoy.es/api/v1/search?q=real&limit=1")
             echo "Intento $i: /api/v1/search → $code"
-            if [ "$code" = "200" ]; then exit 0; fi
+            if [ "$code" = "200" ]; then break; fi
             sleep 15
           done
-          echo "::error::Producción no expone v4 (/api/v1/search sigue en $code)"
-          exit 1
+          if [ "$code" != "200" ]; then
+            echo "::error::Producción no expone v4 (/api/v1/search sigue en $code)"
+            exit 1
+          fi
+          echo "Calentando caché del feed…"
+          curl -sf "https://queveohoy.es/api/events?scope=home" -o /tmp/feed-home.json
+          events=$(node -e "const d=require('/tmp/feed-home.json'); console.log((d.events||[]).length)")
+          echo "Eventos en home feed: $events"
+          if [ "$events" = "0" ]; then
+            body=$(cat /tmp/feed-home.json)
+            if echo "$body" | grep -q '"error"'; then
+              echo "::warning::Feed vacío con error: $body"
+            else
+              echo "::warning::Feed vacío (0 eventos). Comprueba SUPABASE_URL/SUPABASE_ANON_KEY en Vercel y ejecuta el cron."
+            fi
+          fi
+          curl -sf "https://queveohoy.es/" -o /dev/null
+          echo "Home precalentada"
 
       - name: Deployment summary
         run: echo "### Production ${{ steps.deploy.outputs.deployment_url }}" >> "$GITHUB_STEP_SUMMARY"

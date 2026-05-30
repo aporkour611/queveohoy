@@ -40,12 +40,23 @@ function withFeedQuerySignal<T extends { abortSignal: (signal: AbortSignal) => T
   return signal ? query.abortSignal(signal) : query;
 }
 
+function supabaseMissingFallback(): { events: EventRow[]; error: string | null } {
+  if (process.env.NODE_ENV !== "production") {
+    return { events: [], error: null };
+  }
+  return {
+    events: [],
+    error:
+      "La agenda no está conectada a la base de datos. Revisa SUPABASE_URL y SUPABASE_ANON_KEY en Vercel (Production).",
+  };
+}
+
 async function queryDestacadosEvents(): Promise<{
   events: EventRow[];
   error: string | null;
 }> {
   if (!isSupabaseConfigured()) {
-    return { events: [], error: null };
+    return supabaseMissingFallback();
   }
 
   try {
@@ -121,7 +132,7 @@ async function queryFeedEvents(dayCount: number, tight: boolean): Promise<{
   error: string | null;
 }> {
   if (!isSupabaseConfigured()) {
-    return { events: [], error: null };
+    return supabaseMissingFallback();
   }
 
   try {

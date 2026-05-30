@@ -8,11 +8,15 @@ const HomeFeed = dynamic(
   { ssr: false }
 );
 
-type HomeFeedProps = ComponentProps<typeof HomeFeed>;
+type HomeFeedProps = ComponentProps<typeof HomeFeed> & {
+  /** Si true, hidrata en cuanto el hilo principal esté libre (feed vacío / error SSR). */
+  eager?: boolean;
+};
 
 /** PSI / desktop: retrasa hidratación. Móvil real: activar antes para calendario interactivo. */
-const HYDRATION_IDLE_DESKTOP_MS = 6_000;
-const HYDRATION_IDLE_TOUCH_MS = 3_000;
+const HYDRATION_IDLE_DESKTOP_MS = 2_500;
+const HYDRATION_IDLE_TOUCH_MS = 1_000;
+const HYDRATION_EAGER_MS = 300;
 
 function resolveHydrationIdleMs(): number {
   if (typeof window === "undefined") return HYDRATION_IDLE_DESKTOP_MS;
@@ -22,7 +26,7 @@ function resolveHydrationIdleMs(): number {
 }
 
 /** Hidrata el feed tras interacción o timeout corto en móvil (PSI desktop sigue diferido). */
-export function HomeFeedGate(props: HomeFeedProps) {
+export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -34,7 +38,10 @@ export function HomeFeedGate(props: HomeFeedProps) {
       setReady(true);
     };
 
-    const fallback = window.setTimeout(activate, resolveHydrationIdleMs());
+    const delayMs = eager
+      ? HYDRATION_EAGER_MS
+      : resolveHydrationIdleMs();
+    const fallback = window.setTimeout(activate, delayMs);
 
     const onInteract = () => activate();
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
@@ -48,7 +55,7 @@ export function HomeFeedGate(props: HomeFeedProps) {
       window.removeEventListener("touchstart", onInteract);
       window.removeEventListener("keydown", onInteract);
     };
-  }, [ready]);
+  }, [ready, eager]);
 
   if (!ready) return null;
 

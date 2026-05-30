@@ -20,6 +20,7 @@ export const SUPABASE_PLACEHOLDER_ANON_KEY =
 
 function resolvePublishableKeyFromEnv(): string | null {
   const key = firstNonEmpty(
+    process.env.SUPABASE_ANON_KEY,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
   );
@@ -34,8 +35,10 @@ function resolvePublishableKeyFromEnv(): string | null {
 /** URL for browser/server clients; never throws (check isSupabaseConfigured before querying). */
 export function resolveSupabaseUrl(): string {
   return (
-    firstNonEmpty(process.env.NEXT_PUBLIC_SUPABASE_URL) ??
-    SUPABASE_PLACEHOLDER_URL
+    firstNonEmpty(
+      process.env.SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_URL
+    ) ?? SUPABASE_PLACEHOLDER_URL
   );
 }
 
@@ -46,8 +49,11 @@ export function resolveSupabasePublishableKey(): string {
 
 export function getSupabaseUrl(): string {
   return requireEnv(
-    "NEXT_PUBLIC_SUPABASE_URL",
-    firstNonEmpty(process.env.NEXT_PUBLIC_SUPABASE_URL)
+    "SUPABASE_URL o NEXT_PUBLIC_SUPABASE_URL",
+    firstNonEmpty(
+      process.env.SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_URL
+    )
   );
 }
 
@@ -73,8 +79,12 @@ export function getSupabaseSecretKey(): string | null {
 
 export function isSupabaseConfigured(): boolean {
   return Boolean(
-    firstNonEmpty(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    firstNonEmpty(
+      process.env.SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_URL
+    ) &&
       firstNonEmpty(
+        process.env.SUPABASE_ANON_KEY,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
       )
