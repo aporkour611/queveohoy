@@ -88,7 +88,28 @@ export function CuentaPortal({
         }
         const body = (await res.json()) as { preferences?: UserPreferences }
         if (body.preferences) syncStoredUserPlatforms(body.preferences)
-        setSaveMessage("Plataformas guardadas. El feed priorizará dónde ver.")
+        setSaveMessage("Plataformas guardadas. El feed resaltará dónde ver.")
+      } catch (error) {
+        setSaveError(error instanceof Error ? error.message : "Error al guardar")
+      }
+    })
+  }
+
+  const handleSavePrimeTime = () => {
+    setSaveMessage(null)
+    setSaveError(null)
+    startTransition(async () => {
+      try {
+        const res = await fetch("/api/cuenta/preferences", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ primeTime: preferences.primeTime }),
+        })
+        if (!res.ok) {
+          const body = (await res.json().catch(() => null)) as { error?: string } | null
+          throw new Error(body?.error ?? "No se pudo guardar el prime time")
+        }
+        setSaveMessage("Prime time actualizado.")
       } catch (error) {
         setSaveError(error instanceof Error ? error.message : "Error al guardar")
       }
@@ -246,11 +267,50 @@ export function CuentaPortal({
                   <dt>Correo</dt>
                   <dd>{email}</dd>
                 </div>
-                <div>
-                  <dt>Prime time</dt>
-                  <dd>{preferences.primeTime} h (Madrid)</dd>
-                </div>
               </dl>
+              <section className="fh-settings-block">
+                <h2>Prime time</h2>
+                <p className="fh-account-empty-hint">
+                  Hora desde la que prefieres ver eventos destacados (widget y
+                  recomendaciones futuras).
+                </p>
+                <label className="fh-account-prime-time">
+                  <span className="sr-only">Prime time</span>
+                  <select
+                    value={preferences.primeTime}
+                    onChange={(event) =>
+                      setPreferences((current) => ({
+                        ...current,
+                        primeTime: event.target.value,
+                      }))
+                    }
+                  >
+                    {["17:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map(
+                      (time) => (
+                        <option key={time} value={time}>
+                          {time} h (Madrid)
+                        </option>
+                      )
+                    )}
+                  </select>
+                </label>
+                <div className="fh-account-actions">
+                  <button
+                    type="button"
+                    className="fh-btn fh-btn-primary"
+                    onClick={handleSavePrimeTime}
+                    disabled={isPending}
+                  >
+                    {isPending ? "Guardando…" : "Guardar prime time"}
+                  </button>
+                </div>
+              </section>
+              {saveMessage ? (
+                <p className="fh-auth-message fh-auth-message-success">{saveMessage}</p>
+              ) : null}
+              {saveError ? (
+                <p className="fh-auth-message fh-auth-message-error">{saveError}</p>
+              ) : null}
               <section className="fh-settings-block">
                 <h2>Privacidad</h2>
                 <p>

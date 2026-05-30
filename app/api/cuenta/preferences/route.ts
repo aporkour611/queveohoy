@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@/app/lib/supabase/server-auth"
 import {
   parseUserPreferences,
+  sanitizeUserPlatforms,
   serializeUserPreferences,
 } from "@/app/lib/user-preferences"
 
@@ -37,7 +38,11 @@ export async function PATCH(request: NextRequest) {
   const next = {
     ...current,
     ...(Array.isArray(payload.platforms)
-      ? { platforms: payload.platforms.filter((item) => typeof item === "string") }
+      ? {
+          platforms: sanitizeUserPlatforms(
+            payload.platforms.filter((item) => typeof item === "string")
+          ),
+        }
       : {}),
     ...(typeof payload.primeTime === "string"
       ? { primeTime: payload.primeTime.slice(0, 5) }

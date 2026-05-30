@@ -22,8 +22,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 - Versión del producto: `4.0.0`
 
 ### Fixed
-- Warning lint `react-hooks/exhaustive-deps` en `HomePage`
-- Imports no usados en scripts de release
+- Badge «Tus plataformas» ya no aparece en todas las tarjetas sin plataformas configuradas
+- Sincronización inmediata de plataformas en la home tras guardar en `/cuenta`
 
 ## [2.0.0] - 2026-09-01
 

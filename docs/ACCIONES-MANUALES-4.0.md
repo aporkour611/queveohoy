@@ -38,6 +38,8 @@ Opcional pero recomendado: `CRON_ALERT_WEBHOOK_URL` (Slack/Discord si el cron fa
 
 ### 3. Verificar deploy v4.0.0 en producción
 
+> **Nota:** Si varios pushes seguidos, GitHub Actions encola deploys (`concurrency: production-deploy`). Si un run queda colgado en «Deploy prebuilt», cancela el job viejo o redeploy manual desde [Vercel Dashboard](https://vercel.com).
+
 1. Abre [Deploy Production](https://github.com/aporkour611/queveohoy/actions/workflows/deploy.yml) → último run en verde.
 2. Comprueba en https://queveohoy.es:
    - Footer: **v4.0.0**

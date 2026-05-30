@@ -1581,6 +1581,17 @@
   margin-bottom: 12px;
 }
 
+.fh-account-prime-time select {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--qvh-border-light);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.95rem;
+  color: #212529;
+  min-width: 180px;
+}
+
 .fh-settings-block h2 {
   margin: 0 0 6px;
   font-family: var(--qvh-font-display);

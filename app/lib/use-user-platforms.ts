@@ -1,7 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { readStoredUserPlatforms } from "./user-platforms-client"
+import {
+  readStoredUserPlatforms,
+  USER_PLATFORMS_CHANGED_EVENT,
+  USER_PLATFORMS_STORAGE_KEY,
+} from "./user-platforms-client"
 
 export function useUserPlatforms(): string[] {
   const [platforms, setPlatforms] = useState<string[]>(() =>
@@ -9,14 +13,18 @@ export function useUserPlatforms(): string[] {
   )
 
   useEffect(() => {
+    const refresh = () => setPlatforms(readStoredUserPlatforms())
+
     const handleStorage = (event: StorageEvent) => {
-      if (event.key === "qvh-user-platforms") {
-        setPlatforms(readStoredUserPlatforms())
-      }
+      if (event.key === USER_PLATFORMS_STORAGE_KEY) refresh()
     }
 
     window.addEventListener("storage", handleStorage)
-    return () => window.removeEventListener("storage", handleStorage)
+    window.addEventListener(USER_PLATFORMS_CHANGED_EVENT, refresh)
+    return () => {
+      window.removeEventListener("storage", handleStorage)
+      window.removeEventListener(USER_PLATFORMS_CHANGED_EVENT, refresh)
+    }
   }, [])
 
   return platforms

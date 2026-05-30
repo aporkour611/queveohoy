@@ -57,11 +57,16 @@ export function serializeUserPreferences(prefs: UserPreferences): PreferencesRow
   }
 }
 
+export function sanitizeUserPlatforms(platforms: string[]): string[] {
+  const allowed = new Set<string>(SPANISH_PLATFORM_OPTIONS)
+  return platforms.filter((platform) => allowed.has(platform))
+}
+
 export function eventMatchesUserPlatforms(
   platformField: string | null | undefined,
   userPlatforms: string[]
 ): boolean {
-  if (!userPlatforms.length) return true
+  if (!userPlatforms.length) return false
   const blob = (platformField ?? "").toLowerCase()
   if (!blob) return false
 

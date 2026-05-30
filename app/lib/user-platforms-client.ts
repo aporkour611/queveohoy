@@ -1,6 +1,7 @@
 import type { UserPreferences } from "./user-preferences"
 
 export const USER_PLATFORMS_STORAGE_KEY = "qvh-user-platforms"
+export const USER_PLATFORMS_CHANGED_EVENT = "qvh-user-platforms-changed"
 
 export function readStoredUserPlatforms(): string[] {
   if (typeof window === "undefined") return []
@@ -21,6 +22,7 @@ export function writeStoredUserPlatforms(platforms: string[]): void {
     USER_PLATFORMS_STORAGE_KEY,
     JSON.stringify(platforms)
   )
+  window.dispatchEvent(new CustomEvent(USER_PLATFORMS_CHANGED_EVENT))
 }
 
 export function syncStoredUserPlatforms(prefs: UserPreferences): void {

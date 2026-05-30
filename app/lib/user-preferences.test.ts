@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   eventMatchesUserPlatforms,
   parseUserPreferences,
+  sanitizeUserPlatforms,
 } from "./user-preferences"
 
 describe("user-preferences", () => {
@@ -26,6 +27,12 @@ describe("user-preferences", () => {
       eventMatchesUserPlatforms("Movistar LaLiga · DAZN", ["DAZN"])
     ).toBe(true)
     expect(eventMatchesUserPlatforms("Netflix", ["DAZN"])).toBe(false)
-    expect(eventMatchesUserPlatforms("Netflix", [])).toBe(true)
+    expect(eventMatchesUserPlatforms("Netflix", [])).toBe(false)
+  })
+
+  it("sanitiza plataformas desconocidas", () => {
+    expect(
+      sanitizeUserPlatforms(["Netflix", "PirataTV", "DAZN"])
+    ).toEqual(["Netflix", "DAZN"])
   })
 })
