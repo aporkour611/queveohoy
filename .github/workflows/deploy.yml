@@ -89,7 +89,7 @@ jobs:
           echo "deployment_url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed to $url"
           if [ -n "$url" ]; then
-            vercel inspect "$url" --wait --timeout 900 --token="${{ secrets.VERCEL_TOKEN }}"
+            vercel inspect "$url" --wait --timeout 900 --token="${{ secrets.VERCEL_TOKEN }}" || echo "::warning::vercel inspect timeout (el alias puede tardar)"
           fi
 
       - name: Smoke test producción

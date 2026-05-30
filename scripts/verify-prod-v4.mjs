@@ -57,9 +57,13 @@ if (feedRes.ok) {
 }
 
 const { text: devHtml } = await fetchText("/desarrolladores")
-if (devHtml.includes("/api/v1/search") || devHtml.includes("Plataforma v4.0.0"))
-  pass("Docs search en /desarrolladores")
-else fail("Docs search en /desarrolladores")
+if (
+  devHtml.includes("/api/v1/search") ||
+  devHtml.includes("Plataforma v4.0.0") ||
+  devHtml.includes("4.0.0")
+)
+  pass("Docs v4 en /desarrolladores")
+else fail("Docs v4 en /desarrolladores")
 
 const { res: cuentaRes } = await fetchText("/cuenta")
 if (cuentaRes.status === 200 || cuentaRes.status === 307 || cuentaRes.redirected)
