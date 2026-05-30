@@ -853,8 +853,14 @@ export async function GET(request: Request) {
     console.warn("Feed cache warm error:", e);
   }
 
+  const supabaseConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+      process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+  );
+
   const cronResult = {
     ok: true,
+    supabaseConfigured,
     timestamp: new Date().toISOString(),
     dbIndex,
     pastDayPurged: pastDayPurge.purged,
@@ -895,8 +901,9 @@ export async function GET(request: Request) {
     esportsPurged: 0,
     duplicatesRemoved: dedupe.removed,
     dedupeError: dedupe.error,
-    hint:
-      football.count === 0
+    hint: !supabaseConfigured
+      ? "Configura NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en Vercel (Production)."
+      : football.count === 0
         ? "La API respondió pero no hay partidos en este rango de fechas (fin de temporada). Prueba otro día en la UI."
         : undefined,
   };

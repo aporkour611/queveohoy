@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useState } from "react";
 import { deferClientStateUpdate } from "../lib/defer-client-state";
+import { AgendaSearchBar } from "./AgendaSearchBar";
 import { DayTabs } from "./DayTabs";
 import { EventFilters } from "./EventFilters";
 
@@ -26,6 +27,10 @@ type Props = {
   onFilterSearch: (ids: string[]) => void;
   isFeaturedMode: boolean;
   filterSearching?: boolean;
+  agendaQuery?: string;
+  onAgendaQueryChange?: (value: string) => void;
+  agendaResultCount?: number;
+  agendaTotalCount?: number;
 };
 
 function CollapseFiltersIcon() {
@@ -89,6 +94,10 @@ export function FeedControls({
   onFilterSearch,
   isFeaturedMode,
   filterSearching = false,
+  agendaQuery = "",
+  onAgendaQueryChange,
+  agendaResultCount,
+  agendaTotalCount,
 }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [nudgeReady, setNudgeReady] = useState(false);
@@ -153,6 +162,15 @@ export function FeedControls({
       aria-label="Calendario y filtros"
     >
       <DayTabs days={days} activeIndex={activeDayIndex} onChange={onDayChange} />
+
+      {onAgendaQueryChange ? (
+        <AgendaSearchBar
+          value={agendaQuery}
+          onChange={onAgendaQueryChange}
+          resultCount={agendaResultCount}
+          totalCount={agendaTotalCount}
+        />
+      ) : null}
 
       <div
         className={`qvh-feed-controls-toolbar${filtersOpen ? " is-filters-open" : ""}`}

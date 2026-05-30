@@ -53,6 +53,7 @@ import {
   resolveFeaturedHomeDayEvents,
   resolveHomeDayEvents,
 } from "../lib/upcoming-events";
+import { filterEventsByAgendaQuery } from "../lib/agenda-search";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { fetchClientJson } from "../lib/client-fetch-json";
 
@@ -131,6 +132,8 @@ export function HomeFeed({
   const [activeDay, setActiveDay] = useState(0);
   const [weekView, setWeekView] = useState(false);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
+  const [agendaQuery, setAgendaQuery] = useState("");
+  const deferredAgendaQuery = useDeferredValue(agendaQuery);
   const [filterSearching, setFilterSearching] = useState(false);
   const [hasFullWeek, setHasFullWeek] = useState(false);
   const [fullWeekReady, setFullWeekReady] = useState(
@@ -330,9 +333,19 @@ export function HomeFeed({
     [events, initialDestacadosEvents]
   );
 
-  const displayEvents = useMemo(
+  const weekEvents = useMemo(
     () => filterEventsInWeek(feedEvents, MADRID_TZ, dayWindow),
     [feedEvents, dayWindow]
+  );
+
+  const activeAgendaQuery =
+    agendaQuery.trim() === deferredAgendaQuery.trim()
+      ? agendaQuery
+      : deferredAgendaQuery;
+
+  const displayEvents = useMemo(
+    () => filterEventsByAgendaQuery(weekEvents, activeAgendaQuery),
+    [weekEvents, activeAgendaQuery]
   );
 
   const displayDays = useMemo(
@@ -677,6 +690,10 @@ export function HomeFeed({
             onFilterSearch={handleFilterSearch}
             isFeaturedMode={isFeaturedMode}
             filterSearching={filterSearching}
+            agendaQuery={agendaQuery}
+            onAgendaQueryChange={setAgendaQuery}
+            agendaResultCount={displayEvents.length}
+            agendaTotalCount={weekEvents.length}
           />
 
           <div className="fh-feed-area">
@@ -694,9 +711,22 @@ export function HomeFeed({
                   Reintentar
                 </button>
               </div>
-            ) : events.length === 0 ? (
+            ) : weekEvents.length === 0 ? (
               <div className="fh-empty">
                 <p>No hay eventos en los próximos 7 días.</p>
+              </div>
+            ) : displayEvents.length === 0 && activeAgendaQuery.trim() ? (
+              <div className="fh-empty">
+                <p>
+                  Sin coincidencias para «{activeAgendaQuery.trim()}» en la agenda.
+                </p>
+                <button
+                  type="button"
+                  className="fh-btn fh-btn-primary"
+                  onClick={() => setAgendaQuery("")}
+                >
+                  Borrar búsqueda
+                </button>
               </div>
             ) : (
               <FeedErrorBoundary>

@@ -36,7 +36,7 @@
   --qvh-layout-max: 950px;
   --qvh-layout-gutter: 20px;
   --qvh-prose-max: 42rem;
-  --qvh-feed-controls-h: 112px;
+  --qvh-feed-controls-h: 156px;
 }
 
 @media (max-width: 640px) {
@@ -1038,6 +1038,91 @@
   border-bottom: none;
 }
 
+.fh-agenda-search {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.fh-agenda-search-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--qvh-border);
+  background: rgba(0, 0, 0, 0.28);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.fh-agenda-search-field:focus-within {
+  border-color: rgba(93, 95, 239, 0.65);
+  box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.16);
+}
+
+.fh-agenda-search-icon {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.fh-agenda-search-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--qvh-text);
+  font-family: var(--qvh-font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+}
+
+.fh-agenda-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.36);
+}
+
+.fh-agenda-search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.fh-agenda-search-clear {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.fh-agenda-search-clear:hover {
+  background: rgba(93, 95, 239, 0.2);
+  color: #fff;
+}
+
+.fh-agenda-search-status {
+  margin: 0;
+  padding: 0 2px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.fh-agenda-search-status-empty {
+  color: #f87171;
+}
+
 .qvh-feed-controls-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -1753,7 +1838,7 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
   max-width: min(182px, calc((100% - 20px) / 3));
 }
 
-@media (max-width: 720px) {
+@media (max-width: 1023px) {
   .qvh-category-carousel-cards .fh-cardcol,
   .qvh-category-carousel-page > .fh-cardcol,
   .qvh-category-carousel-tv .qvh-tv-slot,
@@ -1777,6 +1862,15 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
     max-width: min(182px, 76vw);
   }
 
+  .qvh-category-carousel-posters .qvh-media-card-col-spotlight {
+    flex-basis: min(240px, 78vw);
+    max-width: min(240px, 78vw);
+  }
+
+  .qvh-category-carousel {
+    align-items: start;
+  }
+
   .qvh-category-carousel-page,
   .qvh-category-carousel-scroll-track {
     overflow-x: auto;
@@ -1784,6 +1878,12 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     touch-action: pan-x;
+  }
+
+  .qvh-category-carousel-scroll-track {
+    margin-inline: calc(-1 * var(--qvh-layout-gutter));
+    padding-inline: var(--qvh-layout-gutter);
+    scroll-padding-inline: var(--qvh-layout-gutter);
   }
 
   .qvh-category-carousel-page::-webkit-scrollbar,

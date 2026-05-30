@@ -9,7 +9,6 @@ import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { HomeJsonLd } from "../components/HomeJsonLd";
 import { HomeLcpPreload } from "../components/HomeLcpPreload";
 import { HomeNav } from "../components/HomeNav";
-import { PageFindBar } from "../components/PageFindBar";
 import { HomeResetProvider } from "../components/HomeResetContext";
 import { SiteFooter } from "../components/SiteFooter";
 import { SeoGuidesPromo } from "../components/SeoGuidesPromo";
@@ -79,8 +78,7 @@ export default async function Page() {
         <HomeResetProvider>
           <HomeNav />
           <main id="main-content" className="fh-content">
-            <div className="fh-main-layout">
-              <div className="fh-container fh-main">
+            <div className="fh-container fh-main">
                 <h1 className="sr-only">Qué ver hoy en TV</h1>
 
                 <DestacadosSection events={weekEvents} />
@@ -107,8 +105,6 @@ export default async function Page() {
                     serverDayHeaderDate={initialDay?.date ?? null}
                   />
                 </div>
-              </div>
-              <PageFindBar containerId="main-content" />
             </div>
             <SeoGuidesPromo />
             <SiteFooter />

@@ -17,16 +17,19 @@ type Props = {
 
 export function DestacadosSection({ events }: Props) {
   const todayKey = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "";
-  const weekFeatured = pickWeekDestacados(events, { todayKey }).filter((event) =>
-    spotlightHasCompleteTeamCover(getSpotlightCardModel(event, MADRID_TZ))
-  );
   const championsWeek = resolveChampionsWeekContext(
     events,
     todayKey,
     FEED_DAY_COUNT
   );
+  const championsFinalId = championsWeek?.finalEvent.id;
 
-  if (weekFeatured.length === 0) return null;
+  const weekFeatured = pickWeekDestacados(events, { todayKey }).filter((event) => {
+    if (championsFinalId != null && event.id === championsFinalId) return true;
+    return spotlightHasCompleteTeamCover(getSpotlightCardModel(event, MADRID_TZ));
+  });
+
+  if (weekFeatured.length === 0 && !championsWeek) return null;
 
   const subtitle = championsWeek
     ? "La gran final y lo más esperado del fin de semana"
@@ -47,8 +50,12 @@ export function DestacadosSection({ events }: Props) {
       {championsWeek ? (
         <div className="qvh-cl-week-shell">
           <ChampionsWeekHero context={championsWeek} />
-          <DestacadosStaticRow {...rowProps} />
-          <DestacadosEnhancerSlot {...rowProps} />
+          {weekFeatured.length > 0 ? (
+            <>
+              <DestacadosStaticRow {...rowProps} />
+              <DestacadosEnhancerSlot {...rowProps} />
+            </>
+          ) : null}
         </div>
       ) : (
         <>

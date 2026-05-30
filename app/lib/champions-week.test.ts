@@ -44,4 +44,12 @@ describe("resolveChampionsWeekContext crests", () => {
     expect(context?.homeCrest).toContain("524");
     expect(context?.awayCrest).toContain("108");
   });
+
+  it("usa fallback editorial si no hay final en el feed", () => {
+    const context = resolveChampionsWeekContext([], "2026-05-30", 7);
+
+    expect(context?.headline).toBe("Champions League");
+    expect(context?.homeTeam).toContain("Paris");
+    expect(context?.awayTeam).toBe("Inter");
+  });
 });

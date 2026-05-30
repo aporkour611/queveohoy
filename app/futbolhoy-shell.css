@@ -16,7 +16,7 @@ html {
 }
 
 .fh-content {
-  background-color: var(--qvh-bg-elevated);
+  background-color: #0a0a10;
   padding: var(--qvh-navbar-h) 0 0;
   min-height: 100vh;
   overflow-anchor: none;
@@ -30,23 +30,43 @@ html {
   content: "";
   position: absolute;
   top: 0;
-  left: 50%;
+  left: 0;
+  right: 0;
   z-index: 0;
-  width: min(var(--qvh-shell-max), 100%);
-  height: min(360px, 46vh);
-  transform: translateX(-50%);
+  width: 100%;
+  height: min(720px, 78vh);
   pointer-events: none;
   background:
     radial-gradient(
-      ellipse 80% 62% at 18% -8%,
-      rgba(93, 95, 239, 0.1),
-      transparent 72%
+      ellipse 92% 58% at 18% -6%,
+      rgba(93, 95, 239, 0.14),
+      transparent 74%
     ),
     radial-gradient(
-      ellipse 64% 54% at 82% -4%,
-      rgba(160, 74, 43, 0.07),
-      transparent 68%
+      ellipse 72% 52% at 82% -2%,
+      rgba(160, 74, 43, 0.09),
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(13, 13, 18, 0.55) 0%,
+      rgba(10, 10, 16, 0.2) 42%,
+      transparent 100%
     );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 38%,
+    rgba(0, 0, 0, 0.55) 62%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 38%,
+    rgba(0, 0, 0, 0.55) 62%,
+    transparent 100%
+  );
 }
 
 .fh-container {
@@ -74,19 +94,27 @@ html {
 .fh-header-depth {
   position: absolute;
   inset: 0;
+  bottom: -48px;
   pointer-events: none;
   background:
     linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.07) 0%,
       rgba(255, 255, 255, 0.02) 18%,
-      transparent 42%
+      transparent 52%
     ),
     radial-gradient(
-      ellipse 72% 120% at 50% -20%,
-      rgba(93, 95, 239, 0.14),
-      transparent 68%
+      ellipse 92% 140% at 50% -24%,
+      rgba(93, 95, 239, 0.16),
+      transparent 72%
     );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 72%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(180deg, #000 0%, #000 72%, transparent 100%);
 }
 
 .fh-navbar-volumetric {
@@ -757,7 +785,7 @@ html {
 }
 
 .fh-day-section {
-  scroll-margin-top: calc(var(--qvh-navbar-h) + 52px);
+  scroll-margin-top: calc(var(--qvh-navbar-h) + var(--qvh-feed-controls-h) + 8px);
 }
 
 
