@@ -1,0 +1,9 @@
+/* Hubs SEO — shell + agenda sin filtros ni carruseles de la home */
+@import "./futbolhoy-shell.css";
+@import "./home-feed-ssr.css";
+@import "./event-stamp.css";
+@import "./destacados.css";
+@import "./futbolhoy-feed.css";
+@import "./media.css";
+@import "./channel-badges.css";
+@import "./dark-mode-feed.css";

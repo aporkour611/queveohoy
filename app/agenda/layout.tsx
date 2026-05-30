@@ -1,4 +1,4 @@
-import "../futbolhoy.css";
+import "../hub-shell.css";
 
 export default function AgendaLayout({
   children,

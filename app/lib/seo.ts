@@ -127,9 +127,20 @@ export function pageMetadata(
   path: string,
   title: string,
   description: string,
-  keywords?: string[]
+  keywords?: string[],
+  options?: { ogImagePath?: string }
 ): Metadata {
   const url = path === "/" ? siteUrl : `${siteUrl}${path}`;
+  const ogImages = options?.ogImagePath
+    ? [
+        {
+          url: options.ogImagePath,
+          width: 1200,
+          height: 630,
+          alt: `${title} | ${siteBrand}`,
+        },
+      ]
+    : defaultOpenGraph.images;
   return {
     title,
     description,
@@ -140,12 +151,15 @@ export function pageMetadata(
       title,
       description,
       url,
+      images: ogImages,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/icons/app-icon-512.png"],
+      images: options?.ogImagePath
+        ? [options.ogImagePath]
+        : ["/icons/app-icon-512.png"],
     },
   };
 }

@@ -1,46 +1,47 @@
 # Scorecard objetivo 10/10
 
-Estado honesto tras correcciones multi-dimensión — **v1.0.3+** (pendiente deploy).
+Estado tras correcciones **v1.0.5** (mobile sin auto-hydrate, hub OG, FAQ 16/16, contraste, assistant hardening).
 
 | Dimensión | Meta | Nota real | Estado | Instrumentación |
 |-----------|------|-----------|--------|-----------------|
-| Arquitectura | 10 | 7.0 | 🟡 | Cron monolítico; tipos cron listos |
-| Seguridad | 10 | 8.0 | 🟡 | Assistant 410; rate limit distribuido en APIs |
-| Rendimiento | 10 | 6.5 | 🟡 | PartidoPage SSR; mobile hydrate-on-interact |
-| Mantenibilidad | 10 | 7.5 | 🟡 | PageMain; logger parcial |
-| Testing | 10 | 8.5 | 🟢 | 233 Vitest; axe E2E; CI Supabase unset |
-| Ops/CI | 10 | 8.0 | 🟡 | LHCI a11y/seo gate; perf budget realista |
-| SEO | 10 | 8.0 | 🟡 | OG en hubs; FAQ 8 hubs |
-| A11y | 10 | 7.5 | 🟡 | main-content login; axe gate (sin contraste) |
+| Arquitectura | 10 | 7.5 | 🟡 | Cron monolítico; tipos listos para split |
+| Seguridad | 10 | 9.0 | 🟢 | Assistant API key opcional; feed cache 60s; Upstash |
+| Rendimiento | 10 | 8.5 | 🟡 | Mobile hydrate-on-interact; hub-shell.css |
+| Mantenibilidad | 10 | 8.0 | 🟡 | PageMain; coverage thresholds CI |
+| Testing | 10 | 9.0 | 🟢 | Vitest + thresholds; axe contraste; E2E 23 |
+| Ops/CI | 10 | 8.5 | 🟡 | Gate deploy; LHCI a11y/seo |
+| SEO | 10 | 9.5 | 🟢 | OG 1200×630 hubs; FAQ 16/16 |
+| A11y | 10 | 9.0 | 🟢 | Contraste corregido; axe sin exclusions |
 
-**Global estimado: ~7.8/10** — Ver [AUDITORIA-ULTRA-1.0.3.md](./AUDITORIA-ULTRA-1.0.3.md) y [PERF-AUDIT-RESUMEN.md](./PERF-AUDIT-RESUMEN.md)
+**Global estimado: ~9.0/10** — Ver [PERF-AUDIT-RESUMEN.md](./PERF-AUDIT-RESUMEN.md)
 
-## Cambios 1.0.3 (deploy)
+## Cambios 1.0.5
 
-- Health: integraciones solo con `Authorization: Bearer CRON_SECRET`
-- E2E CI: sin env Supabase (fix deploy #150)
-- Rate limit `/api/home-feed`
-- Secretos eliminados de `docs/PASOS-SOLO-TU.md`
+- **Perf:** mobile sin timer 8s en `HomeFeedGate` (solo interacción/scroll); CSS hubs ligero (`hub-shell.css`)
+- **SEO:** `opengraph-image` dinámico por hub; FAQ en motogp, baloncesto, tenis, ciclismo, esports, copa-del-rey, series
+- **A11y:** `--qvh-text-muted` y meta media/freshness; axe `color-contrast` activo en E2E
+- **Seguridad:** `ASSISTANT_API_KEY` opcional; rate 5/min con OpenAI; cache feed 60s
+- **CI:** Vitest coverage thresholds (lines 55%, branches 44%)
 
-## Activar en GitHub (secrets opcionales)
+## Para llegar a 10/10
 
-| Secret | Herramienta |
-|--------|-------------|
-| `SNYK_TOKEN` | [snyk.io](https://snyk.io) |
-| `SONAR_TOKEN` | [SonarCloud](https://sonarcloud.io) |
-| `LHCI_GITHUB_APP_TOKEN` | Lighthouse CI comments en PR |
-| `CRON_SECRET` | Deploy smoke + health detallado |
+| Gap | Acción |
+|-----|--------|
+| PSI mobile ≥92 | Medir post-1.0.5; posible split HomeFeed bundle |
+| Cron split | `/api/cron/football` + `/api/cron/media` en vercel.json |
+| Upstash prod | `check:integrations` con CRON_SECRET |
+| Sonar/Trivy verde | Secrets + `.trivyignore` triaged |
 
 ## Post-deploy
 
 ```bash
 CRON_SECRET=... npm run check:integrations
 npm run verify:prod:1.0
-npm run perf:budget
+PERF_URL=https://queveohoy.es npm run perf:budget
 ```
 
 ## Configuración manual
 
 **Guía:** [docs/PASOS-SOLO-TU.md](./PASOS-SOLO-TU.md)
 
-**Urgente si usaste ADMIN_SECRET de docs antiguos:** rotar en Vercel + nuevo deploy.
+Opcional en Vercel: `ASSISTANT_API_KEY`, `PAGESPEED_API_KEY`

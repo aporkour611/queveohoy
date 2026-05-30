@@ -118,7 +118,7 @@ html[data-theme="light"] .fh-nav-explorar-link:hover {
   gap: 0.4rem;
   margin: 0 0 0.75rem;
   font-size: 0.78rem;
-  color: #8888a0;
+  color: #a0a0b4;
 }
 
 .qvh-feed-freshness-dot {
@@ -134,5 +134,5 @@ html[data-theme="light"] .fh-nav-explorar-link:hover {
 }
 
 html[data-theme="light"] .qvh-feed-freshness {
-  color: #555568;
+  color: #4a4a5c;
 }

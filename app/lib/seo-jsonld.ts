@@ -210,6 +210,11 @@ export const HUB_FAQ_BY_SLUG: Record<
       answer:
         "Consulta la agenda de F1 en queveohoy.es con horarios en península y Baleares.",
     },
+    {
+      question: "¿Qué sesiones de F1 hay hoy?",
+      answer:
+        "Entrenamientos, clasificación y carrera aparecen en la agenda con hora y emisora.",
+    },
   ],
   "premier-league": [
     {
@@ -229,12 +234,106 @@ export const HUB_FAQ_BY_SLUG: Record<
       answer:
         "UFC se emite en DAZN. Consulta queveohoy.es/ufc para horarios de eventos y prelims.",
     },
+    {
+      question: "¿A qué hora es UFC hoy?",
+      answer:
+        "Prelims y main card con horario en península (Europe/Madrid) en queveohoy.es/ufc.",
+    },
   ],
   nba: [
     {
       question: "¿Dónde ver la NBA en TV?",
       answer:
         "La NBA se ve en Movistar Deportes, NBA League Pass y a veces en La 1. Horarios en queveohoy.es/nba.",
+    },
+    {
+      question: "¿Qué partidos de NBA hay hoy?",
+      answer:
+        "La agenda en queveohoy.es/nba lista los partidos con horario y canal en España.",
+    },
+  ],
+  motogp: [
+    {
+      question: "¿Dónde ver MotoGP en España?",
+      answer:
+        "MotoGP se emite en DAZN. Consulta queveohoy.es/motogp para horarios de carreras y clasificación.",
+    },
+    {
+      question: "¿A qué hora es MotoGP hoy?",
+      answer:
+        "Los horarios están en península y Baleares (Europe/Madrid) en la agenda de queveohoy.es/motogp.",
+    },
+  ],
+  baloncesto: [
+    {
+      question: "¿Dónde ver baloncesto hoy en TV?",
+      answer:
+        "ACB, Euroliga y otras competiciones en Movistar, DAZN y Gol Play. Agenda: queveohoy.es/baloncesto.",
+    },
+    {
+      question: "¿Qué partidos de baloncesto hay hoy?",
+      answer:
+        "La agenda lista partidos de ACB, Euroliga y más con horario y canal en España.",
+    },
+  ],
+  tenis: [
+    {
+      question: "¿Dónde ver tenis hoy en TV?",
+      answer:
+        "Tenis ATP y WTA en Movistar, DAZN y Eurosport. Horarios en queveohoy.es/tenis.",
+    },
+    {
+      question: "¿A qué hora son los partidos de tenis hoy?",
+      answer:
+        "Consulta la agenda actualizada con horarios en península y Baleares (Europe/Madrid).",
+    },
+  ],
+  ciclismo: [
+    {
+      question: "¿Dónde ver ciclismo hoy en TV?",
+      answer:
+        "Etapas de Vuelta, Tour y Giro en Eurosport, La 1 y DAZN. Agenda: queveohoy.es/ciclismo.",
+    },
+    {
+      question: "¿Qué carreras de ciclismo hay hoy?",
+      answer:
+        "La agenda de ciclismo en queveohoy.es indica horarios y emisoras para hoy y la semana.",
+    },
+  ],
+  esports: [
+    {
+      question: "¿Dónde ver e-sports hoy?",
+      answer:
+        "CS2, Valorant, LoL y más en Twitch, YouTube y a veces en Movistar. Horarios en queveohoy.es/esports.",
+    },
+    {
+      question: "¿Qué partidos de e-sports hay hoy?",
+      answer:
+        "La agenda lista torneos y partidos con hora de inicio en península (Europe/Madrid).",
+    },
+  ],
+  "copa-del-rey": [
+    {
+      question: "¿Dónde ver la Copa del Rey en TV?",
+      answer:
+        "La Copa del Rey se emite en La 1, DAZN y Movistar según la ronda. Consulta queveohoy.es/copa-del-rey.",
+    },
+    {
+      question: "¿Qué partidos de Copa del Rey hay hoy?",
+      answer:
+        "La agenda muestra los encuentros de copa con horario y canal en España.",
+    },
+  ],
+  series: [
+    {
+      question: "¿Qué series y estrenos hay hoy?",
+      answer:
+        "Estrenos y capítulos nuevos en Netflix, HBO, Movistar+ y más. Agenda: queveohoy.es/series.",
+    },
+    {
+      question: "¿Dónde ver estrenos de series hoy?",
+      answer:
+        "Cada título indica plataforma y horario en península y Baleares (Europe/Madrid).",
     },
   ],
 };

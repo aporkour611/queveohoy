@@ -468,7 +468,7 @@
   text-align: center;
   font-family: var(--qvh-font-display);
   font-size: 0.72rem;
-  color: #8a8a96;
+  color: #a0a0ac;
 }
 
 .qvh-media-card-details {
@@ -489,7 +489,7 @@
 .qvh-media-detail-label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: #8a8a96;
+  color: #a0a0ac;
 }
 
 .qvh-media-detail-value {

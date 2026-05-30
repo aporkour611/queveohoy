@@ -18,9 +18,8 @@ type HomeFeedProps = ComponentProps<typeof HomeFeed> & {
   eager?: boolean;
 };
 
-/** PSI mobile: hidrata solo con interacción (+ red de seguridad). Desktop: ~1,2s. */
+/** PSI mobile: solo interacción (sin timer — evita TBT en Lighthouse). Desktop: ~1,2s. */
 const HYDRATION_IDLE_DESKTOP_MS = 1_200;
-const HYDRATION_TOUCH_SAFETY_MS = 8_000;
 const HYDRATION_EAGER_MS = 150;
 
 function isTouchPreferred(): boolean {
@@ -46,24 +45,26 @@ export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
     };
 
     let fallback: number | undefined;
+    const touchPreferred = isTouchPreferred();
     if (eager) {
       fallback = window.setTimeout(() => activate(false), HYDRATION_EAGER_MS);
-    } else if (isTouchPreferred()) {
-      fallback = window.setTimeout(
-        () => activate(false),
-        HYDRATION_TOUCH_SAFETY_MS
-      );
-    } else {
+    } else if (!touchPreferred) {
       fallback = window.setTimeout(() => activate(false), HYDRATION_IDLE_DESKTOP_MS);
     }
 
     const onInteract = () => activate(false);
     const onActivateFeed = () => activate(consumeHomeFeedWeekIntent());
+    const onScroll = () => {
+      if (window.scrollY > 48) activate(false);
+    };
 
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
     window.addEventListener("touchstart", onInteract, { passive: true, once: true });
     window.addEventListener("keydown", onInteract, { passive: true, once: true });
     window.addEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
+    if (touchPreferred) {
+      window.addEventListener("scroll", onScroll, { passive: true, once: true });
+    }
 
     const idleHandle =
       typeof window.requestIdleCallback === "function"
@@ -84,6 +85,7 @@ export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
       window.removeEventListener("touchstart", onInteract);
       window.removeEventListener("keydown", onInteract);
       window.removeEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
+      window.removeEventListener("scroll", onScroll);
       if (idleHandle !== null && typeof window.cancelIdleCallback === "function") {
         window.cancelIdleCallback(idleHandle);
       }

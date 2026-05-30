@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     `/${hub.slug}`,
     buildHubMetadataTitle(hub),
     hub.description,
-    hub.keywords
+    hub.keywords,
+    { ogImagePath: `/${hub.slug}/opengraph-image` }
   );
 }
 

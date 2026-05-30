@@ -44,7 +44,6 @@ test.describe("a11y axe", () => {
 
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa"])
-      .disableRules(["color-contrast"])
       .analyze()
 
     const critical = results.violations.filter(

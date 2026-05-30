@@ -8,7 +8,7 @@ import {
   toAssistantEventCards,
 } from "@/app/lib/assistant-core"
 import { filterEventsByAgendaQuery } from "@/app/lib/agenda-search"
-import { fetchHomeFeedEvents } from "@/app/lib/events-feed-server"
+import { getAssistantFeedSnapshot } from "@/app/lib/assistant-feed-cache"
 import {
   filterEventsByUserPlatforms,
   pickPersonalizedTonightEvents,
@@ -17,12 +17,21 @@ import { enforceApiRateLimit } from "@/app/lib/api-rate-limit"
 import { getMadridTodayKey } from "@/app/lib/seo-date"
 
 const ASSISTANT_RATE_LIMIT = 20
+const ASSISTANT_AI_RATE_LIMIT = 5
 const ASSISTANT_WINDOW_MS = 60_000
 const MAX_PLATFORMS = 20
 const MAX_PLATFORM_LEN = 64
 
 function isAssistantEnabled(): boolean {
   return process.env.ASSISTANT_ENABLED?.trim() === "true"
+}
+
+function isAssistantAuthorized(request: NextRequest): boolean {
+  const required = process.env.ASSISTANT_API_KEY?.trim()
+  if (!required) return true
+  const header = request.headers.get("authorization")?.trim() ?? ""
+  const token = header.startsWith("Bearer ") ? header.slice(7).trim() : ""
+  return token.length > 0 && token === required
 }
 
 export async function GET() {
@@ -37,10 +46,17 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  if (!isAssistantAuthorized(request)) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+  }
+
+  const apiKey = process.env.OPENAI_API_KEY?.trim()
+  const rateLimit = apiKey ? ASSISTANT_AI_RATE_LIMIT : ASSISTANT_RATE_LIMIT
+
   const rate = await enforceApiRateLimit(
     request,
     "assistant",
-    ASSISTANT_RATE_LIMIT,
+    rateLimit,
     ASSISTANT_WINDOW_MS
   )
   if (!rate.ok) {
@@ -83,13 +99,12 @@ export async function POST(request: NextRequest) {
       ? (body as { primeTime: string }).primeTime.slice(0, 5)
       : "18:00"
 
-  const { events, error } = await fetchHomeFeedEvents()
+  const { events, error } = await getAssistantFeedSnapshot()
   if (error) {
     return NextResponse.json({ error }, { status: 502 })
   }
 
   const todayKey = getMadridTodayKey()
-  const apiKey = process.env.OPENAI_API_KEY?.trim()
 
   if (!apiKey) {
     const smart = buildSmartAssistantReply(query, events, todayKey, {
