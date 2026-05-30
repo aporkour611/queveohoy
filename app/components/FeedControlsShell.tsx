@@ -60,7 +60,12 @@ export function FeedControlsShell({ days }: Props) {
                 {quick.label}
               </span>
             ))}
-            <span className="fh-quick-filter fh-quick-filter-more">Más</span>
+            <span
+              className="fh-quick-filter fh-quick-filter-more"
+              data-qvh-filter-intent
+            >
+              Más
+            </span>
           </div>
         </div>
       </div>

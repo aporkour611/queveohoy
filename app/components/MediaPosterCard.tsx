@@ -67,7 +67,7 @@ export const MediaPosterCard = memo(function MediaPosterCard({
       ? displaySeriesTitle(event)
       : event.title?.trim() || "Sin título";
   const isAnimeCard = sport === "anime";
-  const posterUrl = resolveEventPosterUrl(event, "poster");
+  const posterUrl = resolveEventPosterUrl(event, "card");
   const posterObjectPosition = resolveEventPosterObjectPosition(event);
   const channels = resolveEventChannelList(event);
   const subtitle =

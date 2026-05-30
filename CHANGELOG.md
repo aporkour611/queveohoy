@@ -2,6 +2,24 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [1.9.9] - 2026-05-30 — Release candidate pre-2.0
+
+### Added
+- `docs/ROADMAP-1.9.9.md` — plan 1.0.11→1.9.9 por departamento
+- `app/lib/filter-css-preload.ts`, `FilterCssIntentBridge`, `feed-etag.ts`
+- Tests: `tmdb-client`, `filter-url`, `feed-etag`
+- `npm run verify:prod:1.9`
+
+### Changed
+- Versión del producto: **1.9.9**
+- Feed entretenimiento: pósters TMDB **w185** (`card`) en tarjetas del listado
+- LCP preload alineado a 320w; calidad feed 65; `RemotePoster` rootMargin 200px
+- `?filtros=` con debounce 280ms; aplicación inmediata al buscar
+- `GET /api/home-feed` y `/api/events` con **ETag** y **304**
+- `fetchClientJson` deduplica peticiones en vuelo; prefetch semanal TTL 30s
+- `/api/feed-meta` cache CDN 60s; idle hidratación 10s
+- LHCI: performance ≥80%, LCP warn ≤2s
+
 ## [1.0.1] - 2026-05-30
 
 ### Added

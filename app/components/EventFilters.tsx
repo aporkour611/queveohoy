@@ -6,6 +6,7 @@ import {
   formatFilterSummary,
   sportLabel,
 } from "../lib/filter-config";
+import { preloadFilterPanelCss } from "@/app/lib/filter-css-preload";
 import { CategoryGroupsPanel } from "./CategoryGroupsPanel";
 import { CategoryIcon } from "./CategoryIcon";
 
@@ -47,7 +48,7 @@ export const EventFilters = memo(function EventFilters({
 
   useEffect(() => {
     if (!open) return;
-    void import("@/app/category-groups.css");
+    preloadFilterPanelCss();
   }, [open]);
 
   const setOpen = (next: boolean) => {

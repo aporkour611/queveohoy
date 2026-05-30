@@ -1,11 +1,11 @@
-import { sportAccentClass } from "../lib/sport-accent";
 import { groupEventsForDisplay } from "../lib/event-day-group";
-import { splitMotorFromSportsEsports } from "../lib/event-day-sports-split";
-import { sortEventsByPopularity } from "../lib/sort-events-by-priority";
+import {
+  splitMotorFromSportsEsports,
+  splitSportsFromEsports,
+} from "../lib/event-day-sports-split";
 import type { EventRow } from "./types";
-import { MatchCardStatic } from "./MatchCardStatic";
-import { CategorySectionHeader } from "./CategorySectionHeader";
-import { SportsEsportsFeedSectionStatic } from "./SportsEsportsFeedSectionStatic";
+import { FeedPanelSectionStatic } from "./FeedPanelSectionStatic";
+import type { FeedPanelSubgroup } from "../lib/feed-panel-config";
 
 type Props = {
   events: EventRow[];
@@ -14,65 +14,52 @@ type Props = {
   omitCovers?: boolean;
 };
 
-function StaticMotorBlock({
-  title,
-  accentClass,
-  events,
-  omitCovers = false,
-  iconId,
-}: {
-  title: string;
-  accentClass: string;
-  events: EventRow[];
-  omitCovers?: boolean;
-  iconId: string;
-}) {
-  const sortedEvents = sortEventsByPopularity(events);
-  if (sortedEvents.length === 0) return null;
-
-  return (
-    <div className="fh-section-block qvh-feed-category-shell qvh-content-auto">
-      <div className={`fh-comp-header ${accentClass}`}>
-        <CategorySectionHeader
-          title={title}
-          iconId={iconId}
-          count={events.length}
-        />
-      </div>
-      <div className="qvh-category-carousel-cards fh-category-carousel-static">
-        {sortedEvents.map((event) => (
-          <div key={event.id} className="fh-cardcol">
-            <MatchCardStatic event={event} omitCover={omitCovers} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+function buildTvSubgroups(sections: ReturnType<typeof groupEventsForDisplay>): FeedPanelSubgroup[] {
+  const groups: FeedPanelSubgroup[] = [];
+  if (sections.tvDirecto.length > 0) {
+    groups.push({
+      key: "directo",
+      label: "TV",
+      iconId: "tv-directo",
+      events: sections.tvDirecto,
+    });
+  }
+  if (sections.tvConcurso.length > 0) {
+    groups.push({
+      key: "concurso",
+      label: "Concursos",
+      iconId: "tv-concurso",
+      events: sections.tvConcurso,
+    });
+  }
+  if (sections.tvReality.length > 0) {
+    groups.push({
+      key: "reality",
+      label: "Reality",
+      iconId: "tv-reality",
+      events: sections.tvReality,
+    });
+  }
+  return groups;
 }
 
-function StaticMediaGroup({
-  title,
-  accentClass,
-  events,
-  omitCovers = false,
-  iconId,
-}: {
-  title: string;
-  accentClass: string;
-  events: EventRow[];
-  omitCovers?: boolean;
-  iconId: string;
-}) {
-  if (events.length === 0) return null;
-  return (
-    <StaticMotorBlock
-      title={title}
-      accentClass={accentClass}
-      events={events}
-      omitCovers={omitCovers}
-      iconId={iconId}
-    />
-  );
+function buildCatalogSubgroups(sections: ReturnType<typeof groupEventsForDisplay>): FeedPanelSubgroup[] {
+  const groups: FeedPanelSubgroup[] = [];
+  if (sections.cine.length > 0) {
+    groups.push({ key: "cine", label: "En cines", iconId: "cine", events: sections.cine });
+  }
+  if (sections.series.length > 0) {
+    groups.push({
+      key: "series",
+      label: "Capítulos y series",
+      iconId: "series",
+      events: sections.series,
+    });
+  }
+  if (sections.anime.length > 0) {
+    groups.push({ key: "anime", label: "Anime", iconId: "anime", events: sections.anime });
+  }
+  return groups;
 }
 
 export function EventDaySectionsStatic({
@@ -90,49 +77,39 @@ export function EventDaySectionsStatic({
 
   const sections = groupEventsForDisplay(events);
   const { motor, sportsEsports } = splitMotorFromSportsEsports(sections.bySport);
+  const { sports, esports } = splitSportsFromEsports(sportsEsports);
 
   return (
     <>
-      <SportsEsportsFeedSectionStatic
+      <FeedPanelSectionStatic
+        panel="sports"
         football={sections.football}
-        sportsEsports={sportsEsports}
+        bySport={sports}
         omitCovers={omitCovers}
       />
 
-      {Object.values(motor).map(({ label, sportId, events: evs }) => (
-        <StaticMotorBlock
-          key={sportId}
-          title={label}
-          iconId={sportId}
-          accentClass={sportAccentClass(sportId)}
-          events={evs}
-          omitCovers={omitCovers}
-        />
-      ))}
+      <FeedPanelSectionStatic
+        panel="esports"
+        bySport={esports}
+        omitCovers={omitCovers}
+      />
 
-      <StaticMediaGroup title="Cine" accentClass="fh-accent-cine" events={sections.cine} omitCovers={omitCovers} iconId="cine" />
-      <StaticMediaGroup title="Series" accentClass="fh-accent-series" events={sections.series} omitCovers={omitCovers} iconId="series" />
-      <StaticMediaGroup title="Anime" accentClass="fh-accent-anime" events={sections.anime} omitCovers={omitCovers} iconId="anime" />
-      <StaticMediaGroup
-        title="Reality"
-        accentClass="fh-accent-tv"
-        events={sections.tvReality}
+      <FeedPanelSectionStatic
+        panel="motor"
+        bySport={motor}
         omitCovers={omitCovers}
-        iconId="tv-reality"
       />
-      <StaticMediaGroup
-        title="Concursos"
-        accentClass="fh-accent-tv"
-        events={sections.tvConcurso}
+
+      <FeedPanelSectionStatic
+        panel="tv"
+        subgroups={buildTvSubgroups(sections)}
         omitCovers={omitCovers}
-        iconId="tv-concurso"
       />
-      <StaticMediaGroup
-        title="Directos"
-        accentClass="fh-accent-tv"
-        events={sections.tvDirecto}
+
+      <FeedPanelSectionStatic
+        panel="catalog"
+        subgroups={buildCatalogSubgroups(sections)}
         omitCovers={omitCovers}
-        iconId="tv-directo"
       />
     </>
   );

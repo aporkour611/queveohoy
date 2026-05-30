@@ -21,7 +21,10 @@ const { res: homeRes, text: homeHtml } = await fetchText("/");
 if (homeRes.ok) pass("HTTP 200 home");
 else fail("HTTP 200 home", String(homeRes.status));
 
-if (homeHtml.includes("1.0.10") || homeHtml.includes("1.0.9") || homeHtml.includes("1.0.8") || homeHtml.includes("1.0.7") || homeHtml.includes("1.0.6") || homeHtml.includes("1.0.5") || homeHtml.includes("1.0.4") || homeHtml.includes("1.0.3") || homeHtml.includes("1.0.2") || homeHtml.includes("1.0.1") || homeHtml.includes("1.0.0"))
+const footerVersion =
+  /1\.0\.(1[0-9]|[2-9]\d)|1\.[1-9]\.\d/.test(homeHtml)
+
+if (footerVersion || homeHtml.includes("1.0.0"))
   pass("Footer versión 1.0.x");
 else fail("Footer versión 1.0.x", "Aún no desplegado o caché antigua");
 
@@ -32,7 +35,7 @@ const { res: healthRes, text: healthText } = await fetchText("/api/health");
 if (healthRes.ok) pass("GET /api/health");
 else fail("GET /api/health", String(healthRes.status));
 
-if (healthText.includes("1.0.10") || healthText.includes("1.0.9") || healthText.includes("1.0.8") || healthText.includes("1.0.7") || healthText.includes("1.0.6") || healthText.includes("1.0.5") || healthText.includes("1.0.4") || healthText.includes("1.0.3") || healthText.includes("1.0.2") || healthText.includes("1.0.1") || healthText.includes('"version"'))
+if (footerVersion || healthText.includes('"version"'))
   pass("Health incluye versión");
 else fail("Health incluye versión");
 

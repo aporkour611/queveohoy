@@ -38,7 +38,7 @@ export function RemotePoster({
   const isSvg = Boolean(safeSrc?.toLowerCase().endsWith(".svg"));
   const { ref, inView } = useLazyInView({
     eager: priority,
-    rootMargin: priority ? "0px" : "240px 0px",
+    rootMargin: priority ? "0px" : "200px 0px",
   });
   const [failed, setFailed] = useState(false);
 

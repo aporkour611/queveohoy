@@ -34,7 +34,9 @@ export function readFilterParamFromSearch(search: string): string[] {
   return parseFilterParam(new URLSearchParams(search).get(FILTER_PARAM))
 }
 
-export function syncFilterParamInUrl(ids: string[]): void {
+let filterUrlSyncTimer: ReturnType<typeof setTimeout> | undefined
+
+function applyFilterParamInUrl(ids: string[]): void {
   if (typeof window === "undefined") return
 
   const url = new URL(window.location.href)
@@ -48,4 +50,22 @@ export function syncFilterParamInUrl(ids: string[]): void {
   if (next === current) return
 
   window.history.replaceState(window.history.state, "", next)
+}
+
+/** Sincroniza `?filtros=` con debounce para no saturar history al togglear chips. */
+export function syncFilterParamInUrl(ids: string[], options?: { immediate?: boolean }): void {
+  if (typeof window === "undefined") return
+
+  if (options?.immediate) {
+    if (filterUrlSyncTimer) clearTimeout(filterUrlSyncTimer)
+    filterUrlSyncTimer = undefined
+    applyFilterParamInUrl(ids)
+    return
+  }
+
+  if (filterUrlSyncTimer) clearTimeout(filterUrlSyncTimer)
+  filterUrlSyncTimer = setTimeout(() => {
+    filterUrlSyncTimer = undefined
+    applyFilterParamInUrl(ids)
+  }, 280)
 }

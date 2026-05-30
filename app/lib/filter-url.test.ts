@@ -1,32 +1,45 @@
-import { describe, expect, it } from "vitest"
-import {
-  buildFilterParam,
-  buildFilterSearch,
-  parseFilterParam,
-} from "./filter-url"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { buildFilterParam, syncFilterParamInUrl } from "./filter-url"
 
-describe("filter-url", () => {
-  it("parses valid sport ids", () => {
-    expect(parseFilterParam("futbol,tenis,basket")).toEqual([
-      "futbol",
-      "tenis",
-      "basket",
-    ])
+describe("buildFilterParam", () => {
+  it("drops unknown ids", () => {
+    expect(buildFilterParam(["futbol", "invalido"])).toBe("futbol")
+  })
+})
+
+describe("syncFilterParamInUrl", () => {
+  const replaceState = vi.fn()
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    replaceState.mockClear()
+    vi.stubGlobal("window", {
+      location: {
+        href: "http://localhost/",
+        pathname: "/",
+        search: "",
+        hash: "",
+      },
+      history: { replaceState, state: null },
+    })
   })
 
-  it("drops unknown ids and dedupes", () => {
-    expect(parseFilterParam("futbol,foo,futbol")).toEqual(["futbol"])
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
   })
 
-  it("builds search string", () => {
-    expect(buildFilterSearch(["formula1", "motos"])).toBe(
-      "?filtros=formula1%2Cmotos"
-    )
-    expect(buildFilterSearch([])).toBe("")
+  it("debounces replaceState when toggling filters", () => {
+    syncFilterParamInUrl(["futbol"])
+    syncFilterParamInUrl(["futbol", "tenis"])
+    expect(replaceState).not.toHaveBeenCalled()
+
+    vi.advanceTimersByTime(280)
+    expect(replaceState).toHaveBeenCalledTimes(1)
   })
 
-  it("builds param from ids", () => {
-    expect(buildFilterParam(["cine", "series"])).toBe("cine,series")
-    expect(buildFilterParam(["invalid"])).toBeNull()
+  it("applies immediately when requested", () => {
+    syncFilterParamInUrl(["ufc"], { immediate: true })
+    expect(replaceState).toHaveBeenCalledTimes(1)
   })
 })

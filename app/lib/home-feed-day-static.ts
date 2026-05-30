@@ -2,13 +2,12 @@ import type { EventRow } from "../components/types";
 import { HOME_SSR_DAY_COUNT } from "./home-feed-config";
 import { mergeFeedEvents } from "./merge-feed-events";
 import {
-  buildDisplayDays,
   filterEventsInWeek,
   MADRID_TZ,
 } from "./timezone";
 import {
   indexDisplayEventsByDate,
-  resolveFeaturedHomeDayEvents,
+  resolveDayEventsAllFromIndex,
   type HomeDayEventsResult,
 } from "./upcoming-events";
 
@@ -24,8 +23,18 @@ export function resolveStaticHomeFeedDay(
     HOME_SSR_DAY_COUNT
   );
   const eventsByDate = indexDisplayEventsByDate(displayEvents);
-  const todayKey =
-    buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0]?.date ?? dayDate;
 
-  return resolveFeaturedHomeDayEvents(eventsByDate, dayDate, todayKey);
+  // SEO: agenda completa publicable del día en HTML estático (sin recorte de portada).
+  const todayEvents = resolveDayEventsAllFromIndex(
+    eventsByDate,
+    dayDate,
+    new Set(),
+    false
+  );
+
+  return {
+    todayEvents,
+    upcomingEvents: [],
+    upcomingMessage: null,
+  };
 }

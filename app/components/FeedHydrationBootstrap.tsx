@@ -17,7 +17,7 @@ export function FeedHydrationBootstrap(props: Props) {
 
   useEffect(() => {
     return subscribeFeedHydration({
-      desktopIdleMs: 8_000,
+      desktopIdleMs: 10_000,
       onActivate: () => {
         void import("./FeedClientRootsInner").then((mod) => {
           setRoots(() => mod.FeedClientRootsInner);

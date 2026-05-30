@@ -394,6 +394,9 @@ export function buildHomeJsonLd(events: EventRow[]) {
           name: "Programación deportiva y entretenimiento en televisión",
         },
         inLanguage: "es-ES",
+        mainEntity: itemList
+          ? { "@id": itemList["@id"] as string }
+          : { "@id": `${siteUrl}/#faq` },
       },
       buildHomeFaqPage(),
       ...(itemList ? [itemList] : []),

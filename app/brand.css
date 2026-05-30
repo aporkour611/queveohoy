@@ -1859,10 +1859,7 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
 
   .fh-container,
   .qvh-cl-week-shell,
-  .qvh-feed-category-shell,
-  .qvh-entertainment-stack,
-  .qvh-tv-section,
-  .qvh-catalog-section,
+  .qvh-feed-panel,
   .qvh-home-feed-slot {
     min-width: 0;
     max-width: 100%;

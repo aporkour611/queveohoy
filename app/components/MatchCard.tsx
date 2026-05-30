@@ -280,7 +280,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     ? parseUfcImage(event.source)
     : resolveEventPosterUrl(
         event,
-        isSeries || isCine || isAnime || isTv ? "poster" : "thumb"
+        isSeries || isCine || isAnime || isTv ? "card" : "thumb"
       );
 
   const esportsLogos = parseEsportsTeamLogos(event.source);

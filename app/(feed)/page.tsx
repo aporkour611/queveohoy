@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
 import { FeedControlsShell } from "../components/FeedControlsShell";
+import { FilterCssIntentBridge } from "../components/FilterCssIntentBridge";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
 import { TonightForYouSectionStatic } from "../components/TonightForYouSectionStatic";
@@ -155,7 +156,7 @@ export default async function Page() {
   return (
     <>
       <HomeLcpPreload entries={lcpPreloadEntries} />
-      <HomeJsonLd events={ssrEvents} />
+      <HomeJsonLd events={mergedForSsr} />
       <div className="fh-body">
           <HomeNav />
           <main id="main-content" className="fh-content">
@@ -173,6 +174,7 @@ export default async function Page() {
                     </p>
                   ) : null}
                   <FeedControlsShell days={shellDays} />
+                  <FilterCssIntentBridge />
                   {initialDay ? (
                     <HomeFeedDayHeader
                       date={initialDay.date}
@@ -181,7 +183,7 @@ export default async function Page() {
                   ) : null}
                   {initialDay ? (
                     <HomeFeedDayStatic
-                      initialEvents={ssrEvents}
+                      initialEvents={mergedForSsr}
                       initialDestacadosEvents={weekEvents}
                       dayDate={initialDay.date}
                     />

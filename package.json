@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "1.0.10",
+  "version": "1.9.9",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -22,6 +22,7 @@
     "verify:prod:v12": "node scripts/verify-prod-v12.mjs",
     "verify:prod:v13": "node scripts/verify-prod-v13.mjs",
     "verify:prod:1.0": "node scripts/verify-prod-1.0.mjs",
+    "verify:prod:1.9": "node scripts/verify-prod-1.9.mjs",
     "check:integrations": "node scripts/check-integrations.mjs",
     "vercel:import-file": "node scripts/generate-vercel-import.mjs",
     "perf:budget": "node scripts/perf-budget.mjs",

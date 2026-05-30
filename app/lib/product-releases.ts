@@ -8,6 +8,17 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "1.9.9",
+    date: "2026-05-30",
+    title: "Release candidate pre-2.0",
+    highlights: [
+      "Roadmap 1.0.11→1.9.9: imágenes w185 en feed, LCP preload 320w, filtros con debounce URL",
+      "Prefetch CSS filtros en intent; home-feed y events con ETag/304",
+      "fetchClientJson dedup; prefetch semanal TTL 30s; feed-meta cache 60s",
+      "LHCI perf ≥80% y LCP ≤2s; verify:prod:1.9",
+    ],
+  },
+  {
     version: "1.0.3",
     date: "2026-05-30",
     title: "Deploy gate + seguridad health",

@@ -488,7 +488,7 @@ export function HomeFeed({
 
   const handleFilterSearch = useCallback(async (ids: string[]) => {
     setFilterSearching(true);
-    syncFilterParamInUrl(ids);
+    syncFilterParamInUrl(ids, { immediate: true });
     startTransition(() => {
       setSelectedSports(ids);
       setActiveDay(0);

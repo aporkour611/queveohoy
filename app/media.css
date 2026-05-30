@@ -1096,76 +1096,99 @@
   }
 }
 
-/* ── Entretenimiento: TV/Twitch vs catálogo ── */
-.qvh-entertainment-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 0;
-}
-
-.qvh-feed-surface .qvh-catalog-section {
+/* ── Paneles del feed: diseño homogéneo (deportes, TV, catálogo…) ── */
+.qvh-feed-panel {
+  --qvh-panel-accent: rgba(168, 85, 247, 0.55);
+  --qvh-panel-accent-soft: rgba(192, 132, 252, 0.92);
+  --qvh-panel-accent-glow: rgba(168, 85, 247, 0.28);
+  --qvh-panel-border: rgba(168, 85, 247, 0.28);
+  --qvh-panel-bg-a: rgba(168, 85, 247, 0.18);
+  --qvh-panel-bg-b: rgba(6, 182, 212, 0.14);
+  --qvh-panel-bg-base: rgba(20, 14, 32, 0.95);
+  --qvh-panel-group-bg: linear-gradient(90deg, #14061f 0%, #2a0f45 50%, #14061f 100%);
   padding: 18px 14px 16px;
-  border: 1px solid rgba(217, 119, 6, 0.2);
-  border-top: 1px solid rgba(217, 119, 6, 0.2);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-/* Sub-bloques TV y catálogo — misma caja que Champions */
-.qvh-feed-surface .qvh-tv-group.qvh-feed-category-shell,
-.qvh-feed-surface .qvh-catalog-rail-block.qvh-feed-category-shell {
-  position: relative;
-  padding: 12px 10px 10px;
-  border: 1px solid rgba(120, 140, 255, 0.22);
-  background: linear-gradient(
-    180deg,
-    rgba(10, 6, 72, 0.42) 0%,
-    rgba(10, 10, 14, 0.88) 100%
-  );
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-}
-
-.qvh-feed-surface .qvh-tv-group.qvh-feed-category-shell::before,
-.qvh-feed-surface .qvh-catalog-rail-block.qvh-feed-category-shell::before {
-  display: none;
-}
-
-.qvh-feed-surface .qvh-tv-group .qvh-tv-group-accent,
-.qvh-feed-surface .qvh-catalog-rail-block .qvh-catalog-rail-accent {
-  display: none;
-}
-
-/* TV y Twitch — parrilla horizontal tipo guía */
-.qvh-tv-section {
-  padding: 18px 14px 16px;
+  margin-bottom: 16px;
   border-radius: 16px;
-  border: 1px solid rgba(217, 70, 239, 0.22);
+  border: 1px solid var(--qvh-panel-border);
   background:
-    radial-gradient(ellipse 90% 70% at 0% 0%, rgba(145, 70, 255, 0.14), transparent 58%),
-    radial-gradient(ellipse 70% 55% at 100% 100%, rgba(236, 72, 153, 0.1), transparent 52%),
-    linear-gradient(180deg, rgba(22, 16, 32, 0.95) 0%, rgba(12, 10, 18, 0.98) 100%);
+    radial-gradient(ellipse 90% 70% at 0% 0%, var(--qvh-panel-bg-a), transparent 58%),
+    radial-gradient(ellipse 70% 55% at 100% 100%, var(--qvh-panel-bg-b), transparent 52%),
+    linear-gradient(180deg, var(--qvh-panel-bg-base) 0%, rgba(10, 12, 18, 0.98) 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.qvh-tv-hero {
+.qvh-feed-panel-sports {
+  --qvh-panel-accent: rgba(58, 171, 110, 0.55);
+  --qvh-panel-accent-soft: rgba(74, 222, 128, 0.88);
+  --qvh-panel-accent-glow: rgba(58, 171, 110, 0.24);
+  --qvh-panel-border: rgba(58, 171, 110, 0.24);
+  --qvh-panel-bg-a: rgba(58, 171, 110, 0.16);
+  --qvh-panel-bg-b: rgba(168, 85, 247, 0.12);
+  --qvh-panel-bg-base: rgba(14, 24, 20, 0.95);
+  --qvh-panel-group-bg: linear-gradient(90deg, #061a12 0%, #0c3020 50%, #061a12 100%);
+}
+
+.qvh-feed-panel-esports {
+  --qvh-panel-accent: rgba(168, 85, 247, 0.55);
+  --qvh-panel-accent-soft: rgba(192, 132, 252, 0.92);
+  --qvh-panel-accent-glow: rgba(168, 85, 247, 0.28);
+  --qvh-panel-border: rgba(168, 85, 247, 0.28);
+  --qvh-panel-bg-a: rgba(168, 85, 247, 0.18);
+  --qvh-panel-bg-b: rgba(6, 182, 212, 0.14);
+  --qvh-panel-bg-base: rgba(20, 14, 32, 0.95);
+  --qvh-panel-group-bg: linear-gradient(90deg, #14061f 0%, #2a0f45 50%, #14061f 100%);
+}
+
+.qvh-feed-panel-motor {
+  --qvh-panel-accent: rgba(239, 68, 68, 0.55);
+  --qvh-panel-accent-soft: rgba(252, 165, 165, 0.92);
+  --qvh-panel-accent-glow: rgba(239, 68, 68, 0.26);
+  --qvh-panel-border: rgba(239, 68, 68, 0.28);
+  --qvh-panel-bg-a: rgba(239, 68, 68, 0.16);
+  --qvh-panel-bg-b: rgba(249, 115, 22, 0.14);
+  --qvh-panel-bg-base: rgba(24, 12, 12, 0.95);
+  --qvh-panel-group-bg: linear-gradient(90deg, #1a0606 0%, #3a0f0f 50%, #1a0606 100%);
+}
+
+.qvh-feed-panel-tv {
+  --qvh-panel-accent: rgba(201, 162, 39, 0.65);
+  --qvh-panel-accent-soft: rgba(244, 114, 182, 0.85);
+  --qvh-panel-accent-glow: rgba(236, 72, 153, 0.22);
+  --qvh-panel-border: rgba(217, 70, 239, 0.22);
+  --qvh-panel-bg-a: rgba(145, 70, 255, 0.14);
+  --qvh-panel-bg-b: rgba(236, 72, 153, 0.1);
+  --qvh-panel-bg-base: rgba(22, 16, 32, 0.95);
+  --qvh-panel-group-bg: linear-gradient(90deg, #0a0648 0%, #180878 50%, #0a0648 100%);
+}
+
+.qvh-feed-panel-catalog {
+  --qvh-panel-accent: rgba(201, 162, 39, 0.65);
+  --qvh-panel-accent-soft: rgba(251, 191, 36, 0.88);
+  --qvh-panel-accent-glow: rgba(217, 119, 6, 0.24);
+  --qvh-panel-border: rgba(217, 119, 6, 0.24);
+  --qvh-panel-bg-a: rgba(217, 119, 6, 0.14);
+  --qvh-panel-bg-b: rgba(124, 58, 237, 0.1);
+  --qvh-panel-bg-base: rgba(22, 18, 12, 0.95);
+  --qvh-panel-group-bg: linear-gradient(90deg, #0a0648 0%, #180878 50%, #0a0648 100%);
+}
+
+.qvh-feed-hero {
   position: relative;
   margin-bottom: 18px;
 }
 
-.qvh-tv-hero-glow {
+.qvh-feed-hero-glow {
   position: absolute;
   top: -20px;
   right: -10px;
   width: 110px;
   height: 110px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.22), transparent 68%);
+  background: radial-gradient(circle, var(--qvh-panel-accent-glow), transparent 68%);
   pointer-events: none;
 }
 
-.qvh-tv-hero-eyebrow {
+.qvh-feed-hero-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -1175,18 +1198,18 @@
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(244, 114, 182, 0.85);
+  color: var(--qvh-panel-accent-soft);
 }
 
-.qvh-tv-hero-dot {
+.qvh-feed-hero-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #ec4899;
-  box-shadow: 0 0 10px rgba(236, 72, 153, 0.75);
+  background: var(--qvh-panel-accent-soft);
+  box-shadow: 0 0 10px var(--qvh-panel-accent-glow);
 }
 
-.qvh-tv-hero-title {
+.qvh-feed-hero-title {
   margin: 0 0 6px;
   font-family: var(--qvh-font-display);
   font-size: clamp(1.45rem, 4vw, 1.85rem);
@@ -1195,7 +1218,7 @@
   color: #fff;
 }
 
-.qvh-tv-hero-lead {
+.qvh-feed-hero-lead {
   margin: 0;
   max-width: 34rem;
   font-size: 0.86rem;
@@ -1203,165 +1226,56 @@
   color: rgba(255, 255, 255, 0.58);
 }
 
-.qvh-tv-group {
+.qvh-feed-group {
   margin-bottom: 16px;
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
-.qvh-tv-group:last-child {
+.qvh-feed-group:last-child {
   margin-bottom: 0;
 }
 
-.qvh-tv-group-head {
+.qvh-feed-group-head {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin: -12px -10px 10px;
+  margin: 0 0 10px;
   padding: 14px 12px;
   border-radius: 14px 14px 0 0;
-  background: linear-gradient(90deg, #0a0648 0%, #180878 50%, #0a0648 100%);
-  border-bottom: 2px solid rgba(201, 162, 39, 0.65);
+  background: var(--qvh-panel-group-bg);
+  border-bottom: 2px solid var(--qvh-panel-accent);
 }
 
-.qvh-tv-group-accent {
-  display: none;
-}
-
-.qvh-tv-group-title {
-  margin: 0;
-  font-family: var(--qvh-font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.qvh-tv-group-count {
-  margin-left: 0;
-  min-width: 22px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-family: var(--qvh-font-display);
-  font-size: 0.75em;
-  font-weight: 700;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.25);
-  border: none;
-}
-
-/* Deportes y E-Sports — mismo lenguaje visual que TV y Twitch */
-.qvh-sports-section {
-  padding: 18px 14px 16px;
-  margin-bottom: 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(58, 171, 110, 0.24);
-  background:
-    radial-gradient(ellipse 90% 70% at 0% 0%, rgba(58, 171, 110, 0.16), transparent 58%),
-    radial-gradient(ellipse 70% 55% at 100% 100%, rgba(168, 85, 247, 0.12), transparent 52%),
-    linear-gradient(180deg, rgba(14, 24, 20, 0.95) 0%, rgba(10, 12, 18, 0.98) 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.qvh-sports-hero {
-  position: relative;
-  margin-bottom: 18px;
-}
-
-.qvh-sports-hero-glow {
-  position: absolute;
-  top: -20px;
-  right: -10px;
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(58, 171, 110, 0.24), transparent 68%);
-  pointer-events: none;
-}
-
-.qvh-sports-hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 6px;
-  font-family: var(--qvh-font-display);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(74, 222, 128, 0.88);
-}
-
-.qvh-sports-hero-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #3aab6e;
-  box-shadow: 0 0 10px rgba(58, 171, 110, 0.75);
-}
-
-.qvh-sports-hero-title {
-  margin: 0 0 6px;
-  font-family: var(--qvh-font-display);
-  font-size: clamp(1.45rem, 4vw, 1.85rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #fff;
-}
-
-.qvh-sports-hero-lead {
-  margin: 0;
-  max-width: 34rem;
-  font-size: 0.86rem;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.58);
-}
-
-.qvh-sports-group {
-  margin-bottom: 16px;
-}
-
-.qvh-sports-group:last-child {
-  margin-bottom: 0;
-}
-
-.qvh-sports-group-head {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: -12px -10px 10px;
-  padding: 14px 12px;
-  border-radius: 14px 14px 0 0;
-  background: linear-gradient(90deg, #061a12 0%, #0c3020 50%, #061a12 100%);
-  border-bottom: 2px solid rgba(58, 171, 110, 0.55);
-}
-
-.qvh-sports-group-title {
-  margin: 0;
-  font-family: var(--qvh-font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.qvh-sports-group-count {
-  margin-left: 0;
-  min-width: 22px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-family: var(--qvh-font-display);
-  font-size: 0.75em;
-  font-weight: 700;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.25);
-  border: none;
-}
-
-.qvh-feed-surface .qvh-sports-group .qvh-sports-group-icon {
+.qvh-feed-group-icon {
   flex-shrink: 0;
+}
+
+.qvh-feed-group-title {
+  margin: 0;
+  font-family: var(--qvh-font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.qvh-feed-group-count {
+  margin-left: 0;
+  min-width: 22px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.75em;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  border: none;
 }
 
 .qvh-tv-slot-list {
@@ -1522,163 +1436,4 @@
 
 .qvh-tv-slot-body .qvh-channel-badges {
   margin-top: 2px;
-}
-
-/* Cine, series y anime — pósters verticales */
-.qvh-catalog-section {
-  padding: 20px 0 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  background:
-    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(217, 119, 6, 0.1), transparent 55%),
-    radial-gradient(ellipse 60% 50% at 100% 0%, rgba(124, 58, 237, 0.08), transparent 50%),
-    rgba(255, 255, 255, 0.012);
-  border-radius: 16px;
-}
-
-.qvh-catalog-hero {
-  position: relative;
-  margin-bottom: 22px;
-  padding: 0 2px;
-}
-
-.qvh-catalog-hero-glow {
-  position: absolute;
-  top: -18px;
-  left: -8px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(217, 119, 6, 0.2), transparent 68%);
-  pointer-events: none;
-}
-
-.qvh-catalog-hero-inner {
-  position: relative;
-  z-index: 1;
-}
-
-.qvh-catalog-hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 10px;
-  font-family: var(--qvh-font-display);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(251, 191, 36, 0.75);
-}
-
-.qvh-catalog-hero-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fbbf24, #d97706);
-  box-shadow: 0 0 12px rgba(217, 119, 6, 0.55);
-}
-
-.qvh-catalog-hero-title {
-  margin: 0;
-  font-family: var(--qvh-font-display);
-  font-size: clamp(1.85rem, 5vw, 2.35rem);
-  font-weight: 700;
-  line-height: 0.98;
-  letter-spacing: -0.03em;
-  color: #fff;
-}
-
-.qvh-catalog-hero-amp {
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.38);
-}
-
-.qvh-catalog-hero-rule {
-  margin-top: 18px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(217, 119, 6, 0.55) 0%,
-    rgba(124, 58, 237, 0.35) 38%,
-    transparent 100%
-  );
-}
-
-.qvh-catalog-rail-block {
-  margin-bottom: 22px;
-}
-
-.qvh-catalog-rail-block:last-of-type {
-  margin-bottom: 10px;
-}
-
-.qvh-catalog-rail-head {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: -12px -10px 10px;
-  padding: 14px 12px;
-  border-radius: 14px 14px 0 0;
-  background: linear-gradient(90deg, #0a0648 0%, #180878 50%, #0a0648 100%);
-  border-bottom: 2px solid rgba(201, 162, 39, 0.65);
-}
-
-.qvh-catalog-rail-icon,
-.qvh-tv-group-icon {
-  flex-shrink: 0;
-}
-
-.qvh-catalog-rail-accent {
-  display: none;
-}
-
-.qvh-catalog-rail-copy {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.qvh-catalog-rail-title {
-  margin: 0;
-  font-family: var(--qvh-font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.qvh-catalog-rail-count {
-  flex-shrink: 0;
-  min-width: 22px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-family: var(--qvh-font-display);
-  font-size: 0.75em;
-  font-weight: 700;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.25);
-  border: none;
-}
-
-.qvh-catalog-rail-scroll {
-  overflow-x: auto;
-  margin: 0 calc(-1 * var(--qvh-layout-gutter));
-  padding: 4px var(--qvh-layout-gutter) 8px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  scroll-behavior: smooth;
-  scroll-padding-inline: var(--qvh-layout-gutter);
-}
-
-.qvh-catalog-rail-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.qvh-catalog-rail-track {
-  display: flex;
-  gap: 14px;
-  width: max-content;
 }

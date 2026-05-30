@@ -1,7 +1,7 @@
 import { isAllowedRemoteImageUrl, safeRemoteImageUrl } from "./remote-image";
 
 /** Calidad por defecto para pósters (debe estar en next.config `images.qualities`). */
-export const IMAGE_QUALITY = 68;
+export const IMAGE_QUALITY = 65;
 
 /** Escudos y logos pequeños. */
 export const CREST_IMAGE_QUALITY = 60;
@@ -90,7 +90,7 @@ function buildNextImagePreloadHref(src: string, width = SPOTLIGHT_IMAGE_WIDTH): 
 }
 
 function buildSpotlightPreloadSrcSet(src: string): string {
-  const widths = [384, 640];
+  const widths = [320, 640];
   return widths
     .map((width) => `${buildNextImagePreloadHref(src, width)} ${width}w`)
     .join(", ");
@@ -111,7 +111,7 @@ export function buildSpotlightPreloadEntry(src: string): SpotlightPreloadEntry |
     return href ? { href } : null;
   }
 
-  const href = buildNextImagePreloadHref(safe, 640);
+  const href = buildNextImagePreloadHref(safe, SPOTLIGHT_IMAGE_WIDTH);
 
   return {
     href,
