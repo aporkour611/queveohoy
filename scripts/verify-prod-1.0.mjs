@@ -21,9 +21,9 @@ const { res: homeRes, text: homeHtml } = await fetchText("/");
 if (homeRes.ok) pass("HTTP 200 home");
 else fail("HTTP 200 home", String(homeRes.status));
 
-if (homeHtml.includes("v1.0.0") || homeHtml.includes("1.0.0"))
-  pass("Footer versión 1.0.0");
-else fail("Footer versión 1.0.0", "Aún no desplegado o caché antigua");
+if (homeHtml.includes("v1.0.1") || homeHtml.includes("1.0.1") || homeHtml.includes("v1.0.0") || homeHtml.includes("1.0.0"))
+  pass("Footer versión 1.0.x");
+else fail("Footer versión 1.0.x", "Aún no desplegado o caché antigua");
 
 if (homeHtml.includes('id="main-content"')) pass("#main-content en home");
 else fail("#main-content en home");
