@@ -7,6 +7,7 @@ import { SupabaseBrowserConfig } from "./components/SupabaseBrowserConfig";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Analytics } from "./components/Analytics";
 import { SpeedInsights } from "./components/SpeedInsights";
+import { buildSupabaseBootstrapScript } from "./lib/supabase/browser-runtime";
 import { resolveBrowserSupabaseConfig } from "./lib/supabase-config";
 import { rootMetadata, siteUrl } from "./lib/seo";
 import { THEME_STORAGE_KEY } from "./lib/theme";
@@ -38,6 +39,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabaseBrowserConfig = resolveBrowserSupabaseConfig();
+  const supabaseBootstrapScript =
+    buildSupabaseBootstrapScript(supabaseBrowserConfig);
 
   return (
     <html
@@ -51,6 +54,11 @@ export default function RootLayout({
             __html: `(function(){try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var p=localStorage.getItem(k)||"system";var r=p==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):p;document.documentElement.dataset.theme=r;document.documentElement.style.colorScheme=r}catch(e){}})();`,
           }}
         />
+        {supabaseBootstrapScript ? (
+          <script
+            dangerouslySetInnerHTML={{ __html: supabaseBootstrapScript }}
+          />
+        ) : null}
         <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://r2.thesportsdb.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://crests.football-data.org" />

@@ -26,6 +26,11 @@ Instalar [CodeRabbit GitHub App](https://github.com/apps/coderabbit) — lee `.c
 ## Post-deploy
 
 ```bash
+npm run check:integrations
 npm run verify:prod:1.0
 npm run perf:budget
 ```
+
+## Configuración manual (solo tú)
+
+**Guía copy-paste:** [docs/SETUP-MANUAL-TU.md](./SETUP-MANUAL-TU.md)
