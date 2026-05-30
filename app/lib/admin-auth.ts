@@ -2,7 +2,15 @@ import { createHmac, timingSafeEqual } from "crypto";
 
 export const ADMIN_COOKIE = "qvh_admin";
 const ADMIN_SESSION_VERSION = "v1";
-const ADMIN_SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 365;
+const ADMIN_SESSION_MAX_AGE_SEC = 60 * 60 * 24
+
+function isLocalDevOnly(): boolean {
+  return (
+    process.env.NODE_ENV !== "production" &&
+    process.env.VERCEL_ENV !== "preview" &&
+    process.env.VERCEL_ENV !== "production"
+  )
+}
 
 export function getAdminSecret(): string {
   return process.env.ADMIN_SECRET?.trim() ?? "";
@@ -86,7 +94,7 @@ export function adminSessionCookieOptions() {
   return {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
+    sameSite: "strict" as const,
     path: "/",
     maxAge: ADMIN_SESSION_MAX_AGE_SEC,
   };
@@ -96,7 +104,7 @@ export function adminSessionCookieOptions() {
 export function isCronAuthorized(request: Request): boolean {
   const secret = getCronSecret();
   if (!secret) {
-    return process.env.NODE_ENV !== "production";
+    return isLocalDevOnly();
   }
 
   const auth = request.headers.get("authorization")?.trim();

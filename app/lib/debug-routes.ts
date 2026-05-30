@@ -1,7 +1,4 @@
-/** Rutas de diagnóstico desactivadas en producción salvo override explícito. */
+/** Rutas de diagnóstico desactivadas en producción (override ignorado). */
 export function isDebugRouteDisabled(): boolean {
-  return (
-    process.env.NODE_ENV === "production" &&
-    process.env.ALLOW_DEBUG_ROUTES !== "true"
-  );
+  return process.env.NODE_ENV === "production"
 }

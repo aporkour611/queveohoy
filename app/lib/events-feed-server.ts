@@ -253,3 +253,37 @@ export const getHomeFeedEventsForPage = cache(fetchHomeFeedEvents);
 export const getDestacadosFeedEventsForPage = cache(fetchDestacadosFeedEvents);
 
 export const getFeedEventsForPage = cache(fetchFeedEvents);
+
+/** Evento por ID — query directa (API pública v1). */
+export async function fetchEventById(
+  id: number
+): Promise<{ event: EventRow | null; error: string | null }> {
+  if (!isSupabaseConfigured()) {
+    const fallback = supabaseMissingFallback();
+    return { event: null, error: fallback.error };
+  }
+
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("events")
+      .select(FEED_EVENT_SELECT)
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) {
+      return { event: null, error: error.message };
+    }
+
+    if (!data) {
+      return { event: null, error: null };
+    }
+
+    const [normalized] = normalizeFeedEvents([data as EventRow]);
+    return { event: normalized ?? null, error: null };
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "No se pudo cargar el evento";
+    return { event: null, error: message };
+  }
+}

@@ -1,0 +1,47 @@
+/**
+ * v14 — tema claro en feed y páginas de error.
+ * Importado solo en rutas con feed-bundle.
+ */
+html[data-theme="light"] .fh-body,
+html[data-theme="light"] .fh-content {
+  background: #f4f4f8;
+  color: #12121a;
+}
+
+html[data-theme="light"] .fh-match,
+html[data-theme="light"] .qvh-spotlight-card {
+  background: #ffffff;
+  border-color: #e0e0ea;
+  color: #12121a;
+}
+
+html[data-theme="light"] .fh-feed-controls,
+html[data-theme="light"] .fh-day-tab {
+  background: #ffffff;
+  border-color: #dddde8;
+  color: #333348;
+}
+
+html[data-theme="light"] .fh-day-tab.active {
+  background: #12121a;
+  color: #ffffff;
+}
+
+html[data-theme="light"] .qvh-not-found {
+  background: #f4f4f8;
+  color: #12121a;
+}
+
+html[data-theme="light"] .qvh-error-page {
+  background: #f4f4f8;
+  color: #12121a;
+}
+
+html[data-theme="light"] .qvh-tonight-for-you {
+  background: #ffffff;
+  border-color: #e0e0ea;
+}
+
+html[data-theme="light"] .destacados-section {
+  background: transparent;
+}

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { FEED_REVALIDATE_SECONDS } from "@/app/lib/cache-config"
-import { fetchFeedEvents } from "@/app/lib/events-feed-server"
+import { fetchEventById } from "@/app/lib/events-feed-server"
 import {
-  enforcePublicApiRateLimit,
+  enforcePublicApiRateLimitAsync,
   publicApiCorsHeaders,
   toPublicApiEvent,
 } from "@/app/lib/public-api"
@@ -19,7 +19,7 @@ export async function OPTIONS() {
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
-  const rate = enforcePublicApiRateLimit(request)
+  const rate = await enforcePublicApiRateLimitAsync(request)
   if (!rate.ok) {
     return NextResponse.json(
       { error: "Rate limit exceeded", retryAfterSec: rate.retryAfterSec },
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     )
   }
 
-  const { events, error } = await fetchFeedEvents()
+  const { event, error } = await fetchEventById(id)
   if (error) {
     return NextResponse.json(
       { error, event: null },
@@ -50,8 +50,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     )
   }
 
-  const match = events.find((event) => event.id === id)
-  const publicEvent = match ? toPublicApiEvent(match) : null
+  const publicEvent = event ? toPublicApiEvent(event) : null
 
   if (!publicEvent) {
     return NextResponse.json(

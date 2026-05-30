@@ -25,6 +25,10 @@ jobs:
       - name: Test
         run: npm run test
 
+      - name: Audit dependencies
+        run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true
+
   e2e:
     runs-on: ubuntu-latest
     steps:
@@ -91,3 +95,9 @@ jobs:
         run: npm run perf:budget
         env:
           PERF_URL: http://127.0.0.1:3000
+
+      - name: Lighthouse CI (quality gates)
+        run: npx lhci autorun --config=lighthouserc.json
+        continue-on-error: true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

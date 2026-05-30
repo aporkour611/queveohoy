@@ -5,14 +5,15 @@ import { partidoPath } from "../lib/event-slug";
 import {
   buildSpotlightImageProps,
   spotlightCoverImageStyle,
-} from "../lib/optimized-image";
-import { safeRemoteImageUrl } from "../lib/remote-image";
+} from "../lib/optimized-image"
 import { MADRID_TZ } from "../lib/timezone";
 import type { EventRow } from "./types";
 import {
   StaticRolandGarrosDuelVisual,
   StaticUfcFightVisual,
 } from "./duel-visuals-static";
+import { RemotePosterStatic } from "./RemotePosterStatic";
+import { safeRemoteImageUrl } from "../lib/remote-image";
 
 type Props = {
   event: EventRow;
@@ -29,7 +30,18 @@ function StaticCover({
   local: boolean;
   objectPosition?: string;
 }) {
-  const imgClass = local ? "qvh-spotlight-cover-img" : "qvh-remote-poster-img";
+  if (!local) {
+    return (
+      <RemotePosterStatic
+        src={url}
+        className="qvh-remote-poster qvh-spotlight-cover"
+        objectPosition={objectPosition}
+        sizeVariant="card"
+      />
+    );
+  }
+
+  const imgClass = "qvh-spotlight-cover-img";
   const style = spotlightCoverImageStyle(objectPosition);
   const built = buildSpotlightImageProps(url, false);
 

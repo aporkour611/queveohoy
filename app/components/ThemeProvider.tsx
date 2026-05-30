@@ -53,6 +53,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     applyThemeToDocument(resolved)
+    const color = resolved === "light" ? "#f8f9fc" : "#1a1a2e"
+    let meta = document.querySelector('meta[name="theme-color"]')
+    if (!meta) {
+      meta = document.createElement("meta")
+      meta.setAttribute("name", "theme-color")
+      document.head.appendChild(meta)
+    }
+    meta.setAttribute("content", color)
   }, [resolved])
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useFocusTrap } from "../lib/use-focus-trap"
 import { useMemo } from "react"
 import type { EventRow } from "./types"
 import { buildEventDetails } from "../lib/event-details"
@@ -22,6 +23,7 @@ type Props = {
 
 export function EventDetailDrawer({ event, onClose }: Props) {
   const userPlatforms = useUserPlatforms()
+  const focusRef = useFocusTrap(Boolean(event))
   const details = useMemo(
     () => (event ? buildEventDetails(event) : []),
     [event]
@@ -51,6 +53,7 @@ export function EventDetailDrawer({ event, onClose }: Props) {
         onClick={onClose}
       />
       <aside
+        ref={focusRef}
         className="qvh-event-drawer"
         role="dialog"
         aria-modal="true"

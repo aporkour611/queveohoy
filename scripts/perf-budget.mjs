@@ -34,7 +34,7 @@ if (result.status !== 0) {
   process.exit(result.status ?? 1);
 }
 
-const report = JSON.parse(readFileSync("./lighthouse-v7-budget.json", "utf8"));
+const report = JSON.parse(readFileSync("./lighthouse-v13-budget.json", "utf8"));
 
 const perf = report.categories?.performance?.score ?? 0;
 const lcp = report.audits?.["largest-contentful-paint"]?.numericValue ?? 99999;

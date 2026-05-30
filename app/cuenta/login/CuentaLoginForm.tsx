@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { FormEvent, useMemo, useState } from "react"
 import { createBrowserClient } from "@/app/lib/supabase/browser-client"
 import { siteUrl } from "@/app/lib/seo"
+import { sanitizeInternalRedirectPath } from "@/app/lib/safe-redirect"
 import "../../futbolhoy-feed.css"
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -20,7 +21,7 @@ export const CuentaLoginForm = () => {
   const [message, setMessage] = useState("")
 
   const redirectTo = useMemo(() => {
-    const safeNext = nextPath.startsWith("/") ? nextPath : "/cuenta"
+    const safeNext = sanitizeInternalRedirectPath(nextPath, "/cuenta")
     return `${siteUrl}/auth/callback?next=${encodeURIComponent(safeNext)}`
   }, [nextPath])
 

@@ -5,6 +5,7 @@ import {
   resolveSupabasePublishableKey,
   resolveSupabaseUrl,
 } from "@/app/lib/supabase-config"
+import { sanitizeInternalRedirectPath } from "@/app/lib/safe-redirect"
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -36,6 +37,6 @@ export async function GET(request: Request) {
     }
   }
 
-  const safeNext = nextPath.startsWith("/") ? nextPath : "/cuenta"
+  const safeNext = sanitizeInternalRedirectPath(nextPath, "/cuenta")
   return NextResponse.redirect(`${origin}${safeNext}`)
 }

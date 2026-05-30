@@ -3,6 +3,7 @@ import type { EventRow } from "../components/types"
 import { pickTonightEvents } from "./embed-tonight"
 import {
   buildPublicApiFeedResponse,
+  buildPublicApiV2FeedResponse,
   decodePublicApiCursor,
   encodePublicApiCursor,
   filterPublicApiEventsByDate,
@@ -65,6 +66,20 @@ describe("public-api", () => {
     )
     expect(body.apiMinorVersion).toBe("1.1")
     expect(body.categoriesApplied).toEqual(["futbol"])
+  })
+
+  it("builds v2 feed response with etag and scopes", () => {
+    const publicEvents = toPublicApiEvents([sampleEvent])
+    const body = buildPublicApiV2FeedResponse(
+      publicEvents,
+      "2026-05-30",
+      "Europe/Madrid",
+      null
+    )
+    expect(body.version).toBe("2")
+    expect(body.etag).toMatch(/^"/)
+    expect(body.scopes).toContain("day")
+    expect(body.scopes).toContain("cursor")
   })
 
   it("parses categories query param", () => {

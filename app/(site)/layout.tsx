@@ -6,5 +6,5 @@ export default function SiteLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return children;
+  return <div id="site-shell">{children}</div>;
 }

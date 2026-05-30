@@ -49,6 +49,10 @@
     transform 0.18s ease;
 }
 
+.qvh-cat-main-bar:active {
+  transform: scale(1.02);
+}
+
 .qvh-cat-main-bar:hover {
   border-color: color-mix(in srgb, var(--qvh-cat-accent) 55%, transparent);
   box-shadow: 0 0 24px color-mix(in srgb, var(--qvh-cat-accent) 22%, transparent);

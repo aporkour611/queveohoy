@@ -57,9 +57,16 @@ export function serializeUserPreferences(prefs: UserPreferences): PreferencesRow
   }
 }
 
+import { ALL_SPORT_IDS } from "./filter-config"
+
 export function sanitizeUserPlatforms(platforms: string[]): string[] {
   const allowed = new Set<string>(SPANISH_PLATFORM_OPTIONS)
   return platforms.filter((platform) => allowed.has(platform))
+}
+
+export function sanitizeHiddenSports(ids: string[]): string[] {
+  const allowed = new Set<string>(ALL_SPORT_IDS)
+  return [...new Set(ids.filter((id) => allowed.has(id)))]
 }
 
 export function eventMatchesUserPlatforms(

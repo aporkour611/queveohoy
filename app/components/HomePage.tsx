@@ -5,12 +5,10 @@ import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, use
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { countHiddenHomeEvents } from "../lib/featured";
-import { STORAGE_KEY, ALL_SPORT_IDS } from "../lib/filter-config";
+import { STORAGE_KEY } from "../lib/filter-config";
 import {
-  readFilterParamFromSearch,
   syncFilterParamInUrl,
 } from "../lib/filter-url";
-import { TV_SPORT_FILTER_IDS } from "../lib/tv-show-category";
 import {
   COOKIE_CONSENT_EVENT,
   hasPreferenceConsent,
@@ -18,10 +16,16 @@ import {
 import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
-import { FeedControls } from "./FeedControls";
 import { WeekDaySection } from "./WeekDaySection";
 import { useHomeReset } from "./HomeResetContext";
 import dynamic from "next/dynamic";
+import { useHomeFilterBootstrap } from "../hooks/useHomeFilterBootstrap";
+import { useHomeOnlyMyPlatforms } from "../hooks/useHomeOnlyMyPlatforms";
+
+const FeedControls = dynamic(
+  () => import("./FeedControls").then((mod) => mod.FeedControls),
+  { loading: () => null }
+);
 
 const EventDaySections = dynamic(
   () => import("./EventDaySections").then((mod) => mod.EventDaySections),
@@ -78,8 +82,6 @@ type Props = {
 };
 
 let cachedScrollAnchorOffset: number | null = null;
-
-const ONLY_MY_PLATFORMS_KEY = "qvh-only-my-platforms";
 
 function readScrollAnchorOffset(): number {
   const navH = parseFloat(
@@ -154,7 +156,7 @@ export function HomeFeed({
   const [agendaQuery, setAgendaQuery] = useState("");
   const deferredAgendaQuery = useDeferredValue(agendaQuery);
   const [filterSearching, setFilterSearching] = useState(false);
-  const [onlyMyPlatforms, setOnlyMyPlatforms] = useState(false);
+  const { onlyMyPlatforms, setOnlyMyPlatforms } = useHomeOnlyMyPlatforms();
   const userPlatforms = useUserPlatforms();
   const [hasFullWeek, setHasFullWeek] = useState(initialWeekView);
   const [fullWeekReady, setFullWeekReady] = useState(false);
@@ -279,47 +281,7 @@ export function HomeFeed({
     fullWeekLoadRef.current = null;
   }, [hasFullWeek]);
 
-  useEffect(() => {
-    deferClientStateUpdate(() => {
-      try {
-        setOnlyMyPlatforms(localStorage.getItem(ONLY_MY_PLATFORMS_KEY) === "1");
-      } catch {
-        /* ignore */
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    deferClientStateUpdate(() => {
-      const fromUrl = readFilterParamFromSearch(window.location.search);
-      if (fromUrl.length > 0) {
-        setSelectedSports(fromUrl);
-        return;
-      }
-
-      if (hasPreferenceConsent()) {
-        try {
-          const saved = localStorage.getItem(STORAGE_KEY);
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed)) {
-              setSelectedSports(
-                [
-                  ...new Set(
-                    parsed.flatMap((id): string[] => {
-                      if (typeof id !== "string") return [];
-                      if (id === "tv") return [...TV_SPORT_FILTER_IDS];
-                      return ALL_SPORT_IDS.includes(id) ? [id] : [];
-                    })
-                  ),
-                ]
-              );
-            }
-          }
-        } catch {}
-      }
-    });
-  }, []);
+  useHomeFilterBootstrap(setSelectedSports);
 
   useEffect(() => {
     if (fullWeekReady) return;
@@ -357,16 +319,6 @@ export function HomeFeed({
       void loadEvents();
     });
   }, [hasInitialData, loadEvents]);
-
-  useEffect(() => {
-    if (!hasPreferenceConsent()) return;
-    const timer = window.setTimeout(() => {
-      try {
-        localStorage.setItem(ONLY_MY_PLATFORMS_KEY, onlyMyPlatforms ? "1" : "0");
-      } catch {}
-    }, 120);
-    return () => window.clearTimeout(timer);
-  }, [onlyMyPlatforms]);
 
   useEffect(() => {
     if (!hasPreferenceConsent()) return;

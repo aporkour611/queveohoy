@@ -10,7 +10,7 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <main className="fh-content" style={{ padding: "48px 16px" }}>
+    <main id="main-content" className="fh-content qvh-error-page" style={{ padding: "48px 16px" }}>
       <div className="fh-container" style={{ maxWidth: 560 }}>
         <h1 style={{ marginTop: 0 }}>No hemos podido cargar la agenda</h1>
         <p>

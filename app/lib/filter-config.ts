@@ -22,7 +22,7 @@ export const QUICK_FILTERS: QuickFilter[] = [
     label: "Deportes",
     sportIds: ["futbol", "tenis", "basket", "ciclismo", "ufc"],
   },
-  { id: "motor", label: "Motor", sportIds: ["formula1", "motos"] },
+  { id: "motor", label: "Motor", sportIds: ["formula1", "motos", "rally"] },
   { id: "esports", label: "E-Sports", sportIds: ["csgo", "valorant", "lol"] },
   { id: "tv", label: "TV y Twitch", sportIds: [...TV_SPORT_FILTER_IDS] },
   {
@@ -50,6 +50,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
     options: [
       { id: "formula1", label: "F1" },
       { id: "motos", label: "MotoGP" },
+      { id: "rally", label: "Rallye WRC" },
     ],
   },
   {

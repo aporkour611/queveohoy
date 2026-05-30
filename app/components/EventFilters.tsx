@@ -45,6 +45,11 @@ export const EventFilters = memo(function EventFilters({
     setDraft(selected);
   }, [selected]);
 
+  useEffect(() => {
+    if (!open) return;
+    void import("@/app/category-groups.css");
+  }, [open]);
+
   const setOpen = (next: boolean) => {
     if (!isControlled) setInternalOpen(next);
     onOpenChange?.(next);

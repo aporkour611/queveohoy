@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@/app/lib/supabase/server-auth"
 import {
   parseUserPreferences,
+  sanitizeHiddenSports,
   sanitizeUserPlatforms,
   serializeUserPreferences,
 } from "@/app/lib/user-preferences"
+import { publicApiErrorMessage } from "@/app/lib/api-error"
 
 export async function PATCH(request: NextRequest) {
   const supabase = await createServerClient()
@@ -49,8 +51,8 @@ export async function PATCH(request: NextRequest) {
       : {}),
     ...(Array.isArray(payload.hiddenSports)
       ? {
-          hiddenSports: payload.hiddenSports.filter(
-            (item) => typeof item === "string"
+          hiddenSports: sanitizeHiddenSports(
+            payload.hiddenSports.filter((item) => typeof item === "string")
           ),
         }
       : {}),
@@ -69,7 +71,10 @@ export async function PATCH(request: NextRequest) {
   })
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(
+      { error: publicApiErrorMessage(error.message) },
+      { status: 500 }
+    )
   }
 
   return NextResponse.json({ preferences: next })

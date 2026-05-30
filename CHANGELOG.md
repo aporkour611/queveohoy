@@ -2,6 +2,37 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [1.0.1] - 2026-05-30
+
+### Added
+- CI: CodeQL, Trivy, Snyk (opcional), SonarCloud (opcional), Dependabot, CodeRabbit config
+- Lighthouse CI (`lighthouserc.json`, `npm run lhci`)
+- Cron modularizado en `app/lib/cron/run-cron.ts`
+- Scorecard 10: `docs/SCORECARD-10.md`
+
+### Changed
+- Versión del producto: `1.0.1`
+- Deploy ejecuta `verify-prod-1.0` post-smoke
+
+## [1.0.0] - 2026-05-30 — Lanzamiento
+
+### Added
+- **API v2** — `GET /api/v2/feed` con ETag, 304 Not Modified y scopes documentados
+- **Rally WRC** — ingest en cron (TheSportsDB league 4370) y tile activo en filtros
+- `RemotePosterStatic` — pósters server-side en `MatchCardStatic`
+- `useFocusTrap` en drawer de detalle de evento (accesibilidad v19)
+- `useHomeFilterBootstrap` — hidratación de filtros extraída de HomePage (v17)
+- `app/dark-mode-feed.css` — tema oscuro completo en feed
+- CSS categorías lazy-load al abrir panel de filtros
+- `docs/ROADMAP-LANZAMIENTO-1.0.md`, roadmaps v14–v20, `verify:prod:1.0`
+
+### Changed
+- Versión del producto: **1.0.0** (lanzamiento oficial; el histórico MVP pasa a `0.1.0`)
+- `ThemeProvider` actualiza `theme-color` según tema resuelto
+- Páginas de error y 404 con `#main-content`; site layout con `#site-shell`
+- Presupuesto Lighthouse: fix lectura `lighthouse-v13-budget.json`
+- Micro-interacción `:active` en barras de grupos neon
+
 ## [13.0.0] - 2026-05-30
 
 ### Added

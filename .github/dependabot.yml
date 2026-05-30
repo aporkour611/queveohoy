@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      nextjs:
+        patterns:
+          - next
+          - eslint-config-next
+          - "@next/*"
+      supabase:
+        patterns:
+          - "@supabase/*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

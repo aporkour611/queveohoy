@@ -45,18 +45,12 @@ export const MAIN_CATEGORY_GROUPS: MainCategoryGroupDesign[] = [
     watermark: "MOTOR",
     accent: "#f97316",
     accentSoft: "rgba(249, 115, 22, 0.14)",
-    sportIds: ["formula1", "motos"],
-    subtitle: "F1 · MotoGP · Motos · Rallye",
+    sportIds: ["formula1", "motos", "rally"],
+    subtitle: "F1 · MotoGP · Rallye WRC",
     subgroups: [
       { sportId: "formula1", label: "F1" },
       { sportId: "motos", label: "MotoGP", iconId: "motos" },
-      {
-        sportId: "rally",
-        label: "Rallye",
-        iconId: "motor",
-        disabled: true,
-        disabledHint: "Próximamente",
-      },
+      { sportId: "rally", label: "Rallye WRC", iconId: "motor" },
     ],
   },
   {

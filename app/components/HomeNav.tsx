@@ -1,4 +1,4 @@
-import { HomeLogoLink } from "./HomeLogoLink";
+import { HomeLogoLinkServer } from "./HomeLogoLinkServer";
 import { HomeNavActions } from "./HomeNavActions";
 import { NavbarHeightSync } from "./NavbarHeightSync";
 
@@ -9,7 +9,7 @@ export function HomeNav() {
       <div className="fh-header-depth" aria-hidden />
       <nav className="fh-navbar fh-navbar-elevated fh-navbar-volumetric">
         <div className="fh-navbar-inner">
-          <HomeLogoLink />
+          <HomeLogoLinkServer />
           <HomeNavActions />
         </div>
       </nav>

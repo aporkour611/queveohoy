@@ -4,7 +4,7 @@ import { SEO_HUB_NAV_LINKS } from "./lib/seo-hub-nav";
 
 export default function NotFound() {
   return (
-    <main className="fh-content qvh-not-found">
+    <main id="main-content" className="fh-content qvh-not-found">
       <div className="fh-container">
         <h1>Página no encontrada</h1>
         <p>

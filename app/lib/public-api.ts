@@ -4,10 +4,12 @@ import { filterEventsForDisplay } from "./event-crests"
 import { ALL_SPORT_IDS } from "./filter-config"
 import { siteUrl } from "./seo"
 import { checkRateLimit, clientIp } from "./rate-limit"
+import { checkRateLimitDistributed } from "./rate-limit-distributed"
 import { eventMatchesSportFilters } from "./tv-show-category"
 
 export const PUBLIC_API_VERSION = "1"
 export const PUBLIC_API_MINOR_VERSION = "1.1"
+export const PUBLIC_API_V2_VERSION = "2"
 export const PUBLIC_API_RATE_LIMIT = 60
 export const PUBLIC_API_RATE_WINDOW_MS = 60_000
 
@@ -85,6 +87,17 @@ export function enforcePublicApiRateLimit(
 ): { ok: true } | { ok: false; retryAfterSec: number } {
   const ip = clientIp(request)
   return checkRateLimit(
+    `public-api:${ip}`,
+    PUBLIC_API_RATE_LIMIT,
+    PUBLIC_API_RATE_WINDOW_MS
+  )
+}
+
+export async function enforcePublicApiRateLimitAsync(
+  request: Request
+): Promise<{ ok: true } | { ok: false; retryAfterSec: number }> {
+  const ip = clientIp(request)
+  return checkRateLimitDistributed(
     `public-api:${ip}`,
     PUBLIC_API_RATE_LIMIT,
     PUBLIC_API_RATE_WINDOW_MS
@@ -200,5 +213,36 @@ export function paginatePublicApiEvents(
   return {
     events: slice,
     nextCursor: hasMore && last ? encodePublicApiCursor(last.id) : null,
+  }
+}
+
+export type PublicApiV2FeedResponse = Omit<PublicApiFeedResponse, "version"> & {
+  version: typeof PUBLIC_API_V2_VERSION
+  etag: string
+  scopes: string[]
+}
+
+export function buildPublicApiV2FeedResponse(
+  events: PublicApiEvent[],
+  dateKey: string,
+  timezone: string,
+  nextCursor: string | null = null,
+  categoriesApplied?: string[]
+): PublicApiV2FeedResponse {
+  const base = buildPublicApiFeedResponse(
+    events,
+    dateKey,
+    timezone,
+    nextCursor,
+    categoriesApplied
+  )
+  const payload = JSON.stringify({ date: dateKey, count: events.length, ids: events.map((e) => e.id) })
+  const etag = `"${Buffer.from(payload).toString("base64url").slice(0, 32)}"`
+
+  return {
+    ...base,
+    version: PUBLIC_API_V2_VERSION,
+    etag,
+    scopes: ["day", "categories", "cursor"],
   }
 }

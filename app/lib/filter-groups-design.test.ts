@@ -17,11 +17,15 @@ describe("MAIN_CATEGORY_GROUPS", () => {
     ]);
   });
 
-  it("marca rally como no seleccionable", () => {
+  it("incluye rally activo en motor", () => {
     const motor = MAIN_CATEGORY_GROUPS.find((g) => g.id === "motor");
     const rally = motor?.subgroups.find((s) => s.sportId === "rally");
-    expect(rally?.disabled).toBe(true);
-    expect(selectableSportIdsFromGroup("motor")).toEqual(["formula1", "motos"]);
+    expect(rally?.disabled).toBeFalsy();
+    expect(selectableSportIdsFromGroup("motor")).toEqual([
+      "formula1",
+      "motos",
+      "rally",
+    ]);
   });
 
   it("detecta grupo completo seleccionado", () => {

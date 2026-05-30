@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
-import { FeedFreshness } from "../components/FeedFreshness";
+import { FeedFreshnessSlot } from "../components/FeedFreshnessSlot";
 import { FeedControlsShell } from "../components/FeedControlsShell";
 import { FeedControlsShellBridge } from "../components/FeedControlsShellBridge";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
 import { HomeFeedGate } from "../components/HomeFeedGate";
-import { TonightForYouSection } from "../components/TonightForYouSection";
+import { TonightForYouPersonalizer } from "../components/TonightForYouPersonalizer";
+import { TonightForYouSectionStatic } from "../components/TonightForYouSectionStatic";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
@@ -24,7 +25,7 @@ import {
 } from "../lib/events-feed-server";
 import { raceWithTimeout } from "../lib/race-with-timeout";
 import { resolveHomeLcpPreloadEntries } from "../lib/home-lcp";
-import { buildHomeMetadataTitle } from "../lib/seo-jsonld";
+import { buildHomeMetadataDescription, buildHomeMetadataTitle } from "../lib/seo-jsonld";
 import { defaultDescription, pageMetadata, seoKeywords } from "../lib/seo";
 
 export const revalidate = 900;
@@ -76,11 +77,18 @@ async function loadHomePageData(): Promise<{
   );
 }
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const { events, weekEvents } = await loadHomePageData();
+  const merged = mergeFeedEvents(events, weekEvents);
+  const description =
+    merged.length > 0
+      ? buildHomeMetadataDescription(merged)
+      : defaultDescription;
+
   return pageMetadata(
     "/",
     buildHomeMetadataTitle(),
-    defaultDescription,
+    description,
     seoKeywords
   );
 }
@@ -114,10 +122,11 @@ export default async function Page() {
 
                 <DestacadosSection events={weekEvents} />
 
-                <TonightForYouSection events={tonightEvents} todayKey={todayKey} />
+                <TonightForYouSectionStatic events={tonightEvents} todayKey={todayKey} />
+                <TonightForYouPersonalizer events={tonightEvents} todayKey={todayKey} />
 
                 <div className="qvh-home-feed-slot">
-                  <FeedFreshness />
+                  <FeedFreshnessSlot initialEventCount={ssrEvents.length} />
                   <FeedControlsShell days={shellDays} />
                   <FeedControlsShellBridge />
                   {initialDay ? (

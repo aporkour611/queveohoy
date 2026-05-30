@@ -17,7 +17,8 @@ export function FeedControlsShell({ days }: Props) {
     <section
       id="feed-controls-ssr"
       className="qvh-feed-controls qvh-feed-controls-ssr"
-      aria-hidden="true"
+      aria-busy="true"
+      aria-label="Cargando calendario y filtros"
     >
       <div className="qvh-day-tabs">
         {days.map((day, index) => (

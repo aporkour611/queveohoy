@@ -9,6 +9,7 @@ import { pageMetadata, siteUrl } from "../../lib/seo"
 import {
   PUBLIC_API_MINOR_VERSION,
   PUBLIC_API_RATE_LIMIT,
+  PUBLIC_API_V2_VERSION,
   PUBLIC_API_VERSION,
 } from "../../lib/public-api"
 
@@ -25,6 +26,7 @@ export const revalidate = 0
 export default function DesarrolladoresPage() {
   const feedExample = `${siteUrl}/api/v1/feed`
   const categoriesExample = `${siteUrl}/api/v1/feed?categories=futbol,formula1&limit=10`
+  const v2FeedExample = `${siteUrl}/api/v2/feed`
   const embedTonight = `${siteUrl}/embed/esta-noche`
   const embedCategories = `${siteUrl}/embed/categorias`
 
@@ -40,7 +42,7 @@ export default function DesarrolladoresPage() {
           <h1>Desarrolladores</h1>
           <p className="qvh-legal-updated">
             Plataforma v{PRODUCT_VERSION} · API v{PUBLIC_API_VERSION} (ext.{" "}
-            {PUBLIC_API_MINOR_VERSION})
+            {PUBLIC_API_MINOR_VERSION}) · v{PUBLIC_API_V2_VERSION} con ETag
           </p>
 
           <section>
@@ -59,6 +61,11 @@ export default function DesarrolladoresPage() {
                 <code>GET /api/v1/feed?categories=...</code> — filtro por
                 categorías (v1.1). IDs separados por coma:{" "}
                 <code>futbol</code>, <code>formula1</code>, <code>tv-reality</code>, etc.
+              </li>
+              <li>
+                <code>GET /api/v2/feed</code> — feed v{PUBLIC_API_V2_VERSION} con{" "}
+                cabecera <code>ETag</code> y respuesta <code>304</code> si envías{" "}
+                <code>If-None-Match</code>. Mismos query params que v1.
               </li>
               <li>
                 <code>GET /api/v1/search?q=...</code> — búsqueda por texto (mín. 2
@@ -80,7 +87,7 @@ export default function DesarrolladoresPage() {
               <strong>queveohoy.es</strong> al reutilizar los datos.
             </p>
             <pre className="qvh-dev-code">
-              <code>{`curl "${feedExample}"\ncurl "${categoriesExample}"`}</code>
+              <code>{`curl "${feedExample}"\ncurl "${categoriesExample}"\ncurl -I "${v2FeedExample}"`}</code>
             </pre>
           </section>
 

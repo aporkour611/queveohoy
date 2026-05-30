@@ -18,7 +18,7 @@ export default function GlobalError({
           color: "#fff",
         }}
       >
-        <main style={{ maxWidth: 520, margin: "48px auto", padding: "0 16px" }}>
+        <main id="main-content" style={{ maxWidth: 520, margin: "48px auto", padding: "0 16px" }}>
           <h1 style={{ marginTop: 0 }}>Error en queveohoy.es</h1>
           <p>
             La página no pudo cargarse. Prueba de nuevo; si persiste, vuelve en

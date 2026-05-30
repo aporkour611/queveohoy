@@ -8,6 +8,30 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "1.0.1",
+    date: "2026-05-30",
+    title: "Excelencia operativa — scorecard 10",
+    highlights: [
+      "CI: CodeQL, Trivy, Snyk/SonarCloud (secrets), Dependabot, CodeRabbit",
+      "Lighthouse CI + verify-prod-1.0 en deploy",
+      "Cron modularizado; hardening seguridad y SSR performance",
+      "API v2, rally WRC, hooks HomeFeed, rate limit Upstash opcional",
+    ],
+  },
+  {
+    version: "1.0.0",
+    date: "2026-05-30",
+    title: "Lanzamiento público — QueveoHoy 1.0",
+    highlights: [
+      "Consolidación v14→v20: dark mode feed, rally WRC, API v2 con ETag",
+      "RemotePosterStatic en tarjetas SSR; CSS categorías lazy-load",
+      "Focus trap en drawer de evento; #main-content en rutas clave",
+      "theme-color dinámico light/dark; micro-interacciones grupos neon",
+      "Hook useHomeFilterBootstrap — HomePage modular (v17)",
+      "docs/ROADMAP-LANZAMIENTO-1.0.md y verify:prod:1.0",
+    ],
+  },
+  {
     version: "13.0.0",
     date: "2026-05-30",
     title: "Performance engineering — v13",
@@ -169,9 +193,9 @@ export const PRODUCT_RELEASES: ProductRelease[] = [
     ],
   },
   {
-    version: "1.0.0",
+    version: "0.1.0",
     date: "2026-01-20",
-    title: "Lanzamiento público v1",
+    title: "MVP público inicial",
     highlights: [
       "Agenda multi-día con filtros y destacados semanales",
       "15 hubs SEO y páginas de partido indexables",

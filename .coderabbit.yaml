@@ -1,0 +1,22 @@
+# CodeRabbit — revisión automática de PRs (activar en github.com/apps/coderabbit)
+language: es-ES
+early_access: false
+reviews:
+  profile: assertive
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!**/*.md"
+    - "!**/.next/**"
+    - "!**/package-lock.json"
+chat:
+  auto_reply: true
+knowledge_base:
+  learnings:
+    scope: auto
