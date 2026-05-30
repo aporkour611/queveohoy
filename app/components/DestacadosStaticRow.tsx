@@ -39,14 +39,15 @@ export function DestacadosStaticRow({
         </div>
       </div>
 
-      <div className="qvh-destacados-page qvh-destacados-page-static">
+      <div className="qvh-destacados-page-static">
         {visible.map((event, index) => (
           <FeaturedEventCardStatic
             key={event.id}
             event={event}
             priority={index === lcpIndex}
           />
-        ))}      </div>
+        ))}
+      </div>
     </section>
   );
 }

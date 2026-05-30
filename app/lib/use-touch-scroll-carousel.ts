@@ -8,7 +8,7 @@ export function useTouchScrollCarousel(): boolean {
 
   useEffect(() => {
     const coarse = window.matchMedia("(pointer: coarse)");
-    const narrow = window.matchMedia("(max-width: 720px)");
+    const narrow = window.matchMedia("(max-width: 1023px)");
 
     const sync = () => setEnabled(coarse.matches || narrow.matches);
 

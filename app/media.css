@@ -193,11 +193,12 @@
 
 .qvh-media-rail-scroll {
   overflow-x: auto;
-  margin: 0 -15px;
-  padding: 4px 15px 8px;
+  margin: 0 calc(-1 * var(--qvh-layout-gutter));
+  padding: 4px var(--qvh-layout-gutter) 8px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   scroll-behavior: smooth;
+  scroll-padding-inline: var(--qvh-layout-gutter);
 }
 
 .qvh-media-rail-scroll::-webkit-scrollbar {
@@ -1545,11 +1546,12 @@
 
 .qvh-catalog-rail-scroll {
   overflow-x: auto;
-  margin: 0 -15px;
-  padding: 4px 15px 8px;
+  margin: 0 calc(-1 * var(--qvh-layout-gutter));
+  padding: 4px var(--qvh-layout-gutter) 8px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   scroll-behavior: smooth;
+  scroll-padding-inline: var(--qvh-layout-gutter);
 }
 
 .qvh-catalog-rail-scroll::-webkit-scrollbar {

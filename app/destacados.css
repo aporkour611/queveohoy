@@ -66,27 +66,49 @@
   scrollbar-width: none;
   touch-action: pan-x;
   padding-bottom: 8px;
+  scroll-padding-inline: var(--qvh-layout-gutter);
+}
+
+@media (max-width: 1023px) {
+  .qvh-destacados-page-static {
+    margin-inline: calc(-1 * var(--qvh-layout-gutter));
+    padding-inline: var(--qvh-layout-gutter);
+  }
+
+  .qvh-destacados-page-static .qvh-spotlight-card {
+    flex: 0 0 min(240px, 82vw);
+  }
 }
 
 .qvh-destacados-page-static::-webkit-scrollbar {
   display: none;
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1024px) {
   .qvh-destacados-page-static {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
     overflow-x: visible;
     scroll-snap-type: none;
     touch-action: auto;
     padding-bottom: 0;
+    margin-inline: 0;
+    padding-inline: 0;
   }
 }
 
-@media (max-width: 768px) {
+.qvh-destacados-page-static .qvh-spotlight-card {
+  flex: 0 0 min(236px, 72vw);
+  max-width: none;
+  scroll-snap-align: start;
+  align-self: start;
+}
+
+@media (min-width: 1024px) {
   .qvh-destacados-page-static .qvh-spotlight-card {
-    flex: 0 0 min(236px, 72vw);
-    scroll-snap-align: start;
+    flex: initial;
+    scroll-snap-align: none;
   }
 }
 
@@ -209,7 +231,7 @@
 }
 
 /* Ancho fijo por hueco (3 columnas): la última página con 1–2 items no se estira */
-.qvh-destacados-page .qvh-spotlight-card {
+.qvh-destacados-carousel .qvh-destacados-page .qvh-spotlight-card {
   flex: 0 0 calc((100% - 24px) / 3);
   max-width: calc((100% - 24px) / 3);
   min-width: 0;
@@ -312,6 +334,7 @@
 }
 
 .qvh-spotlight-card {
+  display: block;
   flex: 0 0 min(236px, 72vw);
   scroll-snap-align: start;
   border-radius: 12px;
@@ -320,6 +343,8 @@
   border: 1px solid var(--qvh-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   transition: box-shadow 0.35s ease;
+  color: inherit;
+  text-decoration: none;
 }
 
 .qvh-spotlight-card:hover {
@@ -329,7 +354,10 @@
 
 .qvh-spotlight-visual {
   position: relative;
+  flex-shrink: 0;
   height: 132px;
+  min-height: 132px;
+  max-height: 132px;
   overflow: hidden;
   background-size: cover;
   background-position: center top;
@@ -933,6 +961,29 @@
   color: #f3e8ff;
 }
 
+@media (max-width: 640px) {
+  .qvh-destacados-head {
+    margin-bottom: 12px;
+  }
+
+  .qvh-destacados-title {
+    font-size: 1.2rem;
+  }
+
+  .qvh-destacados-sub {
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .qvh-spotlight-headline {
+    font-size: 1.05rem;
+  }
+
+  .qvh-spotlight-body {
+    padding: 10px 12px 12px;
+  }
+}
+
 @media (min-width: 768px) {
   .qvh-spotlight-card {
     flex-basis: 252px;
@@ -940,5 +991,7 @@
 
   .qvh-spotlight-visual {
     height: 142px;
+    min-height: 142px;
+    max-height: 142px;
   }
 }

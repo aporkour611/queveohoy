@@ -8,6 +8,8 @@ import { MADRID_TZ } from "../lib/timezone";
 import { buildLcpPosterUrl } from "../lib/lcp-poster";
 import {
   buildSpotlightImageProps,
+  SPOTLIGHT_IMAGE_HEIGHT,
+  SPOTLIGHT_IMAGE_WIDTH,
   spotlightCoverImageStyle,
 } from "../lib/optimized-image";
 import { safeRemoteImageUrl } from "../lib/remote-image";
@@ -48,8 +50,8 @@ function StaticSpotlightCover({
             loading="eager"
             fetchPriority="high"
             decoding="sync"
-            width={342}
-            height={132}
+            width={SPOTLIGHT_IMAGE_WIDTH}
+            height={SPOTLIGHT_IMAGE_HEIGHT}
           />
         </div>
       );
@@ -85,6 +87,8 @@ function StaticSpotlightCover({
         alt=""
         className={imgClass}
         style={imgStyle}
+        width={SPOTLIGHT_IMAGE_WIDTH}
+        height={SPOTLIGHT_IMAGE_HEIGHT}
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
         decoding="async"

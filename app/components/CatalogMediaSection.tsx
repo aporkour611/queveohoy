@@ -55,11 +55,17 @@ function CatalogRail({
   accent,
   count,
   events,
+  carouselClassName,
+  cine = false,
+  spotlightAspect = false,
 }: {
   label: string;
   accent: "cine" | "series" | "anime";
   count: number;
   events: EventRow[];
+  carouselClassName: string;
+  cine?: boolean;
+  spotlightAspect?: boolean;
 }) {
   const sortedEvents = useMemo(
     () =>
@@ -85,7 +91,7 @@ function CatalogRail({
       <CategoryCarousel
         ariaLabel={label}
         visibleSlots={CATEGORY_CAROUSEL_ANIME_SLOTS}
-        className="qvh-category-carousel-posters qvh-category-carousel-anime"
+        className={carouselClassName}
       >
         {sortedEvents.map((event, index) => (
           <MediaPosterCard
@@ -93,6 +99,8 @@ function CatalogRail({
             event={event}
             index={index}
             compact
+            cine={cine}
+            spotlightAspect={spotlightAspect}
           />
         ))}
       </CategoryCarousel>
@@ -142,18 +150,28 @@ export function CatalogMediaSection({
         <div className="qvh-catalog-hero-rule" aria-hidden />
       </header>
 
-      <CatalogRail label="En cines" accent="cine" count={visibleCine.length} events={visibleCine} />
+      <CatalogRail
+        label="En cines"
+        accent="cine"
+        count={visibleCine.length}
+        events={visibleCine}
+        carouselClassName="qvh-category-carousel-posters"
+        cine
+      />
       <CatalogRail
         label="Capítulos y series"
         accent="series"
         count={visibleSeries.length}
         events={visibleSeries}
+        carouselClassName="qvh-category-carousel-posters"
+        spotlightAspect
       />
       <CatalogRail
         label="Anime"
         accent="anime"
         count={visibleAnime.length}
         events={visibleAnime}
+        carouselClassName="qvh-category-carousel-posters qvh-category-carousel-anime"
       />
     </section>
   );
