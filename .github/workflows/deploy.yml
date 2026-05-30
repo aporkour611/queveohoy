@@ -98,11 +98,11 @@ jobs:
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
         run: |
           set -euo pipefail
-          if ! vercel deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}" 2>&1 | tee /tmp/vercel-deploy.log; then
+          if ! vercel deploy --prebuilt --prod --archive=tgz --token="${{ secrets.VERCEL_TOKEN }}" 2>&1 | tee /tmp/vercel-deploy.log; then
             echo "::error::Vercel deploy failed"
-            tail -n 40 /tmp/vercel-deploy.log || true
-            if grep -qE "api-deployments-free-per-day|api-upload-free" /tmp/vercel-deploy.log; then
-              echo "::warning::Cuota de Vercel agotada. Se activó git.deploymentEnabled: el push también dispara build en Vercel."
+            tail -n 60 /tmp/vercel-deploy.log || true
+            if grep -qE "api-deployments-free-per-day|api-upload-free|Resource is limited" /tmp/vercel-deploy.log; then
+              echo "::warning::Cuota de deploys de Vercel agotada. Reintenta en unas horas."
             fi
             exit 1
           fi
@@ -117,6 +117,9 @@ jobs:
           fi
 
       - name: Smoke test producción
+        env:
+          VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
         run: |
           set -euo pipefail
           for i in $(seq 1 30); do
@@ -143,6 +146,11 @@ jobs:
           fi
           curl -sf "https://queveohoy.es/" -o /dev/null
           echo "Home precalentada"
+          if [ "$events" = "0" ]; then
+            echo "Ejecutando cron para repoblar eventos…"
+            vercel env run --environment=production -- bash -c \
+              'curl -sf "https://queveohoy.es/api/cron" -H "Authorization: Bearer ${CRON_SECRET}" -o /tmp/cron.json && node -e "const d=require(\"/tmp/cron.json\"); console.log(\"cron football:\", d.football?.count ?? 0, \"supabase:\", d.supabaseConfigured)"'
+          fi
 
       - name: Deployment summary
         run: echo "### Production ${{ steps.deploy.outputs.deployment_url }}" >> "$GITHUB_STEP_SUMMARY"
