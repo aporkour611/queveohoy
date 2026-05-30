@@ -9,6 +9,7 @@ import {
   type FormEvent,
   type KeyboardEvent,
 } from "react";
+import { deferClientStateUpdate } from "../lib/defer-client-state";
 import {
   clearPageFindHighlights,
   collectPageFindRanges,
@@ -125,7 +126,7 @@ export function PageFindBar({ containerId = "main-content" }: Props) {
 
   useEffect(() => {
     if (!query.trim()) {
-      clearFind();
+      deferClientStateUpdate(clearFind);
       return;
     }
 

@@ -3,7 +3,6 @@ import {
   parseBasketTeamLogos,
 } from "./basketball";
 import { sportLabel } from "./filter-config";
-import { resolveChannelsForEvent } from "./channels";
 import { eventDisplayTime, MADRID_TZ } from "./madrid-time";
 import { formatDisplayDateLabel } from "./timezone";
 import {

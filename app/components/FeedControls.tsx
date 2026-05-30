@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useState } from "react";
+import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { DayTabs } from "./DayTabs";
 import { EventFilters } from "./EventFilters";
 
@@ -94,11 +95,13 @@ export function FeedControls({
   const [nudgeDismissed, setNudgeDismissed] = useState(true);
 
   useEffect(() => {
-    try {
-      setNudgeDismissed(localStorage.getItem(FILTER_NUDGE_KEY) === "1");
-    } catch {
-      setNudgeDismissed(false);
-    }
+    deferClientStateUpdate(() => {
+      try {
+        setNudgeDismissed(localStorage.getItem(FILTER_NUDGE_KEY) === "1");
+      } catch {
+        setNudgeDismissed(false);
+      }
+    });
 
     const timer = window.setTimeout(() => setNudgeReady(true), 1200);
     return () => window.clearTimeout(timer);
