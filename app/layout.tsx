@@ -3,7 +3,6 @@ import { Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import "./theme.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
-import { ThemeProvider } from "./components/ThemeProvider";
 import { Analytics } from "./components/Analytics";
 import { SpeedInsights } from "./components/SpeedInsights";
 import { buildSupabaseBootstrapScript } from "./lib/supabase/browser-runtime";
@@ -84,9 +83,7 @@ export default function RootLayout({
         <a href="#main-content" className="qvh-skip-link">
           Saltar al contenido
         </a>
-        <ThemeProvider>
-          <CookieConsentRoot>{children}</CookieConsentRoot>
-        </ThemeProvider>
+        <CookieConsentRoot>{children}</CookieConsentRoot>
         <Analytics />
         <SpeedInsights />
       </body>

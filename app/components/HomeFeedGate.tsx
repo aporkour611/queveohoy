@@ -1,7 +1,8 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import dynamic from "next/dynamic";
-import { useEffect, useState, type ComponentProps } from "react";
+import { useEffect, useState } from "react";
 import {
   consumeHomeFeedWeekIntent,
   dispatchHomeFeedActivate,
@@ -9,7 +10,7 @@ import {
   markHomeFeedWeekIntent,
   prefetchHomeFeedWeek,
 } from "@/app/lib/home-feed-intent";
-import { subscribeInteractionGate } from "@/app/lib/interaction-gate";
+import { subscribeFeedScopedGate } from "@/app/lib/interaction-gate";
 import { EventDrawerProvider } from "./EventDrawerProvider";
 import { HomeResetProvider } from "./HomeResetContext";
 
@@ -20,11 +21,10 @@ const HomeFeed = dynamic(
 );
 
 type HomeFeedProps = ComponentProps<typeof HomeFeed> & {
-  /** Si true, hidrata en cuanto el hilo principal esté libre (feed vacío / error SSR). */
   eager?: boolean;
 };
 
-/** Hidrata el feed solo con interacción (mobile) o idle corto (desktop). Sin scroll — PSI lo dispara. */
+/** Hidrata HomeFeed solo con interacción en el área del feed (PSI-safe). */
 export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
   const [ready, setReady] = useState(false);
   const [initialWeekView, setInitialWeekView] = useState(false);
@@ -62,7 +62,7 @@ export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
 
     window.addEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
 
-    const cleanupGate = subscribeInteractionGate({
+    const cleanupGate = subscribeFeedScopedGate({
       eager,
       desktopIdleMs: 1_200,
       onActivate: () => activate(false),

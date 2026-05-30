@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic"
 import { useEffect, useState } from "react"
-import { subscribeInteractionGate } from "@/app/lib/interaction-gate"
+import { subscribeFeedScopedGate } from "@/app/lib/interaction-gate"
 
 const FeedFreshness = dynamic(
   () => import("./FeedFreshness").then((mod) => mod.FeedFreshness),
@@ -13,12 +13,11 @@ type Props = {
   initialEventCount: number
 }
 
-/** Monta frescura del feed tras interacción (mobile) o idle (desktop). */
 export function FeedFreshnessSlot({ initialEventCount }: Props) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    return subscribeInteractionGate({
+    return subscribeFeedScopedGate({
       desktopIdleMs: 3_500,
       onActivate: () => setReady(true),
     })

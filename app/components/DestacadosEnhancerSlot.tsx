@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { subscribeInteractionGate } from "@/app/lib/interaction-gate";
+import { isTouchPreferred, subscribeFeedScopedGate } from "@/app/lib/interaction-gate";
 import type { EventRow } from "./types";
 
 type RowProps = {
@@ -21,12 +21,11 @@ const DestacadosEnhancer = dynamic(
   { ssr: false, loading: () => null }
 );
 
-/** Carrusel interactivo — solo tras interacción (no en PSI mobile). */
 export function DestacadosEnhancerSlot(props: RowProps) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    return subscribeInteractionGate({
+    return subscribeFeedScopedGate({
       desktopIdleMs: 2_000,
       onActivate: () => setReady(true),
     });

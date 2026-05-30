@@ -27,20 +27,13 @@ export function SpeedInsights() {
     if (!enabled) return;
 
     let cancelled = false;
-    const activate = () => {
+    const fallback = window.setTimeout(() => {
       if (!cancelled) setReady(true);
-    };
-
-    const onInteract = () => activate();
-    window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
-    window.addEventListener("keydown", onInteract, { passive: true, once: true });
-    const fallback = window.setTimeout(activate, 45_000);
+    }, 45_000);
 
     return () => {
       cancelled = true;
       window.clearTimeout(fallback);
-      window.removeEventListener("pointerdown", onInteract);
-      window.removeEventListener("keydown", onInteract);
       deferClientStateUpdate(() => setReady(false));
     };
   }, [enabled]);

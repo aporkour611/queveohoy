@@ -6,14 +6,25 @@ export function isTouchPreferred(): boolean {
   return coarse || narrow
 }
 
+const FEED_SCOPE_SELECTOR =
+  "#feed-controls-ssr, .qvh-home-feed-slot, [data-qvh-feed-activate]"
+
+function isFeedScopedTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false
+  return Boolean(target.closest(FEED_SCOPE_SELECTOR))
+}
+
 export type InteractionGateOptions = {
   eager?: boolean
   desktopIdleMs?: number
   onActivate?: () => void
 }
 
-/** Activa tras interacción real; en desktop permite idle corto. Sin scroll (PSI lo dispara). */
-export function subscribeInteractionGate({
+/**
+ * Activa solo con clic/toque dentro del feed o idle en desktop ancho.
+ * PSI/Lighthouse hace pointerdown fuera del feed — no debe cargar HomeFeed.
+ */
+export function subscribeFeedScopedGate({
   eager = false,
   desktopIdleMs = 1_200,
   onActivate,
@@ -33,17 +44,29 @@ export function subscribeInteractionGate({
     fallback = window.setTimeout(activate, desktopIdleMs)
   }
 
-  const onInteract = () => activate()
+  const onPointer = (event: Event) => {
+    if (!isFeedScopedTarget(event.target)) return
+    activate()
+  }
 
-  window.addEventListener("pointerdown", onInteract, { passive: true, once: true })
-  window.addEventListener("touchstart", onInteract, { passive: true, once: true })
-  window.addEventListener("keydown", onInteract, { passive: true, once: true })
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key !== "Enter" && event.key !== " ") return
+    if (!isFeedScopedTarget(event.target)) return
+    activate()
+  }
+
+  document.addEventListener("pointerdown", onPointer, { passive: true })
+  document.addEventListener("keydown", onKey, { passive: true })
 
   return () => {
     cancelled = true
     if (fallback !== undefined) window.clearTimeout(fallback)
-    window.removeEventListener("pointerdown", onInteract)
-    window.removeEventListener("touchstart", onInteract)
-    window.removeEventListener("keydown", onInteract)
+    document.removeEventListener("pointerdown", onPointer)
+    document.removeEventListener("keydown", onKey)
   }
+}
+
+/** @deprecated Prefer subscribeFeedScopedGate on home feed paths */
+export function subscribeInteractionGate(options: InteractionGateOptions): () => void {
+  return subscribeFeedScopedGate(options)
 }

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { isTouchPreferred } from "@/app/lib/interaction-gate";
 
 const NavActionPlaceholder = () => (
   <span className="fh-nav-action-placeholder" aria-hidden />
@@ -40,11 +41,15 @@ export function HomeNavActions() {
     const onInteract = () => activate();
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
     window.addEventListener("keydown", onInteract, { passive: true, once: true });
-    const fallback = window.setTimeout(activate, 2_000);
+
+    let fallback: number | undefined;
+    if (!isTouchPreferred()) {
+      fallback = window.setTimeout(activate, 2_000);
+    }
 
     return () => {
       cancelled = true;
-      window.clearTimeout(fallback);
+      if (fallback !== undefined) window.clearTimeout(fallback);
       window.removeEventListener("pointerdown", onInteract);
       window.removeEventListener("keydown", onInteract);
     };

@@ -25,23 +25,8 @@ export function CookieConsentRoot({ children }: { children: ReactNode }) {
   const [promptsReady, setPromptsReady] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
-
-    const activate = () => {
-      if (!cancelled) setPromptsReady(true);
-    };
-
-    const onInteract = () => activate();
-    window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
-    window.addEventListener("keydown", onInteract, { passive: true, once: true });
-    const fallback = window.setTimeout(activate, 45_000);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(fallback);
-      window.removeEventListener("pointerdown", onInteract);
-      window.removeEventListener("keydown", onInteract);
-    };
+    const fallback = window.setTimeout(() => setPromptsReady(true), 45_000);
+    return () => window.clearTimeout(fallback);
   }, []);
 
   return (

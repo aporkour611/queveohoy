@@ -4,7 +4,7 @@ import dynamic from "next/dynamic"
 import { useEffect, useState } from "react"
 import type { EventRow } from "./types"
 import { hasPreferenceConsent } from "../lib/cookie-consent"
-import { subscribeInteractionGate } from "../lib/interaction-gate"
+import { subscribeFeedScopedGate } from "../lib/interaction-gate"
 import { readStoredUserPlatforms } from "../lib/user-platforms-client"
 
 const TonightForYouSection = dynamic(
@@ -23,12 +23,11 @@ function readStoredPlatforms(): string[] {
   return readStoredUserPlatforms()
 }
 
-/** Solo hidrata «Para ti» tras interacción y si hay plataformas guardadas. */
 export function TonightForYouPersonalizer({ events, todayKey }: Props) {
   const [personalize, setPersonalize] = useState(false)
 
   useEffect(() => {
-    return subscribeInteractionGate({
+    return subscribeFeedScopedGate({
       desktopIdleMs: 4_000,
       onActivate: () => {
         const platforms = readStoredPlatforms()

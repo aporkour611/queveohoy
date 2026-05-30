@@ -897,7 +897,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: default;
+  cursor: pointer;
+  font: inherit;
+  border: none;
+  background: transparent;
+  appearance: none;
 }
 
 .qvh-feed-controls-ssr [data-qvh-week-view] {
