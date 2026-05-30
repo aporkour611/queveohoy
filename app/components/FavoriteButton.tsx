@@ -4,7 +4,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useCallback, useEffect, useState, type MouseEvent } from "react"
 import { createBrowserClient, isSupabaseConfigured } from "@/app/lib/supabase/browser-client"
-import "../destacados.css"
 
 type Props = {
   eventId: number

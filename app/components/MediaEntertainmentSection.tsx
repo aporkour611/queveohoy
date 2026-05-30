@@ -1,6 +1,5 @@
 "use client";
 
-import "../media.css";
 import type { EventRow } from "./types";
 import { CatalogMediaSection } from "./CatalogMediaSection";
 import { TvBroadcastSection } from "./TvBroadcastSection";

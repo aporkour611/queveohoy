@@ -13,7 +13,7 @@ const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
   weight: ["800"],
-  preload: true,
+  preload: false,
   adjustFontFallback: true,
   display: "swap",
   fallback: ["Arial Narrow", "Arial", "sans-serif"],
@@ -39,7 +39,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link rel="preconnect" href="https://image.tmdb.org" />
+        <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://crests.football-data.org" />
         <link
           rel="alternate"

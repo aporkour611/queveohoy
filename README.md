@@ -72,7 +72,7 @@ Ingesta: fútbol, F1, MotoGP, UFC, baloncesto, e-sports, TMDB, TV española, etc
 ## CI/CD
 
 - **PR → main:** lint + tests (`.github/workflows/validate.yml`)
-- **Push → main:** lint + tests + build Vercel + deploy (`.github/workflows/deploy.yml`)
+- **Push → main:** lint + tests + `vercel build` + deploy prebuilt (`.github/workflows/deploy.yml`)
 
 ## Licencia
 

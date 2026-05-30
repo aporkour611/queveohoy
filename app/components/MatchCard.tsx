@@ -1,9 +1,5 @@
 "use client";
 
-import "../futbolhoy-feed.css";
-import "../media.css";
-import "../roland-garros.css";
-import "../basket-duel.css";
 import { memo, startTransition, useCallback, useMemo, useState, type ReactNode } from "react";
 import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls, isEsportsSport } from "../lib/esports";

@@ -43,6 +43,11 @@ build.log
 # vercel
 .vercel
 
+# lighthouse / local probes
+lighthouse-*.json
+tmp-*.html
+tmp-*.xml
+
 # local verification artifacts
 _hf.json
 hf.json

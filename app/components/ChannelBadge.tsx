@@ -1,6 +1,5 @@
 "use client";
 
-import "../channel-badges.css";
 import { channelStyle } from "../lib/channels";
 
 type BadgeVariant = "match" | "spotlight" | "inline";
