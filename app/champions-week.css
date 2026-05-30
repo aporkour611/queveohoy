@@ -371,20 +371,24 @@
   pointer-events: none;
 }
 
-/* Feed block */
+/* Feed block — misma caja que el resto de categorías (sin sangrado lateral) */
 .qvh-cl-week-feed-block {
-  margin: 0 calc(-1 * var(--qvh-layout-gutter)) 12px;
-  padding: 0 var(--qvh-layout-gutter) 12px;
-  border-radius: 0;
-  border: 1px solid rgba(120, 140, 255, 0.18);
-  border-left: none;
-  border-right: none;
-  background: linear-gradient(180deg, rgba(10, 6, 72, 0.35) 0%, transparent 100%);
+  margin-bottom: 10px;
+  padding: 12px 10px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(120, 140, 255, 0.22);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 6, 72, 0.42) 0%,
+    rgba(10, 10, 14, 0.88) 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .qvh-cl-week-feed-block .fh-comp-header {
-  margin: 0 calc(-1 * var(--qvh-layout-gutter));
-  padding: 14px var(--qvh-layout-gutter);
+  margin: -12px -10px 10px;
+  padding: 14px 12px;
+  border-radius: 14px 14px 0 0;
   background: linear-gradient(90deg, #0a0648 0%, #180878 50%, #0a0648 100%);
   border-bottom: 2px solid rgba(201, 162, 39, 0.65);
 }
@@ -403,6 +407,17 @@
   border: 2px solid rgba(201, 162, 39, 0.55);
   background: linear-gradient(180deg, #dee7f6 0%, #c8d8f0 100%);
   box-shadow: 0 8px 28px rgba(25, 48, 86, 0.25);
+}
+
+.fh-match_championsleague-final.fh-match-media-spotlight {
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.fh-match_championsleague-final.fh-match-media-spotlight .fh-media-spotlight-body {
+  background: #fff;
 }
 
 .fh-match_championsleague-final .fh-m-comp {
