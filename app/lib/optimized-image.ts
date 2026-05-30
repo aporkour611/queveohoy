@@ -1,7 +1,10 @@
 import { isAllowedRemoteImageUrl, safeRemoteImageUrl } from "./remote-image";
 
 /** Calidad por defecto para pósters (debe estar en next.config `images.qualities`). */
-export const IMAGE_QUALITY = 75;
+export const IMAGE_QUALITY = 68;
+
+/** Escudos y logos pequeños. */
+export const CREST_IMAGE_QUALITY = 60;
 
 /** Destacados above-the-fold: tarjetas ~236–320px de ancho, visual 132px alto. */
 export const SPOTLIGHT_IMAGE_QUALITY = 62;

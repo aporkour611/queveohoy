@@ -4,11 +4,13 @@ import Image from "next/image";
 import { useState } from "react";
 import {
   canOptimizeImageSrc,
+  CREST_IMAGE_QUALITY,
   IMAGE_QUALITY,
   POSTER_SIZES,
   SPOTLIGHT_IMAGE_QUALITY,
   type PosterSizeVariant,
 } from "../lib/optimized-image";
+import { POSTER_BLUR_DATA_URL } from "../lib/premium-images";
 import { safeRemoteImageUrl } from "../lib/remote-image";
 import { useLazyInView } from "../lib/use-lazy-in-view";
 
@@ -50,11 +52,19 @@ export function RemotePoster({
   const shouldLoad = priority || inView;
   const sizes = POSTER_SIZES[sizeVariant];
   const quality =
-    sizeVariant === "spotlight" ? SPOTLIGHT_IMAGE_QUALITY : IMAGE_QUALITY;
+    sizeVariant === "spotlight"
+      ? SPOTLIGHT_IMAGE_QUALITY
+      : sizeVariant === "crest"
+        ? CREST_IMAGE_QUALITY
+        : IMAGE_QUALITY;
   const imgStyle = objectPosition ? { objectPosition } : undefined;
 
   return (
-    <div ref={ref} className={className} aria-hidden>
+    <div
+      ref={ref}
+      className={`${className}${shouldLoad ? "" : " qvh-remote-poster-pending"}`}
+      aria-hidden
+    >
       {shouldLoad && isSvg ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -77,6 +87,8 @@ export function RemotePoster({
           sizes={sizes}
           quality={quality}
           priority={priority}
+          placeholder="blur"
+          blurDataURL={POSTER_BLUR_DATA_URL}
           fetchPriority={priority ? "high" : undefined}
           onError={handleError}
         />

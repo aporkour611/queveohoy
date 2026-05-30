@@ -1,17 +1,12 @@
 "use client";
 
-import { memo, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { memo, useEffect, useState } from "react";
 import {
-  FILTER_GROUPS,
   QUICK_FILTERS,
   formatFilterSummary,
   sportLabel,
 } from "../lib/filter-config";
-import {
-  categoryGroupId,
-  categoryGroupLabelColor,
-  categoryGroupShortLabel,
-} from "../lib/category-visuals";
+import { CategoryGroupsPanel } from "./CategoryGroupsPanel";
 import { CategoryIcon } from "./CategoryIcon";
 
 type Props = {
@@ -54,17 +49,14 @@ export const EventFilters = memo(function EventFilters({
     if (!isControlled) setInternalOpen(next);
     onOpenChange?.(next);
   };
-  const draftSet = useMemo(() => new Set(draft), [draft]);
   const isToolbar = variant === "toolbar";
   const hasPendingChanges = !sameSelection(draft, selected);
   const canSearch = draft.length > 0 || hasPendingChanges;
 
   function toggle(id: string) {
-    if (draftSet.has(id)) {
-      setDraft(draft.filter((s) => s !== id));
-      return;
-    }
-    setDraft([...draft, id]);
+    setDraft((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
   }
 
   function handleSearch() {
@@ -181,48 +173,16 @@ export const EventFilters = memo(function EventFilters({
     >
       {isFeaturedMode && (
         <p className="fh-filters-hint">
-          Ajusta el calendario por deporte o sección. Elige categorías y pulsa
-          Buscar para ver el calendario filtrado.
+          Elige un grupo principal o afina con subgrupos. Pulsa Buscar para
+          actualizar el calendario.
         </p>
       )}
 
-      {FILTER_GROUPS.map((group) => (
-        <div key={group.id} className="fh-filter-group" data-group={group.id}>
-          <span className="fh-filter-group-label" data-group={group.id}>
-            <CategoryIcon id={group.id} size={18} />
-            {group.label}
-          </span>
-          <div className="fh-filter-chips fh-filter-chips-icon">
-            {group.options.map((opt) => {
-              const on = draftSet.has(opt.id);
-              const groupLabel = categoryGroupShortLabel(categoryGroupId(opt.id));
-              const groupColor = categoryGroupLabelColor(opt.id);
-              return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  data-sport={opt.id}
-                  data-group={group.id}
-                  className={`fh-filter-chip fh-filter-chip-icon ${on ? "active" : ""}`}
-                  style={
-                    {
-                      "--qvh-cat-group-color": groupColor,
-                    } as CSSProperties
-                  }
-                  onClick={() => toggle(opt.id)}
-                  aria-pressed={on}
-                >
-                  <span className="fh-filter-chip-icon-wrap">
-                    <CategoryIcon id={opt.id} size={28} />
-                  </span>
-                  <span className="fh-filter-chip-label">{opt.label}</span>
-                  <span className="fh-filter-chip-group">{groupLabel}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+      <CategoryGroupsPanel
+        draft={draft}
+        onToggleSport={toggle}
+        onSelectGroup={setDraft}
+      />
 
       <div className="fh-filters-actions">
         {(draft.length > 0 || selected.length > 0) && (

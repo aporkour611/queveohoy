@@ -172,8 +172,10 @@ function IconPaths({ iconId }: { iconId: CategoryVisualKey }) {
           <path
             {...stroke}
             strokeWidth="1.5"
-            d="M12 3.5l1.8 5.5h5.7l-4.6 3.4 1.8 5.5L12 14.5l-4.7 3.4 1.8-5.5-4.6-3.4h5.7L12 3.5z"
+            d="M12 8.5c2.8 0 5 2.1 5 5.2 0 2.4-1.6 4.5-4 5.1-.6.1-1 .5-1.2 1.1l-.3 1.1h-2.5l-.3-1.1c-.2-.6-.6-1-1.2-1.1-2.4-.6-4-2.7-4-5.1 0-3.1 2.2-5.2 5-5.2z"
           />
+          <circle cx="10" cy="13.5" r="1" fill="currentColor" stroke="none" />
+          <circle cx="14" cy="13.5" r="1" fill="currentColor" stroke="none" />
         </>
       )
     case "tv":
@@ -188,8 +190,9 @@ function IconPaths({ iconId }: { iconId: CategoryVisualKey }) {
     case "tv-reality":
       return (
         <>
-          <circle {...stroke} strokeWidth="1.5" cx="12" cy="10" r="3.5" />
-          <path {...stroke} strokeWidth="1.5" d="M6 19c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+          <rect {...stroke} strokeWidth="1.5" x="5" y="7" width="14" height="10" rx="2" />
+          <path {...stroke} strokeWidth="1.5" d="M9 7V5h6v2M12 4v3" />
+          <circle {...stroke} strokeWidth="1.5" cx="12" cy="12" r="2.5" />
         </>
       )
     case "tv-concurso":

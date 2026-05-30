@@ -8,6 +8,33 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "10.0.0",
+    date: "2026-05-30",
+    title: "Grupos neon — design system v10",
+    highlights: [
+      "Panel de filtros con barras GRUPOS PRINCIPALES (mockup aprobado por diseño)",
+      "Subgrupos en tiles cuadrados con iconos SVG neon y glow por categoría",
+      "Revisión de diseño documentada en docs/DISENO-REVISION-GRUPOS-v10.md",
+      "Rallye «Próximamente»; MotoGP renombrado; TV streams/directos unificados",
+      "Herencia v7: LCP premium, semana 1-clic, view transitions",
+      "Roadmap consolidado v8→v10 en docs/ROADMAP-10.0.md",
+    ],
+  },
+  {
+    version: "7.0.0",
+    date: "2026-05-30",
+    title: "Experiencia premium — v7",
+    highlights: [
+      "Core Web Vitals: LCP TMDB directo, SSR sin pósters bajo destacados, prefetch semanal",
+      "Imágenes AVIF/WebP con blur-up, shimmer lazy y compresión batch (`npm run posters:compress`)",
+      "API `/api/events?scope=week` optimizada (7 días exactos, caché CDN)",
+      "Preconnect a TMDB, TheSportsDB y MAL; view transitions Hoy ↔ Semana",
+      "Semana completa: 1 clic desde shell SSR + hidratación instantánea",
+      "Scripts `npm run perf:budget` y `npm run verify:prod:v7`",
+      "Roadmap: docs/ROADMAP-7.0.md",
+    ],
+  },
+  {
     version: "5.0.0",
     date: "2026-05-30",
     title: "Personalización e IA — v5",

@@ -4,21 +4,15 @@ Horizonte simulado a partir del estado **v2.0.0** (septiembre 2026), como si el 
 
 ---
 
-## Estado actual — v4.0.0 «Universo Queveo (web)»
+## Estado actual — v10.0.0 «Grupos neon»
 
 | Área | Estado |
 |------|--------|
-| Feed multi-día + filtros | ✅ Producción |
-| 15 hubs SEO + 14 guías | ✅ |
-| Cron 11 fuentes + admin v2 + alertas | ✅ |
-| Push + PWA + legal completo | ✅ |
-| Cuenta v2 / favoritos / plataformas | ✅ v4.0 |
-| API pública v1 + búsqueda + paginación | ✅ v4.0 |
-| Widget embed | ✅ v2.0 |
-| E2E Playwright | ✅ v2.0 |
-| Champions Week (final UCL) | ✅ v4.0 |
-| LCP móvil | ⚠️ Mejoras continuas |
-| App nativa / IA asistente / B2B dashboard | 📋 Ver [ROADMAP-4.0.md](./ROADMAP-4.0.md) |
+| Grupos/subgrupos premium (mockup diseño) | ✅ v10.0 |
+| Core Web Vitals / imágenes premium | ✅ v7.0 |
+| Personalización + IA asistente | ✅ v5.0 |
+| API pública v1 + cuenta v2 | ✅ v4.0 |
+| Dark mode / rally activo | 📋 [ROADMAP-10.0.md](./ROADMAP-10.0.md) v10.1+ |
 
 ---
 

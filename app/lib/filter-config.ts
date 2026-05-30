@@ -49,7 +49,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
     label: "Motor",
     options: [
       { id: "formula1", label: "F1" },
-      { id: "motos", label: "Motos" },
+      { id: "motos", label: "MotoGP" },
     ],
   },
   {
@@ -76,7 +76,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
     options: [
       { id: "tv-reality", label: "Reality" },
       { id: "tv-concurso", label: "Concursos" },
-      { id: "tv-directo", label: "TV" },
+      { id: "tv-directo", label: "Streams y directos" },
     ],
   },
 ];

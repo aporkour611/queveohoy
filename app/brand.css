@@ -1369,6 +1369,10 @@
 
 .qvh-feed-filters.is-open .fh-filters-body {
   animation: qvh-filters-slide-in 0.22s ease-out;
+  max-height: min(72vh, 920px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }
 
 @keyframes qvh-filters-slide-in {
@@ -1848,5 +1852,47 @@ body:has(.qvh-cookie-banner) .qvh-scroll-top.is-visible {
     min-width: 0;
     max-width: 100%;
     box-sizing: border-box;
+  }
+}
+
+/* ── v7: imágenes premium + view transitions ── */
+.qvh-remote-poster-pending {
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0.04) 8%,
+    rgba(255, 255, 255, 0.1) 18%,
+    rgba(255, 255, 255, 0.04) 33%
+  );
+  background-size: 200% 100%;
+  animation: qvh-poster-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes qvh-poster-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@supports (view-transition-name: none) {
+  .fh-feed-pane-today,
+  .fh-feed-pane-week {
+    view-transition-name: qvh-feed-pane;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qvh-remote-poster-pending {
+    animation: none;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .qvh-brand-loader-tile {
+    animation: none !important;
+    opacity: 0.85;
+  }
+
+  ::view-transition-old(qvh-feed-pane),
+  ::view-transition-new(qvh-feed-pane) {
+    animation: none;
   }
 }

@@ -11,6 +11,10 @@ import {
   buildSpotlightImageProps,
   spotlightCoverImageStyle,
 } from "../lib/optimized-image";
+import {
+  prioritySpotlightImgProps,
+  resolvePrioritySpotlightSrc,
+} from "../lib/premium-images";
 import { safeRemoteImageUrl } from "../lib/remote-image";
 import { RemotePoster } from "./RemotePoster";
 import { TeamCrest } from "./TeamCrest";
@@ -43,6 +47,23 @@ function SpotlightCoverArt({
     ? "qvh-spotlight-cover-img"
     : "qvh-remote-poster-img";
   const imgStyle = spotlightCoverImageStyle(cover.objectPosition);
+
+  if (priority) {
+    const resolved = resolvePrioritySpotlightSrc(cover.url);
+    if (resolved?.mode === "lcp-direct") {
+      return (
+        <div className={coverClass} aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={resolved.src}
+            alt=""
+            className={imgClass}
+            {...prioritySpotlightImgProps(cover.objectPosition)}
+          />
+        </div>
+      );
+    }
+  }
 
   const built = buildSpotlightImageProps(cover.url, priority);
   if (built) {

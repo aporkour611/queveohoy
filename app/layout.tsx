@@ -44,7 +44,10 @@ export default function RootLayout({
     >
       <head>
         <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://r2.thesportsdb.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://crests.football-data.org" />
+        <link rel="dns-prefetch" href="https://cdn.myanimelist.net" />
+        <link rel="dns-prefetch" href="https://www.thesportsdb.com" />
         <link
           rel="alternate"
           type="application/rss+xml"

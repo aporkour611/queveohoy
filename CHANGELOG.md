@@ -2,6 +2,44 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [10.0.0] - 2026-05-30
+
+### Added
+- Panel **Grupos principales + Subgrupos** neon (mockup aprobado, `CategoryGroupsPanel`)
+- `app/lib/filter-groups-design.ts` — tokens visuales y taxonomía v10
+- `app/category-groups.css` — barras con watermark, tiles glow SVG
+- Documentación `docs/DISENO-REVISION-GRUPOS-v10.md` y `docs/ROADMAP-10.0.md`
+- Rallye deshabilitado «Próximamente»; script `verify:prod:v10`
+
+### Changed
+- Versión del producto: `10.0.0`
+- Filtros detallados reemplazan chips legacy al abrir «Más»
+- MotoGP label; TV «Streams y directos»
+
+## [7.0.0] - 2026-05-30
+
+### Added
+- Roadmap `docs/ROADMAP-7.0.md` — experiencia premium y meta Performance 100
+- `app/lib/premium-images.ts` — LCP unificado, blur placeholder, priority resolver
+- Script `npm run posters:compress` (sharp batch en assets locales)
+- Script `npm run perf:budget` (Lighthouse mobile con presupuesto LCP/CLS)
+- Script `npm run verify:prod:v7`
+- API `GET /api/events?scope=week` (ventana 7 días tight, caché separada)
+- Prefetch semanal en HTML + idle; shell SSR «Semana completa» interactivo
+- Preconnect TheSportsDB + dns-prefetch MAL/TheSportsDB
+- View Transitions CSS en cambio de vista del feed; `prefers-reduced-motion`
+
+### Changed
+- Versión del producto: `7.0.0`
+- SSR home: `omitCovers` en feed estático (protege LCP de destacados)
+- Cliente priority: TMDB w342 directo alineado con SSR (`FeaturedEventCard`)
+- Calidades imagen: spotlight 62, feed 68, crest 60
+- `RemotePoster`: blur-up placeholder + skeleton shimmer pending
+
+### Fixed
+- Semana completa: estado `fullWeekReady` ya no se confunde con destacados
+- Carrera prefetch/clic en vista semanal (`wantWeekTabsRef`)
+
 ## [5.0.0] - 2026-05-30
 
 ### Added

@@ -114,6 +114,20 @@ function restoreScrollY(y: number) {
   window.scrollTo({ left: 0, top: y, behavior: "instant" });
 }
 
+function runFeedViewTransition(update: () => void) {
+  if (
+    typeof document !== "undefined" &&
+    "startViewTransition" in document &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    document.startViewTransition(() => {
+      update();
+    });
+    return;
+  }
+  update();
+}
+
 export function HomeFeed({
   initialEvents = [],
   initialDestacadosEvents = [],
@@ -671,9 +685,11 @@ export function HomeFeed({
     wantWeekTabsRef.current = true;
     setSsrDayHeaderVisible(false);
     pinScrollForViewToggle();
-    startTransition(() => {
-      setWeekView(true);
-      if (fullWeekReady) setHasFullWeek(true);
+    runFeedViewTransition(() => {
+      startTransition(() => {
+        setWeekView(true);
+        if (fullWeekReady) setHasFullWeek(true);
+      });
     });
     if (!fullWeekReady) {
       void ensureFullWeek();
@@ -682,7 +698,9 @@ export function HomeFeed({
 
   const closeWeekView = useCallback(() => {
     pinScrollForViewToggle();
-    startTransition(() => setWeekView(false));
+    runFeedViewTransition(() => {
+      startTransition(() => setWeekView(false));
+    });
   }, [pinScrollForViewToggle]);
 
   useLayoutEffect(() => {
