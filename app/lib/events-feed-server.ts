@@ -110,6 +110,13 @@ const FEED_TIMEOUT_FALLBACK = {
   error: "La agenda tardó demasiado en cargar. Reintenta en unos segundos.",
 };
 
+function isUncacheableFeedResult(result: {
+  events: EventRow[];
+  error: string | null;
+}): boolean {
+  return Boolean(result.error) && result.events.length === 0;
+}
+
 async function loadDestacadosEvents(): Promise<{
   events: EventRow[];
   error: string | null;
@@ -122,7 +129,13 @@ async function loadDestacadosEvents(): Promise<{
 }
 
 const getCachedDestacadosFeed = unstable_cache(
-  () => loadDestacadosEvents(),
+  async () => {
+    const result = await loadDestacadosEvents();
+    if (isUncacheableFeedResult(result)) {
+      throw new Error(result.error ?? "destacados-feed-empty");
+    }
+    return result;
+  },
   ["destacados-feed-events"],
   { revalidate: FEED_REVALIDATE_SECONDS, tags: ["feed", "destacados"] }
 );
@@ -180,24 +193,50 @@ async function loadFeedEvents(
 
 /** dayCount + tight forman parte de la clave de cache (evita colisión home/full). */
 const getCachedFeed = unstable_cache(
-  (dayCount: number, tight: boolean) => loadFeedEvents(dayCount, tight),
+  async (dayCount: number, tight: boolean) => {
+    const result = await loadFeedEvents(dayCount, tight);
+    if (isUncacheableFeedResult(result)) {
+      throw new Error(result.error ?? "feed-empty");
+    }
+    return result;
+  },
   ["feed-events"],
   { revalidate: FEED_REVALIDATE_SECONDS, tags: ["feed"] }
 );
 
+async function readCachedFeed<T>(
+  loader: () => Promise<T>,
+  fallback: T
+): Promise<T> {
+  try {
+    return await loader();
+  } catch {
+    return fallback;
+  }
+}
+
 /** Feed completo (7 días) — hubs, sitemap, semana completa. */
 export async function fetchFeedEvents() {
-  return getCachedFeed(FEED_DAY_COUNT, false);
+  return readCachedFeed(
+    () => getCachedFeed(FEED_DAY_COUNT, false),
+    FEED_TIMEOUT_FALLBACK
+  );
 }
 
 /** Feed ligero para la home (hoy + mañana). */
 export async function fetchHomeFeedEvents() {
-  return getCachedFeed(HOME_SSR_DAY_COUNT, true);
+  return readCachedFeed(
+    () => getCachedFeed(HOME_SSR_DAY_COUNT, true),
+    FEED_TIMEOUT_FALLBACK
+  );
 }
 
 /** Semana + estrenos editoriales recientes para Destacados. */
 export async function fetchDestacadosFeedEvents() {
-  return getCachedDestacadosFeed();
+  return readCachedFeed(
+    () => getCachedDestacadosFeed(),
+    FEED_TIMEOUT_FALLBACK
+  );
 }
 
 /** Dedup en la misma petición (generateMetadata + Page). */

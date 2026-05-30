@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { EventRow } from "../components/types";
 import {
+  eventsForHomeSsrHtml,
   pickFeaturedEvents,
   pickFilteredEvents,
   pickHomePageEvents,
@@ -33,6 +34,29 @@ describe("pickFilteredEvents", () => {
 
     expect(filtered.length).toBeGreaterThan(home.length);
     expect(filtered).toHaveLength(12);
+  });
+});
+
+describe("eventsForHomeSsrHtml", () => {
+  it("includes futbol without crests that pickHomePageEvents would drop", () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const noCrests: EventRow = {
+      id: 1,
+      title: "Getafe vs Alavés",
+      date: today,
+      time: "21:00",
+      sport: "futbol",
+      home_team: "Getafe",
+      away_team: "Alavés",
+      competition: "Amistoso de pretemporada",
+      external_id: "no_crests",
+      source: "manual",
+    };
+
+    expect(pickHomePageEvents([noCrests])).toHaveLength(0);
+    const ssr = eventsForHomeSsrHtml([noCrests]);
+    expect(ssr).toHaveLength(1);
+    expect(ssr[0]?.external_id).toBe("no_crests");
   });
 });
 

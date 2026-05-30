@@ -1,7 +1,7 @@
 import type { EventRow } from "../components/types";
 import { resolveFeedSport } from "./anime-classify";
 import { sportFilterGroupId } from "./filter-config";
-import { eventCanDisplay } from "./event-crests";
+import { eventCanDisplay, filterPublishableEvents } from "./event-crests";
 import {
   HOME_DAILY_EVENT_CAP,
   HOME_SECTION_MAX_DEFAULT,
@@ -350,4 +350,21 @@ export function trimHomeSsrEvents(events: EventRow[]): EventRow[] {
   }
 
   return sortByPriority([...byId.values()]).slice(0, HOME_SSR_EVENT_CAP);
+}
+
+/**
+ * HTML estático de la home: merge home+destacados, filtro publicable (sin exigir escudos)
+ * y tope diario razonable para SEO/LCP.
+ */
+export function eventsForHomeSsrHtml(events: EventRow[]): EventRow[] {
+  const mapped = filterEventsInWeek(
+    mapEventsToTimezone(events, MADRID_TZ),
+    MADRID_TZ,
+    HOME_SSR_DAY_COUNT
+  );
+
+  return sortByPriority(filterPublishableEvents(mapped)).slice(
+    0,
+    HOME_DAILY_EVENT_CAP
+  );
 }

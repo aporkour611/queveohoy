@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
 import { FeedControlsShell } from "../components/FeedControlsShell";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
 import { HomeFeedGate } from "../components/HomeFeedGate";
 import { TonightForYouSection } from "../components/TonightForYouSection";
-import { AssistantFab } from "../components/AssistantPanel";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
@@ -15,7 +15,7 @@ import { HomeNav } from "../components/HomeNav";
 import { HomeResetProvider } from "../components/HomeResetContext";
 import { SiteFooter } from "../components/SiteFooter";
 import { SeoGuidesPromo } from "../components/SeoGuidesPromo";
-import { trimHomeSsrEvents } from "../lib/featured";
+import { eventsForHomeSsrHtml } from "../lib/featured";
 import {
   getDestacadosFeedEventsForPage,
   getHomeFeedEventsForPage,
@@ -44,14 +44,31 @@ async function loadHomePageData(): Promise<{
   weekEvents: Awaited<ReturnType<typeof getDestacadosFeedEventsForPage>>["events"];
 }> {
   return raceWithTimeout(
-    Promise.all([
+    Promise.allSettled([
       getHomeFeedEventsForPage(),
       getDestacadosFeedEventsForPage(),
-    ]).then(([{ events, error }, { events: weekEvents }]) => ({
-      events,
-      error,
-      weekEvents,
-    })),
+    ]).then((results) => {
+      const home =
+        results[0].status === "fulfilled"
+          ? results[0].value
+          : { events: [] as EventRow[], error: "No se pudo cargar la agenda de hoy." };
+      const destacados =
+        results[1].status === "fulfilled"
+          ? results[1].value
+          : { events: [] as EventRow[], error: "No se pudo cargar destacados." };
+
+      const errors = [home.error, destacados.error].filter(Boolean);
+      return {
+        events: home.events,
+        weekEvents: destacados.events,
+        error:
+          home.events.length === 0 && destacados.events.length === 0
+            ? errors[0] ?? PAGE_DATA_FALLBACK.error
+            : errors.length === 2
+              ? errors.join(" ")
+              : null,
+      };
+    }),
     PAGE_DATA_BUDGET_MS,
     () => PAGE_DATA_FALLBACK
   );
@@ -68,7 +85,8 @@ export function generateMetadata(): Metadata {
 
 export default async function Page() {
   const { events, error, weekEvents } = await loadHomePageData();
-  const ssrEvents = trimHomeSsrEvents(events);
+  const mergedForSsr = mergeFeedEvents(events, weekEvents);
+  const ssrEvents = eventsForHomeSsrHtml(mergedForSsr);
   const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
   const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
   const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
@@ -116,7 +134,6 @@ export default async function Page() {
             </div>
             <SeoGuidesPromo />
             <SiteFooter />
-            <AssistantFab />
           </main>
         </HomeResetProvider>
       </div>

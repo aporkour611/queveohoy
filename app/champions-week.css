@@ -113,6 +113,13 @@
   );
 }
 
+.qvh-cl-week-hero-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .qvh-cl-week-hero::after {
   content: "";
   position: absolute;
@@ -267,7 +274,8 @@
 }
 
 @media (hover: hover) {
-  .qvh-cl-week-hero:hover {
+  .qvh-cl-week-hero-link:hover,
+  .qvh-cl-week-hero:has(.qvh-cl-week-hero-link:hover) {
     box-shadow: inset 0 0 48px rgba(93, 95, 239, 0.12);
   }
 

@@ -13,6 +13,10 @@ import {
   spotlightCoverImageStyle,
 } from "../lib/optimized-image";
 import { safeRemoteImageUrl } from "../lib/remote-image";
+import {
+  resolveTennisPlayerCountry,
+  tennisFlagUrl,
+} from "../lib/tennis-player-country";
 import { EventCardStamp } from "./EventCardStamp";
 
 type Props = {
@@ -107,6 +111,121 @@ function StaticTeamCrest({ src }: { src?: string | null }) {
   );
 }
 
+function fighterInitials(name?: string | null): string {
+  if (!name?.trim()) return "?";
+  const parts = name.trim().split(/\s+/);
+  return parts.length >= 2
+    ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+    : name.slice(0, 2).toUpperCase();
+}
+
+function StaticUfcFightVisual({
+  f1Url,
+  f2Url,
+  f1Name,
+  f2Name,
+  priority = false,
+}: {
+  f1Url?: string | null;
+  f2Url?: string | null;
+  f1Name?: string | null;
+  f2Name?: string | null;
+  priority?: boolean;
+}) {
+  const f1Safe = safeRemoteImageUrl(f1Url);
+  const f2Safe = safeRemoteImageUrl(f2Url);
+
+  return (
+    <div className="qvh-ufc-duel" aria-hidden>
+      <div className="qvh-ufc-fighter">
+        <div className="fh-ufc-fighter-slot">
+          {f1Safe ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={f1Safe}
+              alt=""
+              width={120}
+              height={120}
+              className="qvh-ufc-fighter-img"
+              loading={priority ? "eager" : "lazy"}
+              decoding="async"
+            />
+          ) : (
+            <span className="fh-ufc-fighter-fallback">{fighterInitials(f1Name)}</span>
+          )}
+        </div>
+      </div>
+      <span className="qvh-ufc-vs">vs</span>
+      <div className="qvh-ufc-fighter">
+        <div className="fh-ufc-fighter-slot">
+          {f2Safe ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={f2Safe}
+              alt=""
+              width={120}
+              height={120}
+              className="qvh-ufc-fighter-img"
+              loading={priority ? "eager" : "lazy"}
+              decoding="async"
+            />
+          ) : (
+            <span className="fh-ufc-fighter-fallback">{fighterInitials(f2Name)}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function shortPlayerName(name?: string | null): string {
+  if (!name?.trim()) return "?";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length <= 1) return parts[0];
+  return parts[parts.length - 1];
+}
+
+function StaticRolandGarrosDuelVisual({
+  homeName,
+  awayName,
+}: {
+  homeName?: string | null;
+  awayName?: string | null;
+}) {
+  const home = homeName?.trim();
+  const away = awayName?.trim();
+  if (!home && !away) return null;
+
+  const homeCode = resolveTennisPlayerCountry(home);
+  const awayCode = resolveTennisPlayerCountry(away);
+  const homeFlag = tennisFlagUrl(homeCode);
+  const awayFlag = tennisFlagUrl(awayCode);
+
+  return (
+    <div className="qvh-rg-duel" aria-hidden>
+      <div className="qvh-rg-flags">
+        <div
+          className="qvh-rg-flag qvh-rg-flag-home"
+          style={homeFlag ? { backgroundImage: `url("${homeFlag}")` } : undefined}
+        />
+        <div
+          className="qvh-rg-flag qvh-rg-flag-away"
+          style={awayFlag ? { backgroundImage: `url("${awayFlag}")` } : undefined}
+        />
+        <div className="qvh-rg-flags-center" />
+        <div className="qvh-rg-ball" aria-hidden>
+          <span className="qvh-rg-ball-core" />
+        </div>
+      </div>
+      <div className="qvh-rg-players">
+        <span className="qvh-rg-player qvh-rg-player-home">{shortPlayerName(home)}</span>
+        <span className="qvh-rg-vs">vs</span>
+        <span className="qvh-rg-player qvh-rg-player-away">{shortPlayerName(away)}</span>
+      </div>
+    </div>
+  );
+}
+
 /** Destacados SSR: sin client boundaries ni lazy observers. */
 export function FeaturedEventCardStatic({
   event,
@@ -135,11 +254,13 @@ export function FeaturedEventCardStatic({
       {showVisual ? (
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
+          card.showUfcDuel ? " qvh-spotlight-visual-ufc-duel" : ""
+        }${card.showRolandGarrosDuel || card.showTennisDuel ? " qvh-spotlight-visual-rg-duel" : ""}${
           showTeamDuel ? " fh-media-spotlight-visual-team-duel" : ""
         }${stamp ? " qvh-spotlight-visual-stamped" : ""}`}
       >
         {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
-        {card.coverImage && !showTeamDuel ? (
+        {card.coverImage && !showTeamDuel && !card.showUfcDuel && !card.showRolandGarrosDuel ? (
           <StaticSpotlightCover
             url={card.coverImage.url}
             local={card.coverImage.local}
@@ -147,7 +268,20 @@ export function FeaturedEventCardStatic({
             priority={priority}
           />
         ) : null}
-        {showTeamDuel ? (
+        {card.showUfcDuel ? (
+          <StaticUfcFightVisual
+            f1Url={card.homeCrest}
+            f2Url={card.awayCrest}
+            f1Name={card.homeName}
+            f2Name={card.awayName}
+            priority={priority}
+          />
+        ) : card.showRolandGarrosDuel || card.showTennisDuel ? (
+          <StaticRolandGarrosDuelVisual
+            homeName={card.homeName}
+            awayName={card.awayName}
+          />
+        ) : showTeamDuel ? (
           <div className="qvh-spotlight-duel" aria-hidden>
             <div className="qvh-spotlight-duel-team">
               <StaticTeamCrest src={card.homeCrest} />
@@ -162,7 +296,9 @@ export function FeaturedEventCardStatic({
         ) : null}
         <div className="qvh-spotlight-overlay" aria-hidden />
         <span
-          className={`qvh-spotlight-badge qvh-spotlight-badge-${card.badgeVariant}`}
+          className={`qvh-spotlight-badge qvh-spotlight-badge-${
+            card.showRolandGarrosDuel || card.showTennisDuel ? "rg" : card.badgeVariant
+          }`}
         >
           {card.badge}
         </span>

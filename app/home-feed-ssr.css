@@ -128,8 +128,7 @@
 }
 
 .qvh-home-feed-day-ssr {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 420px;
+  min-height: 0;
 }
 
 .fh-media-spotlight-visual .qvh-remote-poster-img,

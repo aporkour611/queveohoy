@@ -54,7 +54,6 @@ type Props = {
 function CatalogRail({
   label,
   accent,
-  count,
   events,
   carouselClassName,
   cine = false,
@@ -62,7 +61,6 @@ function CatalogRail({
 }: {
   label: string;
   accent: "cine" | "series" | "anime";
-  count: number;
   events: EventRow[];
   carouselClassName: string;
   cine?: boolean;
@@ -78,6 +76,8 @@ function CatalogRail({
 
   if (sortedEvents.length === 0) return null;
 
+  const visibleCount = sortedEvents.length;
+
   return (
     <div
       className={`qvh-catalog-rail-block qvh-feed-category-shell qvh-catalog-rail-accented-${accent}`}
@@ -87,7 +87,7 @@ function CatalogRail({
         <div className={`qvh-catalog-rail-accent qvh-catalog-rail-accent-${accent}`} />
         <div className="qvh-catalog-rail-copy">
           <h4 className="qvh-catalog-rail-title">{label}</h4>
-          <span className="qvh-catalog-rail-count">{count}</span>
+          <span className="qvh-catalog-rail-count">{visibleCount}</span>
         </div>
       </div>
       <CategoryCarousel
@@ -155,7 +155,6 @@ export function CatalogMediaSection({
       <CatalogRail
         label="En cines"
         accent="cine"
-        count={visibleCine.length}
         events={visibleCine}
         carouselClassName="qvh-category-carousel-posters"
         cine
@@ -163,7 +162,6 @@ export function CatalogMediaSection({
       <CatalogRail
         label="Capítulos y series"
         accent="series"
-        count={visibleSeries.length}
         events={visibleSeries}
         carouselClassName="qvh-category-carousel-posters"
         spotlightAspect
@@ -171,7 +169,6 @@ export function CatalogMediaSection({
       <CatalogRail
         label="Anime"
         accent="anime"
-        count={visibleAnime.length}
         events={visibleAnime}
         carouselClassName="qvh-category-carousel-posters qvh-category-carousel-anime"
       />

@@ -161,7 +161,8 @@ export function HomeFeed({
     : deferredSports.length === 0 && selectedSports.length > 0
       ? selectedSports
       : deferredSports;
-  const hasInitialData = initialEvents.length > 0;
+  const hasInitialData =
+    initialEvents.length > 0 || initialDestacadosEvents.length > 0;
 
   const loadEvents = useCallback(async (options?: {
     silent?: boolean;
@@ -191,7 +192,6 @@ export function HomeFeed({
 
       if (!ok || body.error) {
         setLoadError(body.error ?? "No se pudieron cargar los eventos");
-        if (!silent) setEvents([]);
       } else {
         const incoming = body.events ?? [];
         if (fullWeek) {
@@ -212,7 +212,6 @@ export function HomeFeed({
       setLoadError(
         err instanceof Error ? err.message : "No se pudieron cargar los eventos"
       );
-      if (!silent) setEvents([]);
     } finally {
       if (showLoader) {
         setRefreshing(false);
@@ -530,7 +529,9 @@ export function HomeFeed({
       !loading &&
       !refreshing &&
       !filterSearching &&
-      (loadError != null || !hasInitialData);
+      events.length === 0 &&
+      loadError != null &&
+      !hasInitialData;
 
     if (clientHasContent || clientSettledEmpty) {
       ssr.setAttribute("hidden", "");
