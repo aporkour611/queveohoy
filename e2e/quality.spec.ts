@@ -10,6 +10,17 @@ test.describe("a11y landmarks", () => {
     await page.goto("/ruta-no-existe-a11y")
     await expect(page.locator("#main-content")).toBeVisible()
   })
+
+  test("guía expone main-content", async ({ page }) => {
+    await page.goto("/guia/champions-espana")
+    await expect(page.locator("#main-content")).toBeVisible()
+  })
+
+  test("skip link apunta a main-content", async ({ page }) => {
+    await page.goto("/")
+    const skip = page.locator(".qvh-skip-link")
+    await expect(skip).toHaveAttribute("href", "#main-content")
+  })
 })
 
 test.describe("api quality", () => {

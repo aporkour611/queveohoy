@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { EventRow } from "./types";
 import { MatchCard } from "./MatchCard";
+import { PageMain } from "./PageMain";
 import { SiteFooter } from "./SiteFooter";
 import { Logo } from "./Logo";
 import { eventLabel } from "../lib/seo-events";
@@ -34,7 +35,7 @@ export function PartidoPage({ event }: Props) {
         </div>
       </nav>
 
-      <main className="fh-content">
+      <PageMain className="fh-content">
         <div className="fh-container fh-main fh-partido-page">
           <nav className="fh-seo-breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Inicio</Link>
@@ -69,7 +70,7 @@ export function PartidoPage({ event }: Props) {
           </p>
         </div>
         <SiteFooter />
-      </main>
+      </PageMain>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import webpush from "web-push";
+import { isAllowedPushEndpoint } from "./push-endpoint";
 import type { EventRow } from "../components/types";
 import { partidoPath } from "./event-slug";
 import { eventDisplayTitle } from "./event-display";
@@ -286,6 +287,14 @@ export async function upsertPushSubscription(
 ): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
   if (!payload.endpoint || !payload.keys.p256dh || !payload.keys.auth) {
     return { ok: false, error: "Suscripción incompleta" };
+  }
+
+  if (!isAllowedPushEndpoint(payload.endpoint)) {
+    return { ok: false, error: "Endpoint push no permitido" };
+  }
+
+  if (payload.endpoint.length > 2048) {
+    return { ok: false, error: "Endpoint demasiado largo" };
   }
 
   const admin = createSupabaseAdmin();

@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FEED_REVALIDATE_SECONDS } from "@/app/lib/cache-config";
 import {
+  enforceApiRateLimit,
+  rateLimitResponse,
+} from "@/app/lib/api-rate-limit";
+import {
   fetchFeedEvents,
   fetchHomeFeedEvents,
   fetchWeekViewFeedEvents,
 } from "@/app/lib/events-feed-server";
 
 export async function GET(request: NextRequest) {
+  const rate = await enforceApiRateLimit(request, "events");
+  if (!rate.ok) return rateLimitResponse(rate.retryAfterSec);
+
   const scope = request.nextUrl.searchParams.get("scope");
   const { events, error } =
     scope === "home"

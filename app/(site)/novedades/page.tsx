@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "../../components/Logo";
+
+import { PageMain } from "../../components/PageMain";
 import { SiteFooter } from "../../components/SiteFooter";
 import { PRODUCT_RELEASES } from "../../lib/product-releases";
 import { pageMetadata } from "../../lib/seo";
@@ -28,7 +30,7 @@ export default function NovedadesPage() {
           <Logo />
         </div>
       </nav>
-      <main className="fh-content">
+      <PageMain className="fh-content">
         <div className="qvh-legal-page fh-container qvh-releases-page">
           <h1>Novedades</h1>
           <p className="qvh-legal-updated">
@@ -59,7 +61,7 @@ export default function NovedadesPage() {
           </p>
         </div>
         <SiteFooter />
-      </main>
+      </PageMain>
     </div>
   );
 }

@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import "@/app/explorar.css"
 import { Logo } from "../../components/Logo"
+
+import { PageMain } from "../../components/PageMain";
 import { SiteFooter } from "../../components/SiteFooter"
 import { MAIN_CATEGORY_GROUPS } from "../../lib/filter-groups-design"
 import { PRODUCT_VERSION } from "../../lib/product-version"
@@ -37,7 +39,7 @@ export default function DesarrolladoresPage() {
           <Logo />
         </div>
       </nav>
-      <main className="fh-content">
+      <PageMain className="fh-content">
         <div className="qvh-legal-page fh-container">
           <h1>Desarrolladores</h1>
           <p className="qvh-legal-updated">
@@ -172,7 +174,7 @@ export default function DesarrolladoresPage() {
           </section>
         </div>
         <SiteFooter />
-      </main>
+      </PageMain>
     </div>
   )
 }

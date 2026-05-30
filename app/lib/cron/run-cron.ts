@@ -44,6 +44,7 @@ import {
 } from "@/app/lib/madrid-time";
 import { purgePastDayEvents } from "@/app/lib/purge-past-events";
 import { evaluateCronHealth, sendCronAlert } from "@/app/lib/cron-alerts";
+import { log } from "@/app/lib/logger";
 
 function getSupabase() {
   return createSupabaseAdmin();
@@ -717,12 +718,13 @@ export async function runCronJob(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  console.log("=== CRON INICIADO ===");
-  console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL ? "OK" : "MISSING");
-  console.log("Football key:", process.env.FOOTBALL_DATA_API_KEY ? "OK" : "MISSING");
-  console.log("Pandascore key:", process.env.PANDASCORE_API_KEY ? "OK" : "MISSING");
-  console.log("TMDB key:", process.env.TMDB_API_KEY ? "OK" : "MISSING");
-  console.log("Balldontlie key:", process.env.BALLDONTLIE_API_KEY ? "OK" : "MISSING");
+  log.info("cron.started", {
+    supabase: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+    football: Boolean(process.env.FOOTBALL_DATA_API_KEY),
+    pandascore: Boolean(process.env.PANDASCORE_API_KEY),
+    tmdb: Boolean(process.env.TMDB_API_KEY),
+    balldontlie: Boolean(process.env.BALLDONTLIE_API_KEY),
+  });
 
   let dbIndex: Awaited<ReturnType<typeof ensureEventsDateIndex>> = {
     ok: false,
@@ -838,7 +840,7 @@ export async function runCronJob(request: Request) {
     console.error("✗ Blocked sports purge error:", e);
   }
 
-  console.log("=== CRON TERMINADO ===");
+  log.info("cron.finished");
 
   let indexNow: Awaited<ReturnType<typeof pingIndexNow>> = {
     ok: false,

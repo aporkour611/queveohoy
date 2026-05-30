@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "../../components/Logo";
+import { PageMain } from "../../components/PageMain";
 import { pageMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = pageMetadata(
@@ -17,7 +18,7 @@ export default function PrivacidadPage() {
           <Logo />
         </div>
       </nav>
-      <main className="qvh-legal-page">
+      <PageMain className="qvh-legal-page">
         <div className="fh-container">
           <h1>Política de privacidad</h1>
           <p className="qvh-legal-updated">Última actualización: 30 de mayo de 2026</p>
@@ -134,7 +135,7 @@ export default function PrivacidadPage() {
             <Link href="/">← Volver al inicio</Link>
           </p>
         </div>
-      </main>
+      </PageMain>
     </div>
   );
 }

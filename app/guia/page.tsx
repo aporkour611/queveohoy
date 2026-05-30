@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Logo } from "../components/Logo";
+import { Logo } from "../components/Logo"
+import { PageMain } from "../components/PageMain";
 import { SiteFooter } from "../components/SiteFooter";
 import { pageMetadata } from "../lib/seo";
 import { SEO_GUIDES } from "../lib/seo-guides";
@@ -31,7 +32,7 @@ export default function GuiaIndexPage() {
         </div>
       </nav>
 
-      <main className="fh-content">
+      <PageMain className="fh-content">
         <div className="fh-container fh-main fh-seo-guide">
           <nav className="fh-seo-breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Inicio</Link>
@@ -57,7 +58,7 @@ export default function GuiaIndexPage() {
           </ul>
         </div>
         <SiteFooter />
-      </main>
+      </PageMain>
     </div>
   );
 }

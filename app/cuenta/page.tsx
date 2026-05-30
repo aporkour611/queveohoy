@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { CuentaPortal } from "@/app/components/CuentaPortal"
+import { PageMain } from "@/app/components/PageMain";
 import type { EventRow } from "@/app/components/types"
 import { isSupabaseConfigured } from "@/app/lib/supabase-config"
 import { createServerClient } from "@/app/lib/supabase/server-auth"
@@ -62,13 +63,13 @@ export default async function CuentaPage() {
     "Usuario"
 
   return (
-    <main className="fh-auth-page">
+    <PageMain className="fh-auth-page">
       <CuentaPortal
         email={user.email ?? ""}
         displayName={displayName}
         favorites={favoriteEvents}
         preferences={parseUserPreferences(preferencesRow)}
       />
-    </main>
+    </PageMain>
   )
 }

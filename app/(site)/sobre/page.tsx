@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "../../components/Logo";
+
+import { PageMain } from "../../components/PageMain";
 import { SiteFooter } from "../../components/SiteFooter";
 import { pageMetadata } from "../../lib/seo";
 
@@ -19,7 +21,7 @@ export default function SobrePage() {
           <Logo />
         </div>
       </nav>
-      <main className="fh-content">
+      <PageMain className="fh-content">
         <div className="qvh-legal-page fh-container">
           <h1>Sobre queveohoy.es</h1>
           <p className="qvh-legal-updated">Proyecto activo desde junio de 2025</p>
@@ -84,7 +86,7 @@ export default function SobrePage() {
           </p>
         </div>
         <SiteFooter />
-      </main>
+      </PageMain>
     </div>
   );
 }

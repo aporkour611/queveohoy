@@ -17,6 +17,7 @@ import { HomeLcpPreload } from "../components/HomeLcpPreload";
 import { HomeNav } from "../components/HomeNav";
 import { HomeResetProvider } from "../components/HomeResetContext";
 import { SiteFooter } from "../components/SiteFooter";
+import { HomeFaq } from "../components/HomeFaq";
 import { SeoGuidesPromo } from "../components/SeoGuidesPromo";
 import { eventsForHomeSsrHtml } from "../lib/featured";
 import {
@@ -152,6 +153,7 @@ export default async function Page() {
                 </div>
             </div>
             <SeoGuidesPromo />
+            <HomeFaq />
             <SiteFooter />
           </main>
         </HomeResetProvider>

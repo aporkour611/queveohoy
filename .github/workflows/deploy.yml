@@ -35,11 +35,43 @@ jobs:
       - name: Test
         run: npm run test
 
+      - name: Test coverage
+        run: npm run test:coverage
+
       - name: Build
         run: npm run build
 
-  deploy:
+  e2e:
     needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+
+      - name: E2E smoke
+        run: npm run test:e2e
+        env:
+          CI: true
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+
+  deploy:
+    needs: [validate, e2e]
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -120,6 +152,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           set -euo pipefail
           for i in $(seq 1 30); do
@@ -129,38 +162,46 @@ jobs:
             sleep 15
           done
           if [ "$code" != "200" ]; then
-            echo "::error::Producción no expone v4 (/api/v1/search sigue en $code)"
+            echo "::error::Producción no responde /api/v1/search (HTTP $code)"
             exit 1
           fi
           echo "Calentando caché del feed…"
           curl -sf "https://queveohoy.es/api/events?scope=home" -o /tmp/feed-home.json
           events=$(node -e "const d=require('/tmp/feed-home.json'); console.log((d.events||[]).length)")
           echo "Eventos en home feed: $events"
+          health_code=$(curl -s -o /tmp/health.json -w "%{http_code}" "https://queveohoy.es/api/health")
+          echo "Health HTTP $health_code"
+          if [ "$health_code" != "200" ]; then
+            echo "::error::Health no ready (HTTP $health_code). Revisa DB/feed."
+            cat /tmp/health.json || true
+            exit 1
+          fi
           if [ "$events" = "0" ]; then
             body=$(cat /tmp/feed-home.json)
             if echo "$body" | grep -q '"error"'; then
-              echo "::warning::Feed vacío con error: $body"
-            else
-              echo "::warning::Feed vacío (0 eventos). Comprueba SUPABASE_URL/SUPABASE_ANON_KEY en Vercel y ejecuta el cron."
+              echo "::error::Feed vacío con error: $body"
+              exit 1
             fi
+            echo "::warning::Feed vacío (0 eventos). Ejecutando cron…"
           fi
-          if [ -n "${{ secrets.CRON_SECRET }}" ]; then
+          if [ -n "${CRON_SECRET:-}" ]; then
             echo "Invalidando caché del feed y la home…"
             curl -sf "https://queveohoy.es/api/indexing/ping" \
-              -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+              -H "Authorization: Bearer ${CRON_SECRET}" \
               -o /tmp/revalidate.json || echo "::warning::indexing/ping falló"
             node -e "try{const d=require('/tmp/revalidate.json');console.log('revalidate',d.feedCache?.ok??d.ok)}catch(e){console.log('revalidate skip')}" || true
           fi
           home_code=$(curl -s --max-time 45 -o /dev/null -w "%{http_code}" "https://queveohoy.es/" || echo "000")
           echo "Home HTTP $home_code"
           if [ "$home_code" != "200" ]; then
-            echo "::warning::Home respondió $home_code (ISR puede regenerarse en segundo plano)"
+            echo "::error::Home respondió $home_code"
+            exit 1
           fi
           echo "Verificación lanzamiento 1.0…"
-          node scripts/verify-prod-1.0.mjs || echo "::warning::verify-prod-1.0 falló (caché CDN antigua)"
+          node scripts/verify-prod-1.0.mjs
           echo "Integraciones en producción…"
-          node scripts/check-integrations.mjs || echo "::warning::Falta ADMIN_SECRET u otra variable obligatoria en Vercel Production"
-          if [ "$events" = "0" ]; then
+          node scripts/check-integrations.mjs
+          if [ "$events" = "0" ] && [ -n "${CRON_SECRET:-}" ]; then
             echo "Ejecutando cron para repoblar eventos…"
             vercel env run --environment=production -- bash -c \
               'curl -sf "https://queveohoy.es/api/cron" -H "Authorization: Bearer ${CRON_SECRET}" -o /tmp/cron.json && node -e "const d=require(\"/tmp/cron.json\"); console.log(\"cron football:\", d.football?.count ?? 0, \"supabase:\", d.supabaseConfigured)"'

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { SeoGuideConfig } from "../lib/seo-guides";
 import { Logo } from "./Logo";
+import { PageMain } from "./PageMain";
 import { SiteFooter } from "./SiteFooter";
+import { GuideJsonLd } from "./GuideJsonLd";
 
 type Props = {
   guide: SeoGuideConfig;
@@ -11,8 +13,11 @@ export function SeoGuidePage({ guide }: Props) {
   const hubHref = guide.hubSlug === "partidos-hoy" ? "/partidos-hoy" : `/${guide.hubSlug}`;
 
   return (
-    <div className="fh-body">
-      <nav className="fh-navbar">
+    <>
+      <GuideJsonLd guide={guide} />
+      <div className="fh-body">
+      <header className="fh-header-shell">
+      <nav className="fh-navbar" aria-label="Navegación de guía">
         <div className="fh-navbar-inner">
           <Logo />
           <div className="fh-nav-links">
@@ -25,8 +30,9 @@ export function SeoGuidePage({ guide }: Props) {
           </div>
         </div>
       </nav>
+      </header>
 
-      <main className="fh-content">
+      <PageMain className="fh-content">
         <article className="fh-container fh-main fh-seo-guide">
           <nav className="fh-seo-breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Inicio</Link>
@@ -75,7 +81,8 @@ export function SeoGuidePage({ guide }: Props) {
           </section>
         </article>
         <SiteFooter />
-      </main>
+      </PageMain>
     </div>
+    </>
   );
 }

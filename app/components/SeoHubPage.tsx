@@ -12,6 +12,7 @@ import { HubJsonLd } from "./HubJsonLd";
 import { Logo } from "./Logo";
 import { SeoDateNav } from "./SeoDateNav";
 import { SeoHubLinks } from "./SeoHubLinks";
+import { PageMain } from "./PageMain";
 import { SiteFooter } from "./SiteFooter";
 import { SeoGuidesPromo } from "./SeoGuidesPromo";
 import { SeoHubEventFeed } from "./SeoHubEventFeed";
@@ -38,7 +39,8 @@ export function SeoHubPage({ hub, events }: Props) {
     <>
       <HubJsonLd hub={hub} events={filtered} />
       <div className="fh-body">
-        <nav className="fh-navbar">
+        <header className="fh-header-shell">
+        <nav className="fh-navbar" aria-label="Navegación del hub">
           <div className="fh-navbar-inner">
             <Logo />
             <div className="fh-nav-links">
@@ -48,8 +50,9 @@ export function SeoHubPage({ hub, events }: Props) {
             </div>
           </div>
         </nav>
+        </header>
 
-        <main className="fh-content">
+        <PageMain className="fh-content">
           <div className="fh-container fh-main fh-seo-hub-page">
             <nav className="fh-seo-breadcrumb" aria-label="Breadcrumb">
               <Link href="/">Inicio</Link>
@@ -96,7 +99,7 @@ export function SeoHubPage({ hub, events }: Props) {
           </div>
           <SeoGuidesPromo />
           <SiteFooter />
-        </main>
+        </PageMain>
       </div>
     </>
   );

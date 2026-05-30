@@ -40,7 +40,7 @@ export function HomeNavActions() {
     const onInteract = () => activate();
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
     window.addEventListener("keydown", onInteract, { passive: true, once: true });
-    const fallback = window.setTimeout(activate, 10_000);
+    const fallback = window.setTimeout(activate, 2_000);
 
     return () => {
       cancelled = true;
@@ -50,17 +50,26 @@ export function HomeNavActions() {
     };
   }, []);
 
-  if (!ready) return <div className="fh-nav-links" aria-hidden />;
-
   return (
     <div className="fh-nav-links">
       <Link href="/explorar" className="fh-nav-explorar-link">
         Explorar
       </Link>
-      <ThemeToggle />
-      <AccountNavLink />
-      <PushNavButton />
-      <AdminNavLink />
+      {ready ? (
+        <>
+          <ThemeToggle />
+          <AccountNavLink />
+          <PushNavButton />
+          <AdminNavLink />
+        </>
+      ) : (
+        <>
+          <NavActionPlaceholder />
+          <NavActionPlaceholder />
+          <NavActionPlaceholder />
+          <NavActionPlaceholder />
+        </>
+      )}
     </div>
   );
 }

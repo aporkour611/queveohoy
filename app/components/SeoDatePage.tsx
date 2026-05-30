@@ -5,6 +5,7 @@ import { Logo } from "./Logo";
 import { SeoDateNav } from "./SeoDateNav";
 import { SeoHubEventFeed } from "./SeoHubEventFeed";
 import { SeoHubLinks } from "./SeoHubLinks";
+import { PageMain } from "./PageMain";
 import { SiteFooter } from "./SiteFooter";
 import {
   buildDatePageLead,
@@ -45,7 +46,7 @@ export function SeoDatePage({ dateKey, events }: Props) {
           </div>
         </nav>
 
-        <main className="fh-content">
+        <PageMain className="fh-content">
           <div className="fh-container fh-main fh-seo-hub-page">
             <nav className="fh-seo-breadcrumb" aria-label="Breadcrumb">
               <Link href="/">Inicio</Link>
@@ -88,7 +89,7 @@ export function SeoDatePage({ dateKey, events }: Props) {
             <SeoHubLinks />
           </div>
           <SiteFooter />
-        </main>
+        </PageMain>
       </div>
     </>
   );

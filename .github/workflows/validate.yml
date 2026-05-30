@@ -25,6 +25,9 @@ jobs:
       - name: Test
         run: npm run test
 
+      - name: Test coverage
+        run: npm run test:coverage
+
       - name: Audit dependencies
         run: npm audit --omit=dev --audit-level=high
         continue-on-error: true
@@ -58,8 +61,7 @@ jobs:
 
   perf-budget:
     runs-on: ubuntu-latest
-    continue-on-error: true
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v5
 

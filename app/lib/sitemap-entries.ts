@@ -47,6 +47,12 @@ export function buildStaticSitemapEntries(now = new Date()): MetadataRoute.Sitem
     ...dateEntries,
     ...guideEntries,
     {
+      url: `${siteUrl}/explorar`,
+      lastModified: now,
+      changeFrequency: "hourly",
+      priority: 0.85,
+    },
+    {
       url: `${siteUrl}/privacidad`,
       lastModified: now,
       changeFrequency: "yearly",

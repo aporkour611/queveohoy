@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "../../components/Logo";
+
+import { PageMain } from "../../components/PageMain";
 import { SiteFooter } from "../../components/SiteFooter";
 import { pageMetadata } from "../../lib/seo";
 
@@ -19,7 +21,7 @@ export default function ContactoPage() {
           <Logo />
         </div>
       </nav>
-      <main className="fh-content">
+      <PageMain className="fh-content">
         <div className="qvh-legal-page fh-container">
           <h1>Contacto</h1>
           <p className="qvh-legal-updated">Respondemos en 2–5 días laborables</p>
@@ -73,7 +75,7 @@ export default function ContactoPage() {
           </p>
         </div>
         <SiteFooter />
-      </main>
+      </PageMain>
     </div>
   );
 }

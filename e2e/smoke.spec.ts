@@ -82,6 +82,7 @@ test.describe("smoke", () => {
     const body = await response.json()
     expect(body.ok).toBe(true)
     expect(body.version).toBeTruthy()
+    expect(body.checks).toBeTruthy()
   })
 
   test("API feed-meta responde JSON", async ({ request }) => {
