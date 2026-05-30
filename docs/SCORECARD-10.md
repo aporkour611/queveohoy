@@ -21,15 +21,18 @@ Estado tras **v2.0.0** (graduación RC 1.9.9 — plataforma estable).
 
 | Métrica | Resultado | Meta |
 |---------|-----------|------|
-| Performance | **96** | ≥80 |
-| LCP | **2.73s** | ≤2.0s |
-| CLS | **0.000** | ≤0.08 |
+| Versión | Performance | LCP | CLS |
+|---------|-------------|-----|-----|
+| 2.0.3 | **96** | **2.73s** | 0 |
+| 2.0.4 | **92** | **2.80s** | 0 |
+
+Meta: Performance ≥80 ✅ · LCP ≤2.0s ❌ (~800ms de margen)
 
 **2.0.3:** TMDB w154, preload 320w único, preconnect temprano, crestas CL lazy (−190ms LCP vs 2.0.2).
 
-**2.0.4:** LCP local-first + TMDB w92 + JSON-LD al pie.
+**2.0.4:** LCP local-first + TMDB w92 + JSON-LD al pie — PSI sin mejora (variación Lab; w92 no bajó LCP de forma estable).
 
-Meta LCP ≤2s — remeasure tras deploy 2.0.4.
+**Siguiente candidato:** WebP/AVIF local para el destacado #1 del día; o volver w154 si calidad importa más que bytes.
 
 ## Cambios 1.0.6 (performance extrema)
 
