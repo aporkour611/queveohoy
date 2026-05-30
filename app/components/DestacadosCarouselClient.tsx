@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import type { EventRow } from "./types";
+import { useTouchScrollCarousel } from "../lib/use-touch-scroll-carousel";
 
 const DestacadosCarousel = dynamic(
   () =>
@@ -69,6 +70,8 @@ function DestacadosCarouselClient({
   ariaLabel,
   className,
 }: RowProps) {
+  const touchScroll = useTouchScrollCarousel();
+
   if (items.length === 0) return null;
 
   return (
@@ -86,7 +89,10 @@ function DestacadosCarouselClient({
         </div>
       </div>
 
-      <DestacadosCarousel ariaLabel={ariaLabel}>
+      <DestacadosCarousel
+        ariaLabel={ariaLabel}
+        layout={touchScroll ? "scroll" : "paginated"}
+      >
         {items.map((event, index) => (
           <FeaturedEventCard
             key={event.id}

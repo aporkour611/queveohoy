@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { buildContentSecurityPolicy } from "./security-headers";
+import {
+  buildContentSecurityPolicy,
+  buildEmbedContentSecurityPolicy,
+} from "./security-headers";
 
 describe("security-headers", () => {
   afterEach(() => {
@@ -21,5 +24,9 @@ describe("security-headers", () => {
     expect(buildContentSecurityPolicy(false)).not.toContain(
       "upgrade-insecure-requests"
     );
+  });
+
+  it("permite iframe externo en embed", () => {
+    expect(buildEmbedContentSecurityPolicy(true)).toContain("frame-ancestors *");
   });
 });

@@ -1,6 +1,7 @@
 import { addDaysToDateKey, getMadridWeekDates } from "./madrid-time";
 import { encodeTmdbSource } from "./tmdb-client";
 import {
+  SPANISH_TV_FLAGSHIP,
   matchSpanishTvByTvmazeShow,
   matchSpanishTvShowName,
   type SpanishTvShow,
@@ -101,6 +102,62 @@ async function fetchScheduleDay(
   );
   if (!result.ok || !Array.isArray(result.data)) return [];
   return result.data;
+}
+
+type TvmazeEpisodeListItem = {
+  id?: number;
+  name?: string;
+  season?: number;
+  number?: number;
+  airdate?: string;
+  airtime?: string;
+};
+
+/** Episodios por show ID (complementa la parrilla país ES). */
+export async function fetchTvmazeByShowEvents(
+  dayCount = 7
+): Promise<{ events: TvmazeCronEvent[]; error?: string }> {
+  const dates = getMadridWeekDates(dayCount);
+  const dateFrom = dates[0];
+  const dateTo = dates[dates.length - 1];
+  const byExternalId = new Map<string, TvmazeCronEvent>();
+  const errors: string[] = [];
+
+  const shows = SPANISH_TV_FLAGSHIP.filter((show) => show.tvmazeShowId);
+  if (!shows.length) {
+    return { events: [], error: undefined };
+  }
+
+  for (const show of shows) {
+    const showId = show.tvmazeShowId;
+    if (!showId) continue;
+
+    try {
+      const result = await fetchJsonWithTimeout<TvmazeEpisodeListItem[]>(
+        `${TVMAZE_BASE}/shows/${showId}/episodes`,
+        { next: { revalidate: 0 } },
+        15_000
+      );
+
+      if (!result.ok || !Array.isArray(result.data)) continue;
+
+      for (const episode of result.data) {
+        const event = buildTvmazeEvent(show, episode);
+        if (!event) continue;
+        if (event.date < dateFrom || event.date > dateTo) continue;
+        byExternalId.set(event.external_id, event);
+      }
+    } catch (err) {
+      errors.push(
+        `${show.id}: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
+  }
+
+  return {
+    events: [...byExternalId.values()],
+    error: errors.length ? errors.join("; ") : undefined,
+  };
 }
 
 /** Episodios TV lineal España (TVmaze) para programas flagship curados. */

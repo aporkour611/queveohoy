@@ -61,6 +61,9 @@ function applyTmdbPosterMeta(show: SpanishTvShow): SpanishTvShow {
   };
 }
 
+/** Umbral de audiencia editorial para aparecer en Destacados (filtro TV muestra todos). */
+export const SPANISH_TV_DESTACADOS_MIN_PRIORITY = 90;
+
 /** Programas de máxima audiencia en España — prioridad editorial y cron TMDB/TVmaze/RTVE */
 const SPANISH_TV_FLAGSHIP_RAW: SpanishTvShow[] = [
   {
@@ -131,7 +134,9 @@ const SPANISH_TV_FLAGSHIP_RAW: SpanishTvShow[] = [
     priority: 97,
     category: "directo",
     localPosterPath: "/posters/la-revuelta.png",
+    posterObjectPosition: "center 22%",
     tvmazeShowId: 79483,
+    rtveProgramId: 1000646,
     airTime: "21:40",
     airWeekdays: [1, 2, 3, 4],
   },
@@ -158,6 +163,7 @@ const SPANISH_TV_FLAGSHIP_RAW: SpanishTvShow[] = [
     category: "ficcion",
     localPosterPath: "/posters/la-promesa.png",
     tvmazeShowId: 82594,
+    rtveProgramId: 169690,
     airTime: "18:35",
     airWeekdays: [1, 2, 3, 4, 5],
   },
@@ -170,6 +176,7 @@ const SPANISH_TV_FLAGSHIP_RAW: SpanishTvShow[] = [
     priority: 88,
     category: "directo",
     localPosterPath: "/posters/late-xou.png",
+    rtveProgramId: 176290,
     airTime: "00:05",
     airWeekdays: [1, 2, 3, 4, 5],
   },
@@ -335,4 +342,15 @@ export function spanishTvPriorityBonus(event: EventRow): number {
 
 export function isSpanishTvFlagship(event: EventRow): boolean {
   return spanishTvPriorityBonus(event) > 0;
+}
+
+/** Destacados: solo programas TV con audiencia editorial alta (talk shows menores van al filtro TV). */
+export function isSpanishTvDestacadosEligible(event: EventRow): boolean {
+  if (event.sport !== "tv") return true;
+
+  const show = matchesSpanishTvFlagship(event);
+  if (!show) return false;
+  if (show.category === "ficcion") return true;
+
+  return show.priority >= SPANISH_TV_DESTACADOS_MIN_PRIORITY;
 }

@@ -58,6 +58,42 @@ export function buildStaticSitemapEntries(now = new Date()): MetadataRoute.Sitem
       changeFrequency: "yearly",
       priority: 0.3,
     },
+    {
+      url: `${siteUrl}/guia`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.75,
+    },
+    {
+      url: `${siteUrl}/sobre`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.4,
+    },
+    {
+      url: `${siteUrl}/contacto`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.35,
+    },
+    {
+      url: `${siteUrl}/novedades`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.45,
+    },
+    {
+      url: `${siteUrl}/aviso-legal`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${siteUrl}/desarrolladores`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.4,
+    },
   ];
 }
 

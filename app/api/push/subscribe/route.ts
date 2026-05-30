@@ -12,6 +12,8 @@ type SubscribeBody = {
   keys?: { p256dh?: string; auth?: string };
   topics?: PushTopicId[];
   userAgent?: string;
+  userId?: string | null;
+  favoritesOnly?: boolean;
 };
 
 export async function POST(request: Request) {
@@ -45,6 +47,8 @@ export async function POST(request: Request) {
     },
     topics: body.topics,
     userAgent: body.userAgent ?? request.headers.get("user-agent"),
+    userId: body.userId ?? null,
+    favoritesOnly: body.favoritesOnly,
   });
 
   if (!result.ok) {

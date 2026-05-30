@@ -17,6 +17,8 @@ export type ChampionsWeekContext = {
   awayCrest?: string;
   dateLabel: string;
   time: string;
+  eventDate: string;
+  eventTime: string;
   channels: string[];
 };
 
@@ -74,6 +76,8 @@ export function resolveChampionsWeekContext(
       ? formatDisplayDateLabel(finalEvent.date, MADRID_TZ)
       : "",
     time: eventDisplayTime(finalEvent),
+    eventDate: finalEvent.date ?? todayKey,
+    eventTime: finalEvent.time?.trim() || "00:00",
     channels: resolveChannelsForEvent(finalEvent),
   };
 }

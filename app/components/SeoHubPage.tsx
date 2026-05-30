@@ -13,6 +13,7 @@ import { Logo } from "./Logo";
 import { SeoDateNav } from "./SeoDateNav";
 import { SeoHubLinks } from "./SeoHubLinks";
 import { SiteFooter } from "./SiteFooter";
+import { SeoGuidesPromo } from "./SeoGuidesPromo";
 import { SeoHubEventFeed } from "./SeoHubEventFeed";
 
 type Props = {
@@ -93,6 +94,7 @@ export function SeoHubPage({ hub, events }: Props) {
             <HubFaq slug={hub.slug} />
             <SeoHubLinks current={hub.slug} />
           </div>
+          <SeoGuidesPromo />
           <SiteFooter />
         </main>
       </div>

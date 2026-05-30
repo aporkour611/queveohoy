@@ -2,6 +2,8 @@
 
 Agenda deportiva y entretenimiento en España: partidos, horarios TV/streaming, destacados y hubs SEO.
 
+**Versión actual:** 2.0.0 · [Novedades](/novedades) · [API](/desarrolladores) · [Roadmap](docs/ROADMAP.md)
+
 ## Stack
 
 - **Next.js 16** (App Router), React 19, TypeScript
@@ -43,7 +45,7 @@ Ver `.env.example`. En producción son obligatorias:
 
 ## Admin
 
-Acceso en `/admin/login` (POST con `ADMIN_SECRET`; cookie firmada HttpOnly). Panel en `/admin`.
+Acceso en `/admin/login` (POST con `ADMIN_SECRET`; cookie firmada HttpOnly). Panel en `/admin` con pestañas Añadir, Listado (filtros y edición) y Cron manual.
 
 Las escrituras en `events` van por `/api/admin/events` con service role; la tabla tiene RLS de solo lectura para anon.
 
@@ -51,16 +53,26 @@ Las escrituras en `events` van por `/api/admin/events` con service role; la tabl
 
 `GET /api/cron` — protegido con `Authorization: Bearer CRON_SECRET`. Vercel Cron lo ejecuta cada hora (ver `vercel.json`).
 
-Ingesta: fútbol, F1, MotoGP, UFC, baloncesto, e-sports, TMDB, etc.
+Ingesta: fútbol, F1, MotoGP, UFC, baloncesto, e-sports, TMDB, TV española, etc.
+
+## SEO y contenido
+
+- Sitemap dinámico, 15 hubs `/agenda/*`, 8 guías `/guia/*`
+- Páginas de partido, JSON-LD, RSS, IndexNow tras cron
+- Páginas de confianza: `/sobre`, `/contacto`, `/novedades`
+
+## Documentación
+
+| Doc | Contenido |
+|-----|-----------|
+| [CHANGELOG.md](CHANGELOG.md) | Historial de releases |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Plan meses 13–15 (simulado) |
+| [docs/PRODUCT-REVIEW.md](docs/PRODUCT-REVIEW.md) | Revisión de madurez mes 12 |
 
 ## CI/CD
 
 - **PR → main:** lint + tests (`.github/workflows/validate.yml`)
 - **Push → main:** lint + tests + build Vercel + deploy (`.github/workflows/deploy.yml`)
-
-## SEO
-
-Sitemap dinámico, hubs `/agenda/*`, páginas de partido, JSON-LD, RSS, IndexNow tras cron.
 
 ## Licencia
 

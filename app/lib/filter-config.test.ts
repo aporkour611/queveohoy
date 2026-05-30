@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formatFilterSummary, formatMediaGroupLabel } from "./filter-config";
+import {
+  formatFilterSummary,
+  formatMediaGroupLabel,
+  sportCalendarLabel,
+  sportLabel,
+} from "./filter-config";
 
 describe("formatMediaGroupLabel", () => {
   it("keeps full label when all media types are selected", () => {
@@ -16,6 +21,17 @@ describe("formatMediaGroupLabel", () => {
 
   it("uses single media label when only one is selected", () => {
     expect(formatMediaGroupLabel(["cine"])).toBe("Cine");
+  });
+});
+
+describe("sportCalendarLabel", () => {
+  it("keeps LoL in filters but uses full name in calendar blocks", () => {
+    expect(sportLabel("lol")).toBe("LoL");
+    expect(sportCalendarLabel("lol")).toBe("League of Legends");
+  });
+
+  it("falls back to filter labels for other sports", () => {
+    expect(sportCalendarLabel("valorant")).toBe("Valorant");
   });
 });
 

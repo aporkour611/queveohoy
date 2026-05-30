@@ -1,6 +1,8 @@
 import type { CronEventInput } from "./cron-events";
+import { buildCuratedSpanishTvCronEvents } from "./curated-tv-events";
+import { toMadridDateKey } from "./madrid-time";
 import { fetchRtveFlagshipEvents } from "./rtve-schedule";
-import { fetchTvmazeSpainEvents } from "./tvmaze-schedule";
+import { fetchTvmazeByShowEvents, fetchTvmazeSpainEvents } from "./tvmaze-schedule";
 
 type ScheduleCronEvent = CronEventInput & {
   external_id: string;
@@ -34,15 +36,20 @@ function mergeScheduleEvents(
 export async function fetchSpanishTvScheduleEvents(
   dayCount = 7
 ): Promise<{ events: CronEventInput[]; error?: string }> {
-  const [tvmaze, rtve] = await Promise.all([
+  const todayKey = toMadridDateKey(new Date());
+  const [tvmaze, tvmazeShows, rtve] = await Promise.all([
     fetchTvmazeSpainEvents(dayCount),
+    fetchTvmazeByShowEvents(dayCount),
     fetchRtveFlagshipEvents(dayCount),
   ]);
 
-  const errors = [tvmaze.error, rtve.error].filter(Boolean);
+  const curated = buildCuratedSpanishTvCronEvents(todayKey, dayCount);
+  const errors = [tvmaze.error, tvmazeShows.error, rtve.error].filter(Boolean);
   const events = mergeScheduleEvents(
     tvmaze.events as ScheduleCronEvent[],
-    rtve.events as ScheduleCronEvent[]
+    tvmazeShows.events as ScheduleCronEvent[],
+    rtve.events as ScheduleCronEvent[],
+    curated as ScheduleCronEvent[]
   );
 
   return {

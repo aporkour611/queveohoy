@@ -303,6 +303,109 @@
   gap: 6px 10px;
 }
 
+.qvh-cl-week-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.qvh-cl-week-countdown {
+  margin-bottom: 2px;
+}
+
+.qvh-countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.qvh-countdown-kicker {
+  font-family: var(--qvh-font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(201, 162, 39, 0.88);
+}
+
+.qvh-countdown-grid {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.qvh-countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 34px;
+}
+
+.qvh-countdown-digit {
+  display: block;
+  min-width: 34px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  font-family: var(--qvh-font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(24, 8, 120, 0.92) 0%, rgba(10, 6, 72, 0.96) 100%);
+  border: 1px solid rgba(201, 162, 39, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.28);
+  animation: qvh-countdown-tick 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.qvh-countdown-label {
+  margin-top: 3px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.qvh-countdown-sep {
+  padding-bottom: 14px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: rgba(201, 162, 39, 0.72);
+}
+
+.qvh-countdown-live {
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-family: var(--qvh-font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, #c9a227, #f5e6a8);
+  box-shadow: 0 0 18px rgba(201, 162, 39, 0.45);
+  animation: qvh-cl-badge-glint 1.6s ease-in-out infinite;
+}
+
+@keyframes qvh-countdown-tick {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .qvh-cl-week-date,
 .qvh-cl-week-time {
   font-family: var(--qvh-font-display);
@@ -436,8 +539,22 @@
   .qvh-cl-week-stage-badge,
   .qvh-cl-week-hero::after,
   .qvh-cl-week-trophy,
-  .qvh-cl-week-matchup:hover .qvh-cl-week-crest {
+  .qvh-cl-week-matchup:hover .qvh-cl-week-crest,
+  .qvh-countdown-digit,
+  .qvh-countdown-live {
     animation: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .qvh-cl-week-hero-titleline {
+    flex-wrap: nowrap;
+    align-items: baseline;
+  }
+
+  .qvh-cl-week-kicker,
+  .qvh-cl-week-headline {
+    white-space: nowrap;
   }
 }
 

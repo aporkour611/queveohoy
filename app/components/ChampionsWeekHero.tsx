@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { ChampionsWeekContext } from "../lib/champions-week";
 import { ChannelBadges } from "./ChannelBadge";
+import { EventCountdown } from "./EventCountdown";
 import { TeamCrest } from "./TeamCrest";
 
 type Props = {
@@ -18,6 +19,8 @@ export function ChampionsWeekHero({ context }: Props) {
     awayCrest,
     dateLabel,
     time,
+    eventDate,
+    eventTime,
     channels,
   } = context;
 
@@ -72,6 +75,12 @@ export function ChampionsWeekHero({ context }: Props) {
             </div>
 
             <div className="qvh-cl-week-meta">
+              <EventCountdown
+                date={eventDate}
+                time={eventTime}
+                className="qvh-cl-week-countdown"
+                liveLabel="¡Arranca la final!"
+              />
               {dateLabel ? (
                 <span className="qvh-cl-week-date">{dateLabel}</span>
               ) : null}

@@ -15,8 +15,10 @@ import {
   subscribeToPush,
   unsubscribeFromPush,
   updatePushTopics,
+  writeLocalPushFavoritesOnly,
   writeLocalPushTopics,
 } from "../lib/push-client";
+import { supabase, supabaseConfigured } from "../lib/supabase";
 import {
   notifyPushPreferencesSaved,
   PUSH_CONSENT_EVENT,
@@ -61,6 +63,9 @@ export function PushSettingsPanel({
   const [topics, setTopics] = useState<PushTopicId[]>(() =>
     readLocalPushTopics()
   );
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const [subscribed, setSubscribed] = useState(false);
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
@@ -72,12 +77,24 @@ export function PushSettingsPanel({
     queueMicrotask(() => {
       if (cancelled) return;
       setTopics(readLocalPushTopics());
+      setFavoritesOnly(
+        typeof window !== "undefined" &&
+          localStorage.getItem("qvh-push-favorites-only") === "1"
+      );
       setStatus("");
     });
 
     void isPushSubscribedLocally().then((value) => {
       if (!cancelled) setSubscribed(value);
     });
+
+    if (supabaseConfigured) {
+      void supabase.auth.getUser().then(({ data }) => {
+        if (cancelled) return;
+        setLoggedIn(Boolean(data.user));
+        setUserId(data.user?.id ?? null);
+      });
+    }
 
     return () => {
       cancelled = true;
@@ -93,11 +110,24 @@ export function PushSettingsPanel({
     });
   }, []);
 
+  const toggleFavoritesOnly = useCallback((checked: boolean) => {
+    setFavoritesOnly(checked);
+    writeLocalPushFavoritesOnly(checked);
+  }, []);
+
+  const pushOptions = useCallback(
+    () => ({
+      userId: loggedIn ? userId : null,
+      favoritesOnly: favoritesOnly && loggedIn,
+    }),
+    [favoritesOnly, loggedIn, userId]
+  );
+
   const handleEnable = useCallback(async () => {
     setBusy(true);
     setStatus("");
     writeLocalPushTopics(topics);
-    const result = await subscribeToPush(topics);
+    const result = await subscribeToPush(topics, pushOptions());
     setBusy(false);
     if (result.ok) {
       setSubscribed(true);
@@ -108,12 +138,12 @@ export function PushSettingsPanel({
       return;
     }
     setStatus(result.error ?? "No se pudieron activar los avisos.");
-  }, [topics, onClose, onPreferencesSaved]);
+  }, [topics, onClose, onPreferencesSaved, pushOptions]);
 
   const handleSave = useCallback(async () => {
     setBusy(true);
     setStatus("");
-    const result = await updatePushTopics(topics);
+    const result = await updatePushTopics(topics, pushOptions());
     setBusy(false);
     if (result.ok) {
       setStatus("Preferencias guardadas.");
@@ -123,7 +153,7 @@ export function PushSettingsPanel({
       return;
     }
     setStatus(result.error ?? "No se pudieron guardar las preferencias.");
-  }, [topics, onClose, onPreferencesSaved]);
+  }, [topics, onClose, onPreferencesSaved, pushOptions]);
 
   const handleDisable = useCallback(async () => {
     setBusy(true);
@@ -168,6 +198,29 @@ export function PushSettingsPanel({
               </label>
             </li>
           ))}
+        </ul>
+
+        <ul className="qvh-push-topic-list">
+          <li>
+            <label className={!loggedIn ? "qvh-push-topic-disabled" : undefined}>
+              <input
+                type="checkbox"
+                checked={favoritesOnly && loggedIn}
+                onChange={(event) => toggleFavoritesOnly(event.target.checked)}
+                disabled={busy || !loggedIn}
+              />
+              <span>
+                Solo mis favoritos (requiere cuenta)
+                {!loggedIn ? (
+                  <>
+                    {" "}
+                    —{" "}
+                    <Link href="/cuenta/login">Inicia sesión</Link>
+                  </>
+                ) : null}
+              </span>
+            </label>
+          </li>
         </ul>
 
         {status ? <p className="qvh-push-status">{status}</p> : null}

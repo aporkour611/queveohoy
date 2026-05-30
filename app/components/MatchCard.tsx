@@ -11,6 +11,11 @@ import { parseBasketTeamLogos, basketLogoFallbackUrls } from "../lib/basketball"
 import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
 import { buildEventDetails } from "../lib/event-details";
 import { matchCardEntertainmentVisualClass } from "../lib/entertainment-art";
+import {
+  matchCardEsportsGameArtUrl,
+  matchCardEsportsShellClass,
+  matchCardEsportsVisualClass,
+} from "../lib/esports-art";
 import { resolveEventPosterObjectPosition, resolveEventPosterUrl } from "../lib/event-poster";
 import { resolveEventChannelList } from "../lib/media-platform";
 import { displaySeriesSubtitle, displaySeriesTitle } from "../lib/series-display";
@@ -42,6 +47,7 @@ import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
 import Link from "next/link";
 import type { EventRow } from "./types";
 import { EventCardStamp } from "./EventCardStamp";
+import { FavoriteButton } from "./FavoriteButton";
 
 type Props = {
   event: EventRow;
@@ -336,6 +342,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     <div className={`fh-cardcol${expanded ? " fh-cardcol-expanded" : ""}`}>
       <div
         className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${hasExtraDetails ? " fh-match-expandable" : ""}${stampOnCard && stamp ? " fh-match-stamped" : ""}`}
+        style={{ position: "relative" }}
         role={hasExtraDetails ? "button" : undefined}
         tabIndex={hasExtraDetails ? 0 : undefined}
         aria-expanded={hasExtraDetails ? expanded : undefined}
@@ -351,6 +358,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
             : undefined
         }
       >
+        <FavoriteButton eventId={event.id} />
         {stampOnCard && stamp ? <EventCardStamp kind={stamp} /> : null}
         {children}
         {expanded && hasExtraDetails ? (
@@ -414,19 +422,10 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
 
   if (isEsportsSport(event.sport)) {
     const card = getSpotlightCardModel(event, MADRID_TZ);
-    if (!card.showTeamDuel) {
-      // Sin escudos completos: cae al layout compacto del feed.
-    } else {
-    const visualClass = (card.visualClass ?? "").replace(
-      "qvh-spotlight-visual-",
-      "fh-media-spotlight-visual-"
-    );
-    const esportsShellClass =
-      event.sport === "valorant"
-        ? "fh-match_valorant"
-        : event.sport === "lol"
-          ? "fh-match_lol"
-          : "fh-match_cs2";
+    const sport = event.sport ?? "csgo";
+    const visualClass = matchCardEsportsVisualClass(sport);
+    const esportsShellClass = matchCardEsportsShellClass(sport);
+    const useDuelCover = Boolean(card.showTeamDuel && card.coverImage?.url);
 
     return cardShell(
       <SpotlightCardContent
@@ -435,8 +434,9 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         badgeLabel={card.badge}
         title={card.headline}
         subtitle={card.meta}
-        posterUrl={card.coverImage?.url ?? null}
+        posterUrl={useDuelCover ? card.coverImage?.url ?? null : null}
         posterObjectPosition={card.coverImage?.objectPosition}
+        gameArtUrl={useDuelCover ? null : matchCardEsportsGameArtUrl(sport)}
         dateLabel={card.dateLabel}
         time={card.time}
         channels={card.channelList ?? channels}
@@ -451,7 +451,6 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
       />,
       `fh-match-media-spotlight ${esportsShellClass}`
     );
-    }
   }
 
   if (isUfc) {

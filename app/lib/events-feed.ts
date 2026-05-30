@@ -1,6 +1,8 @@
 import type { EventRow } from "../components/types";
 import { filterBlockedSports } from "./blocked-sports";
+import { mergeCuratedSpanishTvEvents } from "./curated-tv-events";
 import { stripStaleCuratedSeriesEvents } from "./curated-series-events";
+import { toMadridDateKey } from "./madrid-time";
 import {
   shouldSuppressMisdatedSpanishTvEvent,
   stripDuplicateGenericSpanishTvEvents,
@@ -20,7 +22,13 @@ export function normalizeFeedEvents(raw: EventRow[] | null | undefined): EventRo
     stripStaleCuratedSeriesEvents(raw || [])
   ).filter((event) => !shouldSuppressMisdatedSpanishTvEvent(event));
 
-  return filterBlockedSports(
+  const deduped = filterBlockedSports(
     filterEventsForDisplay(dedupeEvents(cleaned as EventRow[]))
   ).filter(isSpainLatamRelevantMediaEvent);
+
+  return mergeCuratedSpanishTvEvents(
+    deduped,
+    toMadridDateKey(new Date()),
+    FEED_DAY_COUNT
+  );
 }

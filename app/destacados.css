@@ -53,19 +53,42 @@
 
 @media (max-width: 767px) {
   .qvh-cl-week-shell {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .qvh-cl-week-hero {
-    order: 2;
-  }
-
-  .qvh-destacados-static.qvh-cl-week-destacados {
-    order: 1;
+    min-width: 0;
   }
 }
 
+.qvh-destacados-page-static {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  touch-action: pan-x;
+  padding-bottom: 8px;
+}
+
+.qvh-destacados-page-static::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .qvh-destacados-page-static {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow-x: visible;
+    scroll-snap-type: none;
+    touch-action: auto;
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .qvh-destacados-page-static .qvh-spotlight-card {
+    flex: 0 0 min(236px, 72vw);
+    scroll-snap-align: start;
+  }
+}
 
 .qvh-destacados-week .qvh-destacados-dot {
   background: #c9a227;
@@ -120,6 +143,7 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   scroll-snap-type: x mandatory;
+  touch-action: pan-x;
   flex: 1;
   min-width: 0;
 }
@@ -295,11 +319,11 @@
   background: var(--qvh-bg-panel);
   border: 1px solid var(--qvh-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: box-shadow 0.35s ease;
 }
 
 .qvh-spotlight-card:hover {
-  transform: translateY(-2px);
+  transform: none;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
 }
 
@@ -572,6 +596,14 @@
   object-fit: cover;
   object-position: center top;
   display: block;
+  transition: transform 0.7s ease;
+}
+
+.qvh-spotlight-card:hover .qvh-spotlight-cover-poster .qvh-remote-poster-img,
+.qvh-spotlight-card:hover .qvh-spotlight-cover-poster .qvh-spotlight-cover-img,
+.qvh-spotlight-card:hover .qvh-spotlight-visual .qvh-remote-poster-img,
+.qvh-spotlight-card:hover .qvh-spotlight-visual .qvh-spotlight-cover-img {
+  transform: scale(1.07);
 }
 
 .qvh-spotlight-cover-emblem,
@@ -629,8 +661,8 @@
   .qvh-spotlight-visual-cine:not(:has(.qvh-spotlight-cover-poster)),
   .qvh-spotlight-visual-series:not(:has(.qvh-spotlight-cover-poster)),
   .qvh-spotlight-visual-premiere:not(:has(.qvh-spotlight-cover-poster)) {
-    background-size: 200% 200%;
-    animation: qvh-media-spotlight-shift 6s ease-in-out infinite;
+    background-size: 100% 100%;
+    animation: none;
   }
 }
 

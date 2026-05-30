@@ -43,7 +43,10 @@ export default function PrivacidadPage() {
               no identifican por sí solas a una persona concreta. Si activas
               avisos push, almacenamos un identificador de suscripción y tus
               categorías preferidas (fútbol, UFC, series, motor) para enviarte
-              como máximo 2 avisos al día.
+              como máximo 2 avisos al día. Si creas una cuenta con enlace
+              mágico, guardamos tu correo en Supabase Auth y los eventos que
+              marques como favoritos en la tabla <code>favorites</code>,
+              vinculados a tu usuario.
             </p>
           </section>
 
@@ -64,6 +67,12 @@ export default function PrivacidadPage() {
                 eventos destacados ~45 min antes de su hora. Base: consentimiento
                 explícito del navegador. Puedes desactivarlas en cualquier
                 momento desde el icono de campana en la home.
+              </li>
+              <li>
+                <strong>Cuenta y favoritos (opcional)</strong> — correo para
+                autenticación y lista de eventos guardados. Base: ejecución del
+                servicio solicitado. Puedes eliminar favoritos o cerrar sesión
+                desde <Link href="/cuenta">Mi cuenta</Link>.
               </li>
             </ul>
           </section>

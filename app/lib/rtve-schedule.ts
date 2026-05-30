@@ -1,10 +1,11 @@
 import { getMadridWeekDates } from "./madrid-time";
 import { encodeTmdbSource } from "./tmdb-client";
 import {
-  listSpanishTvWithRtveProgramId,
+  SPANISH_TV_FLAGSHIP,
   matchSpanishTvByRtveProgramId,
   type SpanishTvShow,
 } from "./spanish-tv-curated";
+import { isRtveLinearShow, resolveRtveProgramId } from "./rtve-program-lookup";
 import { fetchJsonWithTimeout } from "./fetch-json";
 
 const RTVE_API = "https://api.rtve.es/api";
@@ -118,20 +119,32 @@ export async function fetchRtveFlagshipEvents(
   const byExternalId = new Map<string, RtveCronEvent>();
   const errors: string[] = [];
 
-  const curatedShows = listSpanishTvWithRtveProgramId();
-  if (!curatedShows.length) {
-    return { events: [], error: undefined };
-  }
+  const rtveShows = SPANISH_TV_FLAGSHIP.filter(
+    (show) => show.category !== "ficcion" && isRtveLinearShow(show)
+  );
 
   const programIds = new Set<number>();
   for (const id of await fetchTrendingProgramIds()) programIds.add(id);
-  for (const show of curatedShows) {
-    if (show.rtveProgramId) programIds.add(show.rtveProgramId);
+
+  const showByProgramId = new Map<number, SpanishTvShow>();
+
+  for (const show of rtveShows) {
+    try {
+      const programId = await resolveRtveProgramId(show);
+      if (!programId) continue;
+      programIds.add(programId);
+      showByProgramId.set(programId, show);
+    } catch (err) {
+      errors.push(
+        `${show.id}: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
   }
 
   for (const programId of programIds) {
-    const show = matchSpanishTvByRtveProgramId(programId);
-    if (!show?.rtveProgramId) continue;
+    const show =
+      showByProgramId.get(programId) ?? matchSpanishTvByRtveProgramId(programId);
+    if (!show) continue;
 
     try {
       const videos = await fetchProgramVideos(programId);

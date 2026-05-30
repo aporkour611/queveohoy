@@ -20,6 +20,9 @@ export function competitionMatchClass(
   }
   if (sport === "basket") return "fh-match_basket";
   if (sport === "tenis") return "fh-match_default";
+  if (sport === "csgo") return "fh-match_cs2 fh-match-media";
+  if (sport === "valorant") return "fh-match_valorant fh-match-media";
+  if (sport === "lol") return "fh-match_lol fh-match-media";
   if (sport && sport !== "futbol") return "fh-match_esports";
 
   const c = (competition ?? "").toLowerCase();

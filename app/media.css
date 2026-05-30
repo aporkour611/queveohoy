@@ -241,13 +241,11 @@
 }
 
 .qvh-media-card-tilt {
-  transition:
-    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 0.35s ease;
+  transition: box-shadow 0.35s ease;
 }
 
 .qvh-media-card-tilt:hover {
-  transform: translateY(-4px);
+  transform: none;
 }
 
 .qvh-media-card-expanded {
@@ -599,6 +597,7 @@
   object-fit: cover;
   object-position: center top;
   display: block;
+  transition: transform 0.7s ease;
 }
 
 .fh-media-spotlight-visual .fh-media-spotlight-banner,
@@ -609,6 +608,13 @@
   height: 100%;
   object-fit: cover;
   object-position: center top;
+  transition: transform 0.7s ease;
+}
+
+.fh-match-media-spotlight:hover .fh-media-spotlight-visual .qvh-remote-poster-img,
+.fh-match-media-spotlight:hover .fh-media-spotlight-visual .fh-media-spotlight-banner,
+.fh-match-media-spotlight:hover .fh-media-spotlight-visual .fh-media-spotlight-banner .qvh-remote-poster-img {
+  transform: scale(1.07);
 }
 
 .fh-media-spotlight-visual-team-duel {
@@ -676,6 +682,67 @@
   background:
     radial-gradient(circle at 50% 0%, rgba(200, 155, 60, 0.2), transparent 55%),
     linear-gradient(180deg, #0a1428 0%, #050505 100%);
+}
+
+.fh-media-spotlight-visual-esports .fh-media-spotlight-overlay,
+.fh-media-spotlight-visual-cs2 .fh-media-spotlight-overlay,
+.fh-media-spotlight-visual-valorant .fh-media-spotlight-overlay,
+.fh-media-spotlight-visual-lol .fh-media-spotlight-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.35) 45%,
+    rgba(0, 0, 0, 0.88) 100%
+  );
+}
+
+.fh-media-spotlight-visual-cine {
+  background: linear-gradient(135deg, #451a03 0%, #d97706 48%, #78350f 100%);
+}
+
+.fh-media-spotlight-visual-series {
+  background: linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #4c1d95 100%);
+}
+
+.fh-media-spotlight-visual-premiere {
+  background: linear-gradient(135deg, #1a0a2e 0%, #6b21a8 42%, #3b0764 100%);
+}
+
+.fh-media-spotlight-visual-cine:has(.fh-media-spotlight-banner),
+.fh-media-spotlight-visual-series:has(.fh-media-spotlight-banner),
+.fh-media-spotlight-visual-premiere:has(.fh-media-spotlight-banner) {
+  background: #101015;
+}
+
+.fh-match-media-spotlight.fh-match_cine {
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 6px 22px rgba(217, 119, 6, 0.16);
+}
+
+.fh-match-media-spotlight.fh-match_series {
+  border-color: rgba(124, 58, 237, 0.35);
+  box-shadow: 0 6px 22px rgba(124, 58, 237, 0.16);
+}
+
+.fh-match-media-spotlight.fh-match_tv {
+  border-color: rgba(236, 72, 153, 0.35);
+  box-shadow: 0 6px 22px rgba(190, 24, 93, 0.14);
+}
+
+.fh-media-spotlight-badge-cine {
+  background: rgba(217, 119, 6, 0.94);
+  border-color: rgba(255, 220, 140, 0.45);
+  color: #1a1200;
+}
+
+.fh-media-spotlight-badge-series {
+  background: rgba(124, 58, 237, 0.94);
+  border-color: rgba(216, 180, 254, 0.45);
+}
+
+.fh-media-spotlight-badge-premiere {
+  background: rgba(168, 85, 247, 0.95);
+  border-color: rgba(233, 213, 255, 0.55);
 }
 
 .fh-media-spotlight-game-art {
@@ -1043,13 +1110,17 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-/* Sub-bloques con barra lateral (TV, catálogo) */
+/* Sub-bloques TV y catálogo — misma caja que Champions */
 .qvh-feed-surface .qvh-tv-group.qvh-feed-category-shell,
 .qvh-feed-surface .qvh-catalog-rail-block.qvh-feed-category-shell {
   position: relative;
-  padding: 14px 12px 12px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.32);
+  padding: 12px 10px 10px;
+  border: 1px solid rgba(120, 140, 255, 0.22);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 6, 72, 0.42) 0%,
+    rgba(10, 10, 14, 0.88) 100%
+  );
   border-radius: 14px;
   overflow: hidden;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
@@ -1057,35 +1128,7 @@
 
 .qvh-feed-surface .qvh-tv-group.qvh-feed-category-shell::before,
 .qvh-feed-surface .qvh-catalog-rail-block.qvh-feed-category-shell::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
-  border-radius: 14px 0 0 14px;
-}
-
-.qvh-feed-surface .qvh-tv-group-accented-directo::before {
-  background: linear-gradient(180deg, #c084fc, #9146ff);
-}
-
-.qvh-feed-surface .qvh-tv-group-accented-concurso::before {
-  background: linear-gradient(180deg, #fcd34d, #f59e0b);
-}
-
-.qvh-feed-surface .qvh-tv-group-accented-reality::before {
-  background: linear-gradient(180deg, #f472b6, #d946ef);
-}
-
-.qvh-feed-surface .qvh-catalog-rail-accented-cine::before {
-  background: linear-gradient(180deg, #fbbf24, #d97706);
-}
-
-.qvh-feed-surface .qvh-catalog-rail-accented-series::before {
-  background: linear-gradient(180deg, #c4b5fd, #7c3aed);
-}
-
-.qvh-feed-surface .qvh-catalog-rail-accented-anime::before {
-  background: linear-gradient(180deg, #fb7185, #e11d48);
+  display: none;
 }
 
 .qvh-feed-surface .qvh-tv-group .qvh-tv-group-accent,
@@ -1170,48 +1213,40 @@
 .qvh-tv-group-head {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin: -12px -10px 10px;
+  padding: 14px 12px;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(90deg, #0a0648 0%, #180878 50%, #0a0648 100%);
+  border-bottom: 2px solid rgba(201, 162, 39, 0.65);
 }
 
 .qvh-tv-group-accent {
-  width: 4px;
-  height: 22px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-
-.qvh-tv-group-accent-reality {
-  background: linear-gradient(180deg, #f472b6, #d946ef);
-}
-
-.qvh-tv-group-accent-concurso {
-  background: linear-gradient(180deg, #fcd34d, #f59e0b);
-}
-
-.qvh-tv-group-accent-directo {
-  background: linear-gradient(180deg, #c084fc, #9146ff);
+  display: none;
 }
 
 .qvh-tv-group-title {
   margin: 0;
   font-family: var(--qvh-font-display);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
 }
 
 .qvh-tv-group-count {
-  margin-left: auto;
+  margin-left: 0;
   min-width: 22px;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: 999px;
   font-family: var(--qvh-font-display);
-  font-size: 0.68rem;
+  font-size: 0.75em;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  border: none;
 }
 
 .qvh-tv-slot-list {
@@ -1247,6 +1282,14 @@
   position: absolute;
   inset: 0;
   z-index: 1;
+}
+
+.qvh-tv-slot-media .qvh-remote-poster-img {
+  transition: transform 0.7s ease;
+}
+
+.qvh-tv-slot:hover .qvh-tv-slot-media .qvh-remote-poster-img {
+  transform: scale(1.07);
 }
 
 .qvh-tv-slot-fallback {
@@ -1457,36 +1500,22 @@
 .qvh-catalog-rail-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding: 0 2px;
+  justify-content: center;
+  gap: 10px;
+  margin: -12px -10px 10px;
+  padding: 14px 12px;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(90deg, #0a0648 0%, #180878 50%, #0a0648 100%);
+  border-bottom: 2px solid rgba(201, 162, 39, 0.65);
 }
 
 .qvh-catalog-rail-accent {
-  width: 3px;
-  height: 28px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-
-.qvh-catalog-rail-accent-cine {
-  background: linear-gradient(180deg, #fbbf24, #d97706);
-  box-shadow: 0 0 14px rgba(217, 119, 6, 0.35);
-}
-
-.qvh-catalog-rail-accent-series {
-  background: linear-gradient(180deg, #c4b5fd, #7c3aed);
-  box-shadow: 0 0 14px rgba(124, 58, 237, 0.35);
-}
-
-.qvh-catalog-rail-accent-anime {
-  background: linear-gradient(180deg, #fb7185, #e11d48);
-  box-shadow: 0 0 14px rgba(225, 29, 72, 0.35);
+  display: none;
 }
 
 .qvh-catalog-rail-copy {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   min-width: 0;
 }
@@ -1495,23 +1524,23 @@
   margin: 0;
   font-family: var(--qvh-font-display);
   font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: rgba(255, 255, 255, 0.92);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
 }
 
 .qvh-catalog-rail-count {
   flex-shrink: 0;
   min-width: 22px;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: 999px;
   font-family: var(--qvh-font-display);
-  font-size: 0.68rem;
+  font-size: 0.75em;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  border: none;
 }
 
 .qvh-catalog-rail-scroll {

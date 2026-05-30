@@ -1,12 +1,23 @@
 import { describe, expect, it } from "vitest";
 import type { EventRow } from "../components/types";
 import {
+  buildCuratedSpanishTvCronEvents,
   mergeCuratedSpanishTvEvents,
   shouldSuppressMisdatedSpanishTvEvent,
   stripDuplicateGenericSpanishTvEvents,
 } from "./curated-tv-events";
 import { normalizeFeedEvents } from "./events-feed";
 import { resolveEventPosterUrl } from "./event-poster";
+
+describe("buildCuratedSpanishTvCronEvents", () => {
+  it("exporta filas curated_tv_ para el cron", () => {
+    const events = buildCuratedSpanishTvCronEvents("2026-05-26", 7);
+    const hormiguero = events.find((event) => /hormiguero/i.test(event.title));
+
+    expect(hormiguero?.external_id).toMatch(/^curated_tv_el-hormiguero_/);
+    expect(hormiguero?.sport).toBe("tv");
+  });
+});
 
 describe("mergeCuratedSpanishTvEvents", () => {
   it("inserta El Hormiguero de lunes a viernes a las 22:00", () => {
@@ -37,6 +48,15 @@ describe("mergeCuratedSpanishTvEvents", () => {
     expect(masterChef?.time).toBe("22:50");
     expect(masterChef?.platform).toContain("La 1");
     expect(resolveEventPosterUrl(masterChef!)).toContain("image.tmdb.org");
+  });
+
+  it("inserta Late Xou de lunes a viernes tras medianoche", () => {
+    const events = mergeCuratedSpanishTvEvents([], "2026-05-26", 7);
+    const lateXou = events.find((event) => /late xou/i.test(event.title ?? ""));
+
+    expect(lateXou).toBeDefined();
+    expect(lateXou?.time).toBe("00:05");
+    expect(lateXou?.platform).toContain("La 2");
   });
 
   it("inserta Mask Singer los miércoles a las 23:00 con póster editorial", () => {
@@ -71,6 +91,12 @@ describe("mergeCuratedSpanishTvEvents", () => {
     const maskSinger = events.find((event) => /mask singer/i.test(event.title ?? ""));
 
     expect(maskSinger?.platform).toBe("Antena 3 · ATRESPLAYER TV");
+  });
+
+  it("normalizeFeedEvents incluye parrilla curada en el calendario", () => {
+    const events = normalizeFeedEvents([]);
+    expect(events.some((event) => /hormiguero/i.test(event.title ?? ""))).toBe(true);
+    expect(events.some((event) => /late xou/i.test(event.title ?? ""))).toBe(true);
   });
 
   it("suprime La Isla T10E25 en lunes y conserva lunes/martes correctos", () => {

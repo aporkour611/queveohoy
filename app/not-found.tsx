@@ -1,18 +1,39 @@
 import "./futbolhoy-shell.css";
 import Link from "next/link";
+import { SEO_HUB_NAV_LINKS } from "./lib/seo-hub-nav";
 
 export default function NotFound() {
   return (
-    <main className="fh-content" style={{ padding: "48px 16px" }}>
-      <div className="fh-container" style={{ maxWidth: 560 }}>
-        <h1 style={{ marginTop: 0 }}>Página no encontrada</h1>
+    <main className="fh-content qvh-not-found">
+      <div className="fh-container">
+        <h1>Página no encontrada</h1>
         <p>
-          No existe esta URL en queveohoy.es. Vuelve al inicio para ver la
-          agenda de hoy: partidos, deportes y estrenos con horarios en España.
+          No existe esta URL en queveohoy.es. Prueba la agenda de hoy o una de
+          las secciones más visitadas:
         </p>
-        <Link href="/" className="fh-btn fh-btn-primary">
-          Ir al inicio
-        </Link>
+        <ul className="qvh-not-found-links">
+          <li>
+            <Link href="/" className="qvh-hero-cta-primary">
+              Agenda de hoy
+            </Link>
+          </li>
+          <li>
+            <Link href="/partidos-hoy">Partidos hoy en TV</Link>
+          </li>
+          <li>
+            <Link href="/guia">Guías: dónde ver</Link>
+          </li>
+        </ul>
+        <p className="qvh-not-found-hubs">
+          {SEO_HUB_NAV_LINKS.slice(0, 8).map((hub, index) => (
+            <span key={hub.slug}>
+              {index > 0 ? " · " : null}
+              <Link href={hub.slug === "partidos-hoy" ? "/partidos-hoy" : `/${hub.slug}`}>
+                {hub.title}
+              </Link>
+            </span>
+          ))}
+        </p>
       </div>
     </main>
   );

@@ -30,6 +30,8 @@ type PushSubscriptionRow = {
   topics: unknown;
   notify_count_date: string | null;
   notify_count: number;
+  user_id?: string | null;
+  favorites_only?: boolean;
 };
 
 let vapidConfigured = false;
@@ -108,6 +110,17 @@ async function sendToSubscription(
 
   if (!subscriptionMatchesEvent(topics, event.sport)) {
     return "skipped";
+  }
+
+  if (row.favorites_only && row.user_id) {
+    const { data: favorite } = await admin
+      .from("favorites")
+      .select("event_id")
+      .eq("user_id", row.user_id)
+      .eq("event_id", event.id)
+      .maybeSingle();
+
+    if (!favorite) return "skipped";
   }
 
   const sameDay = row.notify_count_date === todayKey;
@@ -211,7 +224,7 @@ export async function dispatchPushForEvents(
   const { data: subscriptions, error } = await admin
     .from("push_subscriptions")
     .select(
-      "id, endpoint, p256dh, auth, topics, notify_count_date, notify_count"
+      "id, endpoint, p256dh, auth, topics, notify_count_date, notify_count, user_id, favorites_only"
     );
 
   if (error) {
@@ -264,6 +277,8 @@ export type PushSubscriptionPayload = {
   keys: { p256dh: string; auth: string };
   topics?: PushTopicId[];
   userAgent?: string | null;
+  userId?: string | null;
+  favoritesOnly?: boolean;
 };
 
 export async function upsertPushSubscription(
@@ -276,19 +291,25 @@ export async function upsertPushSubscription(
   const admin = createSupabaseAdmin();
   const topics = normalizePushTopics(payload.topics);
 
+  const row: Record<string, unknown> = {
+    endpoint: payload.endpoint,
+    p256dh: payload.keys.p256dh,
+    auth: payload.keys.auth,
+    topics,
+    user_agent: payload.userAgent?.slice(0, 512) ?? null,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (payload.userId !== undefined) {
+    row.user_id = payload.userId;
+  }
+  if (payload.favoritesOnly !== undefined) {
+    row.favorites_only = payload.favoritesOnly;
+  }
+
   const { data, error } = await admin
     .from("push_subscriptions")
-    .upsert(
-      {
-        endpoint: payload.endpoint,
-        p256dh: payload.keys.p256dh,
-        auth: payload.keys.auth,
-        topics,
-        user_agent: payload.userAgent?.slice(0, 512) ?? null,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "endpoint" }
-    )
+    .upsert(row, { onConflict: "endpoint" })
     .select("id")
     .single();
 

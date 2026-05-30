@@ -17,6 +17,11 @@ const PushNavButton = dynamic(
   { ssr: false, loading: NavActionPlaceholder }
 );
 
+const AccountNavLink = dynamic(
+  () => import("./AccountNavLink").then((mod) => mod.AccountNavLink),
+  { ssr: false, loading: NavActionPlaceholder }
+);
+
 export function HomeNavActions() {
   const [ready, setReady] = useState(false);
 
@@ -29,7 +34,7 @@ export function HomeNavActions() {
     const onInteract = () => activate();
     window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
     window.addEventListener("keydown", onInteract, { passive: true, once: true });
-    const fallback = window.setTimeout(activate, 45_000);
+    const fallback = window.setTimeout(activate, 10_000);
 
     return () => {
       cancelled = true;
@@ -43,6 +48,7 @@ export function HomeNavActions() {
 
   return (
     <div className="fh-nav-links">
+      <AccountNavLink />
       <PushNavButton />
       <AdminNavLink />
     </div>

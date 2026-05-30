@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 import path from "node:path";
-import { buildSecurityHeaders } from "./app/lib/security-headers";
+import {
+  buildEmbedSecurityHeaders,
+  buildSecurityHeaders,
+} from "./app/lib/security-headers";
 import { SEO_HUB_SLUGS } from "./app/lib/seo-hubs";
 import { siteUrl } from "./app/lib/seo";
 
@@ -14,6 +17,7 @@ const apexHost = new URL(siteUrl).host;
 
 const isProduction = process.env.NODE_ENV === "production";
 const securityHeaders = buildSecurityHeaders(isProduction);
+const embedSecurityHeaders = buildEmbedSecurityHeaders(isProduction);
 
 function buildBeforeFileRewrites() {
   const rewrites: { source: string; destination: string }[] = [
@@ -64,6 +68,10 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        source: "/embed/:path*",
+        headers: embedSecurityHeaders,
+      },
       {
         source: "/(.*)",
         headers: securityHeaders,

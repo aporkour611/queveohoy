@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,6 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "verify:release": "node scripts/verify-release-checklist.mjs",
     "verify:prod": "node scripts/verify-prod-v1.mjs",
     "ping-search": "node scripts/ping-indexnow.mjs",
@@ -30,6 +32,7 @@
     "safari >= 16.4"
   ],
   "dependencies": {
+    "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^1.2.0",
@@ -41,6 +44,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@playwright/test": "^1.55.0",
     "@types/node": "^20",
     "@types/pg": "^8.15.4",
     "@types/react": "^19",

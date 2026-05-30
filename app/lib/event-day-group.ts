@@ -1,6 +1,6 @@
 import type { EventRow } from "../components/types";
 import { resolveFeedSport } from "./anime-classify";
-import { sportLabel } from "./filter-config";
+import { sportCalendarLabel } from "./filter-config";
 import { getTvShowCategory, isTvFictionSeriesEvent } from "./tv-show-category";
 
 export type EventDayGroups = {
@@ -53,7 +53,7 @@ export function groupEventsForDisplay(events: EventRow[]): EventDayGroups {
       const sportId = event.sport ?? "otros";
       if (!bySport[sportId]) {
         bySport[sportId] = {
-          label: sportLabel(sportId),
+          label: sportCalendarLabel(sportId),
           sportId,
           events: [],
         };

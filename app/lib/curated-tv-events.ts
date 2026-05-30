@@ -1,5 +1,6 @@
 import type { EventRow } from "../components/types";
-import { addDaysToDateKey } from "./madrid-time";
+import type { CronEventInput } from "./cron-events";
+import { addDaysToDateKey, toMadridDateKey } from "./madrid-time";
 import {
   matchesSpanishTvFlagship,
   SPANISH_TV_FLAGSHIP,
@@ -143,6 +144,28 @@ export function mergeCuratedSpanishTvEvents(
   }
 
   return [...merged.values()];
+}
+
+/** Eventos sintéticos de parrilla fija para persistir en BD (cron). */
+export function buildCuratedSpanishTvCronEvents(
+  todayKey: string = toMadridDateKey(new Date()),
+  windowDays = 7
+): CronEventInput[] {
+  const rows = mergeCuratedSpanishTvEvents([], todayKey, windowDays);
+
+  return rows
+    .filter((event) => event.external_id?.startsWith("curated_tv_"))
+    .map((event) => ({
+      external_id: event.external_id!,
+      title: event.title ?? "",
+      date: event.date ?? todayKey,
+      time: event.time ?? "22:00",
+      sport: "tv" as const,
+      category: "tv" as const,
+      competition: event.competition ?? "",
+      platform: event.platform ?? "",
+      source: event.source ?? "",
+    }));
 }
 
 export function isFlagshipSpanishTvEvent(event: EventRow): boolean {

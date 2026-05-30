@@ -101,6 +101,12 @@ export function sportLabel(sportId: string): string {
   return sportId;
 }
 
+/** Título de bloque en el calendario diario (puede diferir del filtro). */
+export function sportCalendarLabel(sportId: string): string {
+  if (sportId === "lol") return "League of Legends";
+  return sportLabel(sportId);
+}
+
 /** Título del bloque cine/series/anime según la subselección activa. */
 export function formatMediaGroupLabel(selectedIds: string[]): string {
   const selected = MEDIA_SPORT_IDS.filter((id) => selectedIds.includes(id));

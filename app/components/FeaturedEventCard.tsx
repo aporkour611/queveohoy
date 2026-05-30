@@ -18,6 +18,7 @@ import { UfcFightVisual } from "./UfcFightVisual";
 import { RolandGarrosDuelVisual } from "./RolandGarrosDuelVisual";
 import { EventCardStamp } from "./EventCardStamp";
 import { ChannelBadges } from "./ChannelBadge";
+import { FavoriteButton } from "./FavoriteButton";
 
 type Props = {
   event: EventRow;
@@ -119,6 +120,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
         }`}
       >
         {stamp ? <EventCardStamp kind={stamp} size="compact" /> : null}
+        <FavoriteButton eventId={event.id} />
         {card.coverImage ? (
           <SpotlightCoverArt
             cover={card.coverImage}

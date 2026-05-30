@@ -72,8 +72,53 @@ export async function registerPushServiceWorker(): Promise<ServiceWorkerRegistra
   return registration;
 }
 
+export const PUSH_FAVORITES_ONLY_KEY = "qvh-push-favorites-only";
+
+function readLocalPushFavoritesOnly(): boolean {
+  if (typeof window === "undefined") return false;
+
+  try {
+    return localStorage.getItem(PUSH_FAVORITES_ONLY_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function writeLocalPushFavoritesOnly(enabled: boolean): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    localStorage.setItem(PUSH_FAVORITES_ONLY_KEY, enabled ? "1" : "0");
+  } catch {}
+}
+
+async function buildSubscribeBody(
+  endpoint: string,
+  keys: { p256dh: string; auth: string },
+  topics: PushTopicId[],
+  options?: { userId?: string | null; favoritesOnly?: boolean }
+): Promise<Record<string, unknown>> {
+  const favoritesOnly =
+    options?.favoritesOnly ?? readLocalPushFavoritesOnly();
+
+  const body: Record<string, unknown> = {
+    endpoint,
+    keys,
+    topics,
+    userAgent: navigator.userAgent,
+    favoritesOnly,
+  };
+
+  if (options?.userId) {
+    body.userId = options.userId;
+  }
+
+  return body;
+}
+
 export async function subscribeToPush(
-  topics: PushTopicId[] = readLocalPushTopics()
+  topics: PushTopicId[] = readLocalPushTopics(),
+  options?: { userId?: string | null; favoritesOnly?: boolean }
 ): Promise<{ ok: boolean; error?: string }> {
   if (!isPushSupported()) {
     return { ok: false, error: "Tu navegador no admite notificaciones push" };
@@ -117,12 +162,14 @@ export async function subscribeToPush(
   const res = await fetch("/api/push/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint,
-      keys: { p256dh, auth },
-      topics: normalizedTopics,
-      userAgent: navigator.userAgent,
-    }),
+    body: JSON.stringify(
+      await buildSubscribeBody(
+        endpoint,
+        { p256dh, auth },
+        normalizedTopics,
+        options
+      )
+    ),
   });
 
   if (!res.ok) {
@@ -137,7 +184,8 @@ export async function subscribeToPush(
 }
 
 export async function updatePushTopics(
-  topics: PushTopicId[]
+  topics: PushTopicId[],
+  options?: { userId?: string | null; favoritesOnly?: boolean }
 ): Promise<{ ok: boolean; error?: string }> {
   const endpoint = readStoredPushEndpoint();
   if (!endpoint) {
@@ -150,12 +198,14 @@ export async function updatePushTopics(
   const res = await fetch("/api/push/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint,
-      keys: await readCurrentPushKeys(),
-      topics: normalizedTopics,
-      userAgent: navigator.userAgent,
-    }),
+    body: JSON.stringify(
+      await buildSubscribeBody(
+        endpoint,
+        await readCurrentPushKeys(),
+        normalizedTopics,
+        options
+      )
+    ),
   });
 
   if (!res.ok) {

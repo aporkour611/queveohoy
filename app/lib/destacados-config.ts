@@ -13,6 +13,8 @@ import {
   isRecurringFlagshipSpanishTvEvent,
   mergeCuratedSpanishTvEvents,
 } from "./curated-tv-events";
+import { isSpanishTvDestacadosEligible } from "./spanish-tv-curated";
+import { isTvFictionSeriesEvent } from "./tv-show-category";
 import { isSeasonPremiereEvent } from "./tmdb";
 import { pickOneDestacadoPerTier } from "./destacados-importance";
 
@@ -88,6 +90,16 @@ function mergeDestacadosEvents(
   );
 }
 
+/** Destacados: TV de máxima audiencia; el filtro TV del calendario muestra todo el catálogo. */
+function filterSpanishTvForDestacados(events: EventRow[]): EventRow[] {
+  return events.filter(
+    (event) =>
+      event.sport !== "tv" ||
+      isTvFictionSeriesEvent(event) ||
+      isSpanishTvDestacadosEligible(event)
+  );
+}
+
 export { isChampionsFinal, isDestacadoFinal, isDestacadoPremiere } from "./event-card-stamp";
 export {
   isRolandGarrosEvent,
@@ -151,8 +163,10 @@ export function pickTodayDestacados(
   const week = new Set(
     Array.from({ length: windowDays }, (_, i) => addDaysToDateKey(today, i))
   );
-  const todayPool = mergedEvents.filter(
-    (event) => event.date === today && event.date && week.has(event.date)
+  const todayPool = filterSpanishTvForDestacados(
+    mergedEvents.filter(
+      (event) => event.date === today && event.date && week.has(event.date)
+    )
   );
 
   return pickOneDestacadoPerTier(todayPool).slice(0, MAX_DESTACADOS_TODAY);
@@ -167,7 +181,9 @@ export function pickWeekDestacados(
   const todayKey = options.todayKey ?? toMadridDateKey(new Date());
   const windowDays = options.windowDays ?? 7;
   const mergedEvents = mergeDestacadosEvents(events, todayKey, windowDays);
-  const pool = weekPoolFor(mergedEvents, todayKey, windowDays, excludeIds);
+  const pool = filterSpanishTvForDestacados(
+    weekPoolFor(mergedEvents, todayKey, windowDays, excludeIds)
+  );
 
   return pickOneDestacadoPerTier(pool)
     .sort(sortDestacadosBySoonest)

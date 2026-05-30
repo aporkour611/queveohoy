@@ -48,7 +48,9 @@ export function isSpainLatamRelevantMediaEvent(event: EventRow): boolean {
   }
 
   const externalId = event.external_id ?? "";
-  if (externalId.startsWith("manual_tv_")) return true;
+  if (externalId.startsWith("manual_tv_") || externalId.startsWith("curated_tv_")) {
+    return true;
+  }
 
   const title = event.title ?? "";
   if (isExcludedUsTvTitle(title)) return false;

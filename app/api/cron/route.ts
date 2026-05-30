@@ -42,6 +42,7 @@ import {
   toMadridDateKey,
 } from "@/app/lib/madrid-time";
 import { purgePastDayEvents } from "@/app/lib/purge-past-events";
+import { evaluateCronHealth, sendCronAlert } from "@/app/lib/cron-alerts";
 
 function getSupabase() {
   return createSupabaseAdmin();
@@ -326,7 +327,7 @@ async function fetchSpanishTv(): Promise<{ count: number; purged: number; error?
     const purge = await purgeOutOfWindowScheduleEvents(
       dates[0],
       dates[dates.length - 1],
-      ["tvmaze_", "rtve_"]
+      ["tvmaze_", "rtve_", "curated_tv_"]
     );
 
     console.log(
@@ -852,7 +853,7 @@ export async function GET(request: Request) {
     console.warn("Feed cache warm error:", e);
   }
 
-  return NextResponse.json({
+  const cronResult = {
     ok: true,
     timestamp: new Date().toISOString(),
     dbIndex,
@@ -898,5 +899,15 @@ export async function GET(request: Request) {
       football.count === 0
         ? "La API respondió pero no hay partidos en este rango de fechas (fin de temporada). Prueba otro día en la UI."
         : undefined,
-  });
+  };
+
+  try {
+    for (const alert of evaluateCronHealth(cronResult)) {
+      await sendCronAlert(alert);
+    }
+  } catch (e) {
+    console.warn("Cron health alerts failed:", e);
+  }
+
+  return NextResponse.json(cronResult);
 }

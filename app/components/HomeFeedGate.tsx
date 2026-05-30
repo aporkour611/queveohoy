@@ -11,8 +11,8 @@ const HomeFeed = dynamic(
 type HomeFeedProps = ComponentProps<typeof HomeFeed>;
 
 /** PSI / desktop: retrasa hidratación. Móvil real: activar antes para calendario interactivo. */
-const HYDRATION_IDLE_DESKTOP_MS = 60_000;
-const HYDRATION_IDLE_TOUCH_MS = 4_000;
+const HYDRATION_IDLE_DESKTOP_MS = 6_000;
+const HYDRATION_IDLE_TOUCH_MS = 3_000;
 
 function resolveHydrationIdleMs(): number {
   if (typeof window === "undefined") return HYDRATION_IDLE_DESKTOP_MS;

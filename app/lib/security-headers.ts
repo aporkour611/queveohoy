@@ -77,3 +77,20 @@ export function buildSecurityHeaders(isProduction: boolean) {
     },
   ];
 }
+
+/** Widget embed: permite iframe en sitios de terceros. */
+export function buildEmbedContentSecurityPolicy(isProduction: boolean): string {
+  const base = buildContentSecurityPolicy(isProduction)
+  return base.replace("frame-ancestors 'self'", "frame-ancestors *")
+}
+
+export function buildEmbedSecurityHeaders(isProduction: boolean) {
+  return [
+    { key: "X-Content-Type-Options", value: "nosniff" },
+    { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+    {
+      key: "Content-Security-Policy",
+      value: buildEmbedContentSecurityPolicy(isProduction),
+    },
+  ];
+}
