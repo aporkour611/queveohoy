@@ -15,6 +15,18 @@ Estado tras **v2.0.0** (graduación RC 1.9.9 — plataforma estable).
 
 **Global estimado: ~9.4/10** — Objetivo Lighthouse 95+ tras deploy y medición PSI.
 
+## Medición PSI producción (2026-05-31)
+
+`PERF_URL=https://queveohoy.es npm run perf:budget`
+
+| Métrica | Resultado | Meta |
+|---------|-----------|------|
+| Performance | **94** | ≥80 |
+| LCP | **2.92s** | ≤2.0s |
+| CLS | **0.000** | ≤0.08 |
+
+Siguiente foco: recortar ~900ms LCP (preload/poster destacados).
+
 ## Cambios 1.0.6 (performance extrema)
 
 - **`interaction-gate`**: mobile sin timers idle que cargan JS durante Lighthouse
