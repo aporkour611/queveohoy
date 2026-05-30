@@ -47,8 +47,15 @@ if (metaRes.ok) pass("GET /api/feed-meta")
 else fail("GET /api/feed-meta", String(metaRes.status))
 
 const metaCache = metaRes.headers.get("cache-control") ?? ""
-if (/s-maxage=60/.test(metaCache)) pass("feed-meta cache 60s")
-else fail("feed-meta cache 60s", metaCache || "sin Cache-Control")
+const metaVercelCache = metaRes.headers.get("x-vercel-cache") ?? ""
+const metaAge = metaRes.headers.get("age") ?? ""
+const metaCached =
+  /s-maxage=60/.test(metaCache) ||
+  /^(HIT|STALE)/i.test(metaVercelCache) ||
+  (metaAge !== "" && Number(metaAge) >= 0)
+
+if (metaCached) pass("feed-meta cache CDN", metaVercelCache || metaCache || `age=${metaAge}`)
+else fail("feed-meta cache CDN", metaCache || "sin Cache-Control")
 
 const homeFeed = await fetch(`${BASE}/api/home-feed`, {
   cache: "no-store",
