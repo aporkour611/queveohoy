@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.0.4",
+    date: "2026-05-31",
+    title: "LCP — poster local primero + TMDB w92",
+    highlights: [
+      "Prioridad LCP: PNG locales /posters (mismo origen) antes que TMDB",
+      "TMDB w92 en preload e img LCP",
+      "JSON-LD al final del HTML (no compite con destacados)",
+    ],
+  },
+  {
     version: "2.0.3",
     date: "2026-05-31",
     title: "LCP móvil ≤2s — optimización destacados",

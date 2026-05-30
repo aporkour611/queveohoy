@@ -2,6 +2,12 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.0.4] - 2026-05-31
+
+### Changed
+- Versión del producto: **2.0.4**
+- LCP: prioriza pósters locales `/posters`; TMDB **w92**; JSON-LD tras el footer
+
 ## [2.0.3] - 2026-05-31
 
 ### Changed

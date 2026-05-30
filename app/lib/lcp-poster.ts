@@ -2,8 +2,8 @@ import { safeRemoteImageUrl } from "./remote-image";
 
 const TMDB_HOST = "image.tmdb.org";
 
-/** Ancho TMDB para LCP móvil (visual 132px alto; ~72vw ≤320px). w154 ≈ −17% bytes vs w185. */
-export const LCP_TMDB_POSTER_WIDTH = "w154";
+/** Ancho TMDB para LCP móvil (visual 132px alto). w92 ≈ −50% bytes vs w185. */
+export const LCP_TMDB_POSTER_WIDTH = "w92";
 
 /** Póster TMDB directo (sin /_next/image) para preload + <img> LCP. */
 export function buildLcpPosterUrl(src?: string | null): string | null {

@@ -156,7 +156,6 @@ export default async function Page() {
   return (
     <>
       <HomeLcpPreload entries={lcpPreloadEntries} />
-      <HomeJsonLd events={mergedForSsr} />
       <div className="fh-body">
           <HomeNav />
           <main id="main-content" className="fh-content">
@@ -205,6 +204,7 @@ export default async function Page() {
             <SiteFooter />
           </main>
       </div>
+      <HomeJsonLd events={mergedForSsr} />
     </>
   );
 }

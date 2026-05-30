@@ -27,7 +27,9 @@ Estado tras **v2.0.0** (graduación RC 1.9.9 — plataforma estable).
 
 **2.0.3:** TMDB w154, preload 320w único, preconnect temprano, crestas CL lazy (−190ms LCP vs 2.0.2).
 
-Meta LCP ≤2s: ~730ms restantes (valorar w92 LCP o poster local para #1 destacado).
+**2.0.4:** LCP local-first + TMDB w92 + JSON-LD al pie.
+
+Meta LCP ≤2s — remeasure tras deploy 2.0.4.
 
 ## Cambios 1.0.6 (performance extrema)
 
