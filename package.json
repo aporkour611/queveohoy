@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -15,6 +15,7 @@
     "verify:release": "node scripts/verify-release-checklist.mjs",
     "verify:prod": "node scripts/verify-prod-v1.mjs",
     "verify:prod:v4": "node scripts/verify-prod-v4.mjs",
+    "verify:prod:v5": "node scripts/verify-prod-v5.mjs",
     "ping-search": "node scripts/ping-indexnow.mjs",
     "ping-indexing": "node scripts/ping-indexing.mjs",
     "db:index": "node scripts/apply-index.mjs",
@@ -34,19 +35,22 @@
     "safari >= 16.4"
   ],
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.67",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^1.2.0",
+    "ai": "^6.0.193",
     "next": "16.2.6",
     "pg": "^8.16.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@playwright/test": "^1.55.0",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.15.4",
     "@types/react": "^19",

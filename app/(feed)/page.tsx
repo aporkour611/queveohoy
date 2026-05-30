@@ -4,7 +4,10 @@ import { FeedControlsShell } from "../components/FeedControlsShell";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
 import { HomeFeedGate } from "../components/HomeFeedGate";
+import { TonightForYouSection } from "../components/TonightForYouSection";
+import { AssistantFab } from "../components/AssistantPanel";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
+import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { HomeJsonLd } from "../components/HomeJsonLd";
 import { HomeLcpPreload } from "../components/HomeLcpPreload";
@@ -69,6 +72,8 @@ export default async function Page() {
   const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
   const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
   const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
+  const tonightEvents = mergeFeedEvents(ssrEvents, weekEvents);
+  const todayKey = initialDay?.date ?? "";
 
   return (
     <>
@@ -82,6 +87,8 @@ export default async function Page() {
                 <h1 className="sr-only">Qué ver hoy en TV</h1>
 
                 <DestacadosSection events={weekEvents} />
+
+                <TonightForYouSection events={tonightEvents} todayKey={todayKey} />
 
                 <div className="qvh-home-feed-slot">
                   <FeedControlsShell days={shellDays} />
@@ -108,6 +115,7 @@ export default async function Page() {
             </div>
             <SeoGuidesPromo />
             <SiteFooter />
+            <AssistantFab />
           </main>
         </HomeResetProvider>
       </div>

@@ -54,6 +54,8 @@ import {
   resolveHomeDayEvents,
 } from "../lib/upcoming-events";
 import { filterEventsByAgendaQuery } from "../lib/agenda-search";
+import { filterEventsByUserPlatforms } from "../lib/personalized-tonight";
+import { useUserPlatforms } from "../lib/use-user-platforms";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { fetchClientJson } from "../lib/client-fetch-json";
 
@@ -76,6 +78,8 @@ type Props = {
 };
 
 let cachedScrollAnchorOffset: number | null = null;
+
+const ONLY_MY_PLATFORMS_KEY = "qvh-only-my-platforms";
 
 function readScrollAnchorOffset(): number {
   const navH = parseFloat(
@@ -135,6 +139,8 @@ export function HomeFeed({
   const [agendaQuery, setAgendaQuery] = useState("");
   const deferredAgendaQuery = useDeferredValue(agendaQuery);
   const [filterSearching, setFilterSearching] = useState(false);
+  const [onlyMyPlatforms, setOnlyMyPlatforms] = useState(false);
+  const userPlatforms = useUserPlatforms();
   const [hasFullWeek, setHasFullWeek] = useState(false);
   const [fullWeekReady, setFullWeekReady] = useState(
     () => initialDestacadosEvents.length > 0
@@ -252,6 +258,16 @@ export function HomeFeed({
 
   useEffect(() => {
     deferClientStateUpdate(() => {
+      try {
+        setOnlyMyPlatforms(localStorage.getItem(ONLY_MY_PLATFORMS_KEY) === "1");
+      } catch {
+        /* ignore */
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    deferClientStateUpdate(() => {
       if (hasPreferenceConsent()) {
         try {
           const saved = localStorage.getItem(STORAGE_KEY);
@@ -308,6 +324,16 @@ export function HomeFeed({
     if (!hasPreferenceConsent()) return;
     const timer = window.setTimeout(() => {
       try {
+        localStorage.setItem(ONLY_MY_PLATFORMS_KEY, onlyMyPlatforms ? "1" : "0");
+      } catch {}
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [onlyMyPlatforms]);
+
+  useEffect(() => {
+    if (!hasPreferenceConsent()) return;
+    const timer = window.setTimeout(() => {
+      try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedSports));
       } catch {}
     }, 120);
@@ -343,9 +369,14 @@ export function HomeFeed({
       ? agendaQuery
       : deferredAgendaQuery;
 
+  const platformScopedEvents = useMemo(() => {
+    if (!onlyMyPlatforms || userPlatforms.length === 0) return weekEvents;
+    return filterEventsByUserPlatforms(weekEvents, userPlatforms);
+  }, [weekEvents, onlyMyPlatforms, userPlatforms]);
+
   const displayEvents = useMemo(
-    () => filterEventsByAgendaQuery(weekEvents, activeAgendaQuery),
-    [weekEvents, activeAgendaQuery]
+    () => filterEventsByAgendaQuery(platformScopedEvents, activeAgendaQuery),
+    [platformScopedEvents, activeAgendaQuery]
   );
 
   const displayDays = useMemo(
@@ -694,6 +725,9 @@ export function HomeFeed({
             onAgendaQueryChange={setAgendaQuery}
             agendaResultCount={displayEvents.length}
             agendaTotalCount={weekEvents.length}
+            onlyMyPlatforms={onlyMyPlatforms}
+            onOnlyMyPlatformsChange={setOnlyMyPlatforms}
+            platformFilterDisabled={userPlatforms.length === 0}
           />
 
           <div className="fh-feed-area">
@@ -714,6 +748,17 @@ export function HomeFeed({
             ) : weekEvents.length === 0 ? (
               <div className="fh-empty">
                 <p>No hay eventos en los próximos 7 días.</p>
+              </div>
+            ) : displayEvents.length === 0 && onlyMyPlatforms && userPlatforms.length > 0 ? (
+              <div className="fh-empty">
+                <p>No hay eventos en tus plataformas en los próximos días.</p>
+                <button
+                  type="button"
+                  className="fh-btn fh-btn-primary"
+                  onClick={() => setOnlyMyPlatforms(false)}
+                >
+                  Ver toda la agenda
+                </button>
               </div>
             ) : displayEvents.length === 0 && activeAgendaQuery.trim() ? (
               <div className="fh-empty">

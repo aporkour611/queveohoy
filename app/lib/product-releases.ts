@@ -8,6 +8,19 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "5.0.0",
+    date: "2026-05-30",
+    title: "Personalización e IA — v5",
+    highlights: [
+      "Sección «Para ti esta noche» con prime time y tus plataformas",
+      "Filtro global «Solo mis plataformas» en el feed de la home",
+      "Asistente «¿Qué veo?» con Vercel AI SDK (fallback inteligente sin API key)",
+      "Drawer de detalle de evento al tocar una tarjeta (móvil y desktop)",
+      "API POST /api/assistant con rate limit y herramientas sobre la agenda real",
+      "Página /asistente y botón flotante en la home",
+    ],
+  },
+  {
     version: "4.0.0",
     date: "2026-05-30",
     title: "Universo Queveo — web",

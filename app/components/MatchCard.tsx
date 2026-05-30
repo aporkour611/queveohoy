@@ -46,6 +46,7 @@ import Link from "next/link";
 import type { EventRow } from "./types";
 import { EventCardStamp } from "./EventCardStamp";
 import { FavoriteButton } from "./FavoriteButton";
+import { useEventDrawerOptional } from "./EventDrawerProvider";
 
 type Props = {
   event: EventRow;
@@ -250,6 +251,7 @@ function EventDetailsPanel({ event }: { event: EventRow }) {
 
 export const MatchCard = memo(function MatchCard({ event }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const eventDrawer = useEventDrawerOptional();
   const userPlatforms = useUserPlatforms();
   const isOnMyPlatform = useMemo(
     () => eventMatchesUserPlatforms(event.platform, userPlatforms),
@@ -341,21 +343,29 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
     startTransition(() => setExpanded((open) => !open));
   }
 
+  function handleCardActivate() {
+    if (eventDrawer) {
+      eventDrawer.open(event);
+      return;
+    }
+    toggleExpanded();
+  }
+
   const cardShell = (children: ReactNode, extraClass = "", stampOnCard = false) => (
     <div className={`fh-cardcol${expanded ? " fh-cardcol-expanded" : ""}`}>
       <div
-        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${hasExtraDetails ? " fh-match-expandable" : ""}${stampOnCard && stamp ? " fh-match-stamped" : ""}${isOnMyPlatform ? " fh-match-my-platform" : ""}`}
+        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${hasExtraDetails || eventDrawer ? " fh-match-expandable" : ""}${stampOnCard && stamp ? " fh-match-stamped" : ""}${isOnMyPlatform ? " fh-match-my-platform" : ""}${eventDrawer?.event?.id === event.id ? " fh-match-drawer-open" : ""}`}
         style={{ position: "relative" }}
-        role={hasExtraDetails ? "button" : undefined}
-        tabIndex={hasExtraDetails ? 0 : undefined}
-        aria-expanded={hasExtraDetails ? expanded : undefined}
-        onClick={hasExtraDetails ? toggleExpanded : undefined}
+        role={hasExtraDetails || eventDrawer ? "button" : undefined}
+        tabIndex={hasExtraDetails || eventDrawer ? 0 : undefined}
+        aria-expanded={!eventDrawer && hasExtraDetails ? expanded : undefined}
+        onClick={hasExtraDetails || eventDrawer ? handleCardActivate : undefined}
         onKeyDown={
-          hasExtraDetails
+          hasExtraDetails || eventDrawer
             ? (e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  toggleExpanded();
+                  handleCardActivate();
                 }
               }
             : undefined
@@ -364,10 +374,12 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         <FavoriteButton eventId={event.id} />
         {stampOnCard && stamp ? <EventCardStamp kind={stamp} /> : null}
         {children}
-        {expanded && hasExtraDetails ? (
+        {!eventDrawer && expanded && hasExtraDetails ? (
           <EventDetailsPanel event={event} />
-        ) : hasExtraDetails ? (
+        ) : !eventDrawer && hasExtraDetails ? (
           <p className="fh-m-expand-hint">Toca para más info</p>
+        ) : eventDrawer ? (
+          <p className="fh-m-expand-hint">Toca para detalle rápido</p>
         ) : null}
       </div>
     </div>

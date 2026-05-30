@@ -2,6 +2,21 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [5.0.0] - 2026-05-30
+
+### Added
+- Sección «Para ti esta noche» en home (prime time + plataformas del usuario)
+- Filtro global «Solo mis plataformas» en controles del feed
+- Asistente «¿Qué veo?»: FAB en home, página `/asistente`, API `POST /api/assistant`
+- Integración Vercel AI SDK (`ai`, `@ai-sdk/openai`) con tools y fallback smart sin API key
+- Drawer de detalle de evento al interactuar con tarjetas del feed
+- Tests unitarios `personalized-tonight` y `assistant-core`
+- Script `npm run verify:prod:v5` y `docs/ROADMAP-5.0.md`
+
+### Changed
+- Versión del producto: `5.0.0`
+- Tarjetas del feed abren drawer en lugar de expandir inline (cuando hay provider)
+
 ## [4.0.0] - 2026-05-30
 
 ### Added

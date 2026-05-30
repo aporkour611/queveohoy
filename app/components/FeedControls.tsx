@@ -5,6 +5,7 @@ import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { AgendaSearchBar } from "./AgendaSearchBar";
 import { DayTabs } from "./DayTabs";
 import { EventFilters } from "./EventFilters";
+import { PlatformFilterToggle } from "./PlatformFilterToggle";
 
 const FILTER_NUDGE_KEY = "qvh_filter_nudge_dismissed_v2";
 
@@ -31,6 +32,9 @@ type Props = {
   onAgendaQueryChange?: (value: string) => void;
   agendaResultCount?: number;
   agendaTotalCount?: number;
+  onlyMyPlatforms?: boolean;
+  onOnlyMyPlatformsChange?: (active: boolean) => void;
+  platformFilterDisabled?: boolean;
 };
 
 function CollapseFiltersIcon() {
@@ -98,6 +102,9 @@ export function FeedControls({
   onAgendaQueryChange,
   agendaResultCount,
   agendaTotalCount,
+  onlyMyPlatforms = false,
+  onOnlyMyPlatformsChange,
+  platformFilterDisabled = false,
 }: Props) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [nudgeReady, setNudgeReady] = useState(false);
@@ -202,6 +209,14 @@ export function FeedControls({
               Semana completa
             </button>
           </div>
+
+          {onOnlyMyPlatformsChange ? (
+            <PlatformFilterToggle
+              active={onlyMyPlatforms}
+              disabled={platformFilterDisabled}
+              onChange={onOnlyMyPlatformsChange}
+            />
+          ) : null}
 
           {filtersOpen ? (
             <button
