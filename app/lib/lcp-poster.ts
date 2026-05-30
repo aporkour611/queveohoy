@@ -2,7 +2,7 @@ import { safeRemoteImageUrl } from "./remote-image";
 
 const TMDB_HOST = "image.tmdb.org";
 
-/** Póster TMDB w342: un salto menos que /_next/image (mejor LCP en mobile). */
+/** Póster TMDB w185: menos bytes que w342 para LCP mobile. */
 export function buildLcpPosterUrl(src?: string | null): string | null {
   const safe = safeRemoteImageUrl(src);
   if (!safe) return null;
@@ -12,7 +12,7 @@ export function buildLcpPosterUrl(src?: string | null): string | null {
   try {
     const url = new URL(safe);
     if (url.hostname.toLowerCase() !== TMDB_HOST) return safe;
-    url.pathname = url.pathname.replace(/\/w\d+\//i, "/w342/");
+    url.pathname = url.pathname.replace(/\/w\d+\//i, "/w185/");
     return url.toString();
   } catch {
     return safe;

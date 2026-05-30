@@ -1,6 +1,6 @@
 import "../feed-bundle.css"
-import { EventDrawerProvider } from "../components/EventDrawerProvider"
 import { FeedCriticalStyle } from "../components/FeedCriticalStyle"
+import { FeedDeferredStyles } from "../components/FeedDeferredStyles"
 
 export default function FeedLayout({
   children,
@@ -8,9 +8,10 @@ export default function FeedLayout({
   children: React.ReactNode
 }>) {
   return (
-    <EventDrawerProvider>
+    <>
       <FeedCriticalStyle />
+      <FeedDeferredStyles />
       {children}
-    </EventDrawerProvider>
+    </>
   )
 }

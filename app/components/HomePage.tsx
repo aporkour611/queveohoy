@@ -16,11 +16,15 @@ import {
 import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
-import { WeekDaySection } from "./WeekDaySection";
 import { useHomeReset } from "./HomeResetContext";
 import dynamic from "next/dynamic";
 import { useHomeFilterBootstrap } from "../hooks/useHomeFilterBootstrap";
 import { useHomeOnlyMyPlatforms } from "../hooks/useHomeOnlyMyPlatforms";
+
+const WeekDaySection = dynamic(
+  () => import("./WeekDaySection").then((mod) => mod.WeekDaySection),
+  { loading: () => <div className="qvh-feed-day-placeholder" aria-hidden /> }
+);
 
 const FeedControls = dynamic(
   () => import("./FeedControls").then((mod) => mod.FeedControls),

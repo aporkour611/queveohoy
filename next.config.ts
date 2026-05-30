@@ -71,7 +71,7 @@ const nextConfig: NextConfig = {
      * Critters en build: mejora FCP pero duplica mucho el tiempo de deploy en Vercel/CI.
      * Activar solo en local: ENABLE_OPTIMIZE_CSS=true npm run build
      */
-    optimizeCss: process.env.ENABLE_OPTIMIZE_CSS === "true",
+    optimizeCss: isProduction || process.env.ENABLE_OPTIMIZE_CSS === "true",
   },
   async headers() {
     return [

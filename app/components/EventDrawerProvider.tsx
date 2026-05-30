@@ -9,8 +9,16 @@ import {
   useState,
   type ReactNode,
 } from "react"
+import dynamic from "next/dynamic"
 import type { EventRow } from "./types"
-import { EventDetailDrawer } from "./EventDetailDrawer"
+
+const EventDetailDrawer = dynamic(
+  () =>
+    import(/* webpackPrefetch: false */ "./EventDetailDrawer").then(
+      (mod) => mod.EventDetailDrawer
+    ),
+  { ssr: false, loading: () => null }
+)
 
 type EventDrawerContextValue = {
   open: (event: EventRow) => void
@@ -58,7 +66,7 @@ export function EventDrawerProvider({ children }: { children: ReactNode }) {
   return (
     <EventDrawerContext.Provider value={value}>
       {children}
-      <EventDetailDrawer event={event} onClose={close} />
+      {event ? <EventDetailDrawer event={event} onClose={close} /> : null}
     </EventDrawerContext.Provider>
   )
 }

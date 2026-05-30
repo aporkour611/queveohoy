@@ -4,7 +4,6 @@ import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
 import { FeedFreshnessSlot } from "../components/FeedFreshnessSlot";
 import { FeedControlsShell } from "../components/FeedControlsShell";
-import { FeedControlsShellBridge } from "../components/FeedControlsShellBridge";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
 import { HomeFeedGate } from "../components/HomeFeedGate";
@@ -16,7 +15,6 @@ import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { HomeJsonLd } from "../components/HomeJsonLd";
 import { HomeLcpPreload } from "../components/HomeLcpPreload";
 import { HomeNav } from "../components/HomeNav";
-import { HomeResetProvider } from "../components/HomeResetContext";
 import { SiteFooter } from "../components/SiteFooter";
 import { eventsForHomeSsrHtml } from "../lib/featured";
 import {
@@ -118,7 +116,6 @@ export default async function Page() {
       <HomeLcpPreload entries={lcpPreloadEntries} />
       <HomeJsonLd events={ssrEvents} />
       <div className="fh-body">
-        <HomeResetProvider>
           <HomeNav />
           <main id="main-content" className="fh-content">
             <div className="fh-container fh-main">
@@ -132,7 +129,6 @@ export default async function Page() {
                 <div className="qvh-home-feed-slot">
                   <FeedFreshnessSlot initialEventCount={ssrEvents.length} />
                   <FeedControlsShell days={shellDays} />
-                  <FeedControlsShellBridge />
                   {initialDay ? (
                     <HomeFeedDayHeader
                       date={initialDay.date}
@@ -159,7 +155,6 @@ export default async function Page() {
             <HomeFaq />
             <SiteFooter />
           </main>
-        </HomeResetProvider>
       </div>
     </>
   );

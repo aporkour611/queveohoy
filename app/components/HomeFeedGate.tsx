@@ -4,13 +4,19 @@ import dynamic from "next/dynamic";
 import { useEffect, useState, type ComponentProps } from "react";
 import {
   consumeHomeFeedWeekIntent,
+  dispatchHomeFeedActivate,
   HOME_FEED_ACTIVATE_EVENT,
+  markHomeFeedWeekIntent,
   prefetchHomeFeedWeek,
 } from "@/app/lib/home-feed-intent";
+import { subscribeInteractionGate } from "@/app/lib/interaction-gate";
+import { EventDrawerProvider } from "./EventDrawerProvider";
+import { HomeResetProvider } from "./HomeResetContext";
 
 const HomeFeed = dynamic(
-  () => import("./HomePage").then((mod) => mod.HomeFeed),
-  { ssr: false }
+  () =>
+    import(/* webpackPrefetch: false */ "./HomePage").then((mod) => mod.HomeFeed),
+  { ssr: false, loading: () => null }
 );
 
 type HomeFeedProps = ComponentProps<typeof HomeFeed> & {
@@ -18,18 +24,7 @@ type HomeFeedProps = ComponentProps<typeof HomeFeed> & {
   eager?: boolean;
 };
 
-/** PSI mobile: solo interacción (sin timer — evita TBT en Lighthouse). Desktop: ~1,2s. */
-const HYDRATION_IDLE_DESKTOP_MS = 1_200;
-const HYDRATION_EAGER_MS = 150;
-
-function isTouchPreferred(): boolean {
-  if (typeof window === "undefined") return false;
-  const coarse = window.matchMedia("(pointer: coarse)").matches;
-  const narrow = window.matchMedia("(max-width: 720px)").matches;
-  return coarse || narrow;
-}
-
-/** Hidrata el feed tras interacción o timeout corto; «Semana completa» en shell SSR activa al instante. */
+/** Hidrata el feed solo con interacción (mobile) o idle corto (desktop). Sin scroll — PSI lo dispara. */
 export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
   const [ready, setReady] = useState(false);
   const [initialWeekView, setInitialWeekView] = useState(false);
@@ -37,65 +32,56 @@ export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
   useEffect(() => {
     if (ready) return;
 
-    let cancelled = false;
     const activate = (weekView = false) => {
-      if (cancelled || ready) return;
       if (weekView) setInitialWeekView(true);
       setReady(true);
     };
 
-    let fallback: number | undefined;
-    const touchPreferred = isTouchPreferred();
-    if (eager) {
-      fallback = window.setTimeout(() => activate(false), HYDRATION_EAGER_MS);
-    } else if (!touchPreferred) {
-      fallback = window.setTimeout(() => activate(false), HYDRATION_IDLE_DESKTOP_MS);
-    }
-
-    const onInteract = () => activate(false);
     const onActivateFeed = () => activate(consumeHomeFeedWeekIntent());
-    const onScroll = () => {
-      if (window.scrollY > 48) activate(false);
+
+    const handleWeekIntent = () => {
+      markHomeFeedWeekIntent();
+      prefetchHomeFeedWeek();
+      dispatchHomeFeedActivate();
     };
 
-    window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
-    window.addEventListener("touchstart", onInteract, { passive: true, once: true });
-    window.addEventListener("keydown", onInteract, { passive: true, once: true });
-    window.addEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
-    if (touchPreferred) {
-      window.addEventListener("scroll", onScroll, { passive: true, once: true });
-    }
+    const shell = document.getElementById("feed-controls-ssr");
+    const handleShellPointer = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (!target.closest("[data-qvh-week-view]")) return;
+      event.preventDefault();
+      handleWeekIntent();
+    };
 
-    const idleHandle =
-      typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(
-            () => {
-              prefetchHomeFeedWeek();
-            },
-            { timeout: 2_500 }
-          )
-        : null;
-    const idleFallback =
-      idleHandle === null ? window.setTimeout(prefetchHomeFeedWeek, 2_500) : null;
+    shell?.addEventListener("click", handleShellPointer);
+    shell?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      handleShellPointer(event);
+    });
+
+    window.addEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
+
+    const cleanupGate = subscribeInteractionGate({
+      eager,
+      desktopIdleMs: 1_200,
+      onActivate: () => activate(false),
+    });
 
     return () => {
-      cancelled = true;
-      if (fallback !== undefined) window.clearTimeout(fallback);
-      window.removeEventListener("pointerdown", onInteract);
-      window.removeEventListener("touchstart", onInteract);
-      window.removeEventListener("keydown", onInteract);
+      cleanupGate();
       window.removeEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
-      window.removeEventListener("scroll", onScroll);
-      if (idleHandle !== null && typeof window.cancelIdleCallback === "function") {
-        window.cancelIdleCallback(idleHandle);
-      }
-      if (idleFallback !== null) {
-        window.clearTimeout(idleFallback);
-      }
+      shell?.removeEventListener("click", handleShellPointer);
     };
   }, [ready, eager]);
 
   if (!ready) return null;
 
-  return <HomeFeed {...props} initialWeekView={initialWeekView} />;
+  return (
+    <HomeResetProvider>
+      <EventDrawerProvider>
+        <HomeFeed {...props} initialWeekView={initialWeekView} />
+      </EventDrawerProvider>
+    </HomeResetProvider>
+  );
 }

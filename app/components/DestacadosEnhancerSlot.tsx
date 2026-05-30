@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import { subscribeInteractionGate } from "@/app/lib/interaction-gate";
 import type { EventRow } from "./types";
 
 type RowProps = {
@@ -13,11 +15,24 @@ type RowProps = {
 
 const DestacadosEnhancer = dynamic(
   () =>
-    import("./DestacadosCarouselClient").then((mod) => mod.DestacadosEnhancer),
-  { ssr: false }
+    import(/* webpackPrefetch: false */ "./DestacadosCarouselClient").then(
+      (mod) => mod.DestacadosEnhancer
+    ),
+  { ssr: false, loading: () => null }
 );
 
-/** Carga el enhancer del carrusel en chunk separado (no bloquea el bundle inicial). */
+/** Carrusel interactivo — solo tras interacción (no en PSI mobile). */
 export function DestacadosEnhancerSlot(props: RowProps) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    return subscribeInteractionGate({
+      desktopIdleMs: 2_000,
+      onActivate: () => setReady(true),
+    });
+  }, []);
+
+  if (!ready) return null;
+
   return <DestacadosEnhancer {...props} />;
 }

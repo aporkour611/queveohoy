@@ -1,4 +1,5 @@
-import "../futbolhoy.css"
+import "../site-shell.css"
+import "../futbolhoy-feed.css"
 import type { Metadata } from "next"
 import { Logo } from "../components/Logo"
 import { privateAreaMetadata } from "../lib/private-metadata"

@@ -2,14 +2,37 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ChampionsWeekContext } from "../lib/champions-week";
 import { partidoPath } from "../lib/event-slug";
+import { safeRemoteImageUrl } from "../lib/remote-image";
 import { ChannelBadges } from "./ChannelBadge";
-import { EventCountdown } from "./EventCountdown";
-import { TeamCrest } from "./TeamCrest";
 
 type Props = {
   context: ChampionsWeekContext;
 };
 
+function StaticCrest({ src, name }: { src?: string | null; name: string }) {
+  const safe = safeRemoteImageUrl(src);
+  if (!safe) {
+    return (
+      <span className="qvh-cl-week-crest qvh-cl-week-crest-fallback" aria-hidden>
+        {name.slice(0, 2).toUpperCase()}
+      </span>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={safe}
+      alt=""
+      width={28}
+      height={28}
+      className="qvh-cl-week-crest"
+      loading="eager"
+      decoding="async"
+    />
+  );
+}
+
+/** Server Component — sin TeamCrest/EventCountdown client (TBT). */
 export function ChampionsWeekHero({ context }: Props) {
   const {
     kicker,
@@ -21,8 +44,6 @@ export function ChampionsWeekHero({ context }: Props) {
     awayCrest,
     dateLabel,
     time,
-    eventDate,
-    eventTime,
     channels,
     finalEvent,
   } = context;
@@ -62,36 +83,17 @@ export function ChampionsWeekHero({ context }: Props) {
             <div className="qvh-cl-week-hero-detail">
               <div className="qvh-cl-week-matchup">
                 <div className="qvh-cl-week-team">
-                  <TeamCrest
-                    src={homeCrest}
-                    name={homeTeam}
-                    size={28}
-                    className="qvh-cl-week-crest"
-                    eager
-                  />
+                  <StaticCrest src={homeCrest} name={homeTeam} />
                   <span className="qvh-cl-week-team-name">{homeTeam}</span>
                 </div>
                 <span className="qvh-cl-week-vs">VS</span>
                 <div className="qvh-cl-week-team">
-                  <TeamCrest
-                    src={awayCrest}
-                    name={awayTeam}
-                    size={28}
-                    className="qvh-cl-week-crest"
-                    eager
-                  />
+                  <StaticCrest src={awayCrest} name={awayTeam} />
                   <span className="qvh-cl-week-team-name">{awayTeam}</span>
                 </div>
               </div>
 
               <div className="qvh-cl-week-meta">
-                <EventCountdown
-                  date={eventDate}
-                  time={eventTime}
-                  className="qvh-cl-week-countdown"
-                  liveLabel="¡Arranca la final!"
-                  compact
-                />
                 {dateLabel ? (
                   <span className="qvh-cl-week-date">{dateLabel}</span>
                 ) : null}
