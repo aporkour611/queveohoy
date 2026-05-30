@@ -1,16 +1,16 @@
 /**
- * Verificación release candidate 1.9.x
- * Uso: npm run verify:prod:1.9
+ * Verificación lanzamiento 2.0.0
+ * Uso: npm run verify:prod:2.0
  */
 import { readFileSync } from "node:fs"
+import { spawnSync } from "node:child_process"
 
 const BASE = process.env.VERIFY_URL ?? "https://queveohoy.es"
 const checks = []
 const pass = (name, detail = "") => checks.push({ ok: true, name, detail })
 const fail = (name, detail = "") => checks.push({ ok: false, name, detail })
 
-const versionPattern =
-  /2\.0\.\d|1\.9\.\d|1\.[3-8]\.\d|1\.0\.(1[1-9]|[2-9]\d)/
+const versionPattern = /2\.0\.\d|1\.9\.\d|1\.0\.(1[1-9]|[2-9]\d)/
 
 const fetchText = async (path, init = {}) => {
   const res = await fetch(`${BASE}${path}`, {
@@ -25,23 +25,24 @@ const { res: homeRes, text: homeHtml } = await fetchText("/")
 if (homeRes.ok) pass("HTTP 200 home")
 else fail("HTTP 200 home", String(homeRes.status))
 
-if (versionPattern.test(homeHtml)) pass("Footer versión 1.9.x / 1.0.11+")
+if (versionPattern.test(homeHtml)) pass("Footer versión 2.0.x / 1.9+")
 else fail("Footer versión", "Despliegue pendiente o caché antigua")
 
-if (homeHtml.includes('data-qvh-filter-intent')) pass("Intent prefetch filtros en shell")
+if (homeHtml.includes("2.0.0")) pass("Footer muestra 2.0.0")
+else fail("Footer muestra 2.0.0", "Sigue versión anterior en HTML")
+
+if (homeHtml.includes("data-qvh-filter-intent"))
+  pass("Intent prefetch filtros en shell")
 else fail("Intent prefetch filtros en shell")
 
 const { res: healthRes, text: healthText } = await fetchText("/api/health")
 if (healthRes.ok) pass("GET /api/health")
 else fail("GET /api/health", String(healthRes.status))
 
-if (versionPattern.test(healthText) || healthText.includes('"version"'))
-  pass("Health incluye versión")
-else fail("Health incluye versión")
+if (healthText.includes("2.0.0")) pass("Health versión 2.0.0")
+else fail("Health versión 2.0.0", healthText.slice(0, 120))
 
-const metaRes = await fetch(`${BASE}/api/feed-meta`, {
-  cache: "no-store",
-})
+const metaRes = await fetch(`${BASE}/api/feed-meta`, { cache: "no-store" })
 if (metaRes.ok) pass("GET /api/feed-meta")
 else fail("GET /api/feed-meta", String(metaRes.status))
 
@@ -70,12 +71,18 @@ if (etag) {
 }
 
 try {
-  const roadmap = readFileSync("docs/ROADMAP-1.9.9.md", "utf8")
-  if (roadmap.includes("1.9.9")) pass("ROADMAP-1.9.9 presente")
-  else fail("ROADMAP-1.9.9")
+  readFileSync("docs/ROADMAP-2.0.md", "utf8")
+  pass("ROADMAP-2.0.md presente")
 } catch {
-  fail("ROADMAP-1.9.9", "archivo no encontrado")
+  fail("ROADMAP-2.0.md")
 }
+
+const legacy = spawnSync(process.execPath, ["scripts/verify-prod-1.0.mjs"], {
+  stdio: "inherit",
+  env: { ...process.env, VERIFY_URL: BASE },
+})
+if (legacy.status === 0) pass("verify-prod-1.0 (contrato base)")
+else fail("verify-prod-1.0 (contrato base)", `exit ${legacy.status ?? "?"}`)
 
 const failed = checks.filter((c) => !c.ok)
 for (const c of checks) {

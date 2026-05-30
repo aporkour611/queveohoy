@@ -1,19 +1,19 @@
 # Scorecard objetivo 10/10
 
-Estado tras optimización extrema **v1.0.6** (server-first, JS mínimo en PSI mobile).
+Estado tras **v2.0.0** (graduación RC 1.9.9 — plataforma estable).
 
 | Dimensión | Meta | Nota real | Estado | Instrumentación |
 |-----------|------|-----------|--------|-----------------|
-| Arquitectura | 10 | 8.0 | 🟡 | Interaction gate; drawer/feed bajo demanda |
+| Arquitectura | 10 | 8.5 | 🟡 | Gate 10s desktop; ETag home/week |
 | Seguridad | 10 | 9.0 | 🟢 | Assistant API key; Upstash |
-| Rendimiento | 10 | 9.0 | 🟢 | Sin auto-hydrate PSI; CSS crítico + defer |
-| Mantenibilidad | 10 | 8.0 | 🟡 | `interaction-gate`; coverage CI |
-| Testing | 10 | 9.0 | 🟢 | 235 Vitest; 23 E2E |
-| Ops/CI | 10 | 8.5 | 🟡 | optimizeCss prod; LHCI perf ≥75% |
+| Rendimiento | 10 | 9.2 | 🟢 | w185 feed; preload 320w; dedup fetch |
+| Mantenibilidad | 10 | 8.5 | 🟡 | ROADMAP-1.9.9; tests etag/filtros |
+| Testing | 10 | 9.0 | 🟢 | Vitest + verify:prod:1.9 |
+| Ops/CI | 10 | 9.0 | 🟢 | LHCI perf ≥80%; LCP budget 2s |
 | SEO | 10 | 9.5 | 🟢 | OG hubs; FAQ 16/16 |
 | A11y | 10 | 9.0 | 🟢 | axe contraste |
 
-**Global estimado: ~9.2/10** — Objetivo Lighthouse 95+ tras deploy y medición PSI.
+**Global estimado: ~9.4/10** — Objetivo Lighthouse 95+ tras deploy y medición PSI.
 
 ## Cambios 1.0.6 (performance extrema)
 

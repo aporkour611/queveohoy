@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.0.0] - 2026-05-30 — Plataforma estable
+
+### Added
+- `docs/ROADMAP-2.0.md`, `npm run verify:prod:2.0`
+
+### Changed
+- Versión del producto: **2.0.0** (graduación RC 1.9.9)
+- Script verify 1.9 corregido; verify 1.0 acepta 2.x en footer
+
 ## [1.9.9] - 2026-05-30 — Release candidate pre-2.0
 
 ### Added

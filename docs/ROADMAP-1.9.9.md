@@ -168,5 +168,5 @@ Optimización incremental (imágenes, filtros, carga, arquitectura) hasta **1.9.
 
 ## Estado actual
 
-- **Hecho:** 1.9.9 (RC pre-2.0) — ver CHANGELOG y `npm run verify:prod:1.9` tras deploy
-- **Siguiente:** 2.0.0 lanzamiento
+- **Hecho:** 1.9.9 (RC pre-2.0)
+- **Siguiente:** ver [ROADMAP-2.0.md](./ROADMAP-2.0.md) — **2.0.0** en repo; `npm run verify:prod:2.0` tras deploy

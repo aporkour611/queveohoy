@@ -6,6 +6,8 @@ import {
   pickFilteredEvents,
   pickHomePageEvents,
 } from "./featured";
+import { HOME_SSR_DAY_COUNT } from "./home-feed-config";
+import { buildDisplayDays, MADRID_TZ } from "./timezone";
 
 function esportsEvent(id: number, sport: string, title: string): EventRow {
   return {
@@ -39,7 +41,8 @@ describe("pickFilteredEvents", () => {
 
 describe("eventsForHomeSsrHtml", () => {
   it("includes futbol without crests that pickHomePageEvents would drop", () => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today =
+      buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0]?.date ?? "2026-05-30";
     const noCrests: EventRow = {
       id: 1,
       title: "Getafe vs Alavés",
