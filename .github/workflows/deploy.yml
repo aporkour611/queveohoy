@@ -204,8 +204,8 @@ jobs:
             echo "::error::Home respondió $home_code"
             exit 1
           fi
-          echo "Verificación lanzamiento 1.0…"
-          node scripts/verify-prod-1.0.mjs
+          echo "Verificación lanzamiento 2.0…"
+          node scripts/verify-prod-2.0.mjs
           echo "Integraciones en producción…"
           node scripts/check-integrations.mjs
           if [ "$events" = "0" ] && [ -n "${CRON_SECRET:-}" ]; then

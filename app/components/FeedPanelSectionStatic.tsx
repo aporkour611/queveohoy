@@ -1,4 +1,3 @@
-import type { EventRow } from "./types";
 import { CategoryIcon } from "./CategoryIcon";
 import { FeedSectionHero } from "./FeedSectionHero";
 import { MatchCardStatic } from "./MatchCardStatic";
