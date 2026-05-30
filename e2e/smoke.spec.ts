@@ -80,11 +80,11 @@ test.describe("smoke", () => {
 
   test("API health responde ok", async ({ request }) => {
     const response = await request.get("/api/health")
-    expect(response.ok()).toBeTruthy()
     const body = await response.json()
-    expect(body.ok).toBe(true)
     expect(body.version).toBeTruthy()
     expect(body.checks).toBeTruthy()
+    expect(body.ok).toBe(true)
+    expect(response.status()).toBe(200)
   })
 
   test("API feed-meta responde JSON", async ({ request }) => {

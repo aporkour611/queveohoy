@@ -45,6 +45,9 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      CI: true
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
     steps:
       - uses: actions/checkout@v5
 
@@ -60,21 +63,14 @@ jobs:
         run: npx playwright install chromium --with-deps
 
       - name: Build
-        run: npm run build
-        env:
-          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+        run: |
+          unset NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY || true
+          npm run build
 
       - name: E2E smoke
-        run: npm run test:e2e
-        env:
-          CI: true
-          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
-          # Sin credenciales reales: health no debe 503 por feed vacío en CI
-          NEXT_PUBLIC_SUPABASE_URL: ""
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ""
-          SUPABASE_URL: ""
-          SUPABASE_ANON_KEY: ""
-          SUPABASE_SERVICE_ROLE_KEY: ""
+        run: |
+          unset NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY || true
+          npm run test:e2e
 
   deploy:
     needs: [validate, e2e]
