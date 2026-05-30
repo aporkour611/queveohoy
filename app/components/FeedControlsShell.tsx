@@ -66,7 +66,12 @@ export function FeedControlsShell({ days }: Props) {
       </div>
 
       <p className="qvh-feed-hydrate-hint">
-        <button type="button" data-qvh-hydrate-feed className="qvh-feed-hydrate-cta">
+        <button
+          type="button"
+          data-qvh-hydrate-feed
+          className="qvh-feed-hydrate-cta"
+          aria-label="Activar filtros y calendario interactivo de la agenda"
+        >
           Activar filtros y calendario interactivo
         </button>
       </p>

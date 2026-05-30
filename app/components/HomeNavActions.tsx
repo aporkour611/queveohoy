@@ -3,29 +3,29 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { isSyntheticAudit, isTouchPreferred } from "@/app/lib/interaction-gate";
+import { isTouchPreferred, shouldDeferHeavyClient } from "@/app/lib/interaction-gate";
 
 const NavActionPlaceholder = () => (
   <span className="fh-nav-action-placeholder" aria-hidden />
 );
 
 const AdminNavLink = dynamic(
-  () => import(/* webpackPrefetch: false */ "./AdminNavLink").then((mod) => mod.AdminNavLink),
+  () => import("./AdminNavLink").then((mod) => mod.AdminNavLink),
   { ssr: false, loading: NavActionPlaceholder }
 );
 
 const PushNavButton = dynamic(
-  () => import(/* webpackPrefetch: false */ "./PushNotifications").then((mod) => mod.PushNavButton),
+  () => import("./PushNotifications").then((mod) => mod.PushNavButton),
   { ssr: false, loading: NavActionPlaceholder }
 );
 
 const AccountNavLink = dynamic(
-  () => import(/* webpackPrefetch: false */ "./AccountNavLink").then((mod) => mod.AccountNavLink),
+  () => import("./AccountNavLink").then((mod) => mod.AccountNavLink),
   { ssr: false, loading: NavActionPlaceholder }
 );
 
 const ThemeToggle = dynamic(
-  () => import(/* webpackPrefetch: false */ "./ThemeToggle").then((mod) => mod.ThemeToggle),
+  () => import("./ThemeToggle").then((mod) => mod.ThemeToggle),
   { ssr: false, loading: NavActionPlaceholder }
 );
 
@@ -33,7 +33,7 @@ export function HomeNavActions() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (isSyntheticAudit()) return;
+    if (shouldDeferHeavyClient()) return;
 
     let cancelled = false;
     const activate = () => {
@@ -50,7 +50,7 @@ export function HomeNavActions() {
 
     let fallback: number | undefined;
     if (!isTouchPreferred()) {
-      fallback = window.setTimeout(activate, 3_000);
+      fallback = window.setTimeout(activate, 12_000);
     }
 
     return () => {

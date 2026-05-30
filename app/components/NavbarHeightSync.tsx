@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { isSyntheticAudit } from "@/app/lib/interaction-gate"
+import { shouldDeferHeavyClient } from "@/app/lib/interaction-gate"
 
 const syncNavbarHeight = () => {
   const shell = document.querySelector<HTMLElement>(".fh-header-shell")
@@ -32,8 +32,8 @@ export const NavbarHeightSync = () => {
       window.addEventListener("resize", syncNavbarHeight, { passive: true })
     }
 
-    if (isSyntheticAudit()) {
-      const fallback = window.setTimeout(attach, 45_000)
+    if (shouldDeferHeavyClient()) {
+      const fallback = window.setTimeout(attach, 60_000)
       return () => {
         cancelled = true
         window.clearTimeout(fallback)

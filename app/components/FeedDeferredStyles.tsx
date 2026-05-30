@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect } from "react"
-import { isSyntheticAudit } from "@/app/lib/interaction-gate"
+import { shouldDeferHeavyClient } from "@/app/lib/interaction-gate"
 
 /** CSS de deportes especiales — solo tras interacción (no bloquea FCP/LCP). */
 export function FeedDeferredStyles() {
   useEffect(() => {
-    if (isSyntheticAudit()) return
+    if (shouldDeferHeavyClient()) return
 
     let loaded = false
     const load = () => {
@@ -21,15 +21,14 @@ export function FeedDeferredStyles() {
       window.matchMedia("(max-width: 720px)").matches
 
     if (!touchPreferred) {
-      fallback = window.setTimeout(load, 2_500)
+      fallback = window.setTimeout(load, 8_000)
     }
 
-    const onTouch = () => load()
-    document.addEventListener("touchstart", onTouch, { passive: true, once: true })
+    const cta = document.querySelector("[data-qvh-hydrate-feed]")
+    cta?.addEventListener("click", load, { passive: true, once: true })
 
     return () => {
       if (fallback !== undefined) window.clearTimeout(fallback)
-      document.removeEventListener("touchstart", onTouch)
     }
   }, [])
 

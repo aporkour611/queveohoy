@@ -151,7 +151,6 @@ export default async function Page() {
   const tonightEvents = mergeFeedEvents(ssrEvents, weekEvents);
   const todayKey = initialDay?.date ?? "";
   const destacadosEnhancer = resolveDestacadosEnhancerProps(weekEvents, todayKey);
-  const eagerFeed = ssrEvents.length === 0 || Boolean(error);
 
   return (
     <>
@@ -196,7 +195,6 @@ export default async function Page() {
                     tonightEvents={tonightEvents}
                     todayKey={todayKey}
                     destacadosEnhancer={destacadosEnhancer}
-                    eagerFeed={eagerFeed}
                   />
                 </div>
             </div>

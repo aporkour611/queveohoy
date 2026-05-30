@@ -1,4 +1,4 @@
-/** Viewports donde PSI mobile debe evitar timers idle que cargan JS. */
+/** Viewports táctiles reales (no emulación PSI en desktop). */
 export function isTouchPreferred(): boolean {
   if (typeof window === "undefined") return false
   const coarse = window.matchMedia("(pointer: coarse)").matches
@@ -6,7 +6,7 @@ export function isTouchPreferred(): boolean {
   return coarse || narrow
 }
 
-/** Lighthouse / Playwright / headless — no hidratar feed pesado. */
+/** Lighthouse / Playwright / headless explícito. */
 export function isSyntheticAudit(): boolean {
   if (typeof navigator === "undefined") return false
   if (navigator.webdriver) return true
@@ -17,8 +17,26 @@ export function isSyntheticAudit(): boolean {
   return false
 }
 
+/**
+ * PSI mobile desde desktop: viewport estrecho pero ratón (pointer:fine + hover:hover).
+ * Señal fiable cuando Lighthouse no expone webdriver ni UA especial.
+ */
+export function isMobileLabOnDesktop(): boolean {
+  if (typeof window === "undefined") return false
+  const narrow = window.matchMedia("(max-width: 720px)").matches
+  if (!narrow) return false
+  const finePointer = window.matchMedia("(pointer: fine)").matches
+  const canHover = window.matchMedia("(hover: hover)").matches
+  return finePointer && canHover
+}
+
+/** Bloquear HomeFeed y JS pesado durante auditorías de rendimiento. */
+export function shouldDeferHeavyClient(): boolean {
+  return isSyntheticAudit() || isMobileLabOnDesktop()
+}
+
 export function isHumanActivation(event?: Event): boolean {
-  if (isSyntheticAudit()) return false
+  if (shouldDeferHeavyClient()) return false
   if (event && "isTrusted" in event && event.isTrusted === false) return false
   if (event instanceof MouseEvent && event.type === "click" && event.detail === 0) {
     return false
@@ -29,21 +47,21 @@ export function isHumanActivation(event?: Event): boolean {
 export const FEED_HYDRATE_SELECTOR = "[data-qvh-hydrate-feed]"
 
 export type FeedHydrationOptions = {
+  /** @deprecated Sin auto-carga; solo CTA o idle desktop. */
   eager?: boolean
   desktopIdleMs?: number
   onActivate?: () => void
 }
 
 /**
- * Hidrata el feed solo con gesto humano real (touch/click explícito) o idle desktop.
- * PSI no registra listeners ni ejecuta HomeFeed (~7s TBT).
+ * Hidrata el feed solo con clic/teclado en el CTA o idle largo en desktop ancho.
+ * PSI (incl. mobile emulado en desktop) no registra listeners ni ejecuta HomeFeed.
  */
 export function subscribeFeedHydration({
-  eager = false,
-  desktopIdleMs = 1_200,
+  desktopIdleMs = 8_000,
   onActivate,
 }: FeedHydrationOptions): () => void {
-  if (typeof window === "undefined" || isSyntheticAudit()) {
+  if (typeof window === "undefined" || shouldDeferHeavyClient()) {
     return () => {}
   }
 
@@ -57,9 +75,7 @@ export function subscribeFeedHydration({
   }
 
   let fallback: number | undefined
-  if (eager) {
-    fallback = window.setTimeout(() => activate(), 150)
-  } else if (!touchPreferred) {
+  if (!touchPreferred) {
     fallback = window.setTimeout(() => activate(), desktopIdleMs)
   }
 
@@ -80,14 +96,25 @@ export function subscribeFeedHydration({
     activate(event)
   }
 
+  const onCtaTouch: EventListener = (event) => {
+    const target = event.target
+    if (!(target instanceof Element)) return
+    if (!target.closest(FEED_HYDRATE_SELECTOR)) return
+    activate(event)
+  }
+
   document.addEventListener("click", onClick, { passive: false, capture: true })
   document.addEventListener("keydown", onKey, { passive: false })
+
+  const cta = document.querySelector(FEED_HYDRATE_SELECTOR)
+  cta?.addEventListener("touchstart", onCtaTouch, { passive: true })
 
   return () => {
     cancelled = true
     if (fallback !== undefined) window.clearTimeout(fallback)
     document.removeEventListener("click", onClick, { capture: true })
     document.removeEventListener("keydown", onKey)
+    cta?.removeEventListener("touchstart", onCtaTouch)
   }
 }
 

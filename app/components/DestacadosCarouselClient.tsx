@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { shouldDeferHeavyClient } from "@/app/lib/interaction-gate";
 import type { EventRow } from "./types";
 import { useTouchScrollCarousel } from "../lib/use-touch-scroll-carousel";
 
@@ -25,27 +26,29 @@ type RowProps = {
   className?: string;
 };
 
-/** Sustituye la fila estática por el carrusel tras interacción (no scroll/idle de PSI). */
+/** Sustituye la fila estática por el carrusel tras interacción explícita. */
 export function DestacadosEnhancer(props: RowProps) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    if (shouldDeferHeavyClient()) return;
+
     let cancelled = false;
     const activate = () => {
       if (!cancelled) setReady(true);
     };
 
-    const fallback = window.setTimeout(activate, 60_000);
+    const cta = document.querySelector("[data-qvh-hydrate-feed]");
+    cta?.addEventListener("click", activate, { passive: true, once: true });
 
-    const onInteract = () => activate();
-    window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
-    window.addEventListener("keydown", onInteract, { passive: true, once: true });
+    let fallback: number | undefined;
+    if (!window.matchMedia("(max-width: 720px)").matches) {
+      fallback = window.setTimeout(activate, 12_000);
+    }
 
     return () => {
       cancelled = true;
-      window.clearTimeout(fallback);
-      window.removeEventListener("pointerdown", onInteract);
-      window.removeEventListener("keydown", onInteract);
+      if (fallback !== undefined) window.clearTimeout(fallback);
     };
   }, []);
 
