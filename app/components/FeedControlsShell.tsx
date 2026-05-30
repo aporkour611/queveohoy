@@ -38,7 +38,15 @@ export function FeedControlsShell({ days }: Props) {
           <span className="qvh-feed-view-toggle-btn qvh-feed-view-toggle-btn-active">
             Hoy
           </span>
-          <span className="qvh-feed-view-toggle-btn">Semana completa</span>
+          <button
+            type="button"
+            tabIndex={-1}
+            data-qvh-week-view
+            className="qvh-feed-view-toggle-btn"
+            aria-hidden="true"
+          >
+            Semana completa
+          </button>
         </div>
 
         <div className="qvh-feed-controls-divider" aria-hidden />

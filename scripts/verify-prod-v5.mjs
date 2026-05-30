@@ -32,16 +32,14 @@ if (homeHtml.includes("Solo mis plataformas") || homeHtml.includes("qvh-platform
   pass("Filtro Solo mis plataformas (markup/CSS)")
 else fail("Filtro Solo mis plataformas")
 
-if (homeHtml.includes("¿Qué veo?") || homeHtml.includes("qvh-assistant-fab"))
-  pass("Asistente FAB en home")
-else fail("Asistente FAB en home")
+if (homeHtml.includes("fh-agenda-search") || homeHtml.includes("Buscar en la agenda"))
+  pass("Búsqueda inteligente en home")
+else fail("Búsqueda inteligente en home")
 
-const { res: asistenteRes, text: asistenteHtml } = await fetchText("/asistente")
-if (asistenteRes.ok) pass("HTTP 200 /asistente")
-else fail("HTTP 200 /asistente", String(asistenteRes.status))
-
-if (asistenteHtml.includes("¿Qué veo?")) pass("Página asistente")
-else fail("Página asistente")
+const { res: asistenteRes } = await fetchText("/asistente")
+if (asistenteRes.status === 307 || asistenteRes.status === 308)
+  pass("Redirect /asistente → home")
+else fail("Redirect /asistente → home", String(asistenteRes.status))
 
 const assistantRes = await fetch(`${BASE}/api/assistant`, {
   method: "POST",

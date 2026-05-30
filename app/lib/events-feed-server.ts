@@ -215,10 +215,18 @@ async function readCachedFeed<T>(
   }
 }
 
-/** Feed completo (7 días) — hubs, sitemap, semana completa. */
+/** Feed completo (7 días) — hubs, sitemap, RSS. */
 export async function fetchFeedEvents() {
   return readCachedFeed(
     () => getCachedFeed(FEED_DAY_COUNT, false),
+    FEED_TIMEOUT_FALLBACK
+  );
+}
+
+/** Feed semanal ajustado (7 días exactos) — vista «Semana completa» en home. */
+export async function fetchWeekViewFeedEvents() {
+  return readCachedFeed(
+    () => getCachedFeed(FEED_DAY_COUNT, true),
     FEED_TIMEOUT_FALLBACK
   );
 }

@@ -2,8 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
+import { SupabaseBrowserConfig } from "./components/SupabaseBrowserConfig";
 import { Analytics } from "./components/Analytics";
 import { SpeedInsights } from "./components/SpeedInsights";
+import { resolveBrowserSupabaseConfig } from "./lib/supabase-config";
 import { rootMetadata, siteUrl } from "./lib/seo";
 
 /** Funciones cerca de Supabase / usuarios en España (menos latencia). */
@@ -32,6 +34,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabaseBrowserConfig = resolveBrowserSupabaseConfig();
+
   return (
     <html
       lang="es"
@@ -63,6 +67,7 @@ export default function RootLayout({
         <a href="#main-content" className="qvh-skip-link">
           Saltar al contenido
         </a>
+        <SupabaseBrowserConfig config={supabaseBrowserConfig} />
         <CookieConsentRoot>{children}</CookieConsentRoot>
         <Analytics />
         <SpeedInsights />

@@ -14,13 +14,10 @@ import {
 import { deferClientStateUpdate } from "../lib/defer-client-state";
 import { FeedRefreshLoader } from "./FeedRefreshLoader";
 import { FeedErrorBoundary } from "./FeedErrorBoundary";
+import { FeedControls } from "./FeedControls";
+import { WeekDaySection } from "./WeekDaySection";
 import { useHomeReset } from "./HomeResetContext";
 import dynamic from "next/dynamic";
-
-const FeedControls = dynamic(
-  () => import("./FeedControls").then((mod) => mod.FeedControls),
-  { loading: () => null }
-);
 
 const EventDaySections = dynamic(
   () => import("./EventDaySections").then((mod) => mod.EventDaySections),
@@ -29,11 +26,6 @@ const EventDaySections = dynamic(
 
 const LazyMount = dynamic(
   () => import("./LazyMount").then((mod) => mod.LazyMount),
-  { loading: () => null }
-);
-
-const WeekDaySection = dynamic(
-  () => import("./WeekDaySection").then((mod) => mod.WeekDaySection),
   { loading: () => null }
 );
 
@@ -58,6 +50,7 @@ import { filterEventsByUserPlatforms } from "../lib/personalized-tonight";
 import { useUserPlatforms } from "../lib/use-user-platforms";
 import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { fetchClientJson } from "../lib/client-fetch-json";
+import { HOME_FEED_WEEK_PREFETCH_URL } from "../lib/home-feed-intent";
 
 function setSsrDayHeaderVisible(visible: boolean) {
   const header = document.getElementById("home-day-header-ssr");
@@ -75,6 +68,8 @@ type Props = {
   /** Calendario estático antes de hidratar FeedControls. */
   feedControlsShell?: ReactNode;
   children?: ReactNode;
+  /** Vista semanal solicitada desde el shell SSR antes de hidratar. */
+  initialWeekView?: boolean;
 };
 
 let cachedScrollAnchorOffset: number | null = null;
@@ -126,6 +121,7 @@ export function HomeFeed({
   serverDayHeaderDate = null,
   feedControlsShell,
   children,
+  initialWeekView = false,
 }: Props = {}) {
   const [events, setEvents] = useState(() =>
     mergeFeedEvents(initialEvents, initialDestacadosEvents)
@@ -134,22 +130,21 @@ export function HomeFeed({
   const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(initialError);
   const [activeDay, setActiveDay] = useState(0);
-  const [weekView, setWeekView] = useState(false);
+  const [weekView, setWeekView] = useState(initialWeekView);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const [agendaQuery, setAgendaQuery] = useState("");
   const deferredAgendaQuery = useDeferredValue(agendaQuery);
   const [filterSearching, setFilterSearching] = useState(false);
   const [onlyMyPlatforms, setOnlyMyPlatforms] = useState(false);
   const userPlatforms = useUserPlatforms();
-  const [hasFullWeek, setHasFullWeek] = useState(false);
-  const [fullWeekReady, setFullWeekReady] = useState(
-    () => initialDestacadosEvents.length > 0
-  );
+  const [hasFullWeek, setHasFullWeek] = useState(initialWeekView);
+  const [fullWeekReady, setFullWeekReady] = useState(false);
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
   const pinnedScrollYRef = useRef<number | null>(null);
   const scrollRestoreFrameRef = useRef<number | null>(null);
   const fullWeekLoadRef = useRef<Promise<void> | null>(null);
+  const wantWeekTabsRef = useRef(initialWeekView);
   const { registerReset } = useHomeReset();
 
   const isFeaturedMode = selectedSports.length === 0;
@@ -184,7 +179,9 @@ export function HomeFeed({
     setLoadError(null);
 
     try {
-      const url = fullWeek ? "/api/events" : "/api/events?scope=home";
+      const url = fullWeek
+        ? HOME_FEED_WEEK_PREFETCH_URL
+        : "/api/events?scope=home";
       const { ok, body } = await fetchClientJson<{
         events?: EventRow[];
         error?: string;
@@ -200,7 +197,10 @@ export function HomeFeed({
             return mergeFeedEvents(prev, incoming);
           });
           setFullWeekReady(true);
-          if (expandTabs) setHasFullWeek(true);
+          if (expandTabs || wantWeekTabsRef.current) {
+            setHasFullWeek(true);
+            wantWeekTabsRef.current = false;
+          }
         } else {
           setEvents((prev) => {
             if (incoming.length === 0 && prev.length > 0) return prev;
@@ -222,7 +222,7 @@ export function HomeFeed({
   }, []);
 
   const ensureFullWeek = useCallback(() => {
-    if (hasFullWeek) return Promise.resolve();
+    if (hasFullWeek && fullWeekReady) return Promise.resolve();
     if (fullWeekReady) {
       setHasFullWeek(true);
       return Promise.resolve();
@@ -232,7 +232,7 @@ export function HomeFeed({
     fullWeekLoadRef.current = loadEvents({
       silent: true,
       fullWeek: true,
-      expandTabs: true,
+      expandTabs: wantWeekTabsRef.current,
     }).finally(() => {
       fullWeekLoadRef.current = null;
     });
@@ -240,7 +240,7 @@ export function HomeFeed({
   }, [fullWeekReady, hasFullWeek, loadEvents]);
 
   const prefetchFullWeek = useCallback(() => {
-    if (hasFullWeek || fullWeekReady || fullWeekLoadRef.current) return;
+    if (fullWeekReady || fullWeekLoadRef.current) return;
     fullWeekLoadRef.current = loadEvents({
       silent: true,
       fullWeek: true,
@@ -248,7 +248,7 @@ export function HomeFeed({
     }).finally(() => {
       fullWeekLoadRef.current = null;
     });
-  }, [fullWeekReady, hasFullWeek, loadEvents]);
+  }, [fullWeekReady, loadEvents]);
 
   useEffect(() => {
     if (!hasFullWeek) return;
@@ -292,14 +292,14 @@ export function HomeFeed({
   }, []);
 
   useEffect(() => {
-    if (hasFullWeek || fullWeekReady) return;
+    if (fullWeekReady) return;
 
     const run = () => prefetchFullWeek();
     const idle =
       typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(run, { timeout: 6000 })
+        ? window.requestIdleCallback(run, { timeout: 2_500 })
         : undefined;
-    const fallback = window.setTimeout(run, 15000);
+    const fallback = window.setTimeout(run, 4_000);
 
     return () => {
       if (
@@ -310,7 +310,16 @@ export function HomeFeed({
       }
       window.clearTimeout(fallback);
     };
-  }, [fullWeekReady, hasFullWeek, prefetchFullWeek]);
+  }, [fullWeekReady, prefetchFullWeek]);
+
+  useEffect(() => {
+    if (!initialWeekView) return;
+    wantWeekTabsRef.current = true;
+    const timer = window.setTimeout(() => {
+      void ensureFullWeek();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [initialWeekView, ensureFullWeek]);
 
   useEffect(() => {
     if (hasInitialData) return;
@@ -576,6 +585,7 @@ export function HomeFeed({
       };
 
       if (index >= HOME_SSR_DAY_COUNT && !hasFullWeek) {
+        wantWeekTabsRef.current = true;
         void ensureFullWeek().then(apply);
         return;
       }
@@ -591,6 +601,7 @@ export function HomeFeed({
     setWeekView(false);
     setHasFullWeek(false);
     setFullWeekReady(false);
+    wantWeekTabsRef.current = false;
     fullWeekLoadRef.current = null;
     window.scrollTo({ top: 0, behavior: "smooth" });
     void loadEvents({ silent: true, fullWeek: false });
@@ -657,6 +668,7 @@ export function HomeFeed({
   }, [showInitialLoading, displayDays, weekView]);
 
   const openWeekView = useCallback(() => {
+    wantWeekTabsRef.current = true;
     setSsrDayHeaderVisible(false);
     pinScrollForViewToggle();
     startTransition(() => {

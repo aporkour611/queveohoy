@@ -30,4 +30,22 @@ describe("agenda-search", () => {
     expect(eventMatchesAgendaQuery(sample, "real barcelona")).toBe(true);
     expect(eventMatchesAgendaQuery(sample, "real tenis")).toBe(false);
   });
+
+  it("entiende preguntas naturales sobre equipos", () => {
+    expect(
+      eventMatchesAgendaQuery(sample, "donde veo el partido del barca")
+    ).toBe(true);
+    expect(filterEventsByAgendaQuery([sample], "¿Qué partido hay del Barça?")).toEqual([
+      sample,
+    ]);
+  });
+
+  it("detecta competiciones por alias", () => {
+    const champions: EventRow = {
+      ...sample,
+      competition: "Champions League",
+      title: "PSG vs Arsenal",
+    };
+    expect(filterEventsByAgendaQuery([champions], "ucl esta noche")).toEqual([champions]);
+  });
 });

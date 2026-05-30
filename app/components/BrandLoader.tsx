@@ -1,26 +1,26 @@
 import { createPortal } from "react-dom"
-import { LogoMark } from "./LogoMark"
 
 type Props = {
   label?: string
   variant?: "inline" | "overlay" | "fixed"
 }
 
-function LogoLoaderMark() {
+function BrandLoaderTiles() {
   return (
-    <div className="qvh-page-logo-loader-wrap">
-      <LogoMark className="qvh-page-logo-loader-mark" aria-hidden />
-      <div className="qvh-page-logo-loader-glow" aria-hidden />
+    <div className="qvh-brand-loader" aria-hidden>
+      <span className="qvh-brand-loader-tile qvh-brand-loader-tile-q" />
+      <span className="qvh-brand-loader-tile qvh-brand-loader-tile-v" />
+      <span className="qvh-brand-loader-tile qvh-brand-loader-tile-h" />
     </div>
   )
 }
 
-/** Loader de marca: logotipo QVH con barrido difuminado izquierda → derecha. */
+/** Loader de marca: tres cuadrados Q · V · H con iluminación secuencial. */
 export function BrandLoader({
   label = "Cargando eventos…",
   variant = "inline",
 }: Props) {
-  const logo = <LogoLoaderMark />
+  const tiles = <BrandLoaderTiles />
 
   if (variant === "fixed" || variant === "overlay") {
     const overlay = (
@@ -32,9 +32,7 @@ export function BrandLoader({
         aria-live="polite"
         aria-busy="true"
       >
-        <div className="qvh-feed-loader-brand qvh-feed-loader-brand-logo">
-          {logo}
-        </div>
+        <div className="qvh-feed-loader-brand">{tiles}</div>
         <span className="sr-only">{label}</span>
       </div>
     )
@@ -47,8 +45,8 @@ export function BrandLoader({
   }
 
   return (
-    <div className="fh-empty fh-loading fh-loading-logo" role="status" aria-live="polite">
-      {logo}
+    <div className="fh-empty fh-loading" role="status" aria-live="polite">
+      {tiles}
       {label ? <p>{label}</p> : null}
     </div>
   )

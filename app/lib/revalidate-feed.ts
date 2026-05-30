@@ -3,6 +3,7 @@ import {
   fetchDestacadosFeedEvents,
   fetchFeedEvents,
   fetchHomeFeedEvents,
+  fetchWeekViewFeedEvents,
 } from "./events-feed-server";
 
 /** Tras el cron: precarga el feed y luego invalida HTML (evita ventana sin caché). */
@@ -13,6 +14,7 @@ export async function warmFeedCacheAfterCron(): Promise<{
   try {
     await Promise.all([
       fetchHomeFeedEvents(),
+      fetchWeekViewFeedEvents(),
       fetchFeedEvents(),
       fetchDestacadosFeedEvents(),
     ]);

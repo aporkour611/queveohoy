@@ -43,7 +43,7 @@ export function AgendaSearchBar({
   return (
     <div className="fh-agenda-search" role="search" aria-label="Buscar en la agenda">
       <label className="sr-only" htmlFor={inputId}>
-        Buscar eventos por título, equipo o competición
+        Buscar en la agenda con lenguaje natural
       </label>
       <div className="fh-agenda-search-field">
         <svg
@@ -66,7 +66,7 @@ export function AgendaSearchBar({
           id={inputId}
           type="search"
           className="fh-agenda-search-input"
-          placeholder="Buscar equipo, serie, canal…"
+          placeholder="Barça, Champions, DAZN… o pregunta en natural"
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}

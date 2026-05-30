@@ -31,7 +31,9 @@ export const CuentaLoginForm = () => {
     const supabase = createBrowserClient()
     if (!supabase) {
       setStatus("error")
-      setMessage("El inicio de sesión no está disponible en este entorno.")
+      setMessage(
+        "El inicio de sesión no está disponible: faltan variables de Supabase en el entorno (SUPABASE_URL y clave anon/publishable)."
+      )
       return
     }
 
@@ -54,7 +56,9 @@ export const CuentaLoginForm = () => {
     const supabase = createBrowserClient()
     if (!supabase) {
       setStatus("error")
-      setMessage("El inicio de sesión no está disponible en este entorno.")
+      setMessage(
+        "El inicio de sesión no está disponible: faltan variables de Supabase en el entorno (SUPABASE_URL y clave anon/publishable)."
+      )
       return
     }
 

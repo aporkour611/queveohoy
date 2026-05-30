@@ -1,23 +1,26 @@
 import { createBrowserClient as createSupabaseBrowserClient } from "@supabase/ssr"
 import type { SupabaseClient } from "@supabase/supabase-js"
 import {
-  isSupabaseConfigured,
-  resolveSupabasePublishableKey,
-  resolveSupabaseUrl,
-} from "../supabase-config"
+  getActiveBrowserSupabaseConfig,
+  isBrowserSupabaseAvailable,
+} from "./browser-runtime"
 
 let cachedClient: SupabaseClient | null = null
+let cachedConfigKey: string | null = null
 
-export { isSupabaseConfigured }
+export { isBrowserSupabaseAvailable as isSupabaseConfigured }
 
 export function createBrowserClient(): SupabaseClient | null {
-  if (!isSupabaseConfigured()) return null
+  const config = getActiveBrowserSupabaseConfig()
+  if (!config) return null
 
-  if (!cachedClient) {
+  const configKey = `${config.url}\0${config.publishableKey}`
+  if (!cachedClient || cachedConfigKey !== configKey) {
     cachedClient = createSupabaseBrowserClient(
-      resolveSupabaseUrl(),
-      resolveSupabasePublishableKey()
+      config.url,
+      config.publishableKey
     )
+    cachedConfigKey = configKey
   }
 
   return cachedClient

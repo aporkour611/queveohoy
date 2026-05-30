@@ -90,3 +90,19 @@ export function isSupabaseConfigured(): boolean {
       )
   );
 }
+
+export type BrowserSupabaseConfig = {
+  url: string;
+  publishableKey: string;
+};
+
+/** Public Supabase client config; safe to pass to the browser (server reads runtime env). */
+export function resolveBrowserSupabaseConfig(): BrowserSupabaseConfig | null {
+  const url = firstNonEmpty(
+    process.env.SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+  );
+  const publishableKey = resolvePublishableKeyFromEnv();
+  if (!url || !publishableKey) return null;
+  return { url, publishableKey };
+}

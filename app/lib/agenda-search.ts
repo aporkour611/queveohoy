@@ -1,10 +1,14 @@
 import type { EventRow } from "../components/types";
+import {
+  normalizeAgendaQuery,
+  parseNaturalAgendaQuery,
+} from "./agenda-search-nl";
 
-export function normalizeAgendaQuery(raw: string): string {
-  return raw.trim().toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
-}
+export { normalizeAgendaQuery } from "./agenda-search-nl";
 
 function agendaQueryTokens(rawQuery: string): string[] {
+  const parsed = parseNaturalAgendaQuery(rawQuery);
+  if (parsed.tokens.length > 0) return parsed.tokens;
   const query = normalizeAgendaQuery(rawQuery);
   if (!query) return [];
   return query.split(/\s+/).filter(Boolean);

@@ -146,6 +146,13 @@ jobs:
           fi
           curl -sf "https://queveohoy.es/" -o /dev/null
           echo "Home precalentada"
+          if [ -n "${{ secrets.CRON_SECRET }}" ]; then
+            echo "Invalidando caché del feed y la home…"
+            curl -sf "https://queveohoy.es/api/indexing/ping" \
+              -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+              -o /tmp/revalidate.json || echo "::warning::indexing/ping falló"
+            node -e "try{const d=require('/tmp/revalidate.json');console.log('revalidate',d.feedCache?.ok??d.ok)}catch(e){console.log('revalidate skip')}" || true
+          fi
           if [ "$events" = "0" ]; then
             echo "Ejecutando cron para repoblar eventos…"
             vercel env run --environment=production -- bash -c \

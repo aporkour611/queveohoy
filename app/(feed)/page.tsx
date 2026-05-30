@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
 import { FeedControlsShell } from "../components/FeedControlsShell";
+import { FeedControlsShellBridge } from "../components/FeedControlsShellBridge";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
 import { HomeFeedGate } from "../components/HomeFeedGate";
@@ -27,6 +28,8 @@ import { defaultDescription, pageMetadata, seoKeywords } from "../lib/seo";
 
 export const revalidate = 900;
 export const maxDuration = 25;
+/** Evita home estática vacía si el build no alcanza a leer Supabase. */
+export const dynamic = "force-dynamic";
 
 const PAGE_DATA_BUDGET_MS = 8_000;
 
@@ -96,6 +99,12 @@ export default async function Page() {
   return (
     <>
       <HomeLcpPreload entries={lcpPreloadEntries} />
+      <link
+        rel="prefetch"
+        href="/api/events?scope=week"
+        as="fetch"
+        crossOrigin="anonymous"
+      />
       <HomeJsonLd events={ssrEvents} />
       <div className="fh-body">
         <HomeResetProvider>
@@ -110,6 +119,7 @@ export default async function Page() {
 
                 <div className="qvh-home-feed-slot">
                   <FeedControlsShell days={shellDays} />
+                  <FeedControlsShellBridge />
                   {initialDay ? (
                     <HomeFeedDayHeader
                       date={initialDay.date}
