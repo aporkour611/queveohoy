@@ -21,13 +21,13 @@ Estado tras **v2.0.0** (graduación RC 1.9.9 — plataforma estable).
 
 | Métrica | Resultado | Meta |
 |---------|-----------|------|
-| Performance | **94** | ≥80 |
-| LCP | **2.92s** | ≤2.0s |
+| Performance | **96** | ≥80 |
+| LCP | **2.73s** | ≤2.0s |
 | CLS | **0.000** | ≤0.08 |
 
-**2.0.3:** TMDB w154, preload 320w único, preconnect temprano, crestas CL lazy.
+**2.0.3:** TMDB w154, preload 320w único, preconnect temprano, crestas CL lazy (−190ms LCP vs 2.0.2).
 
-Meta LCP ≤2s — remeasure tras deploy 2.0.3.
+Meta LCP ≤2s: ~730ms restantes (valorar w92 LCP o poster local para #1 destacado).
 
 ## Cambios 1.0.6 (performance extrema)
 
