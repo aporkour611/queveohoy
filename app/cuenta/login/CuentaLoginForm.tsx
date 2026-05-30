@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
 import { FormEvent, useMemo, useState } from "react"
 import { createBrowserClient } from "@/app/lib/supabase/browser-client"
 import { siteUrl } from "@/app/lib/seo"
@@ -12,11 +11,12 @@ const ERROR_MESSAGES: Record<string, string> = {
   auth: "No se pudo completar el inicio de sesión. Prueba de nuevo.",
 }
 
-export const CuentaLoginForm = () => {
-  const searchParams = useSearchParams()
-  const nextPath = searchParams.get("next") ?? "/cuenta"
-  const errorKey = searchParams.get("error")
-  const [email, setEmail] = useState("")
+type Props = {
+  nextPath?: string
+  errorKey?: string
+}
+
+export const CuentaLoginForm = ({ nextPath = "/cuenta", errorKey }: Props) => {  const [email, setEmail] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle")
   const [message, setMessage] = useState("")
 
@@ -88,7 +88,7 @@ export const CuentaLoginForm = () => {
   const errorMessage = errorKey ? ERROR_MESSAGES[errorKey] : null
 
   return (
-    <main className="fh-auth-page">
+    <main id="main-content" className="fh-auth-page">
       <div className="fh-container">
         <div className="fh-auth-card">
           <h1>Iniciar sesión</h1>

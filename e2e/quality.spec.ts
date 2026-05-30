@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright"
 import { expect, test } from "@playwright/test"
 
 test.describe("a11y landmarks", () => {
@@ -16,10 +17,37 @@ test.describe("a11y landmarks", () => {
     await expect(page.locator("#main-content")).toBeVisible()
   })
 
+  test("hub champions expone main-content", async ({ page }) => {
+    await page.goto("/champions")
+    await expect(page.locator("#main-content")).toBeVisible()
+  })
+
+  test("login expone main-content", async ({ page }) => {
+    await page.goto("/cuenta/login")
+    await expect(page.locator("#main-content")).toBeVisible()
+  })
+
   test("skip link apunta a main-content", async ({ page }) => {
     await page.goto("/")
     const skip = page.locator(".qvh-skip-link")
     await expect(skip).toHaveAttribute("href", "#main-content")
+  })
+})
+
+test.describe("a11y axe", () => {
+  test("home sin violaciones críticas WCAG", async ({ page }) => {
+    await page.goto("/")
+    await page.locator("#main-content").waitFor({ state: "visible" })
+
+    const results = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa"])
+      .disableRules(["color-contrast"])
+      .analyze()
+
+    const critical = results.violations.filter(
+      (v) => v.impact === "critical" || v.impact === "serious"
+    )
+    expect(critical).toEqual([])
   })
 })
 

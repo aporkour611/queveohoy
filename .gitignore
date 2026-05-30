@@ -27,6 +27,8 @@
 # misc
 .DS_Store
 *.pem
+.tools/
+docs/perf-reports/
 
 # debug
 npm-debug.log*

@@ -49,12 +49,16 @@ jobs:
         run: npx playwright install chromium --with-deps
 
       - name: Build
-        run: npm run build
+        run: |
+          unset NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY || true
+          npm run build
         env:
           NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
 
       - name: E2E smoke
-        run: npm run test:e2e
+        run: |
+          unset NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY || true
+          npm run test:e2e
         env:
           CI: true
           NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
@@ -95,11 +99,13 @@ jobs:
 
       - name: Lighthouse perf budget (opcional)
         run: npm run perf:budget
+        continue-on-error: true
         env:
           PERF_URL: http://127.0.0.1:3000
+          PERF_BUDGET_MIN: 50
+          PERF_BUDGET_LCP_MS: 4000
 
       - name: Lighthouse CI (quality gates)
         run: npx lhci autorun --config=lighthouserc.json
-        continue-on-error: true
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

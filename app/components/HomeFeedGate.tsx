@@ -18,16 +18,16 @@ type HomeFeedProps = ComponentProps<typeof HomeFeed> & {
   eager?: boolean;
 };
 
-/** PSI desktop: retrasa hidratación. Interacción con calendario: activar al instante. */
+/** PSI mobile: hidrata solo con interacción (+ red de seguridad). Desktop: ~1,2s. */
 const HYDRATION_IDLE_DESKTOP_MS = 1_200;
-const HYDRATION_IDLE_TOUCH_MS = 450;
+const HYDRATION_TOUCH_SAFETY_MS = 8_000;
 const HYDRATION_EAGER_MS = 150;
 
-function resolveHydrationIdleMs(): number {
-  if (typeof window === "undefined") return HYDRATION_IDLE_DESKTOP_MS;
+function isTouchPreferred(): boolean {
+  if (typeof window === "undefined") return false;
   const coarse = window.matchMedia("(pointer: coarse)").matches;
   const narrow = window.matchMedia("(max-width: 720px)").matches;
-  return coarse || narrow ? HYDRATION_IDLE_TOUCH_MS : HYDRATION_IDLE_DESKTOP_MS;
+  return coarse || narrow;
 }
 
 /** Hidrata el feed tras interacción o timeout corto; «Semana completa» en shell SSR activa al instante. */
@@ -45,8 +45,17 @@ export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
       setReady(true);
     };
 
-    const delayMs = eager ? HYDRATION_EAGER_MS : resolveHydrationIdleMs();
-    const fallback = window.setTimeout(() => activate(false), delayMs);
+    let fallback: number | undefined;
+    if (eager) {
+      fallback = window.setTimeout(() => activate(false), HYDRATION_EAGER_MS);
+    } else if (isTouchPreferred()) {
+      fallback = window.setTimeout(
+        () => activate(false),
+        HYDRATION_TOUCH_SAFETY_MS
+      );
+    } else {
+      fallback = window.setTimeout(() => activate(false), HYDRATION_IDLE_DESKTOP_MS);
+    }
 
     const onInteract = () => activate(false);
     const onActivateFeed = () => activate(consumeHomeFeedWeekIntent());
@@ -70,7 +79,7 @@ export function HomeFeedGate({ eager = false, ...props }: HomeFeedProps) {
 
     return () => {
       cancelled = true;
-      window.clearTimeout(fallback);
+      if (fallback !== undefined) window.clearTimeout(fallback);
       window.removeEventListener("pointerdown", onInteract);
       window.removeEventListener("touchstart", onInteract);
       window.removeEventListener("keydown", onInteract);

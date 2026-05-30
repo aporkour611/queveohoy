@@ -1,19 +1,19 @@
 # Scorecard objetivo 10/10
 
-Estado honesto tras auditoría ultra-exigente — **v1.0.3**.
+Estado honesto tras correcciones multi-dimensión — **v1.0.3+** (pendiente deploy).
 
 | Dimensión | Meta | Nota real | Estado | Instrumentación |
 |-----------|------|-----------|--------|-----------------|
 | Arquitectura | 10 | 7.0 | 🟡 | Cron monolítico; tipos cron listos |
-| Seguridad | 10 | 7.5 | 🟡 | Health sin recon; Upstash opcional |
-| Rendimiento | 10 | 5.5 | 🔴 | PartidoPage client; LHCI no bloqueante |
+| Seguridad | 10 | 8.0 | 🟡 | Assistant 410; rate limit distribuido en APIs |
+| Rendimiento | 10 | 6.5 | 🟡 | PartidoPage SSR; mobile hydrate-on-interact |
 | Mantenibilidad | 10 | 7.5 | 🟡 | PageMain; logger parcial |
-| Testing | 10 | 8.0 | 🟢 | 227+ Vitest; E2E deploy |
-| Ops/CI | 10 | 7.5 | 🟡 | Gates deploy; branch protection manual |
-| SEO | 10 | 7.5 | 🟡 | FAQ home; hubs sin OG dinámico |
-| A11y | 10 | 6.5 | 🟡 | main-content global; sin axe gate |
+| Testing | 10 | 8.5 | 🟢 | 233 Vitest; axe E2E; CI Supabase unset |
+| Ops/CI | 10 | 8.0 | 🟡 | LHCI a11y/seo gate; perf budget realista |
+| SEO | 10 | 8.0 | 🟡 | OG en hubs; FAQ 8 hubs |
+| A11y | 10 | 7.5 | 🟡 | main-content login; axe gate (sin contraste) |
 
-**Global: ~7.2/10** — Ver [AUDITORIA-ULTRA-1.0.3.md](./AUDITORIA-ULTRA-1.0.3.md)
+**Global estimado: ~7.8/10** — Ver [AUDITORIA-ULTRA-1.0.3.md](./AUDITORIA-ULTRA-1.0.3.md) y [PERF-AUDIT-RESUMEN.md](./PERF-AUDIT-RESUMEN.md)
 
 ## Cambios 1.0.3 (deploy)
 

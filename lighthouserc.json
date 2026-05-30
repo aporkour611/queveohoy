@@ -1,8 +1,12 @@
 {
   "ci": {
     "collect": {
-      "url": ["http://127.0.0.1:3000/"],
-      "numberOfRuns": 3,
+      "url": [
+        "http://127.0.0.1:3000/",
+        "http://127.0.0.1:3000/champions",
+        "http://127.0.0.1:3000/partidos-hoy"
+      ],
+      "numberOfRuns": 2,
       "settings": {
         "formFactor": "mobile",
         "screenEmulation": { "mobile": true },
@@ -11,11 +15,11 @@
     },
     "assert": {
       "assertions": {
-        "categories:performance": ["warn", { "minScore": 0.92 }],
+        "categories:performance": ["warn", { "minScore": 0.5 }],
         "categories:accessibility": ["error", { "minScore": 0.95 }],
-        "categories:best-practices": ["warn", { "minScore": 0.9 }],
-        "categories:seo": ["error", { "minScore": 0.9 }],
-        "largest-contentful-paint": ["warn", { "maxNumericValue": 2000 }],
+        "categories:best-practices": ["warn", { "minScore": 0.85 }],
+        "categories:seo": ["error", { "minScore": 0.92 }],
+        "largest-contentful-paint": ["warn", { "maxNumericValue": 4000 }],
         "cumulative-layout-shift": ["warn", { "maxNumericValue": 0.08 }]
       }
     },

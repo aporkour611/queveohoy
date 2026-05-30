@@ -8,20 +8,41 @@ import {
   toAssistantEventCards,
 } from "@/app/lib/assistant-core"
 import { filterEventsByAgendaQuery } from "@/app/lib/agenda-search"
-import { fetchFeedEvents } from "@/app/lib/events-feed-server"
+import { fetchHomeFeedEvents } from "@/app/lib/events-feed-server"
 import {
   filterEventsByUserPlatforms,
   pickPersonalizedTonightEvents,
 } from "@/app/lib/personalized-tonight"
-import { checkRateLimit, clientIp } from "@/app/lib/rate-limit"
+import { enforceApiRateLimit } from "@/app/lib/api-rate-limit"
 import { getMadridTodayKey } from "@/app/lib/seo-date"
 
 const ASSISTANT_RATE_LIMIT = 20
 const ASSISTANT_WINDOW_MS = 60_000
+const MAX_PLATFORMS = 20
+const MAX_PLATFORM_LEN = 64
+
+function isAssistantEnabled(): boolean {
+  return process.env.ASSISTANT_ENABLED?.trim() === "true"
+}
+
+export async function GET() {
+  return NextResponse.json({ error: "Method not allowed" }, { status: 405 })
+}
 
 export async function POST(request: NextRequest) {
-  const ip = clientIp(request)
-  const rate = checkRateLimit(`assistant:${ip}`, ASSISTANT_RATE_LIMIT, ASSISTANT_WINDOW_MS)
+  if (!isAssistantEnabled()) {
+    return NextResponse.json(
+      { error: "Asistente no disponible" },
+      { status: 410 }
+    )
+  }
+
+  const rate = await enforceApiRateLimit(
+    request,
+    "assistant",
+    ASSISTANT_RATE_LIMIT,
+    ASSISTANT_WINDOW_MS
+  )
   if (!rate.ok) {
     return NextResponse.json(
       { error: "Demasiadas peticiones. Espera un momento." },
@@ -51,16 +72,18 @@ export async function POST(request: NextRequest) {
   }
 
   const userPlatforms = Array.isArray((body as { platforms?: unknown }).platforms)
-    ? ((body as { platforms: unknown[] }).platforms.filter(
-        (item): item is string => typeof item === "string"
-      ) as string[])
+    ? ((body as { platforms: unknown[] }).platforms
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim().slice(0, MAX_PLATFORM_LEN))
+        .filter(Boolean)
+        .slice(0, MAX_PLATFORMS) as string[])
     : []
   const primeTime =
     typeof (body as { primeTime?: unknown }).primeTime === "string"
       ? (body as { primeTime: string }).primeTime.slice(0, 5)
       : "18:00"
 
-  const { events, error } = await fetchFeedEvents()
+  const { events, error } = await fetchHomeFeedEvents()
   if (error) {
     return NextResponse.json({ error }, { status: 502 })
   }
@@ -112,13 +135,13 @@ export async function POST(request: NextRequest) {
         filterByPlatforms: tool({
           description: "Filtra eventos de hoy que coinciden con las plataformas del usuario",
           inputSchema: z.object({
-            platforms: z.array(z.string()).min(1),
+            platforms: z.array(z.string()).min(1).max(MAX_PLATFORMS),
             limit: z.number().min(1).max(12).optional(),
           }),
           execute: async ({ platforms, limit = 6 }) => {
             toolEvents = filterEventsByUserPlatforms(
               events.filter((event) => event.date === todayKey),
-              platforms
+              platforms.slice(0, MAX_PLATFORMS)
             ).slice(0, limit)
             return toAssistantEventCards(toolEvents)
           },

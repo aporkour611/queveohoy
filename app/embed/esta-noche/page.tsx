@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { pickTonightEvents } from "@/app/lib/embed-tonight"
-import { fetchFeedEvents } from "@/app/lib/events-feed-server"
+import { fetchHomeFeedEvents } from "@/app/lib/events-feed-server"
 import { getMadridTodayKey } from "@/app/lib/seo-date"
 import { siteBrand, siteUrl } from "@/app/lib/seo"
 import { eventDisplayTime } from "@/app/lib/madrid-time"
@@ -13,9 +13,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
+export const revalidate = 900
+
 export default async function EmbedEstaNochePage() {
   const todayKey = getMadridTodayKey()
-  const { events } = await fetchFeedEvents()
+  const { events } = await fetchHomeFeedEvents()
   const tonight = pickTonightEvents(events, todayKey)
 
   return (

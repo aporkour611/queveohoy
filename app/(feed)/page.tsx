@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
 import { FeedFreshnessSlot } from "../components/FeedFreshnessSlot";
@@ -17,8 +18,6 @@ import { HomeLcpPreload } from "../components/HomeLcpPreload";
 import { HomeNav } from "../components/HomeNav";
 import { HomeResetProvider } from "../components/HomeResetContext";
 import { SiteFooter } from "../components/SiteFooter";
-import { HomeFaq } from "../components/HomeFaq";
-import { SeoGuidesPromo } from "../components/SeoGuidesPromo";
 import { eventsForHomeSsrHtml } from "../lib/featured";
 import {
   getDestacadosFeedEventsForPage,
@@ -28,6 +27,16 @@ import { raceWithTimeout } from "../lib/race-with-timeout";
 import { resolveHomeLcpPreloadEntries } from "../lib/home-lcp";
 import { buildHomeMetadataDescription, buildHomeMetadataTitle } from "../lib/seo-jsonld";
 import { defaultDescription, pageMetadata, seoKeywords } from "../lib/seo";
+
+const HomeFaq = dynamic(
+  () => import("../components/HomeFaq").then((mod) => mod.HomeFaq),
+  { ssr: true }
+);
+const SeoGuidesPromo = dynamic(
+  () =>
+    import("../components/SeoGuidesPromo").then((mod) => mod.SeoGuidesPromo),
+  { ssr: true }
+);
 
 export const revalidate = 900;
 export const maxDuration = 25;
@@ -107,12 +116,6 @@ export default async function Page() {
   return (
     <>
       <HomeLcpPreload entries={lcpPreloadEntries} />
-      <link
-        rel="prefetch"
-        href="/api/events?scope=week"
-        as="fetch"
-        crossOrigin="anonymous"
-      />
       <HomeJsonLd events={ssrEvents} />
       <div className="fh-body">
         <HomeResetProvider>

@@ -136,9 +136,7 @@ export function pageMetadata(
     ...(keywords?.length ? { keywords } : {}),
     alternates: { canonical: url },
     openGraph: {
-      type: "website",
-      locale: "es_ES",
-      siteName,
+      ...defaultOpenGraph,
       title,
       description,
       url,
@@ -147,6 +145,7 @@ export function pageMetadata(
       card: "summary_large_image",
       title,
       description,
+      images: ["/icons/app-icon-512.png"],
     },
   };
 }

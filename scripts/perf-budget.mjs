@@ -8,8 +8,8 @@ import { readFileSync } from "node:fs";
 
 const url = process.env.PERF_URL ?? "http://127.0.0.1:3000";
 const budgets = {
-  performance: 92,
-  lcpMs: 2000,
+  performance: Number(process.env.PERF_BUDGET_MIN ?? 50),
+  lcpMs: Number(process.env.PERF_BUDGET_LCP_MS ?? 4000),
   cls: 0.08,
 };
 

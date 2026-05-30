@@ -1,4 +1,4 @@
-import "../futbolhoy.css";
+import "../site-shell.css";
 
 export default function PartidoLayout({
   children,

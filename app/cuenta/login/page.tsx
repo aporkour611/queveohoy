@@ -1,23 +1,16 @@
-import { PageMain } from "@/app/components/PageMain"
-import { Suspense } from "react"
 import { CuentaLoginForm } from "./CuentaLoginForm"
 import "../../futbolhoy-feed.css"
 
-const LoginFallback = () => (
-  <PageMain className="fh-auth-page">
-    <div className="fh-container">
-      <div className="fh-auth-card">
-        <h1>Iniciar sesión</h1>
-        <p className="fh-auth-lead">Cargando…</p>
-      </div>
-    </div>
-  </PageMain>
-)
+type Props = {
+  searchParams: Promise<{ next?: string; error?: string }>
+}
 
-export default function CuentaLoginPage() {
+export default async function CuentaLoginPage({ searchParams }: Props) {
+  const params = await searchParams
   return (
-    <Suspense fallback={<LoginFallback />}>
-      <CuentaLoginForm />
-    </Suspense>
+    <CuentaLoginForm
+      nextPath={params.next}
+      errorKey={params.error}
+    />
   )
 }

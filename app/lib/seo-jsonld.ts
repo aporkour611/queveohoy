@@ -165,6 +165,78 @@ export const HUB_FAQ_BY_SLUG: Record<
         "Depende del partido y los derechos de la jornada. En la agenda verás si toca DAZN LaLiga, Movistar u otro emisor.",
     },
   ],
+  "partidos-hoy": [
+    {
+      question: "¿Qué partidos hay hoy en la tele?",
+      answer:
+        "En queveohoy.es/partidos-hoy encuentras todos los eventos deportivos de hoy con horario y canal en España.",
+    },
+    {
+      question: "¿A qué hora son los partidos hoy?",
+      answer:
+        "Los horarios están en península y Baleares (Europe/Madrid). Consulta la agenda actualizada en queveohoy.es.",
+    },
+    {
+      question: "¿Dónde ver el fútbol hoy en TV?",
+      answer:
+        "La agenda indica el canal o plataforma de cada partido: DAZN, Movistar, La 1, LaLiga TV, Gol Play y más.",
+    },
+  ],
+  futbol: [
+    {
+      question: "¿Qué partidos de fútbol hay hoy?",
+      answer:
+        "La agenda de fútbol en queveohoy.es/futbol incluye LaLiga, Champions, copas y ligas internacionales con horario y canal.",
+    },
+    {
+      question: "¿Dónde ver el fútbol en streaming?",
+      answer:
+        "Cada partido indica si está en DAZN, Movistar, Gol Play u otro emisor. Filtra por competición en la agenda.",
+    },
+    {
+      question: "¿Horarios de partidos en España?",
+      answer:
+        "Todos los horarios están en península y Baleares (Europe/Madrid).",
+    },
+  ],
+  "formula-1": [
+    {
+      question: "¿Dónde ver la Fórmula 1 en España?",
+      answer:
+        "La F1 se emite en DAZN F1 y a veces en Movistar. En queveohoy.es/formula-1 ves horarios de cada sesión.",
+    },
+    {
+      question: "¿A qué hora es la F1 hoy?",
+      answer:
+        "Consulta la agenda de F1 en queveohoy.es con horarios en península y Baleares.",
+    },
+  ],
+  "premier-league": [
+    {
+      question: "¿Dónde ver la Premier League en España?",
+      answer:
+        "La Premier se ve en DAZN. En queveohoy.es/premier-league tienes horarios y partidos de la jornada.",
+    },
+    {
+      question: "¿Qué partidos de Premier hay hoy?",
+      answer:
+        "La agenda lista los encuentros de Premier League con horario en Europe/Madrid.",
+    },
+  ],
+  ufc: [
+    {
+      question: "¿Dónde ver UFC en España?",
+      answer:
+        "UFC se emite en DAZN. Consulta queveohoy.es/ufc para horarios de eventos y prelims.",
+    },
+  ],
+  nba: [
+    {
+      question: "¿Dónde ver la NBA en TV?",
+      answer:
+        "La NBA se ve en Movistar Deportes, NBA League Pass y a veces en La 1. Horarios en queveohoy.es/nba.",
+    },
+  ],
 };
 
 export function getHubFaqItems(

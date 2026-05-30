@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import type { EventRow } from "./types";
 import { MatchCard } from "./MatchCard";
