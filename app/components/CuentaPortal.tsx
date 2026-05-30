@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo, useState, useTransition } from "react"
+import { useEffect, useMemo, useState, useTransition } from "react"
 import type { EventRow } from "@/app/components/types"
 import { eventDisplayTitle } from "@/app/lib/event-display"
 import { partidoPath } from "@/app/lib/event-slug"
@@ -11,6 +11,7 @@ import {
   SPANISH_PLATFORM_OPTIONS,
   type UserPreferences,
 } from "@/app/lib/user-preferences"
+import { syncStoredUserPlatforms } from "@/app/lib/user-platforms-client"
 
 type FavoriteItem = {
   event: EventRow
@@ -44,6 +45,10 @@ export function CuentaPortal({
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+
+  useEffect(() => {
+    syncStoredUserPlatforms(initialPreferences)
+  }, [initialPreferences])
 
   const sortedFavorites = useMemo(
     () =>
@@ -81,6 +86,8 @@ export function CuentaPortal({
           const body = (await res.json().catch(() => null)) as { error?: string } | null
           throw new Error(body?.error ?? "No se pudieron guardar las preferencias")
         }
+        const body = (await res.json()) as { preferences?: UserPreferences }
+        if (body.preferences) syncStoredUserPlatforms(body.preferences)
         setSaveMessage("Plataformas guardadas. El feed priorizará dónde ver.")
       } catch (error) {
         setSaveError(error instanceof Error ? error.message : "Error al guardar")
@@ -247,6 +254,17 @@ export function CuentaPortal({
               <section className="fh-settings-block">
                 <h2>Privacidad</h2>
                 <p>
+                  Descarga un JSON con tu correo, perfil, favoritos y preferencias
+                  (derecho de acceso RGPD).
+                </p>
+                <a
+                  href="/api/cuenta/export"
+                  className="fh-btn fh-btn-primary"
+                  download="queveohoy-datos.json"
+                >
+                  Descargar mis datos
+                </a>
+                <p className="fh-settings-muted">
                   Consulta cómo tratamos tus datos en nuestra política de privacidad.
                 </p>
                 <Link href="/privacidad" className="fh-account-menu-link">

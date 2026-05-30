@@ -85,6 +85,8 @@ Cronología paso a paso (equipo 20→40, jun 2026 – jul 2027, presupuesto ilim
 
 → **[ROADMAP-4.0.md](./ROADMAP-4.0.md)** — sprints 41–68, contrataciones, ADRs, releases v2.1–v4.0.
 
+→ **[ACCIONES-MANUALES-4.0.md](./ACCIONES-MANUALES-4.0.md)** — checklist de tareas que solo puedes hacer tú (Supabase, Vercel, stores, Stripe…).
+
 ---
 
 ## Criterios de éxito Q4 2026

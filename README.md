@@ -2,7 +2,7 @@
 
 Agenda deportiva y entretenimiento en España: partidos, horarios TV/streaming, destacados y hubs SEO.
 
-**Versión actual:** 4.0.0 · [Novedades](/novedades) · [API](/desarrolladores) · [Roadmap](docs/ROADMAP.md) · [Plan v4.0](docs/ROADMAP-4.0.md)
+**Versión actual:** 4.0.0 · [Novedades](/novedades) · [API](/desarrolladores) · [Roadmap](docs/ROADMAP.md) · [Plan v4.0](docs/ROADMAP-4.0.md) · **[Tu checklist v4.0](docs/ACCIONES-MANUALES-4.0.md)**
 
 ## Stack
 

@@ -17,6 +17,8 @@ export const PRODUCT_RELEASES: ProductRelease[] = [
       "API v1: paginación con cursor en /api/v1/feed y búsqueda en /api/v1/search",
       "Búsqueda en agenda por tokens (multi-palabra) y final Champions PSG-Arsenal 30 may 18:00",
       "Animaciones hover individuales en escudos del hero Champions Week",
+      "Exportación RGPD y badge «Tus plataformas» en tarjetas del feed",
+      "Checklist de despliegue: docs/ACCIONES-MANUALES-4.0.md",
     ],
   },
   {

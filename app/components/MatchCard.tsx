@@ -40,6 +40,8 @@ import { getEventCardStamp, type EventCardStampKind } from "../lib/event-card-st
 import { isRolandGarrosEvent, isRolandGarrosKnockout } from "../lib/roland-garros";
 import { mediaBadgeForEvent } from "../lib/media-platform";
 import { formatDisplayDateLabel, MADRID_TZ } from "../lib/timezone";
+import { eventMatchesUserPlatforms } from "../lib/user-preferences";
+import { useUserPlatforms } from "../lib/use-user-platforms";
 import Link from "next/link";
 import type { EventRow } from "./types";
 import { EventCardStamp } from "./EventCardStamp";
@@ -248,6 +250,11 @@ function EventDetailsPanel({ event }: { event: EventRow }) {
 
 export const MatchCard = memo(function MatchCard({ event }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const userPlatforms = useUserPlatforms();
+  const isOnMyPlatform = useMemo(
+    () => eventMatchesUserPlatforms(event.platform, userPlatforms),
+    [event.platform, userPlatforms]
+  );
   const details = useMemo(() => buildEventDetails(event), [event]);
   const hasExtraDetails = details.length > 0;
   const isCine = event.sport === "cine";
@@ -337,7 +344,7 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
   const cardShell = (children: ReactNode, extraClass = "", stampOnCard = false) => (
     <div className={`fh-cardcol${expanded ? " fh-cardcol-expanded" : ""}`}>
       <div
-        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${hasExtraDetails ? " fh-match-expandable" : ""}${stampOnCard && stamp ? " fh-match-stamped" : ""}`}
+        className={`fh-match ${matchClass}${expanded ? " fh-match-expanded" : ""}${extraClass ? ` ${extraClass}` : ""}${hasExtraDetails ? " fh-match-expandable" : ""}${stampOnCard && stamp ? " fh-match-stamped" : ""}${isOnMyPlatform ? " fh-match-my-platform" : ""}`}
         style={{ position: "relative" }}
         role={hasExtraDetails ? "button" : undefined}
         tabIndex={hasExtraDetails ? 0 : undefined}

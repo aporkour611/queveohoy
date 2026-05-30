@@ -43,7 +43,12 @@ export default function DesarrolladoresPage() {
             <ul>
               <li>
                 <code>GET /api/v1/feed</code> — eventos del día (Madrid). Opcional{" "}
-                <code>?date=YYYY-MM-DD</code>.
+                <code>?date=YYYY-MM-DD</code>, <code>?limit=50</code>,{" "}
+                <code>?cursor=...</code>.
+              </li>
+              <li>
+                <code>GET /api/v1/search?q=...</code> — búsqueda por texto (mín. 2
+                caracteres).
               </li>
               <li>
                 <code>GET /api/v1/events/[id]</code> — detalle de un evento por ID.
