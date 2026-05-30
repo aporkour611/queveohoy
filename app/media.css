@@ -1032,27 +1032,65 @@
 .qvh-entertainment-stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
   margin-top: 0;
 }
 
-.qvh-feed-surface .qvh-tv-section,
 .qvh-feed-surface .qvh-catalog-section {
-  padding: 0;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+  padding: 18px 14px 16px;
+  border: 1px solid rgba(217, 119, 6, 0.2);
+  border-top: 1px solid rgba(217, 119, 6, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.qvh-feed-surface .qvh-tv-hero,
-.qvh-feed-surface .qvh-catalog-hero {
-  margin-bottom: 12px;
+/* Sub-bloques con barra lateral (TV, catálogo) */
+.qvh-feed-surface .qvh-tv-group.qvh-feed-category-shell,
+.qvh-feed-surface .qvh-catalog-rail-block.qvh-feed-category-shell {
+  position: relative;
+  padding: 14px 12px 12px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.32);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-.qvh-feed-surface .qvh-tv-hero-glow,
-.qvh-feed-surface .qvh-catalog-hero-glow {
-  opacity: 0.55;
+.qvh-feed-surface .qvh-tv-group.qvh-feed-category-shell::before,
+.qvh-feed-surface .qvh-catalog-rail-block.qvh-feed-category-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 14px 0 0 14px;
+}
+
+.qvh-feed-surface .qvh-tv-group-accented-directo::before {
+  background: linear-gradient(180deg, #c084fc, #9146ff);
+}
+
+.qvh-feed-surface .qvh-tv-group-accented-concurso::before {
+  background: linear-gradient(180deg, #fcd34d, #f59e0b);
+}
+
+.qvh-feed-surface .qvh-tv-group-accented-reality::before {
+  background: linear-gradient(180deg, #f472b6, #d946ef);
+}
+
+.qvh-feed-surface .qvh-catalog-rail-accented-cine::before {
+  background: linear-gradient(180deg, #fbbf24, #d97706);
+}
+
+.qvh-feed-surface .qvh-catalog-rail-accented-series::before {
+  background: linear-gradient(180deg, #c4b5fd, #7c3aed);
+}
+
+.qvh-feed-surface .qvh-catalog-rail-accented-anime::before {
+  background: linear-gradient(180deg, #fb7185, #e11d48);
+}
+
+.qvh-feed-surface .qvh-tv-group .qvh-tv-group-accent,
+.qvh-feed-surface .qvh-catalog-rail-block .qvh-catalog-rail-accent {
+  display: none;
 }
 
 /* TV y Twitch — parrilla horizontal tipo guía */

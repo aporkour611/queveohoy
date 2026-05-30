@@ -72,7 +72,9 @@ function CatalogRail({
   if (sortedEvents.length === 0) return null;
 
   return (
-    <div className="qvh-catalog-rail-block qvh-feed-category-shell">
+    <div
+      className={`qvh-catalog-rail-block qvh-feed-category-shell qvh-catalog-rail-accented-${accent}`}
+    >
       <div className="qvh-catalog-rail-head">
         <div className={`qvh-catalog-rail-accent qvh-catalog-rail-accent-${accent}`} />
         <div className="qvh-catalog-rail-copy">

@@ -33,11 +33,13 @@ function TvBroadcastGroup({
   if (sortedEvents.length === 0) return null;
 
   return (
-    <div className="qvh-tv-group qvh-feed-category-shell">
+    <div
+      className={`qvh-tv-group qvh-feed-category-shell qvh-tv-group-accented-${accent}`}
+    >
       <div className="qvh-tv-group-head">
         <span className={`qvh-tv-group-accent qvh-tv-group-accent-${accent}`} />
         <h4 className="qvh-tv-group-title">{label}</h4>
-        <span className="qvh-tv-group-count">{events.length}</span>
+        <span className="qvh-tv-group-count">{sortedEvents.length}</span>
       </div>
       <CategoryCarousel ariaLabel={label} className="qvh-category-carousel-tv">
         {sortedEvents.map((event, index) => (
