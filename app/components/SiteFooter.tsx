@@ -75,6 +75,9 @@ export function SiteFooter() {
                 <Link href="/contacto">Contacto</Link>
               </li>
               <li>
+                <Link href="/explorar">Explorar categorías</Link>
+              </li>
+              <li>
                 <Link href="/desarrolladores">API y widget</Link>
               </li>
             </ul>

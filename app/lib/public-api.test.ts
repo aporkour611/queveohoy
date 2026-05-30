@@ -6,6 +6,7 @@ import {
   decodePublicApiCursor,
   encodePublicApiCursor,
   filterPublicApiEventsByDate,
+  parsePublicApiCategories,
   paginatePublicApiEvents,
   toPublicApiEvent,
   toPublicApiEvents,
@@ -51,6 +52,27 @@ describe("public-api", () => {
     expect(body.count).toBe(1)
     expect(body.nextCursor).toBeNull()
     expect(body.docs).toContain("/desarrolladores")
+  })
+
+  it("includes apiMinorVersion when categories filter applied", () => {
+    const publicEvents = toPublicApiEvents([sampleEvent])
+    const body = buildPublicApiFeedResponse(
+      publicEvents,
+      "2026-05-30",
+      "Europe/Madrid",
+      null,
+      ["futbol"]
+    )
+    expect(body.apiMinorVersion).toBe("1.1")
+    expect(body.categoriesApplied).toEqual(["futbol"])
+  })
+
+  it("parses categories query param", () => {
+    expect(parsePublicApiCategories("futbol,tenis,invalid")).toEqual([
+      "futbol",
+      "tenis",
+    ])
+    expect(parsePublicApiCategories(null)).toEqual([])
   })
 
   it("paginates feed events with cursor", () => {

@@ -4,8 +4,10 @@ import { fetchFeedEvents } from "@/app/lib/events-feed-server"
 import {
   buildPublicApiFeedResponse,
   enforcePublicApiRateLimit,
+  filterPublicApiEventsByCategories,
   filterPublicApiEventsByDate,
   paginatePublicApiEvents,
+  parsePublicApiCategories,
   parsePublicApiPageSize,
   publicApiCorsHeaders,
   toPublicApiEvents,
@@ -42,6 +44,9 @@ export async function GET(request: NextRequest) {
 
   const limit = parsePublicApiPageSize(request.nextUrl.searchParams.get("limit"))
   const cursor = request.nextUrl.searchParams.get("cursor")
+  const categories = parsePublicApiCategories(
+    request.nextUrl.searchParams.get("categories")
+  )
 
   const { events, error } = await fetchFeedEvents()
   if (error) {
@@ -54,16 +59,23 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const publicEvents = dateParam
+  let publicEvents = dateParam
     ? filterPublicApiEventsByDate(events, dateKey)
     : toPublicApiEvents(events).filter((event) => event.date === dateKey)
+
+  if (categories.length > 0) {
+    publicEvents = filterPublicApiEventsByCategories(events, categories).filter(
+      (event) => event.date === dateKey
+    )
+  }
 
   const page = paginatePublicApiEvents(publicEvents, { limit, cursor })
   const body = buildPublicApiFeedResponse(
     page.events,
     dateKey,
     MADRID_TZ,
-    page.nextCursor
+    page.nextCursor,
+    categories.length > 0 ? categories : undefined
   )
 
   return NextResponse.json(body, {

@@ -1,0 +1,60 @@
+/**
+ * v11 — tema claro/oscuro sobre tokens existentes.
+ * Por defecto (sin data-theme) se mantiene el look oscuro legacy.
+ */
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --background: #f4f4f8;
+  --foreground: #12121a;
+}
+
+html[data-theme="light"] body,
+html[data-theme="light"] html {
+  background: #f4f4f8;
+  color: #12121a;
+}
+
+html[data-theme="light"] .fh-navbar {
+  background: #ffffff;
+  border-bottom-color: #e2e2ea;
+}
+
+html[data-theme="light"] .fh-navbar::before {
+  opacity: 0.35;
+}
+
+html[data-theme="light"] .qvh-site-footer {
+  background: #ececf2;
+  color: #12121a;
+}
+
+html[data-theme="light"] .qvh-cat-main-bar {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--qvh-cat-accent-soft) 55%, #fff),
+    #ffffff
+  );
+  border-color: color-mix(in srgb, var(--qvh-cat-accent) 25%, #ddd);
+}
+
+html[data-theme="light"] .qvh-cat-sub-tile {
+  background: #ffffff;
+  border-color: #e0e0ea;
+}
+
+html[data-theme="light"] .qvh-theme-toggle {
+  border-color: #d0d0dc;
+  background: #ffffff;
+  color: #12121a;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] .qvh-theme-toggle {
+  border-color: #3a3a48;
+  background: #1a1a24;
+  color: #f0f0f8;
+}

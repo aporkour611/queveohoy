@@ -2,6 +2,35 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [12.0.0] - 2026-05-30
+
+### Added
+- `GET /api/health` — estado del servicio, versión y Supabase
+- `GET /api/feed-meta` — frescura del feed y conteo de eventos
+- Componente `FeedFreshness` en la home
+- PWA shortcuts en `manifest.webmanifest` (Hoy, Explorar, Esta noche)
+- Widget embed `/embed/categorias` para partners
+- Design system neon en `/desarrolladores` (tokens por grupo)
+- `docs/ROADMAP-12.0.md`, `docs/ORGANIZACION.md`, `verify:prod:v12`
+
+### Changed
+- Versión del producto: `12.0.0`
+
+## [11.0.0] - 2026-05-30
+
+### Added
+- Tema claro/oscuro/sistema (`ThemeProvider`, toggle en nav)
+- Página `/explorar` con panel grupos neon v10
+- Deep link `/?filtros=...` sincronizado con filtros del feed
+- API v1.1: parámetro `categories` en `/api/v1/feed`
+- E2E: explorar, health, feed-meta, categories filter
+- Job Lighthouse opcional en CI (`validate.yml`, workflow_dispatch)
+- `docs/ROADMAP-11.0.md`, `verify:prod:v11`
+
+### Changed
+- Versión del producto: `11.0.0`
+- `/desarrolladores` ampliado con widgets y API health/meta
+
 ## [10.0.0] - 2026-05-30
 
 ### Added

@@ -7,6 +7,29 @@
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
   "lang": "es",
+  "shortcuts": [
+    {
+      "name": "Agenda de hoy",
+      "short_name": "Hoy",
+      "description": "Qué ver hoy en TV y deportes",
+      "url": "/",
+      "icons": [{ "src": "/icons/app-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Explorar categorías",
+      "short_name": "Explorar",
+      "description": "Grupos neon — deportes, motor, TV…",
+      "url": "/explorar",
+      "icons": [{ "src": "/icons/app-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Esta noche",
+      "short_name": "Noche",
+      "description": "Prime time desde las 18:00",
+      "url": "/embed/esta-noche",
+      "icons": [{ "src": "/icons/app-icon-192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "/icons/app-icon.svg",

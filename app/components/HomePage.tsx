@@ -6,6 +6,10 @@ import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { countHiddenHomeEvents } from "../lib/featured";
 import { STORAGE_KEY, ALL_SPORT_IDS } from "../lib/filter-config";
+import {
+  readFilterParamFromSearch,
+  syncFilterParamInUrl,
+} from "../lib/filter-url";
 import { TV_SPORT_FILTER_IDS } from "../lib/tv-show-category";
 import {
   COOKIE_CONSENT_EVENT,
@@ -281,6 +285,12 @@ export function HomeFeed({
 
   useEffect(() => {
     deferClientStateUpdate(() => {
+      const fromUrl = readFilterParamFromSearch(window.location.search);
+      if (fromUrl.length > 0) {
+        setSelectedSports(fromUrl);
+        return;
+      }
+
       if (hasPreferenceConsent()) {
         try {
           const saved = localStorage.getItem(STORAGE_KEY);
@@ -516,6 +526,7 @@ export function HomeFeed({
 
   const handleFilterSearch = useCallback(async (ids: string[]) => {
     setFilterSearching(true);
+    syncFilterParamInUrl(ids);
     startTransition(() => {
       setSelectedSports(ids);
       setActiveDay(0);

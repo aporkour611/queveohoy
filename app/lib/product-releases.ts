@@ -8,6 +8,34 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "12.0.0",
+    date: "2026-05-30",
+    title: "Observabilidad y ecosistema — v12",
+    highlights: [
+      "GET /api/health y /api/feed-meta para SRE y partners",
+      "FeedFreshness en home: «Agenda actualizada hace X min»",
+      "PWA shortcuts: Hoy, Explorar, Esta noche",
+      "Widget embed /embed/categorias para medios",
+      "Design system neon documentado en /desarrolladores",
+      "docs/ORGANIZACION.md — departamentos y cadencia de release",
+      "Script verify:prod:v12",
+    ],
+  },
+  {
+    version: "11.0.0",
+    date: "2026-05-30",
+    title: "Explorar y tema — v11",
+    highlights: [
+      "Tema system / light / dark con toggle en nav (ThemeProvider)",
+      "Página /explorar con CategoryGroupsPanel y CTA a la agenda",
+      "Deep link /?filtros=futbol,tenis sincronizado con filtros",
+      "API v1.1: GET /api/v1/feed?categories=... con apiMinorVersion",
+      "E2E explorar, health, feed-meta y categories",
+      "CI: job Lighthouse opcional (workflow_dispatch)",
+      "Roadmap docs/ROADMAP-11.0.md y verify:prod:v11",
+    ],
+  },
+  {
     version: "10.0.0",
     date: "2026-05-30",
     title: "Grupos neon — design system v10",

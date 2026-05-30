@@ -2,9 +2,11 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { Logo } from "../../components/Logo"
 import { SiteFooter } from "../../components/SiteFooter"
+import { MAIN_CATEGORY_GROUPS } from "../../lib/filter-groups-design"
 import { PRODUCT_VERSION } from "../../lib/product-version"
 import { pageMetadata, siteUrl } from "../../lib/seo"
 import {
+  PUBLIC_API_MINOR_VERSION,
   PUBLIC_API_RATE_LIMIT,
   PUBLIC_API_VERSION,
 } from "../../lib/public-api"
@@ -12,16 +14,18 @@ import {
 export const metadata: Metadata = pageMetadata(
   "/desarrolladores",
   "API y widget para desarrolladores",
-  "API pública read-only y widget embed «Qué ver esta noche» de queveohoy.es para medios y partners.",
+  "API pública read-only, widgets embed y design system neon de queveohoy.es para medios y partners.",
   ["api queveohoy", "widget tv", "agenda deportiva api"]
 )
 
-/** Regenerar tras cada deploy (docs API v4). */
+/** Regenerar tras cada deploy. */
 export const revalidate = 0
 
 export default function DesarrolladoresPage() {
   const feedExample = `${siteUrl}/api/v1/feed`
-  const embedExample = `${siteUrl}/embed/esta-noche`
+  const categoriesExample = `${siteUrl}/api/v1/feed?categories=futbol,formula1&limit=10`
+  const embedTonight = `${siteUrl}/embed/esta-noche`
+  const embedCategories = `${siteUrl}/embed/categorias`
 
   return (
     <div className="fh-body">
@@ -34,7 +38,8 @@ export default function DesarrolladoresPage() {
         <div className="qvh-legal-page fh-container">
           <h1>Desarrolladores</h1>
           <p className="qvh-legal-updated">
-            Plataforma v{PRODUCT_VERSION} · API v{PUBLIC_API_VERSION}
+            Plataforma v{PRODUCT_VERSION} · API v{PUBLIC_API_VERSION} (ext.{" "}
+            {PUBLIC_API_MINOR_VERSION})
           </p>
 
           <section>
@@ -50,11 +55,23 @@ export default function DesarrolladoresPage() {
                 <code>?cursor=...</code>.
               </li>
               <li>
+                <code>GET /api/v1/feed?categories=...</code> — filtro por
+                categorías (v1.1). IDs separados por coma:{" "}
+                <code>futbol</code>, <code>formula1</code>, <code>tv-reality</code>, etc.
+              </li>
+              <li>
                 <code>GET /api/v1/search?q=...</code> — búsqueda por texto (mín. 2
                 caracteres).
               </li>
               <li>
                 <code>GET /api/v1/events/[id]</code> — detalle de un evento por ID.
+              </li>
+              <li>
+                <code>GET /api/health</code> — estado del servicio y versión.
+              </li>
+              <li>
+                <code>GET /api/feed-meta</code> — frescura del feed y conteo de
+                eventos.
               </li>
             </ul>
             <p>
@@ -62,19 +79,20 @@ export default function DesarrolladoresPage() {
               <strong>queveohoy.es</strong> al reutilizar los datos.
             </p>
             <pre className="qvh-dev-code">
-              <code>{`curl "${feedExample}"`}</code>
+              <code>{`curl "${feedExample}"\ncurl "${categoriesExample}"`}</code>
             </pre>
           </section>
 
           <section>
-            <h2>Widget «Qué ver esta noche»</h2>
+            <h2>Widgets embed</h2>
             <p>
-              Incrusta la selección de prime time (desde las 18:00 h) en tu web
-              con un iframe. El widget enlaza de vuelta a la agenda completa.
+              Incrusta prime time o accesos rápidos a categorías en tu web con
+              iframes.
             </p>
+            <h3>Qué ver esta noche</h3>
             <pre className="qvh-dev-code">
               <code>{`<iframe
-  src="${embedExample}"
+  src="${embedTonight}"
   title="Qué ver esta noche — queveohoy.es"
   width="420"
   height="520"
@@ -82,11 +100,51 @@ export default function DesarrolladoresPage() {
   referrerpolicy="no-referrer-when-downgrade"
 ></iframe>`}</code>
             </pre>
+            <h3>Categorías (v12)</h3>
+            <pre className="qvh-dev-code">
+              <code>{`<iframe
+  src="${embedCategories}"
+  title="Categorías — queveohoy.es"
+  width="420"
+  height="360"
+  loading="lazy"
+></iframe>`}</code>
+            </pre>
             <p>
               Vista previa:{" "}
               <Link href="/embed/esta-noche" target="_blank" rel="noopener">
-                abrir widget
+                esta noche
               </Link>
+              {" · "}
+              <Link href="/embed/categorias" target="_blank" rel="noopener">
+                categorías
+              </Link>
+            </p>
+          </section>
+
+          <section>
+            <h2>Design system — grupos neon (v10+)</h2>
+            <p>
+              Taxonomía visual para filtros y explorador. Tokens por grupo en{" "}
+              <code>app/lib/filter-groups-design.ts</code>.
+            </p>
+            <ul className="qvh-dev-token-list">
+              {MAIN_CATEGORY_GROUPS.map((group) => (
+                <li key={group.id}>
+                  <span
+                    className="qvh-dev-token-swatch"
+                    style={{ background: group.accent }}
+                    aria-hidden
+                  />
+                  <strong>{group.title}</strong> — accent{" "}
+                  <code>{group.accent}</code>, watermark «{group.watermark}»
+                </li>
+              ))}
+            </ul>
+            <p>
+              Explorador interactivo:{" "}
+              <Link href="/explorar">/explorar</Link>. Deep link de filtros:{" "}
+              <code>/?filtros=futbol,tenis</code>.
             </p>
           </section>
 
@@ -96,8 +154,12 @@ export default function DesarrolladoresPage() {
               Especificación completa en{" "}
               <a href="https://github.com/aporkour611/queveohoy/blob/main/docs/API.md">
                 docs/API.md
-              </a>{" "}
-              del repositorio.
+              </a>
+              , roadmaps v11/v12 y{" "}
+              <a href="https://github.com/aporkour611/queveohoy/blob/main/docs/ORGANIZACION.md">
+                organización del equipo
+              </a>
+              .
             </p>
           </section>
         </div>

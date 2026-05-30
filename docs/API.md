@@ -36,6 +36,7 @@ Eventos del día en Madrid.
 | `date` | `YYYY-MM-DD` | Opcional. Por defecto: hoy en Madrid. |
 | `limit` | `1–100` | Opcional. Tamaño de página (default 50). |
 | `cursor` | string | Opcional. Cursor devuelto en `nextCursor`. |
+| `categories` | string | Opcional **(v1.1)**. IDs separados por coma (`futbol`, `formula1`, `tv-reality`, …). |
 
 ### Respuesta 200
 

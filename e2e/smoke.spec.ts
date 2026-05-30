@@ -59,4 +59,51 @@ test.describe("smoke", () => {
     ).toBeVisible()
     await expect(page.getByLabel("Correo electrónico")).toBeVisible()
   })
+
+  test("explorar muestra grupos neon", async ({ page }) => {
+    await page.goto("/explorar")
+    await expect(
+      page.getByRole("heading", { name: "Explorar categorías" })
+    ).toBeVisible()
+    await expect(page.getByText("Grupos principales")).toBeVisible()
+    await expect(
+      page.getByRole("button", { name: "Ver en la agenda" })
+    ).toBeVisible()
+  })
+
+  test("deep link filtros en home", async ({ page }) => {
+    await page.goto("/?filtros=futbol")
+    await expect(page.locator("body")).toBeVisible()
+  })
+
+  test("API health responde ok", async ({ request }) => {
+    const response = await request.get("/api/health")
+    expect(response.ok()).toBeTruthy()
+    const body = await response.json()
+    expect(body.ok).toBe(true)
+    expect(body.version).toBeTruthy()
+  })
+
+  test("API feed-meta responde JSON", async ({ request }) => {
+    const response = await request.get("/api/feed-meta")
+    expect(response.ok()).toBeTruthy()
+    const body = await response.json()
+    expect(body.generatedAt).toBeTruthy()
+    expect(typeof body.eventCount).toBe("number")
+  })
+
+  test("API v1 feed filtra categories", async ({ request }) => {
+    const response = await request.get(
+      "/api/v1/feed?categories=futbol&limit=5"
+    )
+    expect(response.ok()).toBeTruthy()
+    const body = await response.json()
+    expect(body.apiMinorVersion).toBe("1.1")
+    expect(body.categoriesApplied).toContain("futbol")
+  })
+
+  test("widget categorías embed carga", async ({ page }) => {
+    await page.goto("/embed/categorias")
+    await expect(page.getByText("Explorar")).toBeVisible()
+  })
 })

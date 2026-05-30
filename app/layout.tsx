@@ -1,12 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
 import "./globals.css";
+import "./theme.css";
+import "./explorar.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { SupabaseBrowserConfig } from "./components/SupabaseBrowserConfig";
+import { ThemeProvider } from "./components/ThemeProvider";
 import { Analytics } from "./components/Analytics";
 import { SpeedInsights } from "./components/SpeedInsights";
 import { resolveBrowserSupabaseConfig } from "./lib/supabase-config";
 import { rootMetadata, siteUrl } from "./lib/seo";
+import { THEME_STORAGE_KEY } from "./lib/theme";
 
 /** Funciones cerca de Supabase / usuarios en España (menos latencia). */
 export const preferredRegion = ["cdg1", "fra1"];
@@ -43,6 +47,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var p=localStorage.getItem(k)||"system";var r=p==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):p;document.documentElement.dataset.theme=r;document.documentElement.style.colorScheme=r}catch(e){}})();`,
+          }}
+        />
         <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://r2.thesportsdb.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://crests.football-data.org" />
@@ -71,7 +80,9 @@ export default function RootLayout({
           Saltar al contenido
         </a>
         <SupabaseBrowserConfig config={supabaseBrowserConfig} />
-        <CookieConsentRoot>{children}</CookieConsentRoot>
+        <ThemeProvider>
+          <CookieConsentRoot>{children}</CookieConsentRoot>
+        </ThemeProvider>
         <Analytics />
         <SpeedInsights />
       </body>

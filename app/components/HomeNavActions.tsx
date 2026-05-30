@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const NavActionPlaceholder = () => (
@@ -19,6 +20,11 @@ const PushNavButton = dynamic(
 
 const AccountNavLink = dynamic(
   () => import("./AccountNavLink").then((mod) => mod.AccountNavLink),
+  { ssr: false, loading: NavActionPlaceholder }
+);
+
+const ThemeToggle = dynamic(
+  () => import("./ThemeToggle").then((mod) => mod.ThemeToggle),
   { ssr: false, loading: NavActionPlaceholder }
 );
 
@@ -48,6 +54,10 @@ export function HomeNavActions() {
 
   return (
     <div className="fh-nav-links">
+      <Link href="/explorar" className="fh-nav-explorar-link">
+        Explorar
+      </Link>
+      <ThemeToggle />
       <AccountNavLink />
       <PushNavButton />
       <AdminNavLink />

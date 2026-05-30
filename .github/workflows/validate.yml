@@ -51,3 +51,43 @@ jobs:
         env:
           CI: true
           NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+
+  perf-budget:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+
+      - name: Start server
+        run: npm run start &
+        env:
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ || echo "000")
+            echo "Intento $i: home → $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+
+      - name: Lighthouse perf budget (opcional)
+        run: npm run perf:budget
+        env:
+          PERF_URL: http://127.0.0.1:3000

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
+import { FeedFreshness } from "../components/FeedFreshness";
 import { FeedControlsShell } from "../components/FeedControlsShell";
 import { FeedControlsShellBridge } from "../components/FeedControlsShellBridge";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
@@ -116,6 +117,7 @@ export default async function Page() {
                 <TonightForYouSection events={tonightEvents} todayKey={todayKey} />
 
                 <div className="qvh-home-feed-slot">
+                  <FeedFreshness />
                   <FeedControlsShell days={shellDays} />
                   <FeedControlsShellBridge />
                   {initialDay ? (

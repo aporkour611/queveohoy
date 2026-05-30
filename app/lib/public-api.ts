@@ -1,10 +1,13 @@
 import type { EventRow } from "../components/types"
 import { partidoPath } from "./event-slug"
 import { filterEventsForDisplay } from "./event-crests"
+import { ALL_SPORT_IDS } from "./filter-config"
 import { siteUrl } from "./seo"
 import { checkRateLimit, clientIp } from "./rate-limit"
+import { eventMatchesSportFilters } from "./tv-show-category"
 
 export const PUBLIC_API_VERSION = "1"
+export const PUBLIC_API_MINOR_VERSION = "1.1"
 export const PUBLIC_API_RATE_LIMIT = 60
 export const PUBLIC_API_RATE_WINDOW_MS = 60_000
 
@@ -21,12 +24,16 @@ export type PublicApiEvent = {
 
 export type PublicApiFeedResponse = {
   version: typeof PUBLIC_API_VERSION
+  /** Presente cuando se usa filtro `categories` (extensión v1.1). */
+  apiMinorVersion?: typeof PUBLIC_API_MINOR_VERSION
   generatedAt: string
   timezone: string
   date: string
   count: number
   events: PublicApiEvent[]
   nextCursor: string | null
+  /** Categorías aplicadas en la petición (v1.1). */
+  categoriesApplied?: string[]
   attribution: string
   docs: string
 }
@@ -84,14 +91,52 @@ export function enforcePublicApiRateLimit(
   )
 }
 
+export function parsePublicApiCategories(
+  raw: string | null | undefined
+): string[] {
+  if (!raw?.trim()) return []
+
+  const valid = new Set(ALL_SPORT_IDS)
+  return [
+    ...new Set(
+      raw
+        .split(",")
+        .map((part) => part.trim().toLowerCase())
+        .filter((id) => valid.has(id))
+    ),
+  ]
+}
+
+export function filterPublicApiEventsByCategories(
+  events: EventRow[],
+  categories: string[]
+): PublicApiEvent[] {
+  if (categories.length === 0) return toPublicApiEvents(events)
+  return toPublicApiEvents(events).filter((event) => {
+    const row = events.find((e) => e.id === event.id)
+    if (!row) return false
+    return eventMatchesSportFilters(row, categories)
+  })
+}
+
 export function buildPublicApiFeedResponse(
   events: PublicApiEvent[],
   dateKey: string,
   timezone: string,
-  nextCursor: string | null = null
+  nextCursor: string | null = null,
+  categoriesApplied?: string[]
 ): PublicApiFeedResponse {
+  const hasCategories =
+    categoriesApplied != null && categoriesApplied.length > 0
+
   return {
     version: PUBLIC_API_VERSION,
+    ...(hasCategories
+      ? {
+          apiMinorVersion: PUBLIC_API_MINOR_VERSION,
+          categoriesApplied,
+        }
+      : {}),
     generatedAt: new Date().toISOString(),
     timezone,
     date: dateKey,
