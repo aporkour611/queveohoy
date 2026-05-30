@@ -47,6 +47,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://image.tmdb.org" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var p=localStorage.getItem(k)||"system";var r=p==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):p;document.documentElement.dataset.theme=r;document.documentElement.style.colorScheme=r}catch(e){}})();`,
@@ -57,7 +59,6 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: supabaseBootstrapScript }}
           />
         ) : null}
-        <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://crests.football-data.org" />
         <link rel="dns-prefetch" href="https://cdn.myanimelist.net" />
         <link rel="dns-prefetch" href="https://www.thesportsdb.com" />

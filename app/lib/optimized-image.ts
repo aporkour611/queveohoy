@@ -9,6 +9,9 @@ export const CREST_IMAGE_QUALITY = 60;
 /** Destacados above-the-fold: tarjetas ~236–320px de ancho, visual 132px alto. */
 export const SPOTLIGHT_IMAGE_QUALITY = 62;
 
+/** Calidad solo para `<link rel=preload>` /_next/image (menos bytes en camino crítico). */
+export const LCP_PRELOAD_IMAGE_QUALITY = 58;
+
 export const SPOTLIGHT_IMAGE_WIDTH = 320;
 export const SPOTLIGHT_IMAGE_HEIGHT = 132;
 
@@ -84,16 +87,9 @@ function buildNextImagePreloadHref(src: string, width = SPOTLIGHT_IMAGE_WIDTH): 
   const params = new URLSearchParams({
     url: src,
     w: String(width),
-    q: String(SPOTLIGHT_IMAGE_QUALITY),
+    q: String(LCP_PRELOAD_IMAGE_QUALITY),
   });
   return `/_next/image?${params.toString()}`;
-}
-
-function buildSpotlightPreloadSrcSet(src: string): string {
-  const widths = [320, 640];
-  return widths
-    .map((width) => `${buildNextImagePreloadHref(src, width)} ${width}w`)
-    .join(", ");
 }
 
 /** URL servida por `/_next/image` (AVIF/WebP) para `<link rel="preload">`. */
@@ -111,11 +107,8 @@ export function buildSpotlightPreloadEntry(src: string): SpotlightPreloadEntry |
     return href ? { href } : null;
   }
 
-  const href = buildNextImagePreloadHref(safe, SPOTLIGHT_IMAGE_WIDTH);
-
   return {
-    href,
-    imageSrcSet: buildSpotlightPreloadSrcSet(safe),
+    href: buildNextImagePreloadHref(safe, SPOTLIGHT_IMAGE_WIDTH),
     imageSizes: POSTER_SIZES.spotlight,
   };
 }

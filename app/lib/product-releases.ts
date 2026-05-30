@@ -8,6 +8,17 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.0.3",
+    date: "2026-05-31",
+    title: "LCP móvil ≤2s — optimización destacados",
+    highlights: [
+      "TMDB w154 directo en preload y <img> LCP (menos bytes que w185)",
+      "Preload /_next/image solo 320w; calidad preload 58",
+      "Preconnect image.tmdb.org al inicio del <head>",
+      "Champions Week: crestas lazy; trofeo sin priority duplicado",
+    ],
+  },
+  {
     version: "2.0.0",
     date: "2026-05-30",
     title: "Plataforma estable 2.0",

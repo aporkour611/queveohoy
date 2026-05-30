@@ -25,7 +25,9 @@ Estado tras **v2.0.0** (graduación RC 1.9.9 — plataforma estable).
 | LCP | **2.92s** | ≤2.0s |
 | CLS | **0.000** | ≤0.08 |
 
-Siguiente foco: recortar ~900ms LCP (preload/poster destacados).
+**2.0.3:** TMDB w154, preload 320w único, preconnect temprano, crestas CL lazy.
+
+Meta LCP ≤2s — remeasure tras deploy 2.0.3.
 
 ## Cambios 1.0.6 (performance extrema)
 

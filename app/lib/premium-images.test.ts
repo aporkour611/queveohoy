@@ -10,7 +10,7 @@ describe("resolvePrioritySpotlightSrc", () => {
       "https://image.tmdb.org/t/p/w500/abc123.jpg"
     );
     expect(result?.mode).toBe("lcp-direct");
-    expect(result?.src).toContain("/w185/");
+    expect(result?.src).toContain("/w154/");
   });
 
   it("usa next-image para posters locales", () => {

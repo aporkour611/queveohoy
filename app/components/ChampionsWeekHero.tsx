@@ -26,7 +26,7 @@ function StaticCrest({ src, name }: { src?: string | null; name: string }) {
       width={28}
       height={28}
       className="qvh-cl-week-crest"
-      loading="eager"
+      loading="lazy"
       decoding="async"
     />
   );
@@ -69,7 +69,6 @@ export function ChampionsWeekHero({ context }: Props) {
               width={28}
               height={37}
               className="qvh-cl-week-trophy"
-              priority
             />
           </div>
 

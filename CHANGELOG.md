@@ -2,6 +2,14 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.0.3] - 2026-05-31
+
+### Changed
+- Versión del producto: **2.0.3**
+- LCP: TMDB **w154** directo; preload sin srcset 640w; calidad preload 58
+- Preconnect TMDB antes del script de tema; crestas Champions en lazy
+- Un solo `fetchPriority=high` (sin priority en trofeo UCL)
+
 ## [2.0.0] - 2026-05-30 — Plataforma estable
 
 ### Added
