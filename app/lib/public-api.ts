@@ -26,6 +26,7 @@ export type PublicApiFeedResponse = {
   date: string
   count: number
   events: PublicApiEvent[]
+  nextCursor: string | null
   attribution: string
   docs: string
 }
@@ -86,7 +87,8 @@ export function enforcePublicApiRateLimit(
 export function buildPublicApiFeedResponse(
   events: PublicApiEvent[],
   dateKey: string,
-  timezone: string
+  timezone: string,
+  nextCursor: string | null = null
 ): PublicApiFeedResponse {
   return {
     version: PUBLIC_API_VERSION,
@@ -95,7 +97,63 @@ export function buildPublicApiFeedResponse(
     date: dateKey,
     count: events.length,
     events,
+    nextCursor,
     attribution: "Datos de queveohoy.es — cita la fuente al reutilizar.",
     docs: `${siteUrl}/desarrolladores`,
+  }
+}
+
+const DEFAULT_PAGE_SIZE = 50
+const MAX_PAGE_SIZE = 100
+
+export function parsePublicApiPageSize(raw: string | null): number {
+  const parsed = Number.parseInt(raw ?? "", 10)
+  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_PAGE_SIZE
+  return Math.min(parsed, MAX_PAGE_SIZE)
+}
+
+export function encodePublicApiCursor(eventId: number): string {
+  return Buffer.from(String(eventId), "utf8").toString("base64url")
+}
+
+export function decodePublicApiCursor(raw: string | null): number | null {
+  if (!raw?.trim()) return null
+  try {
+    const decoded = Buffer.from(raw, "base64url").toString("utf8")
+    const id = Number.parseInt(decoded, 10)
+    return Number.isFinite(id) && id > 0 ? id : null
+  } catch {
+    return null
+  }
+}
+
+export function paginatePublicApiEvents(
+  events: PublicApiEvent[],
+  options: { limit?: number; cursor?: string | null } = {}
+): { events: PublicApiEvent[]; nextCursor: string | null } {
+  const limit = options.limit ?? DEFAULT_PAGE_SIZE
+  const afterId = decodePublicApiCursor(options.cursor ?? null)
+  const sorted = [...events].sort((a, b) => {
+    const dateCmp = a.date.localeCompare(b.date)
+    if (dateCmp !== 0) return dateCmp
+    const timeCmp = (a.time ?? "").localeCompare(b.time ?? "")
+    if (timeCmp !== 0) return timeCmp
+    return a.id - b.id
+  })
+
+  const startIndex =
+    afterId == null
+      ? 0
+      : sorted.findIndex((event) => event.id === afterId) + 1
+
+  const slice = sorted.slice(Math.max(0, startIndex), Math.max(0, startIndex) + limit)
+  const last = slice[slice.length - 1]
+  const hasMore =
+    slice.length === limit &&
+    sorted.length > Math.max(0, startIndex) + slice.length
+
+  return {
+    events: slice,
+    nextCursor: hasMore && last ? encodePublicApiCursor(last.id) : null,
   }
 }

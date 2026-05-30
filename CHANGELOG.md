@@ -2,6 +2,25 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [4.0.0] - 2026-05-30
+
+### Added
+- Portal de cuenta v2 (`/cuenta`) con navegación lateral: Favoritos, Plataformas, Avisos, Cuenta
+- Tabla `user_preferences` y API `PATCH /api/cuenta/preferences` (plataformas, prime time)
+- `GET /api/v1/search?q=` con paginación y rate limit compartido con API pública
+- Paginación `limit` + `cursor` en `GET /api/v1/feed`
+- Roadmap estratégico `docs/ROADMAP-4.0.md`
+
+### Changed
+- Búsqueda en agenda: coincidencia por tokens (todas las palabras)
+- Final Champions PSG-Arsenal: fallback editorial 30 mayo 18:00 h Madrid
+- Hover Champions Week: palpitación solo en el escudo o elemento bajo el cursor
+- Versión del producto: `4.0.0`
+
+### Fixed
+- Warning lint `react-hooks/exhaustive-deps` en `HomePage`
+- Imports no usados en scripts de release
+
 ## [2.0.0] - 2026-09-01
 
 ### Added

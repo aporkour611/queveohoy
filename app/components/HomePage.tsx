@@ -622,7 +622,7 @@ export function HomeFeed({
       window.removeEventListener("resize", handleResize);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [showInitialLoading, displayDays, weekView, invalidateScrollAnchorOffset]);
+  }, [showInitialLoading, displayDays, weekView]);
 
   const openWeekView = useCallback(() => {
     setSsrDayHeaderVisible(false);

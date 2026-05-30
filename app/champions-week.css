@@ -169,6 +169,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  cursor: default;
   background: radial-gradient(circle at 50% 30%, rgba(201, 162, 39, 0.22), rgba(10, 6, 72, 0.6));
   border: 1px solid rgba(201, 162, 39, 0.28);
   box-shadow: 0 0 10px rgba(201, 162, 39, 0.15);
@@ -261,6 +262,7 @@
 
 .qvh-cl-week-crest {
   flex-shrink: 0;
+  cursor: default;
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 

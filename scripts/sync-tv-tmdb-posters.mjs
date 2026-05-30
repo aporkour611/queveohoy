@@ -2,7 +2,7 @@
  * Obtiene poster_path oficial de TMDB para programas flagship.
  * Uso: node scripts/sync-tv-tmdb-posters.mjs
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 /** ID TMDB (tv) por programa — España / emisión actual cuando aplica. */

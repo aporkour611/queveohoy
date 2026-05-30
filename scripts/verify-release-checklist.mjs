@@ -2,7 +2,7 @@
  * Checklist de release v1.0 — verifica peticiones del usuario en código.
  * Uso: node scripts/verify-release-checklist.mjs
  */
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.cwd();

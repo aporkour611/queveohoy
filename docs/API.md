@@ -3,7 +3,7 @@
 API read-only para integrar la agenda de TV, streaming y deportes en España.
 
 **Base URL:** `https://queveohoy.es`  
-**Versión:** `1` (estable desde v2.0.0 del producto)  
+**Versión:** `1` (estable; ampliada en v4.0.0 del producto)  
 **Zona horaria:** `Europe/Madrid` (península y Baleares)
 
 ---
@@ -34,6 +34,8 @@ Eventos del día en Madrid.
 | Parámetro | Tipo | Descripción |
 |-----------|------|-------------|
 | `date` | `YYYY-MM-DD` | Opcional. Por defecto: hoy en Madrid. |
+| `limit` | `1–100` | Opcional. Tamaño de página (default 50). |
+| `cursor` | string | Opcional. Cursor devuelto en `nextCursor`. |
 
 ### Respuesta 200
 
@@ -44,6 +46,7 @@ Eventos del día en Madrid.
   "timezone": "Europe/Madrid",
   "date": "2026-05-30",
   "count": 42,
+  "nextCursor": "MTIz",
   "events": [
     {
       "id": 12345,
@@ -67,6 +70,27 @@ Eventos del día en Madrid.
 |--------|-------------|
 | 429 | Rate limit |
 | 502 | Error temporal al cargar datos |
+
+---
+
+## `GET /api/v1/search`
+
+Búsqueda de eventos por texto (equipos, competición, plataforma). Coincidencia por tokens: todas las palabras deben aparecer.
+
+### Query
+
+| Parámetro | Tipo | Descripción |
+|-----------|------|-------------|
+| `q` | string | Obligatorio, mínimo 2 caracteres. |
+| `date` | `YYYY-MM-DD` | Opcional. Filtra por fecha. |
+| `limit` | `1–100` | Opcional. Default 50. |
+| `cursor` | string | Paginación. |
+
+### Ejemplo
+
+```bash
+curl "https://queveohoy.es/api/v1/search?q=real%20madrid&limit=10"
+```
 
 ---
 

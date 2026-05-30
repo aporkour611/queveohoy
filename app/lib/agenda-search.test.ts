@@ -25,4 +25,9 @@ describe("agenda-search", () => {
   it("sin coincidencias devuelve lista vacía", () => {
     expect(filterEventsByAgendaQuery([sample], "tenis")).toEqual([]);
   });
+
+  it("requiere todos los tokens en búsqueda multi-palabra", () => {
+    expect(eventMatchesAgendaQuery(sample, "real barcelona")).toBe(true);
+    expect(eventMatchesAgendaQuery(sample, "real tenis")).toBe(false);
+  });
 });

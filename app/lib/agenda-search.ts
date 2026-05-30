@@ -4,12 +4,18 @@ export function normalizeAgendaQuery(raw: string): string {
   return raw.trim().toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
 }
 
+function agendaQueryTokens(rawQuery: string): string[] {
+  const query = normalizeAgendaQuery(rawQuery);
+  if (!query) return [];
+  return query.split(/\s+/).filter(Boolean);
+}
+
 export function eventMatchesAgendaQuery(
   event: EventRow,
   rawQuery: string
 ): boolean {
-  const query = normalizeAgendaQuery(rawQuery);
-  if (!query) return true;
+  const tokens = agendaQueryTokens(rawQuery);
+  if (!tokens.length) return true;
 
   const haystack = normalizeAgendaQuery(
     [
@@ -24,7 +30,7 @@ export function eventMatchesAgendaQuery(
       .join(" ")
   );
 
-  return haystack.includes(query);
+  return tokens.every((token) => haystack.includes(token));
 }
 
 export function filterEventsByAgendaQuery(

@@ -8,6 +8,18 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "4.0.0",
+    date: "2026-05-30",
+    title: "Universo Queveo — web",
+    highlights: [
+      "Portal de cuenta v2 con menú lateral: favoritos, plataformas, avisos y seguridad",
+      "Mis plataformas: guarda dónde ves (Movistar+, DAZN, Netflix…) en tu perfil",
+      "API v1: paginación con cursor en /api/v1/feed y búsqueda en /api/v1/search",
+      "Búsqueda en agenda por tokens (multi-palabra) y final Champions PSG-Arsenal 30 may 18:00",
+      "Animaciones hover individuales en escudos del hero Champions Week",
+    ],
+  },
+  {
     version: "2.0.0",
     date: "2026-09-01",
     title: "Plataforma — API, widget y calidad",

@@ -3,7 +3,10 @@ import type { EventRow } from "../components/types"
 import { pickTonightEvents } from "./embed-tonight"
 import {
   buildPublicApiFeedResponse,
+  decodePublicApiCursor,
+  encodePublicApiCursor,
   filterPublicApiEventsByDate,
+  paginatePublicApiEvents,
   toPublicApiEvent,
   toPublicApiEvents,
 } from "./public-api"
@@ -41,11 +44,36 @@ describe("public-api", () => {
     const body = buildPublicApiFeedResponse(
       publicEvents,
       "2026-05-30",
-      "Europe/Madrid"
+      "Europe/Madrid",
+      null
     )
     expect(body.version).toBe("1")
     expect(body.count).toBe(1)
+    expect(body.nextCursor).toBeNull()
     expect(body.docs).toContain("/desarrolladores")
+  })
+
+  it("paginates feed events with cursor", () => {
+    const events = [1, 2, 3, 4, 5].map((id) => ({
+      ...sampleEvent,
+      id,
+      time: `21:0${id}`,
+    }))
+    const publicEvents = toPublicApiEvents(events)
+    const first = paginatePublicApiEvents(publicEvents, { limit: 2 })
+    expect(first.events).toHaveLength(2)
+    expect(first.nextCursor).toBeTruthy()
+
+    const second = paginatePublicApiEvents(publicEvents, {
+      limit: 2,
+      cursor: first.nextCursor,
+    })
+    expect(second.events[0]?.id).toBe(3)
+  })
+
+  it("roundtrips cursor encoding", () => {
+    const cursor = encodePublicApiCursor(42)
+    expect(decodePublicApiCursor(cursor)).toBe(42)
   })
 })
 
