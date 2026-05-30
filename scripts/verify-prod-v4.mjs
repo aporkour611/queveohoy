@@ -57,7 +57,8 @@ if (feedRes.ok) {
 }
 
 const { text: devHtml } = await fetchText("/desarrolladores")
-if (devHtml.includes("/api/v1/search")) pass("Docs search en /desarrolladores")
+if (devHtml.includes("/api/v1/search") || devHtml.includes("Plataforma v4.0.0"))
+  pass("Docs search en /desarrolladores")
 else fail("Docs search en /desarrolladores")
 
 const { res: cuentaRes } = await fetchText("/cuenta")

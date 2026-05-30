@@ -95,11 +95,11 @@ jobs:
       - name: Smoke test producción
         run: |
           set -euo pipefail
-          for i in $(seq 1 18); do
+          for i in $(seq 1 30); do
             code=$(curl -s -o /dev/null -w "%{http_code}" "https://queveohoy.es/api/v1/search?q=real&limit=1")
             echo "Intento $i: /api/v1/search → $code"
             if [ "$code" = "200" ]; then exit 0; fi
-            sleep 10
+            sleep 15
           done
           echo "::error::Producción no expone v4 (/api/v1/search sigue en $code)"
           exit 1

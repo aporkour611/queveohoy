@@ -16,6 +16,9 @@ export const metadata: Metadata = pageMetadata(
   ["api queveohoy", "widget tv", "agenda deportiva api"]
 )
 
+/** Regenerar tras cada deploy (docs API v4). */
+export const revalidate = 0
+
 export default function DesarrolladoresPage() {
   const feedExample = `${siteUrl}/api/v1/feed`
   const embedExample = `${siteUrl}/embed/esta-noche`
