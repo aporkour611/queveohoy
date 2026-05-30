@@ -41,7 +41,7 @@ jobs:
   deploy:
     needs: validate
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
 
@@ -75,7 +75,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
         run: |
           set -euo pipefail
-          if ! timeout 15m vercel deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}" 2>&1 | tee /tmp/vercel-deploy.log; then
+          if ! vercel deploy --prebuilt --prod --no-wait --token="${{ secrets.VERCEL_TOKEN }}" 2>&1 | tee /tmp/vercel-deploy.log; then
             echo "::error::Vercel deploy failed"
             if grep -q "api-deployments-free-per-day" /tmp/vercel-deploy.log; then
               echo "::warning::Cuota diaria de deploys de Vercel agotada (100/día). Reintenta mañana o redeploy manual desde el dashboard."
@@ -88,6 +88,21 @@ jobs:
           fi
           echo "deployment_url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed to $url"
+          if [ -n "$url" ]; then
+            vercel inspect "$url" --wait --timeout 900 --token="${{ secrets.VERCEL_TOKEN }}"
+          fi
+
+      - name: Smoke test producción
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 18); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "https://queveohoy.es/api/v1/search?q=real&limit=1")
+            echo "Intento $i: /api/v1/search → $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 10
+          done
+          echo "::error::Producción no expone v4 (/api/v1/search sigue en $code)"
+          exit 1
 
       - name: Deployment summary
         run: echo "### Production ${{ steps.deploy.outputs.deployment_url }}" >> "$GITHUB_STEP_SUMMARY"
