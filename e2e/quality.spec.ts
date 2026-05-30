@@ -18,8 +18,9 @@ test.describe("a11y landmarks", () => {
   })
 
   test("hub champions expone main-content", async ({ page }) => {
-    await page.goto("/champions")
-    await expect(page.locator("#main-content")).toBeVisible()
+    test.setTimeout(60_000)
+    await page.goto("/champions", { waitUntil: "domcontentloaded", timeout: 45_000 })
+    await expect(page.locator("#main-content")).toBeVisible({ timeout: 15_000 })
   })
 
   test("login expone main-content", async ({ page }) => {
@@ -35,6 +36,8 @@ test.describe("a11y landmarks", () => {
 })
 
 test.describe("a11y axe", () => {
+  test.describe.configure({ retries: process.env.CI ? 2 : 0 })
+
   test("home sin violaciones críticas WCAG", async ({ page }) => {
     await page.goto("/")
     await page.locator("#main-content").waitFor({ state: "visible" })

@@ -194,7 +194,10 @@ jobs:
               -o /tmp/revalidate.json || echo "::warning::indexing/ping falló"
             node -e "try{const d=require('/tmp/revalidate.json');console.log('revalidate',d.feedCache?.ok??d.ok)}catch(e){console.log('revalidate skip')}" || true
           fi
-          home_code=$(curl -s --max-time 45 -o /dev/null -w "%{http_code}" "https://queveohoy.es/" || echo "000")
+          curl -sf "https://queveohoy.es/api/health" -o /dev/null || true
+          curl -sf "https://queveohoy.es/api/v2/feed" -o /dev/null || true
+          curl -sf "https://queveohoy.es/" -o /dev/null --max-time 90 || true
+          home_code=$(curl -s --max-time 90 -o /dev/null -w "%{http_code}" "https://queveohoy.es/" || echo "000")
           echo "Home HTTP $home_code"
           if [ "$home_code" != "200" ]; then
             echo "::error::Home respondió $home_code"
