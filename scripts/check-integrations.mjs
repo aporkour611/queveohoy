@@ -1,5 +1,5 @@
 /**
- * Comprueba integraciones en producción vía GET /api/health?detailed=1
+ * Comprueba integraciones en producción vía GET /api/health (Bearer CRON_SECRET)
  * Uso: npm run check:integrations
  * Opcional: CRON_SECRET en entorno para mapa de integraciones
  */
@@ -26,9 +26,7 @@ const headers = CRON_SECRET
   ? { Authorization: `Bearer ${CRON_SECRET}` }
   : undefined
 
-const url = CRON_SECRET
-  ? `${BASE}/api/health?detailed=1`
-  : `${BASE}/api/health`
+const url = `${BASE}/api/health`
 
 const res = await fetch(url, { cache: "no-store", headers })
 if (!res.ok) {

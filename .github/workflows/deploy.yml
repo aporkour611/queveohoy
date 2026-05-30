@@ -69,6 +69,12 @@ jobs:
         env:
           CI: true
           NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+          # Sin credenciales reales: health no debe 503 por feed vacío en CI
+          NEXT_PUBLIC_SUPABASE_URL: ""
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ""
+          SUPABASE_URL: ""
+          SUPABASE_ANON_KEY: ""
+          SUPABASE_SERVICE_ROLE_KEY: ""
 
   deploy:
     needs: [validate, e2e]

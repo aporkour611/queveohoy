@@ -21,7 +21,7 @@ const { res: homeRes, text: homeHtml } = await fetchText("/");
 if (homeRes.ok) pass("HTTP 200 home");
 else fail("HTTP 200 home", String(homeRes.status));
 
-if (homeHtml.includes("v1.0.1") || homeHtml.includes("1.0.1") || homeHtml.includes("v1.0.0") || homeHtml.includes("1.0.0"))
+if (homeHtml.includes("1.0.3") || homeHtml.includes("1.0.2") || homeHtml.includes("1.0.1") || homeHtml.includes("1.0.0"))
   pass("Footer versión 1.0.x");
 else fail("Footer versión 1.0.x", "Aún no desplegado o caché antigua");
 
@@ -32,9 +32,13 @@ const { res: healthRes, text: healthText } = await fetchText("/api/health");
 if (healthRes.ok) pass("GET /api/health");
 else fail("GET /api/health", String(healthRes.status));
 
-if (healthText.includes("1.0.0") || healthText.includes('"version"'))
+if (healthText.includes("1.0.3") || healthText.includes("1.0.2") || healthText.includes("1.0.1") || healthText.includes('"version"'))
   pass("Health incluye versión");
 else fail("Health incluye versión");
+
+if (!healthText.includes('"integrations"'))
+  pass("Health público sin recon de integraciones");
+else fail("Health público sin recon de integraciones", "Expone integrations sin auth");
 
 const { res: v2Res, text: v2Text } = await fetchText("/api/v2/feed");
 if (v2Res.ok) pass("GET /api/v2/feed");

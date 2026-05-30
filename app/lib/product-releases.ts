@@ -8,6 +8,27 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "1.0.3",
+    date: "2026-05-30",
+    title: "Deploy gate + seguridad health",
+    highlights: [
+      "Health: integraciones solo con Bearer CRON_SECRET (sin ?detailed=1 público)",
+      "E2E en CI sin credenciales Supabase (fix deploy #150)",
+      "Rate limit en /api/home-feed; secretos eliminados de docs",
+      "verify-prod: health sin recon público de integraciones",
+    ],
+  },
+  {
+    version: "1.0.2",
+    date: "2026-05-30",
+    title: "Scorecard hardening",
+    highlights: [
+      "HomeFaq, guías JSON-LD, /explorar en sitemap, robots /cuenta /embed",
+      "PageMain global, health probes DB+feed, rate limit APIs",
+      "E2E en deploy, LHCI mobile, coverage CI",
+    ],
+  },
+  {
     version: "1.0.1",
     date: "2026-05-30",
     title: "Excelencia operativa — scorecard 10",

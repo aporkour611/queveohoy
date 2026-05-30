@@ -1,75 +1,74 @@
 # Solo tú puedes hacer esto (el resto ya está hecho)
 
-## Estado actual (comprobado)
+## Estado actual
 
-- Web **https://queveohoy.es** → OK, 161 eventos, versión 1.0.1
-- Falta **1 variable** en Vercel: `ADMIN_SECRET` (panel /admin)
-- Lo demás opcional: Upstash, push, CodeRabbit, Snyk
+- Web **https://queveohoy.es** — producción activa
+- Variables críticas en Vercel: Supabase, `CRON_SECRET`, `ADMIN_SECRET`
+- Opcional: Upstash, push VAPID, OpenAI
 
 ---
 
-## PASO ÚNICO OBLIGATORIO (3 minutos)
+## PASO ÚNICO OBLIGATORIO (si falta ADMIN_SECRET)
 
 ### Opción A — Importar todo de una vez (recomendado)
 
-1. En tu PC, en la carpeta del proyecto, ejecuta (o pide a alguien):
+1. En tu PC, en la carpeta del proyecto:
 
 ```bash
 node scripts/generate-vercel-import.mjs
 ```
 
-2. Se crea el archivo **`.env.production.import`** en la carpeta del proyecto.
+2. Se crea **`.env.production.import`** (solo si tienes `.env.local` con las claves).
 
-3. Abre **https://vercel.com** → proyecto **queveohoy** → **Settings** → **Environment Variables**
+3. **https://vercel.com** → proyecto **queveohoy** → **Settings** → **Environment Variables**
 
-4. Clic en **Import .env** (o **Import**)
+4. **Import .env** → selecciona `.env.production.import` → **Production** → **Save**
 
-5. Selecciona el archivo **`.env.production.import`**
-
-6. Environment: **Production** → **Save**
-
-7. **Deployments** → **⋯** → **Redeploy** → sin caché
+5. Haz un **nuevo deployment** (push a `main` o workflow Deploy Production). Un redeploy del dashboard **no** aplica env vars nuevas.
 
 ### Opción B — Solo la que falta
 
 1. Vercel → **Environment Variables** → **Add New**
 2. Key: `ADMIN_SECRET`
-3. Value:
+3. Value: genera uno nuevo (no reutilices valores de documentación):
 
-```
-wWJGizM3rGrsYF32YEEbTHKCnUieKEeFtNSoWXPABGE=
+```powershell
+# PowerShell
+[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }))
 ```
 
-4. **Production** → **Save** → **Redeploy**
+```bash
+# macOS/Linux
+openssl rand -base64 32
+```
+
+4. **Production** → **Save** → nuevo deployment (push a main)
 
 **Login admin:** https://queveohoy.es/admin/login con esa contraseña.
 
-### Opción C — GitHub Actions (si prefieres no entrar en Vercel)
+### Opción C — GitHub Actions
 
 1. GitHub → **Settings** → **Secrets and variables** → **Actions**
-2. Añade secret `ADMIN_SECRET` con el mismo valor de arriba (ya debes tener `VERCEL_TOKEN`)
-3. GitHub → **Actions** → **Sync Vercel env (Production)** → **Run workflow**
-4. Espera **Deploy Production** (se dispara solo al push, o redeploy manual en Vercel)
+2. Añade secret `ADMIN_SECRET` con el valor generado arriba
+3. Push a `main` para disparar **Deploy Production**
 
 ---
 
 ## OPCIONAL — cuando quieras
 
-### CodeRabbit (reviews en GitHub)
-
-1. Abre: https://github.com/apps/coderabbitai/installations/new
-2. **Install** → elige **aporkour611/queveohoy**
-
-### Upstash (rate limit pro)
+### Upstash (rate limit distribuido)
 
 1. https://console.upstash.com → Create Redis
 2. REST API → copia URL y TOKEN
-3. Vercel → añade `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN` → Redeploy
+3. Vercel → `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN` → nuevo deploy
 
 ---
 
-## Comprobar después del redeploy
+## Comprobar después del deploy
 
-Abre: https://queveohoy.es/api/health  
+```bash
+CRON_SECRET=... npm run check:integrations
+npm run verify:prod:1.0
+```
 
-Debe salir `"adminSecret": true` dentro de `integrations`.
+Health público (`/api/health`) no expone integraciones. Con `CRON_SECRET` el script las lista.

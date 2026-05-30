@@ -1,30 +1,35 @@
 # Scorecard objetivo 10/10
 
-Estado tras hardening v1.0.2 (auditoría exigente).
+Estado honesto tras auditoría ultra-exigente — **v1.0.3**.
 
-| Dimensión | Meta | Estado | Instrumentación |
-|-----------|------|--------|-----------------|
-| Arquitectura | 10 | ✅ | Cron tipado (`lib/cron/types.ts`); handler API unificado; logger en cron |
-| Seguridad | 10 | ✅ | Rate limit distribuido en APIs; push endpoint allowlist; health sin recon |
-| Rendimiento | 10 | ✅ | SSR crítico; LHCI mobile alineado con `perf:budget`; gate en PR |
-| Mantenibilidad | 10 | ✅ | PageMain compartido; Dependabot; CodeRabbit config |
-| Testing | 10 | ✅ | 224+ Vitest; E2E en deploy; coverage en CI |
-| Ops/CI | 10 | ✅ | Deploy + health probes + check-integrations hard fail |
-| SEO | 10 | ✅ | HomeFaq visible; guías JSON-LD; `/explorar` en sitemap |
-| A11y | 10 | ✅ | `#main-content` global; skip link; nav aria-label |
+| Dimensión | Meta | Nota real | Estado | Instrumentación |
+|-----------|------|-----------|--------|-----------------|
+| Arquitectura | 10 | 7.0 | 🟡 | Cron monolítico; tipos cron listos |
+| Seguridad | 10 | 7.5 | 🟡 | Health sin recon; Upstash opcional |
+| Rendimiento | 10 | 5.5 | 🔴 | PartidoPage client; LHCI no bloqueante |
+| Mantenibilidad | 10 | 7.5 | 🟡 | PageMain; logger parcial |
+| Testing | 10 | 8.0 | 🟢 | 227+ Vitest; E2E deploy |
+| Ops/CI | 10 | 7.5 | 🟡 | Gates deploy; branch protection manual |
+| SEO | 10 | 7.5 | 🟡 | FAQ home; hubs sin OG dinámico |
+| A11y | 10 | 6.5 | 🟡 | main-content global; sin axe gate |
+
+**Global: ~7.2/10** — Ver [AUDITORIA-ULTRA-1.0.3.md](./AUDITORIA-ULTRA-1.0.3.md)
+
+## Cambios 1.0.3 (deploy)
+
+- Health: integraciones solo con `Authorization: Bearer CRON_SECRET`
+- E2E CI: sin env Supabase (fix deploy #150)
+- Rate limit `/api/home-feed`
+- Secretos eliminados de `docs/PASOS-SOLO-TU.md`
 
 ## Activar en GitHub (secrets opcionales)
 
 | Secret | Herramienta |
 |--------|-------------|
-| `SNYK_TOKEN` | [snyk.io](https://snyk.io) — escaneo dependencias |
-| `SONAR_TOKEN` | [SonarCloud](https://sonarcloud.io) — calidad código |
+| `SNYK_TOKEN` | [snyk.io](https://snyk.io) |
+| `SONAR_TOKEN` | [SonarCloud](https://sonarcloud.io) |
 | `LHCI_GITHUB_APP_TOKEN` | Lighthouse CI comments en PR |
 | `CRON_SECRET` | Deploy smoke + health detallado |
-
-## Activar CodeRabbit
-
-Instalar [CodeRabbit GitHub App](https://github.com/apps/coderabbit) — lee `.coderabbit.yaml`.
 
 ## Post-deploy
 
@@ -34,8 +39,8 @@ npm run verify:prod:1.0
 npm run perf:budget
 ```
 
-## Configuración manual (solo tú)
+## Configuración manual
 
-**Guía copy-paste:** [docs/SETUP-MANUAL-TU.md](./SETUP-MANUAL-TU.md)
+**Guía:** [docs/PASOS-SOLO-TU.md](./PASOS-SOLO-TU.md)
 
-**Opcional scorecard+:** Upstash (`UPSTASH_REDIS_REST_*`), OpenAI, VAPID push.
+**Urgente si usaste ADMIN_SECRET de docs antiguos:** rotar en Vercel + nuevo deploy.

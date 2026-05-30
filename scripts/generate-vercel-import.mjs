@@ -9,8 +9,7 @@ const root = resolve(import.meta.dirname, "..")
 const localPath = resolve(root, ".env.local")
 const outPath = resolve(root, ".env.production.import")
 
-const ADMIN_DEFAULT = "wWJGizM3rGrsYF32YEEbTHKCnUieKEeFtNSoWXPABGE="
-const INDEXNOW = "8f3c2e1d4b5a6978queveohoy"
+const INDEXNOW = local.get("INDEXNOW_KEY") ?? ""
 
 function parseEnv(text) {
   const map = new Map()
@@ -45,13 +44,13 @@ const lines = [
   `SUPABASE_URL=${url}`,
   `SUPABASE_ANON_KEY=${anon}`,
   `SUPABASE_SERVICE_ROLE_KEY=${local.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""}`,
-  `ADMIN_SECRET=${local.get("ADMIN_SECRET") ?? ADMIN_DEFAULT}`,
+  `ADMIN_SECRET=${local.get("ADMIN_SECRET") ?? ""}`,
   `CRON_SECRET=${local.get("CRON_SECRET") ?? ""}`,
   `FOOTBALL_DATA_API_KEY=${local.get("FOOTBALL_DATA_API_KEY") ?? ""}`,
   `TMDB_API_KEY=${local.get("TMDB_API_KEY") ?? ""}`,
   `PANDASCORE_API_KEY=${local.get("PANDASCORE_API_KEY") ?? ""}`,
   `BALLDONTLIE_API_KEY=${local.get("BALLDONTLIE_API_KEY") ?? ""}`,
-  `INDEXNOW_KEY=${local.get("INDEXNOW_KEY") ?? INDEXNOW}`,
+  `INDEXNOW_KEY=${INDEXNOW}`,
 ]
 
 writeFileSync(outPath, `${lines.join("\n")}\n`, "utf8")

@@ -14,10 +14,9 @@ import { isSupabaseConfigured } from "@/app/lib/supabase-config"
 
 export const dynamic = "force-dynamic"
 
+/** Integraciones solo con Bearer CRON_SECRET (nunca query params públicos). */
 function isDetailedHealthRequest(request: Request): boolean {
-  if (isCronAuthorized(request)) return true
-  const url = new URL(request.url)
-  return url.searchParams.get("detailed") === "1"
+  return isCronAuthorized(request)
 }
 
 export async function GET(request: Request) {

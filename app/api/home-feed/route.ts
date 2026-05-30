@@ -1,8 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { FEED_REVALIDATE_SECONDS } from "@/app/lib/cache-config";
+import {
+  enforceApiRateLimit,
+  rateLimitResponse,
+} from "@/app/lib/api-rate-limit";
 import { fetchHomeFeedEvents } from "@/app/lib/events-feed-server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const rate = await enforceApiRateLimit(request, "home-feed");
+  if (!rate.ok) return rateLimitResponse(rate.retryAfterSec);
   const { events, error } = await fetchHomeFeedEvents();
 
   if (error) {
