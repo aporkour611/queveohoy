@@ -44,6 +44,13 @@ wWJGizM3rGrsYF32YEEbTHKCnUieKEeFtNSoWXPABGE=
 
 **Login admin:** https://queveohoy.es/admin/login con esa contraseña.
 
+### Opción C — GitHub Actions (si prefieres no entrar en Vercel)
+
+1. GitHub → **Settings** → **Secrets and variables** → **Actions**
+2. Añade secret `ADMIN_SECRET` con el mismo valor de arriba (ya debes tener `VERCEL_TOKEN`)
+3. GitHub → **Actions** → **Sync Vercel env (Production)** → **Run workflow**
+4. Espera **Deploy Production** (se dispara solo al push, o redeploy manual en Vercel)
+
 ---
 
 ## OPCIONAL — cuando quieras

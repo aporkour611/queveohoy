@@ -71,8 +71,8 @@ jobs:
             exit 1
           fi
           missing=0
-          for key in NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
-            if ! grep -q "^${key}=" "$env_file"; then
+          for key in NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY ADMIN_SECRET; do
+            if ! grep -qE "^${key}=.+$" "$env_file"; then
               echo "::warning::Falta $key en el entorno de producción de Vercel"
               missing=$((missing + 1))
             fi
@@ -158,6 +158,8 @@ jobs:
           fi
           echo "Verificación lanzamiento 1.0…"
           node scripts/verify-prod-1.0.mjs || echo "::warning::verify-prod-1.0 falló (caché CDN antigua)"
+          echo "Integraciones en producción…"
+          node scripts/check-integrations.mjs || echo "::warning::Falta ADMIN_SECRET u otra variable obligatoria en Vercel Production"
           if [ "$events" = "0" ]; then
             echo "Ejecutando cron para repoblar eventos…"
             vercel env run --environment=production -- bash -c \

@@ -1,0 +1,44 @@
+name: Sync Vercel env (Production)
+
+# Sincroniza ADMIN_SECRET desde GitHub Secrets → Vercel Production.
+# Útil si la variable está en GitHub pero no llegó a Vercel.
+on:
+  workflow_dispatch:
+
+env:
+  VERCEL_ORG_ID: team_4aqwN7f100zOxDc6ABydAWAq
+  VERCEL_PROJECT_ID: prj_GRwiJU36eEslistBVxWnBgflIqe7
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Sync ADMIN_SECRET to Vercel Production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VERCEL_TOKEN:-}" ]; then
+            echo "::error::Falta GitHub secret VERCEL_TOKEN"
+            exit 1
+          fi
+          if [ -z "${ADMIN_SECRET:-}" ]; then
+            echo "::error::Falta GitHub secret ADMIN_SECRET"
+            exit 1
+          fi
+          vercel link --yes --project="$VERCEL_PROJECT_ID" --scope="$VERCEL_ORG_ID" --token="$VERCEL_TOKEN"
+          printf '%s' "$ADMIN_SECRET" | vercel env add ADMIN_SECRET production --force --token="$VERCEL_TOKEN" 2>/dev/null \
+            || printf '%s' "$ADMIN_SECRET" | vercel env add ADMIN_SECRET production --token="$VERCEL_TOKEN"
+          echo "✓ ADMIN_SECRET sincronizado en Vercel Production"
+          echo "Dispara Deploy Production (push vacío o workflow_dispatch) para aplicar en runtime."
