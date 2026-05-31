@@ -10,36 +10,71 @@ export type PartnerIdentity = {
   label: string
 }
 
+/** Config interna (incluye secreto y webhook opcional). */
+export type PartnerConfig = PartnerIdentity & {
+  secret: string
+  webhookUrl?: string
+}
+
 const DEFAULT_PARTNER_RATE_LIMIT = 300
 
-function parsePartnerApiKeys(): Map<string, PartnerIdentity> {
-  const map = new Map<string, PartnerIdentity>()
+export function partnerIdFromLabel(label: string): string {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 32) || "partner"
+}
+
+/**
+ * PARTNER_API_KEYS: `secreto:Etiqueta` o `secreto:Etiqueta|https://webhook`
+ * (pipe separa URL de webhook; no usar pipe en la etiqueta).
+ */
+function parsePartnerConfigs(): Map<string, PartnerConfig> {
+  const map = new Map<string, PartnerConfig>()
   const raw = process.env.PARTNER_API_KEYS?.trim()
   if (!raw) return map
 
   for (const entry of raw.split(",")) {
     const piece = entry.trim()
     if (!piece) continue
-    const colon = piece.indexOf(":")
-    const secret = (colon >= 0 ? piece.slice(0, colon) : piece).trim()
-    const label = (colon >= 0 ? piece.slice(colon + 1) : "partner").trim()
+
+    const pipe = piece.indexOf("|")
+    const keyPart = (pipe >= 0 ? piece.slice(0, pipe) : piece).trim()
+    const webhookUrl =
+      pipe >= 0 ? piece.slice(pipe + 1).trim() : undefined
+
+    const colon = keyPart.indexOf(":")
+    const secret = (colon >= 0 ? keyPart.slice(0, colon) : keyPart).trim()
+    const label = (colon >= 0 ? keyPart.slice(colon + 1) : "partner").trim()
     if (!secret) continue
-    const id = label.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 32) || "partner"
-    map.set(secret, { id, label: label || id })
+
+    const id = partnerIdFromLabel(label || "partner")
+    const config: PartnerConfig = {
+      id,
+      label: label || id,
+      secret,
+      ...(webhookUrl?.startsWith("http") ? { webhookUrl } : {}),
+    }
+    map.set(secret, config)
   }
 
   return map
 }
 
-let cachedKeys: Map<string, PartnerIdentity> | null = null
+let cachedKeys: Map<string, PartnerConfig> | null = null
 
-function partnerKeyMap(): Map<string, PartnerIdentity> {
-  if (!cachedKeys) cachedKeys = parsePartnerApiKeys()
+function partnerConfigMap(): Map<string, PartnerConfig> {
+  if (!cachedKeys) cachedKeys = parsePartnerConfigs()
   return cachedKeys
 }
 
+export function listPartnerConfigsWithWebhook(): PartnerConfig[] {
+  return [...partnerConfigMap().values()].filter((p) => Boolean(p.webhookUrl))
+}
+
+export function isPartnerWebhooksConfigured(): boolean {
+  return listPartnerConfigsWithWebhook().length > 0
+}
+
 export function isPartnerApiConfigured(): boolean {
-  return partnerKeyMap().size > 0
+  return partnerConfigMap().size > 0
 }
 
 export function extractApiKeyFromRequest(request: Request): string | null {
@@ -57,7 +92,9 @@ export function extractApiKeyFromRequest(request: Request): string | null {
 export function resolvePartnerApiKey(request: Request): PartnerIdentity | null {
   const provided = extractApiKeyFromRequest(request)
   if (!provided) return null
-  return partnerKeyMap().get(provided) ?? null
+  const config = partnerConfigMap().get(provided)
+  if (!config) return null
+  return { id: config.id, label: config.label }
 }
 
 export function getPartnerRateLimit(): number {

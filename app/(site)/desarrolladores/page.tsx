@@ -112,6 +112,11 @@ export default function DesarrolladoresPage() {
               <code>etag</code> y <code>304</code> con <code>If-None-Match</code>.
               Clave inválida → <code>401</code>.
             </p>
+            <p className="text-sm text-neutral-400">
+              Webhook Pro: <code>secreto:Etiqueta|https://tu-webhook</code> en{" "}
+              <code>PARTNER_API_KEYS</code> — POST firmado HMAC tras cada cron (
+              evento <code>feed.updated</code>).
+            </p>
           </section>
 
           <section>

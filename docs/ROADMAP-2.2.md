@@ -18,8 +18,6 @@ PARTNER_API_RATE_LIMIT=300
 
 Recomendado: `UPSTASH_REDIS_REST_*` para rate limit por partner.
 
-## Siguiente (2.3+)
+## Siguiente
 
-- App Expo (API v1/v2)
-- OAuth Apple / Microsoft
-- Webhooks de cambios en feed para partners Pro
+Ver [ROADMAP-2.3.md](./ROADMAP-2.3.md) (webhooks ✅) y backlog 2.4+ en [ROADMAP.md](./ROADMAP.md).

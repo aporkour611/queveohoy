@@ -189,6 +189,36 @@ Configuración en Vercel: `PARTNER_API_KEYS=secreto:EtiquetaPartner,secreto2:Otr
 }
 ```
 
+### Webhooks (partners Pro)
+
+Tras cada cron de ingesta, si la clave incluye URL de webhook:
+
+```
+PARTNER_API_KEYS=secreto:MiMedio|https://tu-servidor.com/webhook/qvh
+```
+
+**POST** al webhook con cuerpo JSON:
+
+```json
+{
+  "event": "feed.updated",
+  "generatedAt": "2026-05-31T18:00:00.000Z",
+  "date": "2026-05-31",
+  "eventCount": 234,
+  "version": "2.3.0"
+}
+```
+
+Cabeceras:
+
+| Cabecera | Descripción |
+|----------|-------------|
+| `X-Queveohoy-Event` | `feed.updated` |
+| `X-Queveohoy-Partner` | ID del partner (slug de la etiqueta) |
+| `X-Queveohoy-Signature` | `sha256=<hmac_hex>` del cuerpo con tu clave API |
+
+Verifica la firma con HMAC-SHA256 del body en bruto usando la misma clave que en `X-API-Key`.
+
 ---
 
 ## Compatibilidad

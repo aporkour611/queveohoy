@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.3.0",
+    date: "2026-05-31",
+    title: "Webhooks partners Pro",
+    highlights: [
+      "POST firmado a URL en PARTNER_API_KEYS (formato clave:label|webhook)",
+      "Evento feed.updated tras cada cron de ingesta",
+      "Cabecera X-Queveohoy-Signature HMAC-SHA256",
+    ],
+  },
+  {
     version: "2.2.0",
     date: "2026-05-31",
     title: "API v2 — claves partner",

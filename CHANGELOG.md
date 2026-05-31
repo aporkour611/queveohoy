@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.3.0] - 2026-05-31
+
+### Added
+- Webhooks partners: `secreto:Etiqueta|https://url` en `PARTNER_API_KEYS`
+- Notificación `feed.updated` firmada tras cada cron
+
+### Changed
+- Versión del producto: **2.3.0**
+
 ## [2.2.0] - 2026-05-31
 
 ### Added

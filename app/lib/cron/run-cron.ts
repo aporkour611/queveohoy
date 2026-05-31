@@ -45,6 +45,10 @@ import {
 import { purgePastDayEvents } from "@/app/lib/purge-past-events";
 import { evaluateCronHealth, sendCronAlert } from "@/app/lib/cron-alerts";
 import { saveLastCronRun } from "@/app/lib/cron-last-run-store";
+import { fetchFeedEvents } from "@/app/lib/events-feed-server";
+import { notifyPartnerFeedWebhooks } from "@/app/lib/partner-webhooks";
+import { PRODUCT_VERSION } from "@/app/lib/product-version";
+import { getMadridTodayKey } from "@/app/lib/seo-date";
 import { log } from "@/app/lib/logger";
 
 function getSupabase() {
@@ -946,5 +950,24 @@ export async function runCronJob(request: Request) {
     console.warn("Cron snapshot save failed:", e);
   }
 
-  return NextResponse.json(cronResult);
+  let partnerWebhooks = { configured: 0, sent: 0, failed: 0 };
+  try {
+    const { events } = await fetchFeedEvents();
+    partnerWebhooks = await notifyPartnerFeedWebhooks({
+      event: "feed.updated",
+      generatedAt: cronResult.timestamp,
+      date: getMadridTodayKey(),
+      eventCount: events.length,
+      version: PRODUCT_VERSION,
+    });
+    if (partnerWebhooks.configured > 0) {
+      console.log(
+        `✓ Partner webhooks ${partnerWebhooks.sent}/${partnerWebhooks.configured}`
+      );
+    }
+  } catch (e) {
+    console.warn("Partner webhooks failed:", e);
+  }
+
+  return NextResponse.json({ ...cronResult, partnerWebhooks });
 }
