@@ -3,6 +3,11 @@ import { NextResponse } from "next/server"
 import { FEED_REVALIDATE_SECONDS } from "./cache-config"
 import { fetchFeedEvents } from "./events-feed-server"
 import {
+  enforcePublicFeedRateLimit,
+  extractApiKeyFromRequest,
+} from "./partner-api"
+import { PUBLIC_API_RATE_WINDOW_MS } from "./public-api"
+import {
   buildPublicApiFeedResponse,
   buildPublicApiV2FeedResponse,
   filterPublicApiEventsByCategories,
@@ -22,6 +27,31 @@ export async function handlePublicFeedGet(
   request: NextRequest,
   version: PublicFeedApiVersion
 ): Promise<NextResponse> {
+  const rate = await enforcePublicFeedRateLimit(request, {
+    allowPartnerKeys: version === "2",
+  })
+
+  if (!rate.ok) {
+    const provided = extractApiKeyFromRequest(request)
+    if (version === "2" && provided && !rate.partner) {
+      return NextResponse.json(
+        { error: "Invalid partner API key" },
+        { status: 401, headers: publicApiCorsHeaders() }
+      )
+    }
+
+    return NextResponse.json(
+      { error: "Rate limit exceeded", retryAfterSec: rate.retryAfterSec },
+      {
+        status: 429,
+        headers: {
+          ...publicApiCorsHeaders(),
+          "Retry-After": String(rate.retryAfterSec),
+        },
+      }
+    )
+  }
+
   const dateParam = request.nextUrl.searchParams.get("date")
   const todayKey = getMadridTodayKey()
   const dateKey =
@@ -66,7 +96,12 @@ export async function handlePublicFeedGet(
       dateKey,
       MADRID_TZ,
       page.nextCursor,
-      categoriesApplied
+      categoriesApplied,
+      rate.partner ?? undefined,
+      {
+        limit: rate.limit,
+        windowSec: PUBLIC_API_RATE_WINDOW_MS / 1000,
+      }
     )
 
     const ifNoneMatch = request.headers.get("if-none-match")

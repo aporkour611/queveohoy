@@ -15,6 +15,6 @@ describe("integration-status", () => {
   it("computes score buckets", () => {
     const score = integrationScore(getIntegrationStatus())
     expect(score.requiredTotal).toBe(7)
-    expect(score.optionalTotal).toBe(6)
+    expect(score.optionalTotal).toBe(7)
   })
 })

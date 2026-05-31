@@ -77,7 +77,8 @@ export function publicApiCorsHeaders(): HeadersInit {
   return {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Accept",
+    "Access-Control-Allow-Headers":
+      "Content-Type, Accept, X-API-Key, Authorization",
     "Access-Control-Max-Age": "86400",
   }
 }
@@ -220,6 +221,9 @@ export type PublicApiV2FeedResponse = Omit<PublicApiFeedResponse, "version"> & {
   version: typeof PUBLIC_API_V2_VERSION
   etag: string
   scopes: string[]
+  /** Presente si la petición usa una clave partner válida. */
+  partner?: { id: string; label: string; tier: "partner" }
+  rateLimit?: { limit: number; windowSec: number }
 }
 
 export function buildPublicApiV2FeedResponse(
@@ -227,7 +231,9 @@ export function buildPublicApiV2FeedResponse(
   dateKey: string,
   timezone: string,
   nextCursor: string | null = null,
-  categoriesApplied?: string[]
+  categoriesApplied?: string[],
+  partner?: { id: string; label: string },
+  rateLimit?: { limit: number; windowSec: number }
 ): PublicApiV2FeedResponse {
   const base = buildPublicApiFeedResponse(
     events,
@@ -243,6 +249,15 @@ export function buildPublicApiV2FeedResponse(
     ...base,
     version: PUBLIC_API_V2_VERSION,
     etag,
-    scopes: ["day", "categories", "cursor"],
+    scopes: ["day", "categories", "cursor", ...(partner ? ["partner"] : [])],
+    ...(partner
+      ? {
+          partner: { ...partner, tier: "partner" as const },
+          rateLimit: rateLimit ?? {
+            limit: 300,
+            windowSec: PUBLIC_API_RATE_WINDOW_MS / 1000,
+          },
+        }
+      : {}),
   }
 }

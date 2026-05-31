@@ -17,8 +17,6 @@ npm test
 # Admin: /admin → Cron → Actualizar métricas
 ```
 
-## Siguiente (2.2+)
+## Siguiente
 
-- API v2 claves partner (backlog ROADMAP.md)
-- App Expo reutilizando API v1
-- OAuth Apple / Microsoft
+Ver [ROADMAP-2.2.md](./ROADMAP-2.2.md) (API partners ✅) y [ROADMAP.md](./ROADMAP.md) backlog 2.3+.

@@ -150,7 +150,48 @@ Al mostrar datos en público, incluye un enlace visible a [queveohoy.es](https:/
 
 ---
 
+## API v2 — `GET /api/v2/feed`
+
+Mismos query params que v1, más **ETag** / **304** y claves partner opcionales.
+
+### Sin clave (público)
+
+60 peticiones/minuto por IP (igual que v1).
+
+### Con clave partner
+
+| Cabecera | Valor |
+|----------|--------|
+| `X-API-Key` | Clave acordada |
+| o `Authorization` | `Bearer <clave>` |
+
+| Límite | Valor por defecto |
+|--------|-------------------|
+| Peticiones | 300 / minuto / partner (`PARTNER_API_RATE_LIMIT` en servidor) |
+
+Configuración en Vercel: `PARTNER_API_KEYS=secreto:EtiquetaPartner,secreto2:Otro`.
+
+| Código | Significado |
+|--------|-------------|
+| 401 | Clave partner inválida |
+| 304 | `If-None-Match` coincide con `etag` |
+
+### Respuesta 200 (extracto)
+
+```json
+{
+  "version": "2",
+  "etag": "\"abc123\"",
+  "scopes": ["day", "categories", "cursor", "partner"],
+  "partner": { "id": "mediaset", "label": "Mediaset", "tier": "partner" },
+  "rateLimit": { "limit": 300, "windowSec": 60 },
+  "events": []
+}
+```
+
+---
+
 ## Compatibilidad
 
 - `/api/events` sigue disponible para la web (sin versionar).
-- Cambios breaking irán en `/api/v2/...` con aviso previo en novedades.
+- v1 no usa claves partner; v2 las soporta de forma opcional.

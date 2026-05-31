@@ -8,6 +8,7 @@ import { SiteFooter } from "../../components/SiteFooter"
 import { MAIN_CATEGORY_GROUPS } from "../../lib/filter-groups-design"
 import { PRODUCT_VERSION } from "../../lib/product-version"
 import { pageMetadata, siteUrl } from "../../lib/seo"
+import { getPartnerRateLimit } from "../../lib/partner-api"
 import {
   PUBLIC_API_MINOR_VERSION,
   PUBLIC_API_RATE_LIMIT,
@@ -85,12 +86,32 @@ export default function DesarrolladoresPage() {
               </li>
             </ul>
             <p>
-              Límite: {PUBLIC_API_RATE_LIMIT} peticiones/minuto por IP. Cita{" "}
-              <strong>queveohoy.es</strong> al reutilizar los datos.
+              Límite: {PUBLIC_API_RATE_LIMIT} peticiones/minuto por IP (v1 y v2
+              sin clave). Cita <strong>queveohoy.es</strong> al reutilizar los
+              datos.
             </p>
             <pre className="qvh-dev-code">
               <code>{`curl "${feedExample}"\ncurl "${categoriesExample}"\ncurl -I "${v2FeedExample}"`}</code>
             </pre>
+          </section>
+
+          <section>
+            <h2>API v2 — partners</h2>
+            <p>
+              Medios y apps con clave acordada: cabecera{" "}
+              <code>X-API-Key</code> o <code>Authorization: Bearer</code>.
+              Límite {getPartnerRateLimit()} peticiones/minuto por partner.
+              Contacto:{" "}
+              <Link href="/contacto">/contacto</Link>.
+            </p>
+            <pre className="qvh-dev-code">
+              <code>{`curl -H "X-API-Key: TU_CLAVE" "${v2FeedExample}?limit=20"`}</code>
+            </pre>
+            <p className="text-sm text-neutral-400">
+              Respuesta incluye <code>partner</code>, <code>rateLimit</code>,{" "}
+              <code>etag</code> y <code>304</code> con <code>If-None-Match</code>.
+              Clave inválida → <code>401</code>.
+            </p>
           </section>
 
           <section>

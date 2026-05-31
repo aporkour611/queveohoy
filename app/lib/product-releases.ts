@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.2.0",
+    date: "2026-05-31",
+    title: "API v2 — claves partner",
+    highlights: [
+      "X-API-Key en GET /api/v2/feed (300 req/min por partner)",
+      "401 si la clave es inválida; v1 sin cambios",
+      "PARTNER_API_KEYS en Vercel (formato secreto:etiqueta)",
+    ],
+  },
+  {
     version: "2.1.0",
     date: "2026-05-31",
     title: "Admin — métricas cron",

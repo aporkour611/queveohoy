@@ -1,4 +1,5 @@
 import { isSupabaseConfigured } from "./supabase-config"
+import { isPartnerApiConfigured } from "./partner-api"
 import { isPushConfigured } from "./push-vapid"
 
 export type IntegrationStatus = {
@@ -15,6 +16,7 @@ export type IntegrationStatus = {
   openaiAssistant: boolean
   pushVapid: boolean
   cronAlerts: boolean
+  partnerApiKeys: boolean
 }
 
 function isSet(name: string): boolean {
@@ -38,6 +40,7 @@ export function getIntegrationStatus(): IntegrationStatus {
     openaiAssistant: isSet("OPENAI_API_KEY"),
     pushVapid: isPushConfigured(),
     cronAlerts: isSet("CRON_ALERT_WEBHOOK_URL"),
+    partnerApiKeys: isPartnerApiConfigured(),
   }
 }
 
@@ -63,6 +66,7 @@ export function integrationScore(status: IntegrationStatus): {
     status.openaiAssistant,
     status.pushVapid,
     status.cronAlerts,
+    status.partnerApiKeys,
   ]
   return {
     requiredOk: required.filter(Boolean).length,

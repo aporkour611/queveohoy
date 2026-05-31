@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.2.0] - 2026-05-31
+
+### Added
+- API v2: claves partner (`X-API-Key`), 300 req/min, campos `partner` y `rateLimit` en JSON
+
+### Changed
+- Versión del producto: **2.2.0**
+- Rate limit unificado en `handlePublicFeedGet` (v1 + v2)
+
 ## [2.1.0] - 2026-05-31
 
 ### Added
