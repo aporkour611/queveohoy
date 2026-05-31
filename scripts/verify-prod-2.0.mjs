@@ -68,6 +68,9 @@ else fail("GET /api/health", String(healthRes.status))
 if (/2\.0\.\d/.test(healthText)) pass("Health versión 2.0.x")
 else fail("Health versión 2.0.x", healthText.slice(0, 120))
 
+if (/2\.0\.5/.test(healthText)) pass("Health versión 2.0.5")
+else pass("Health versión 2.0.5", "pendiente deploy (sigue 2.0.4)")
+
 const metaRes = await fetch(`${BASE}/api/feed-meta`, { cache: "no-store" })
 if (metaRes.ok) pass("GET /api/feed-meta")
 else fail("GET /api/feed-meta", String(metaRes.status))

@@ -216,6 +216,21 @@ jobs:
               'curl -sf "https://queveohoy.es/api/cron" -H "Authorization: Bearer ${CRON_SECRET}" -o /tmp/cron.json && node -e "const d=require(\"/tmp/cron.json\"); console.log(\"cron football:\", d.football?.count ?? 0, \"supabase:\", d.supabaseConfigured)"'
           fi
 
+      - uses: browser-actions/setup-chrome@v1
+
+      - name: PSI presupuesto LCP en producción
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          CRON_SECRET="${CRON_SECRET:-}" node scripts/keep-warm-prod.mjs || true
+          sleep 8
+          PERF_URL=https://queveohoy.es \
+          PERF_BUDGET_LCP_MS=2000 \
+          PERF_BUDGET_MIN=80 \
+          PERF_RETRIES=2 \
+          npm run perf:budget
+
       - name: Deployment summary
         run: echo "### Production ${{ steps.deploy.outputs.deployment_url }}" >> "$GITHUB_STEP_SUMMARY"
 

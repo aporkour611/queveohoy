@@ -11,6 +11,9 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 ### Verified
 - PSI prod: Performance **97**, LCP **1.92s** (`npm run perf:budget` ✅ meta ≤2s)
 
+### Added
+- `perf:budget` con `PERF_RETRIES` y gate en workflow **Deploy Production**
+
 ## [2.0.4] - 2026-05-31
 
 ### Changed

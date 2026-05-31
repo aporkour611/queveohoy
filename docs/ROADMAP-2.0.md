@@ -29,6 +29,16 @@ PERF_URL=https://queveohoy.es PERF_BUDGET_LCP_MS=2000 npm run perf:budget
 
 **PSI mobile prod (2026-05-31):** Performance **97**, LCP **1.92s** ✅ (meta ≤2s), CLS **0.000**. Comando: `PERF_URL=https://queveohoy.es npm run perf:budget`.
 
+## Gate post-deploy (2.0.5+)
+
+Tras cada deploy a producción, GitHub Actions ejecuta:
+
+```bash
+PERF_URL=https://queveohoy.es PERF_BUDGET_LCP_MS=2000 PERF_RETRIES=2 npm run perf:budget
+```
+
+Meta: LCP ≤2s, Performance ≥80 (PSI mobile).
+
 ## Siguiente (2.1+)
 
 Ver [ROADMAP.md](./ROADMAP.md) backlog: app nativa, API partners ampliada, métricas cron en admin.
