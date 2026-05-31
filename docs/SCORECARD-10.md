@@ -25,16 +25,15 @@ Estado tras **v2.0.0** (graduación RC 1.9.9 — plataforma estable).
 |---------|-------------|-----|-----|
 | 2.0.3 | **96** | **2.73s** | 0 |
 | 2.0.4 | **92** | **2.80s** | 0 |
+| **PSI prod (2026-05-31)** | **97** | **1.92s** | 0 |
 
-Meta: Performance ≥80 ✅ · LCP ≤2.0s ❌ (~800ms de margen)
+Meta: Performance ≥80 ✅ · LCP ≤2.0s ✅ · CLS ≤0.08 ✅
 
-**2.0.3:** TMDB w154, preload 320w único, preconnect temprano, crestas CL lazy (−190ms LCP vs 2.0.2).
+**2.0.5 (código):** WebP local `/posters` + TMDB w154 + keep-warm cada minuto.
 
-**2.0.4:** LCP local-first + TMDB w92 + JSON-LD al pie — PSI sin mejora (variación Lab; w92 no bajó LCP de forma estable).
+**PSI tras keep-warm + optimizaciones acumuladas:** LCP **1.92s** — presupuesto `perf:budget` OK.
 
-**2.0.5:** WebP local `/posters` para LCP; TMDB w154; keep-warm 1 min + verify `/api/warm`.
-
-**Siguiente:** medir PSI tras deploy 2.0.5; meta LCP ≤2s.
+**Siguiente:** confirmar footer **2.0.5** en prod tras deploy; objetivo PSI mobile ≥95 estable.
 
 ## Cambios 1.0.6 (performance extrema)
 

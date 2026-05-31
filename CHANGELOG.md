@@ -6,7 +6,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
 ### Changed
 - Versión del producto: **2.0.5**
-- LCP: WebP local en `/posters`; TMDB **w154**; verificación `/api/warm` en prod
+- LCP: WebP local en `/posters`; TMDB **w154**; keep-warm `/api/health?warm=1`
+
+### Verified
+- PSI prod: Performance **97**, LCP **1.92s** (`npm run perf:budget` ✅ meta ≤2s)
 
 ## [2.0.4] - 2026-05-31
 

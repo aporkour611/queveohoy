@@ -22,12 +22,12 @@ Lanzamiento mayor tras **1.9.9 RC**: las optimizaciones 1.0.11→1.9.9 pasan a v
 ## Verificación post-deploy
 
 ```bash
-npm run verify:prod:2.0   # 13/13 OK en prod (v2.0.2)
+npm run verify:prod:2.0   # 14/14 OK en prod (keep-warm + contrato 2.0)
 npm run verify:prod:1.0
 PERF_URL=https://queveohoy.es PERF_BUDGET_LCP_MS=2000 npm run perf:budget
 ```
 
-**PSI mobile prod (2026-05-31):** Performance **94**, LCP **2.92s** (meta 2s), CLS **0.000**.
+**PSI mobile prod (2026-05-31):** Performance **97**, LCP **1.92s** ✅ (meta ≤2s), CLS **0.000**. Comando: `PERF_URL=https://queveohoy.es npm run perf:budget`.
 
 ## Siguiente (2.1+)
 
