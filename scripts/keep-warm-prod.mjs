@@ -8,6 +8,7 @@ const SITE = (process.env.SITE_URL ?? "https://queveohoy.es").replace(/\/$/, "")
 const CRON_SECRET = process.env.CRON_SECRET?.trim()
 
 const PATHS = [
+  "/api/health?warm=1",
   "/api/warm",
   "/api/feed-meta",
   "/api/health",
@@ -19,7 +20,10 @@ const PATHS = [
 async function ping(path) {
   const url = `${SITE}${path}`
   const headers = { "User-Agent": "qvh-keep-warm-prod/1", Accept: "*/*" }
-  if (CRON_SECRET && path === "/api/warm") {
+  if (
+    CRON_SECRET &&
+    (path === "/api/warm" || path.startsWith("/api/health?warm=1"))
+  ) {
     headers.Authorization = `Bearer ${CRON_SECRET}`
   }
 
@@ -32,7 +36,10 @@ async function ping(path) {
     const ms = Date.now() - started
     const ok = res.ok || res.status === 304
     console.log(`${ok ? "OK" : "FAIL"} ${path} → ${res.status} (${ms}ms)`)
-    if (path === "/api/warm" && res.ok) {
+    if (
+      (path === "/api/warm" || path.startsWith("/api/health?warm=1")) &&
+      res.ok
+    ) {
       const body = await res.json()
       console.log(JSON.stringify(body, null, 2).slice(0, 800))
     }

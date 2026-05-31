@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server"
 import { enforceApiRateLimit, rateLimitResponse } from "@/app/lib/api-rate-limit"
-import { isCronAuthorized } from "@/app/lib/admin-auth"
 import { runKeepWarmCycle } from "@/app/lib/keep-warm"
+import { isTrustedWarmRequest } from "@/app/lib/warm-auth"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
-
-function isTrustedWarmRequest(request: Request): boolean {
-  if (isCronAuthorized(request)) return true
-  return request.headers.get("x-vercel-cron") === "1"
-}
 
 /**
  * Mantiene calientes Vercel (funciones + ISR) y Supabase (consultas periódicas).

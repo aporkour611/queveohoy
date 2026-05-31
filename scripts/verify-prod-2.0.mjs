@@ -35,18 +35,31 @@ if (homeHtml.includes("data-qvh-filter-intent"))
   pass("Intent prefetch filtros en shell")
 else fail("Intent prefetch filtros en shell")
 
-const warmRes = await fetch(`${BASE}/api/warm`, {
-  cache: "no-store",
-  headers: { "Cache-Control": "no-cache" },
-})
-const warmType = warmRes.headers.get("content-type") ?? ""
-if (warmRes.status === 404 || !warmType.includes("application/json")) {
-  fail("GET /api/warm", warmRes.status === 404 ? "404 — despliega main reciente" : warmType)
-} else {
-  const warmBody = await warmRes.json()
-  if (warmBody.ok) pass("GET /api/warm", `ms=${warmBody.ms ?? "?"}`)
-  else pass("GET /api/warm (degraded)", JSON.stringify(warmBody.errors ?? warmBody.data).slice(0, 80))
+const warmCronSecret = process.env.CRON_SECRET?.trim()
+const warmHeaders = {
+  "Cache-Control": "no-cache",
+  ...(warmCronSecret ? { Authorization: `Bearer ${warmCronSecret}` } : {}),
 }
+const warmCandidates = [
+  ["/api/health?warm=1", "health warm"],
+  ["/api/warm", "warm"],
+]
+let warmOk = false
+for (const [warmPath, warmLabel] of warmCandidates) {
+  const warmRes = await fetch(`${BASE}${warmPath}`, {
+    cache: "no-store",
+    headers: warmHeaders,
+  })
+  const warmType = warmRes.headers.get("content-type") ?? ""
+  if (warmRes.status === 404 || !warmType.includes("application/json")) continue
+  const warmBody = await warmRes.json()
+  warmOk = true
+  if (warmBody.ok) pass(`GET ${warmPath}`, `ms=${warmBody.ms ?? "?"}`)
+  else
+    pass(`GET ${warmPath} (degraded)`, JSON.stringify(warmBody.data ?? warmBody).slice(0, 80))
+  break
+}
+if (!warmOk) fail("Keep-warm endpoint", "Necesita /api/health?warm=1 o /api/warm tras deploy")
 
 const { res: healthRes, text: healthText } = await fetchText("/api/health")
 if (healthRes.ok) pass("GET /api/health")

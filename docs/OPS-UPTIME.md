@@ -8,7 +8,8 @@ La producción (`queveohoy.es`) vive en **Vercel + Supabase**. Cursor no la mant
 
 | Canal | Frecuencia | Qué hace |
 |-------|------------|----------|
-| **Cron Vercel** `GET /api/warm` | **Cada 1 minuto** | Cachés feed, ping DB, precalienta `/`, `/explorar`, APIs |
+| **Cron Vercel** `GET /api/health?warm=1` | **Cada 1 minuto** | Ciclo completo keep-warm (Bearer `CRON_SECRET`) |
+| **Cron Vercel** `GET /api/warm` | Cada 5 min | Alias dedicado (mismo ciclo) |
 | **GitHub Actions** `keep-warm.yml` | Cada **5 min** (máx. GHA) | `scripts/keep-warm-prod.mjs` (respaldo) |
 | **push-cron.yml** | Cada 15 min | Keep-warm + notificaciones push |
 | **deploy.yml** | Tras cada deploy | Keep-warm completo |
@@ -19,7 +20,7 @@ Vercel envía `Authorization: Bearer CRON_SECRET` en crons (configura `CRON_SECR
 
 ```bash
 npm run keep-warm:prod
-curl -sS -H "Authorization: Bearer $CRON_SECRET" https://queveohoy.es/api/warm
+curl -sS -H "Authorization: Bearer $CRON_SECRET" "https://queveohoy.es/api/health?warm=1"
 ```
 
 Respuesta esperada: `"ok": true`, eventos > 0, orígenes con HTTP 200.

@@ -36,8 +36,12 @@
   },
   "crons": [
     {
-      "path": "/api/warm",
+      "path": "/api/health?warm=1",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/warm",
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/cron",
