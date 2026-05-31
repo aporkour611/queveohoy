@@ -29,12 +29,15 @@
     },
     "app/api/push/cron/route.ts": {
       "maxDuration": 60
+    },
+    "app/api/warm/route.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
     {
       "path": "/api/warm",
-      "schedule": "*/10 * * * *"
+      "schedule": "* * * * *"
     },
     {
       "path": "/api/cron",

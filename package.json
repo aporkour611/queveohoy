@@ -24,6 +24,7 @@
     "verify:prod:1.0": "node scripts/verify-prod-1.0.mjs",
     "verify:prod:1.9": "node scripts/verify-prod-1.9.mjs",
     "verify:prod:2.0": "node scripts/verify-prod-2.0.mjs",
+    "keep-warm:prod": "node scripts/keep-warm-prod.mjs",
     "check:integrations": "node scripts/check-integrations.mjs",
     "vercel:import-file": "node scripts/generate-vercel-import.mjs",
     "perf:budget": "node scripts/perf-budget.mjs",

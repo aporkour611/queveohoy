@@ -1,50 +1,39 @@
 import { NextResponse } from "next/server"
 import { enforceApiRateLimit, rateLimitResponse } from "@/app/lib/api-rate-limit"
-import {
-  fetchDestacadosFeedEvents,
-  fetchHomeFeedEvents,
-} from "@/app/lib/events-feed-server"
+import { isCronAuthorized } from "@/app/lib/admin-auth"
+import { runKeepWarmCycle } from "@/app/lib/keep-warm"
 
 export const dynamic = "force-dynamic"
-export const maxDuration = 25
+export const maxDuration = 60
+
+function isTrustedWarmRequest(request: Request): boolean {
+  if (isCronAuthorized(request)) return true
+  return request.headers.get("x-vercel-cron") === "1"
+}
 
 /**
- * Precalienta caché de feed (unstable_cache) y función serverless.
- * Invocado por cron Vercel / GitHub Actions para evitar cold start de horas.
+ * Mantiene calientes Vercel (funciones + ISR) y Supabase (consultas periódicas).
+ * Cron Vercel: cada minuto. GitHub Actions: cada 5 min (respaldo).
  */
 export async function GET(request: Request) {
-  const rate = await enforceApiRateLimit(request, "warm", 40, 60_000)
-  if (!rate.ok) return rateLimitResponse(rate.retryAfterSec)
+  if (!isTrustedWarmRequest(request)) {
+    const rate = await enforceApiRateLimit(request, "warm", 20, 60_000)
+    if (!rate.ok) return rateLimitResponse(rate.retryAfterSec)
+  }
 
-  const started = Date.now()
-  const [home, destacados] = await Promise.all([
-    fetchHomeFeedEvents(),
-    fetchDestacadosFeedEvents(),
-  ])
-  const ms = Date.now() - started
-
-  const ok =
-    home.events.length > 0 &&
-    destacados.events.length > 0 &&
-    !home.error &&
-    !destacados.error
+  const warmOrigins = new URL(request.url).searchParams.get("origins") !== "0"
+  const result = await runKeepWarmCycle({ warmOrigins })
 
   return NextResponse.json(
     {
-      ok,
-      warmed: {
-        home: home.events.length,
-        destacados: destacados.events.length,
-      },
-      errors: {
-        home: home.error,
-        destacados: destacados.error,
-      },
-      ms,
+      ok: result.ok,
+      data: result.data,
+      origins: result.origins,
+      ms: result.ms,
       timestamp: new Date().toISOString(),
     },
     {
-      status: ok ? 200 : 503,
+      status: result.ok ? 200 : 503,
       headers: { "Cache-Control": "no-store" },
     }
   )

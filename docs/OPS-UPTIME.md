@@ -1,35 +1,35 @@
-# Disponibilidad — cold start Vercel + Supabase
+# Disponibilidad — sin inactividad
 
 ## No depende de Cursor
 
-Abrir o cerrar **Cursor** no afecta a producción (`queveohoy.es`). Vercel y Supabase siguen en la nube.
+La producción (`queveohoy.es`) vive en **Vercel + Supabase**. Cursor no la mantiene encendida.
 
-Si la web “no carga” tras **varias horas sin visitas**, suele ser:
+## Mantenimiento automático
 
-1. **Cold start** de la función serverless en Vercel (primera petición lenta).
-2. **Regeneración ISR** de la home (`revalidate = 900`) + consultas a Supabase.
-3. En plan gratuito de Supabase, el proyecto puede **pausarse tras ~7 días** sin actividad (hay que reactivarlo en el dashboard).
+| Canal | Frecuencia | Qué hace |
+|-------|------------|----------|
+| **Cron Vercel** `GET /api/warm` | **Cada 1 minuto** | Cachés feed, ping DB, precalienta `/`, `/explorar`, APIs |
+| **GitHub Actions** `keep-warm.yml` | Cada **5 min** (máx. GHA) | `scripts/keep-warm-prod.mjs` (respaldo) |
+| **push-cron.yml** | Cada 15 min | Keep-warm + notificaciones push |
+| **deploy.yml** | Tras cada deploy | Keep-warm completo |
 
-Medición interna (2026-05-30): home **~49s** en frío, **~50ms** en caliente.
-
-## Qué hace el proyecto
-
-| Mecanismo | Frecuencia |
-|-----------|------------|
-| Cron Vercel `GET /api/warm` | Cada **10 min** |
-| GitHub Actions `keep-warm.yml` | Cada **15 min** (`/api/warm` + `GET /`) |
-| Timeouts Supabase HTTP | 6s (feed), 4–8s (health) |
-| Home `loadHomePageData` | `cache()` — una carga por petición (metadata + page) |
+Vercel envía `Authorization: Bearer CRON_SECRET` en crons (configura `CRON_SECRET` en el proyecto).
 
 ## Comprobar
 
 ```bash
-curl -sS https://queveohoy.es/api/warm
-curl -sS https://queveohoy.es/api/health
+npm run keep-warm:prod
+curl -sS -H "Authorization: Bearer $CRON_SECRET" https://queveohoy.es/api/warm
 ```
 
-Si `warm` devuelve `503` con errores de base de datos, revisa Supabase (proyecto pausado o variables en Vercel).
+Respuesta esperada: `"ok": true`, eventos > 0, orígenes con HTTP 200.
 
-## Supabase pausado
+## Supabase pausado (plan gratis, ~7 días sin tráfico)
 
-Dashboard → proyecto → **Restore**. No se despierta solo en segundos; la primera petición puede tardar más hasta que el keep-warm vuelva a calentar la caché.
+Los pings cada minuto **evitan** la pausa por inactividad en condiciones normales. Si el proyecto ya está pausado en el dashboard, hay que pulsar **Restore** una vez; después el keep-warm lo mantiene despierto.
+
+## Si aún falla
+
+1. Variables `SUPABASE_*` y `CRON_SECRET` en Vercel Production.
+2. Actions → **Keep warm** → últimos runs en verde.
+3. Vercel → Project → Cron Jobs → `/api/warm` activo cada minuto.
