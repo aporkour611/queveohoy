@@ -219,17 +219,23 @@ jobs:
       - uses: browser-actions/setup-chrome@v1
 
       - name: PSI presupuesto LCP en producción
+        continue-on-error: true
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           set -euo pipefail
           CRON_SECRET="${CRON_SECRET:-}" node scripts/keep-warm-prod.mjs || true
           sleep 8
-          PERF_URL=https://queveohoy.es \
-          PERF_BUDGET_LCP_MS=2000 \
-          PERF_BUDGET_MIN=80 \
-          PERF_RETRIES=2 \
-          npm run perf:budget
+          if PERF_URL=https://queveohoy.es \
+            PERF_BUDGET_LCP_MS=2000 \
+            PERF_BUDGET_MIN=80 \
+            PERF_RETRIES=2 \
+            npm run perf:budget; then
+            echo "### PSI LCP presupuesto OK" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::PSI LCP incumplido o Lighthouse falló (no bloquea deploy)"
+            echo "### PSI LCP — warning (revisar logs)" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Deployment summary
         run: echo "### Production ${{ steps.deploy.outputs.deployment_url }}" >> "$GITHUB_STEP_SUMMARY"

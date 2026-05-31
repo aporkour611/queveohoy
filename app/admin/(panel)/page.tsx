@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { AdminCronDashboard } from "@/app/components/AdminCronDashboard";
 
 type AdminTab = "add" | "list" | "cron";
 
@@ -48,6 +49,7 @@ export default function AdminPage() {
   const [savingEdit, setSavingEdit] = useState(false);
   const [cronRunning, setCronRunning] = useState(false);
   const [cronResult, setCronResult] = useState<string>("");
+  const [cronRefreshKey, setCronRefreshKey] = useState(0);
 
   const loadEvents = useCallback(async () => {
     setLoadingEvents(true);
@@ -205,6 +207,7 @@ export default function AdminPage() {
         return;
       }
       setCronResult(JSON.stringify(data, null, 2));
+      setCronRefreshKey((k) => k + 1);
     } catch (error) {
       setCronResult(error instanceof Error ? error.message : String(error));
     } finally {
@@ -215,7 +218,7 @@ export default function AdminPage() {
   return (
     <main className="p-6 text-white bg-black min-h-screen">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold">Admin — v2</h1>
+        <h1 className="text-3xl font-bold">Admin</h1>
         <form action="/api/admin/logout" method="post">
           <button type="submit" className="text-sm text-neutral-400 underline">
             Cerrar sesión
@@ -435,10 +438,13 @@ export default function AdminPage() {
       ) : null}
 
       {tab === "cron" ? (
-        <section className="max-w-3xl">
-          <h2 className="mb-3 text-lg font-semibold">Cron manual</h2>
+        <section className="max-w-4xl">
+          <h2 className="mb-3 text-lg font-semibold">Cron — métricas y ejecución</h2>
+          <AdminCronDashboard refreshKey={cronRefreshKey} />
+          <h3 className="mb-2 mt-8 text-base font-semibold">Ejecución manual</h3>
           <p className="mb-4 text-sm text-neutral-400">
             Ejecuta la ingesta completa desde el servidor (requiere CRON_SECRET).
+            El resumen se guarda en Upstash si está configurado.
           </p>
           <button
             type="button"

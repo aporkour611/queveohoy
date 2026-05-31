@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.1.0",
+    date: "2026-05-31",
+    title: "Admin — métricas cron",
+    highlights: [
+      "Dashboard en /admin pestaña Cron (feed, DB, última ingesta)",
+      "Snapshot del último cron en Upstash Redis",
+      "GET /api/admin/cron/status",
+    ],
+  },
+  {
     version: "2.0.5",
     date: "2026-05-31",
     title: "LCP WebP local + uptime keep-warm",

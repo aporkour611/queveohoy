@@ -44,6 +44,7 @@ import {
 } from "@/app/lib/madrid-time";
 import { purgePastDayEvents } from "@/app/lib/purge-past-events";
 import { evaluateCronHealth, sendCronAlert } from "@/app/lib/cron-alerts";
+import { saveLastCronRun } from "@/app/lib/cron-last-run-store";
 import { log } from "@/app/lib/logger";
 
 function getSupabase() {
@@ -936,6 +937,13 @@ export async function runCronJob(request: Request) {
     }
   } catch (e) {
     console.warn("Cron health alerts failed:", e);
+  }
+
+  try {
+    const stored = await saveLastCronRun(cronResult);
+    if (stored) console.log("✓ Last cron snapshot saved");
+  } catch (e) {
+    console.warn("Cron snapshot save failed:", e);
   }
 
   return NextResponse.json(cronResult);

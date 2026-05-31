@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.1.0] - 2026-05-31
+
+### Added
+- Admin: dashboard métricas cron (`/api/admin/cron/status`, snapshot Upstash)
+
+### Changed
+- Versión del producto: **2.1.0**
+- Deploy: PSI LCP como warning (no bloquea publicación)
+
 ## [2.0.5] - 2026-05-31
 
 ### Changed
