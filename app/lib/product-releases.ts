@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.0.5",
+    date: "2026-05-31",
+    title: "LCP WebP local + uptime keep-warm",
+    highlights: [
+      "WebP en /posters para LCP mismo origen (menos bytes que PNG)",
+      "TMDB w154 restaurado (mejor equilibrio que w92 en PSI)",
+      "Keep-warm cada minuto; verify:prod comprueba /api/warm",
+    ],
+  },
+  {
     version: "2.0.4",
     date: "2026-05-31",
     title: "LCP — poster local primero + TMDB w92",

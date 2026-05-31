@@ -2,6 +2,12 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.0.5] - 2026-05-31
+
+### Changed
+- Versión del producto: **2.0.5**
+- LCP: WebP local en `/posters`; TMDB **w154**; verificación `/api/warm` en prod
+
 ## [2.0.4] - 2026-05-31
 
 ### Changed

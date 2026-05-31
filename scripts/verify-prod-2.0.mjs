@@ -35,6 +35,19 @@ if (homeHtml.includes("data-qvh-filter-intent"))
   pass("Intent prefetch filtros en shell")
 else fail("Intent prefetch filtros en shell")
 
+const warmRes = await fetch(`${BASE}/api/warm`, {
+  cache: "no-store",
+  headers: { "Cache-Control": "no-cache" },
+})
+const warmType = warmRes.headers.get("content-type") ?? ""
+if (warmRes.status === 404 || !warmType.includes("application/json")) {
+  fail("GET /api/warm", warmRes.status === 404 ? "404 — despliega main reciente" : warmType)
+} else {
+  const warmBody = await warmRes.json()
+  if (warmBody.ok) pass("GET /api/warm", `ms=${warmBody.ms ?? "?"}`)
+  else pass("GET /api/warm (degraded)", JSON.stringify(warmBody.errors ?? warmBody.data).slice(0, 80))
+}
+
 const { res: healthRes, text: healthText } = await fetchText("/api/health")
 if (healthRes.ok) pass("GET /api/health")
 else fail("GET /api/health", String(healthRes.status))

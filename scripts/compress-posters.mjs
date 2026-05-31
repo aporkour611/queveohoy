@@ -16,8 +16,10 @@ const TARGET_DIRS = [
 ];
 
 const MAX_WIDTH = 800;
+const LCP_WEBP_WIDTH = 320;
 const PNG_COMPRESSION = 9;
 const JPEG_QUALITY = 82;
+const WEBP_QUALITY = 78;
 
 async function walk(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -64,6 +66,22 @@ async function compressFile(filePath) {
   return { filePath, before, after: buffer.length, skipped: false };
 }
 
+async function writeLcpWebpSibling(filePath) {
+  const rel = path.relative(ROOT, filePath);
+  if (!rel.startsWith("public" + path.sep + "posters" + path.sep)) return null;
+
+  const webpPath = filePath.replace(/\.(png|jpe?g)$/i, ".webp");
+  const image = sharp(filePath, { failOn: "none" });
+  const meta = await image.metadata();
+  let pipeline = image.rotate();
+  if (meta.width && meta.width > LCP_WEBP_WIDTH) {
+    pipeline = pipeline.resize({ width: LCP_WEBP_WIDTH, withoutEnlargement: true });
+  }
+  const buffer = await pipeline.webp({ quality: WEBP_QUALITY, effort: 6 }).toBuffer();
+  await fs.writeFile(webpPath, buffer);
+  return { webpPath, bytes: buffer.length };
+}
+
 let totalBefore = 0;
 let totalAfter = 0;
 let optimized = 0;
@@ -85,6 +103,17 @@ for (const rel of TARGET_DIRS) {
       optimized += 1;
       const pct = ((1 - result.after / result.before) * 100).toFixed(1);
       console.log(`✓ ${path.relative(ROOT, result.filePath)} −${pct}%`);
+    }
+
+    try {
+      const webp = await writeLcpWebpSibling(file);
+      if (webp) {
+        console.log(
+          `  webp ${path.relative(ROOT, webp.webpPath)} (${(webp.bytes / 1024).toFixed(1)} KiB)`
+        );
+      }
+    } catch (err) {
+      console.warn(`  webp skip ${path.relative(ROOT, file)}:`, err?.message ?? err);
     }
   }
 }

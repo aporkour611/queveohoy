@@ -24,11 +24,11 @@ describe("resolveHomeLcpPreloadEntries", () => {
     expect(cover?.url).toContain("image.tmdb.org");
   });
 
-  it("preloads TMDB poster directo w92 (sin /_next/image)", () => {
+  it("preloads TMDB poster directo w154 (sin /_next/image)", () => {
     const cover = getSpotlightCardModel(maskSingerEvent, MADRID_TZ).coverImage!;
     const entries = resolveHomeLcpPreloadEntries([maskSingerEvent], "2026-05-27");
 
-    expect(entries[0]?.href).toContain("image.tmdb.org/t/p/w92/");
+    expect(entries[0]?.href).toContain("image.tmdb.org/t/p/w154/");
     expect(entries[0]?.href).not.toContain("/_next/image");
     expect(buildOptimizedPreloadHref(cover.url)).toContain("/_next/image");
   });

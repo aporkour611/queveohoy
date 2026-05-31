@@ -32,7 +32,9 @@ Meta: Performance ≥80 ✅ · LCP ≤2.0s ❌ (~800ms de margen)
 
 **2.0.4:** LCP local-first + TMDB w92 + JSON-LD al pie — PSI sin mejora (variación Lab; w92 no bajó LCP de forma estable).
 
-**Siguiente candidato:** WebP/AVIF local para el destacado #1 del día; o volver w154 si calidad importa más que bytes.
+**2.0.5:** WebP local `/posters` para LCP; TMDB w154; keep-warm 1 min + verify `/api/warm`.
+
+**Siguiente:** medir PSI tras deploy 2.0.5; meta LCP ≤2s.
 
 ## Cambios 1.0.6 (performance extrema)
 

@@ -1,6 +1,7 @@
 import type { EventRow } from "../components/types";
 import { DESTACADOS_VISIBLE_SLOTS, pickWeekDestacados } from "./destacados-config";
 import { getSpotlightCardModel } from "./featured-card";
+import { resolveLcpLocalRasterUrl } from "./lcp-local-poster";
 import { buildLcpPosterUrl, isTmdbPosterUrl } from "./lcp-poster";
 import { buildDisplayDays, MADRID_TZ } from "./timezone";
 import { FEED_DAY_COUNT } from "./events-feed";
@@ -14,8 +15,9 @@ function lcpCoverScore(cover: SpotlightCover | undefined): number {
   if (!cover?.url) return -1;
 
   if (cover.local) {
-    const isRaster = /\.(png|jpe?g|webp|avif)$/i.test(cover.url);
-    return isRaster ? 10 : 4;
+    const raster = resolveLcpLocalRasterUrl(cover.url);
+    const isRaster = /\.(png|jpe?g|webp|avif)$/i.test(raster);
+    return isRaster ? (raster.endsWith(".webp") ? 12 : 10) : 4;
   }
 
   if (isTmdbPosterUrl(cover.url)) return 3;
@@ -29,7 +31,7 @@ export function resolveLcpPreloadEntryFromCover(
   if (!cover.url) return null;
 
   if (cover.local && cover.url.startsWith("/")) {
-    return { href: cover.url };
+    return { href: resolveLcpLocalRasterUrl(cover.url) };
   }
 
   const lcpUrl = buildLcpPosterUrl(cover.url);

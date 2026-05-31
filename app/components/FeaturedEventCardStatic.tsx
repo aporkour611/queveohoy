@@ -5,6 +5,7 @@ import { getSpotlightCardModel } from "../lib/featured-card";
 import { getEventCardStamp, isChampionsFinal } from "../lib/event-card-stamp";
 import { partidoPath } from "../lib/event-slug";
 import { MADRID_TZ } from "../lib/timezone";
+import { resolveLcpLocalRasterUrl } from "../lib/lcp-local-poster";
 import { buildLcpPosterUrl } from "../lib/lcp-poster";
 import {
   buildSpotlightImageProps,
@@ -41,7 +42,9 @@ function StaticSpotlightCover({
   const imgStyle = spotlightCoverImageStyle(objectPosition);
 
   if (priority) {
-    const lcpSrc = buildLcpPosterUrl(url) ?? (local ? url : safeRemoteImageUrl(url));
+    const lcpSrc = local
+      ? resolveLcpLocalRasterUrl(url)
+      : buildLcpPosterUrl(url) ?? safeRemoteImageUrl(url);
     if (lcpSrc) {
       return (
         <div className={layoutClass} aria-hidden>
