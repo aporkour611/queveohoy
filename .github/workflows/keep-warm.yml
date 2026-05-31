@@ -1,0 +1,34 @@
+name: Keep warm (prod)
+
+on:
+  schedule:
+    # Cada 15 min — evita cold start tras horas sin tráfico (Vercel + Supabase)
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: keep-warm
+  cancel-in-progress: false
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Precalentar API feed
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 2 --retry-delay 5 --max-time 45 \
+            "https://queveohoy.es/api/warm" | head -c 500
+          echo ""
+
+      - name: Precalentar home ISR (CDN + función)
+        run: |
+          set -euo pipefail
+          CODE=$(curl -sS -o /dev/null -w "%{http_code}" --retry 1 --retry-delay 10 \
+            --max-time 120 -H "Accept-Encoding: gzip" "https://queveohoy.es/")
+          echo "home HTTP $CODE"
+          test "$CODE" = "200" -o "$CODE" = "304"
+
+      - name: feed-meta
+        run: |
+          curl -fsS --max-time 30 "https://queveohoy.es/api/feed-meta" -o /dev/null

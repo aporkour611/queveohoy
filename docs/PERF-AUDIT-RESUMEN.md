@@ -61,7 +61,7 @@ Reportes JSON/MD en `docs/perf-reports/`.
 - **Deploy** a producción para aplicar fixes de embed + home.
 - **PSI API key** en Vercel: `PAGESPEED_API_KEY` para motor #6.
 - **Upstash** en prod: rate limit distribuido bajo carga multi-instancia.
-- **Cold start home**: primera petición tras idle puede tardar >30s (regeneración ISR + Supabase); monitorizar en Vercel.
+- **Cold start home**: primera petición tras idle puede tardar >30s (regeneración ISR + Supabase). Mitigación: cron `/api/warm` + workflow `keep-warm.yml` (ver [OPS-UPTIME.md](./OPS-UPTIME.md)).
 - **Objetivo 92 PSI mobile**: requiere reducir bundle HomeFeed o hidratar solo tras interacción en mobile.
 
 ## Cómo re-ejecutar

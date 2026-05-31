@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import dynamic from "next/dynamic";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
@@ -55,11 +56,12 @@ const PAGE_DATA_FALLBACK = {
   >["events"],
 };
 
-async function loadHomePageData(): Promise<{
+/** Una sola carga por petición (generateMetadata + Page comparten React cache). */
+const loadHomePageData = cache(async (): Promise<{
   events: Awaited<ReturnType<typeof getHomeFeedEventsForPage>>["events"];
   error: string | null;
   weekEvents: Awaited<ReturnType<typeof getDestacadosFeedEventsForPage>>["events"];
-}> {
+}> => {
   return raceWithTimeout(
     Promise.allSettled([
       getHomeFeedEventsForPage(),
@@ -89,7 +91,7 @@ async function loadHomePageData(): Promise<{
     PAGE_DATA_BUDGET_MS,
     () => PAGE_DATA_FALLBACK
   );
-}
+});
 
 function resolveDestacadosEnhancerProps(
   weekEvents: EventRow[],

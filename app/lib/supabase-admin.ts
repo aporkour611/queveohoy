@@ -3,6 +3,7 @@ import {
   getSupabaseSecretKey,
   getSupabaseUrl,
 } from "./supabase-config";
+import { createSupabaseFetch } from "./supabase-fetch";
 
 export {
   getSupabasePublishableKey,
@@ -11,7 +12,16 @@ export {
   isSupabaseConfigured,
 } from "./supabase-config";
 
-export function createSupabaseAdmin(): SupabaseClient {
+type SupabaseAdminOptions = {
+  /** Tope HTTP; cron usa el default alto; health puede pasar uno bajo. */
+  fetchTimeoutMs?: number;
+};
+
+const SUPABASE_ADMIN_DEFAULT_FETCH_TIMEOUT_MS = 30_000;
+
+export function createSupabaseAdmin(
+  options?: SupabaseAdminOptions
+): SupabaseClient {
   const secretKey = getSupabaseSecretKey();
   if (!secretKey) {
     throw new Error(
@@ -19,7 +29,13 @@ export function createSupabaseAdmin(): SupabaseClient {
     );
   }
 
+  const fetchTimeoutMs =
+    options?.fetchTimeoutMs ?? SUPABASE_ADMIN_DEFAULT_FETCH_TIMEOUT_MS;
+
   return createClient(getSupabaseUrl(), secretKey, {
     auth: { persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: createSupabaseFetch(fetchTimeoutMs),
+    },
   });
 }
