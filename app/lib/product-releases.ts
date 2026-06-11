@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "3.90.0",
+    date: "2026-06-11",
+    title: "Cierre maratón 3.61–3.90",
+    highlights: [
+      "Sexto sprint 30 ciclos · plataforma 3.90.0",
+      "180 ciclos totales desde 2.13",
+      "Explorar week+filtros · verify revalidate",
+    ],
+  },
+  {
     version: "3.80.0",
     date: "2026-06-11",
     title: "Verify revalidate y warm LaLiga prod",
