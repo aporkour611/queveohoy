@@ -122,7 +122,7 @@ Commit + deploy. Comprueba: `https://queveohoy.es/abc123xyz.txt`
 
 ---
 
-## 5. Supabase — Auth (login Google / magic link)
+## 5. Supabase — Auth (Google, Apple, Microsoft / magic link)
 
 Supabase → **Authentication** → **URL Configuration**
 
@@ -136,11 +136,13 @@ https://queveohoy.es/auth/callback
 http://localhost:3000/auth/callback
 ```
 
-Supabase → **Authentication** → **Providers** → **Google** (si usas Google):
+Supabase → **Authentication** → **Providers**:
 
-- Activa Google  
-- Client ID / Secret desde Google Cloud Console  
-- Authorized redirect URI en Google: `https://TU-PROyecto.supabase.co/auth/v1/callback`
+- **Google**: Client ID / Secret desde Google Cloud Console; redirect en Google: `https://TU-PROyecto.supabase.co/auth/v1/callback`
+- **Apple**: Service ID, clave `.p8`, Team ID (ver [Supabase Apple](https://supabase.com/docs/guides/auth/social-login/auth-apple))
+- **Azure (Microsoft)**: Application ID y secret de Entra ID; redirect URI del registro apuntando al callback de Supabase
+
+Sin activar un proveedor, el botón en `/cuenta/login` fallará al redirigir.
 
 ---
 

@@ -4,6 +4,10 @@
 
 La producción (`queveohoy.es`) vive en **Vercel + Supabase**. Cursor no la mantiene encendida.
 
+## Plan Vercel Pro
+
+Con **Fluid compute** (`"fluid": true` en `vercel.json`) las funciones reutilizan instancias activas y reducen cold starts. El keep-warm cada minuto sigue siendo útil para Supabase y cachés del feed, pero la home debería responder mucho más rápido tras inactividad.
+
 ## Mantenimiento automático
 
 | Canal | Frecuencia | Qué hace |

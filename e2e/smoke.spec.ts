@@ -52,10 +52,16 @@ test.describe("smoke", () => {
     await expect(page.locator(".qvh-embed")).toBeVisible()
   })
 
-  test("login muestra Google y magic link", async ({ page }) => {
+  test("login muestra OAuth y magic link", async ({ page }) => {
     await page.goto("/cuenta/login")
     await expect(
       page.getByRole("button", { name: "Continuar con Google" })
+    ).toBeVisible()
+    await expect(
+      page.getByRole("button", { name: "Continuar con Apple" })
+    ).toBeVisible()
+    await expect(
+      page.getByRole("button", { name: "Continuar con Microsoft" })
     ).toBeVisible()
     await expect(page.getByLabel("Correo electrónico")).toBeVisible()
   })

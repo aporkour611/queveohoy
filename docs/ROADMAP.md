@@ -67,9 +67,11 @@ Consolidación de v1.6–v1.8 como release mayor:
 
 - App nativa (Expo) reutilizando API v1
 - Internacionalización (MX/AR) — baja prioridad
-- API v2 con filtros avanzados y claves de partner
-- OAuth Apple / Microsoft
-- Dashboard métricas cron en admin
+- API v2 con filtros avanzados y claves de partner — ✅ v2.2
+- OAuth Apple / Microsoft — ✅ v2.4 ([ROADMAP-2.4.md](./ROADMAP-2.4.md))
+- Dashboard métricas cron en admin — ✅ v2.1
+- Webhooks partners — ✅ v2.3
+- Historial entregas webhook en admin — ✅ v2.5 ([ROADMAP-2.5.md](./ROADMAP-2.5.md))
 
 ---
 

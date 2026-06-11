@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto"
 import { listPartnerConfigsWithWebhook } from "./partner-api"
+import { appendPartnerWebhookHistory } from "./partner-webhook-history-store"
 
 export type PartnerFeedWebhookPayload = {
   event: "feed.updated"
@@ -73,10 +74,20 @@ export async function notifyPartnerFeedWebhooks(
   )
 
   const sent = deliveries.filter((d) => d.ok).length
-  return {
+  const result: PartnerWebhookNotifyResult = {
     configured: partners.length,
     sent,
     failed: deliveries.length - sent,
     deliveries,
   }
+
+  if (result.configured > 0) {
+    try {
+      await appendPartnerWebhookHistory(payload, result)
+    } catch {
+      /* history is best-effort */
+    }
+  }
+
+  return result
 }

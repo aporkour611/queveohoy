@@ -219,6 +219,8 @@ Cabeceras:
 
 Verifica la firma con HMAC-SHA256 del body en bruto usando la misma clave que en `X-API-Key`.
 
+**Operadores:** en `/admin` → pestaña Cron, la tabla «Webhooks partners — historial» muestra las últimas entregas (Upstash). API interna: `GET /api/admin/webhooks/history` (sesión admin).
+
 ---
 
 ## Compatibilidad

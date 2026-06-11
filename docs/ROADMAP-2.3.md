@@ -18,6 +18,7 @@ PARTNER_API_KEYS=sk_live_abc:MiMedio|https://api.mimedio.es/qvh/feed-updated
 
 ## Siguiente (2.4+)
 
+Ver [ROADMAP-2.4.md](./ROADMAP-2.4.md) (OAuth Apple / Microsoft).
+
 - App Expo (API v1/v2)
-- OAuth Apple / Microsoft en `/cuenta/login`
-- Panel admin: historial de entregas webhook
+- Panel admin: historial de entregas webhook — ✅ v2.5

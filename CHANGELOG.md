@@ -2,6 +2,25 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.5.0] - 2026-05-31
+
+### Added
+- Admin: historial de entregas webhook en pestaña Cron (`GET /api/admin/webhooks/history`)
+- Upstash lista `qvh:webhook:history` (40 entradas, 30 días TTL)
+
+### Changed
+- Versión del producto: **2.5.0**
+- `vercel.json`: `"fluid": true` (Vercel Pro — menos cold start)
+
+## [2.4.0] - 2026-05-31
+
+### Added
+- Login: OAuth Apple y Microsoft (`azure`) junto a Google en `/cuenta/login`
+- `app/lib/oauth-providers.ts` — proveedores centralizados
+
+### Changed
+- Versión del producto: **2.4.0**
+
 ## [2.3.0] - 2026-05-31
 
 ### Added

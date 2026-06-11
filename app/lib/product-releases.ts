@@ -8,6 +8,26 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.5.0",
+    date: "2026-05-31",
+    title: "Admin — historial webhooks",
+    highlights: [
+      "Tabla de entregas feed.updated por partner en /admin → Cron",
+      "GET /api/admin/webhooks/history (requiere sesión admin)",
+      "Persistencia en Upstash (mismas credenciales que snapshot cron)",
+    ],
+  },
+  {
+    version: "2.4.0",
+    date: "2026-05-31",
+    title: "Cuenta — Apple y Microsoft",
+    highlights: [
+      "Continuar con Apple y Microsoft en /cuenta/login",
+      "Mismo callback que Google (magic link y OAuth)",
+      "Requiere activar proveedores en Supabase Dashboard",
+    ],
+  },
+  {
     version: "2.3.0",
     date: "2026-05-31",
     title: "Webhooks partners Pro",

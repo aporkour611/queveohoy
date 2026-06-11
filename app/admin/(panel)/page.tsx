@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AdminCronDashboard } from "@/app/components/AdminCronDashboard";
+import { AdminWebhookHistory } from "@/app/components/AdminWebhookHistory";
 
 type AdminTab = "add" | "list" | "cron";
 
@@ -441,6 +442,14 @@ export default function AdminPage() {
         <section className="max-w-4xl">
           <h2 className="mb-3 text-lg font-semibold">Cron — métricas y ejecución</h2>
           <AdminCronDashboard refreshKey={cronRefreshKey} />
+          <h3 className="mb-2 mt-8 text-base font-semibold">
+            Webhooks partners — historial
+          </h3>
+          <p className="mb-3 text-sm text-neutral-400">
+            Últimas entregas de <code className="text-neutral-300">feed.updated</code>{" "}
+            tras cada cron (Upstash, 40 entradas máx.).
+          </p>
+          <AdminWebhookHistory refreshKey={cronRefreshKey} />
           <h3 className="mb-2 mt-8 text-base font-semibold">Ejecución manual</h3>
           <p className="mb-4 text-sm text-neutral-400">
             Ejecuta la ingesta completa desde el servidor (requiere CRON_SECRET).
