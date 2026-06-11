@@ -101,6 +101,10 @@ if (metaBody?.date && /^\d{4}-\d{2}-\d{2}$/.test(metaBody.date))
   pass("feed-meta date Madrid", metaBody.date)
 else if (metaRes.ok) fail("feed-meta date", "campo ausente o inválido")
 
+if (metaBody?.timezone === "Europe/Madrid")
+  pass("feed-meta timezone", metaBody.timezone)
+else if (metaRes.ok) fail("feed-meta timezone", String(metaBody?.timezone ?? "ausente"))
+
 const metaCache = metaRes.headers.get("cache-control") ?? ""
 const metaVercelCache = metaRes.headers.get("x-vercel-cache") ?? ""
 const metaAge = metaRes.headers.get("age") ?? ""

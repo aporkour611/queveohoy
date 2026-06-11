@@ -16,7 +16,7 @@ const PATHS = [
   "/api/v2/feed",
 ]
 
-const FULL_WARM_PATHS = ["/api/warm", "/explorar", "/futbol", "/"]
+const FULL_WARM_PATHS = ["/api/warm", "/explorar", "/futbol", "/champions", "/"]
 
 async function ping(path) {
   const url = `${SITE}${path}`

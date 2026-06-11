@@ -206,7 +206,8 @@ export default function DesarrolladoresPage() {
               Explorador interactivo:{" "}
               <Link href="/explorar">/explorar</Link>. Deep link de filtros:{" "}
               <code>/?filtros=futbol,tenis</code>. Vista semanal:{" "}
-              <code>/?week=1</code>.
+              <code>/?week=1</code> o combinado{" "}
+              <code>/?week=1&filtros=futbol</code>.
             </p>
           </section>
 

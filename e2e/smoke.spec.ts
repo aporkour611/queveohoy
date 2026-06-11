@@ -150,6 +150,20 @@ test.describe("smoke", () => {
     expect(typeof body.date).toBe("string")
   })
 
+  test("deep link week=1 preserva filtros", async ({ page }) => {
+    await page.goto("/?week=1&filtros=futbol")
+    await page.waitForFunction(() => !window.location.search.includes("week=1"))
+    expect(page.url()).toContain("filtros=futbol")
+    expect(page.url()).not.toContain("week=1")
+  })
+
+  test("API feed-meta incluye timezone Madrid", async ({ request }) => {
+    const response = await request.get("/api/feed-meta")
+    expect(response.ok()).toBeTruthy()
+    const body = await response.json()
+    expect(body.timezone).toBe("Europe/Madrid")
+  })
+
   test("deep link week=1 limpia la URL", async ({ page }) => {
     await page.goto("/?week=1")
     await page.waitForFunction(() => !window.location.search.includes("week=1"))

@@ -2,6 +2,18 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [3.50.0] - 2026-06-11
+
+### Added
+- E2E week=1 preserva `?filtros=` tras limpiar URL
+- E2E y verify-prod: timezone Madrid en feed-meta
+- Test alineación paths keep-warm / rollover
+
+### Changed
+- keep-warm-prod full warm incluye `/champions`
+- Sitemap tests: novedades y contacto
+- Versión del producto: **3.50.0**
+
 ## [3.40.0] - 2026-06-11
 
 ### Added
