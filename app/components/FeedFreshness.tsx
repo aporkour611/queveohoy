@@ -63,17 +63,19 @@ export function FeedFreshness({ initialEventCount = 0 }: Props) {
       }
     }
 
+    const refreshDisplay = () => {
+      if (metaRef.current) {
+        setDisplay(buildDisplay(metaRef.current, Date.now()))
+      }
+    }
+
     const idle =
       typeof window.requestIdleCallback === "function"
         ? window.requestIdleCallback(() => void load(), { timeout: 6_000 })
         : null
     const fallback = window.setTimeout(() => void load(), 5_000)
 
-    const tick = window.setInterval(() => {
-      if (metaRef.current) {
-        setDisplay(buildDisplay(metaRef.current, Date.now()))
-      }
-    }, 120_000)
+    document.addEventListener("visibilitychange", refreshDisplay)
 
     return () => {
       cancelled = true
@@ -81,7 +83,7 @@ export function FeedFreshness({ initialEventCount = 0 }: Props) {
         window.cancelIdleCallback(idle)
       }
       window.clearTimeout(fallback)
-      window.clearInterval(tick)
+      document.removeEventListener("visibilitychange", refreshDisplay)
     }
   }, [])
 

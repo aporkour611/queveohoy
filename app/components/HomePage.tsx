@@ -60,7 +60,7 @@ import {
 import { filterEventsByAgendaQuery } from "../lib/agenda-search";
 import { filterEventsByUserPlatforms } from "../lib/personalized-tonight";
 import { useUserPlatforms } from "../lib/use-user-platforms";
-import { mergeFeedEvents } from "../lib/merge-feed-events";
+import { mergeFeedEvents, pruneFeedEventsToWindow } from "../lib/merge-feed-events";
 import { fetchClientJson } from "../lib/client-fetch-json";
 import { HOME_FEED_WEEK_PREFETCH_URL } from "../lib/home-feed-intent";
 import { prefetchHomeFeedWeekOnce } from "../lib/perf-prefetch";
@@ -213,10 +213,22 @@ export function HomeFeed({
       const url = fullWeek
         ? HOME_FEED_WEEK_PREFETCH_URL
         : "/api/events?scope=home";
-      const { ok, body } = await fetchClientJson<{
+      const { ok, body, notModified } = await fetchClientJson<{
         events?: EventRow[];
         error?: string;
       }>(url);
+
+      if (notModified) {
+        setEvents((prev) => pruneFeedEventsToWindow(prev));
+        if (fullWeek) {
+          setFullWeekReady(true);
+          if (expandTabs || wantWeekTabsRef.current) {
+            setHasFullWeek(true);
+            wantWeekTabsRef.current = false;
+          }
+        }
+        return;
+      }
 
       if (!ok || body.error) {
         setLoadError(body.error ?? "No se pudieron cargar los eventos");
@@ -225,7 +237,7 @@ export function HomeFeed({
         if (fullWeek) {
           setEvents((prev) => {
             if (incoming.length === 0 && prev.length > 0) return prev;
-            return mergeFeedEvents(prev, incoming);
+            return pruneFeedEventsToWindow(mergeFeedEvents(prev, incoming));
           });
           setFullWeekReady(true);
           if (expandTabs || wantWeekTabsRef.current) {
@@ -235,7 +247,7 @@ export function HomeFeed({
         } else {
           setEvents((prev) => {
             if (incoming.length === 0 && prev.length > 0) return prev;
-            return mergeFeedEvents(prev, incoming);
+            return pruneFeedEventsToWindow(mergeFeedEvents(prev, incoming));
           });
         }
       }
@@ -324,6 +336,15 @@ export function HomeFeed({
   }, [initialWeekView, ensureFullWeek]);
 
   useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      setEvents((prev) => pruneFeedEventsToWindow(prev));
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
+
+  useEffect(() => {
     if (hasInitialData) return;
     queueMicrotask(() => {
       void loadEvents();
@@ -354,10 +375,7 @@ export function HomeFeed({
   const dayWindow =
     weekView || hasFullWeek ? FEED_DAY_COUNT : HOME_SSR_DAY_COUNT;
 
-  const feedEvents = useMemo(
-    () => mergeFeedEvents(initialDestacadosEvents, events),
-    [events, initialDestacadosEvents]
-  );
+  const feedEvents = events;
 
   const weekEvents = useMemo(
     () => filterEventsInWeek(feedEvents, MADRID_TZ, dayWindow),
@@ -621,42 +639,42 @@ export function HomeFeed({
     if (!sections.length) return;
 
     const anchor = getScrollAnchorOffset();
-    let frame = 0;
 
-    function syncActiveDay() {
+    const syncActiveDay = () => {
       if (scrollLockRef.current) return;
-
       let next = 0;
       for (let i = 0; i < sections.length; i++) {
-        if (sections[i].getBoundingClientRect().top <= anchor) {
-          next = i;
-        }
+        if (sections[i].getBoundingClientRect().top <= anchor) next = i;
       }
       setActiveDay((prev) => (prev === next ? prev : next));
-    }
+    };
 
-    function onScroll() {
-      if (frame) return;
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
+    const observer = new IntersectionObserver(
+      () => {
         syncActiveDay();
-      });
+      },
+      {
+        root: null,
+        rootMargin: `-${anchor}px 0px -65% 0px`,
+        threshold: [0, 0.01, 0.25],
+      }
+    );
+
+    for (const section of sections) {
+      observer.observe(section);
     }
 
-    if (!scrollLockRef.current) {
-      window.requestAnimationFrame(syncActiveDay);
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
+    syncActiveDay();
+
     const handleResize = () => {
       invalidateScrollAnchorOffset();
-      onScroll();
+      syncActiveDay();
     };
     window.addEventListener("resize", handleResize, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      observer.disconnect();
       window.removeEventListener("resize", handleResize);
-      if (frame) window.cancelAnimationFrame(frame);
     };
   }, [showInitialLoading, displayDays, weekView]);
 

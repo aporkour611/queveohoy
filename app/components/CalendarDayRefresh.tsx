@@ -4,6 +4,8 @@ import { useEffect } from "react"
 import { msUntilNextMadridMidnight } from "@/app/lib/madrid-midnight"
 
 const STORAGE_KEY = "qvh-calendar-day"
+/** Revisa cambio de día en Madrid sin saturar red en pestañas largas abiertas. */
+const POLL_MS = 15 * 60_000
 
 /**
  * Recarga la página cuando cambia el día en Madrid (calendario + feed).
@@ -22,6 +24,7 @@ export function CalendarDayRefresh() {
     }
 
     const syncCalendarDay = async () => {
+      if (document.visibilityState === "hidden") return
       try {
         const res = await fetch("/api/feed-meta", { cache: "no-store" })
         if (!res.ok) return
@@ -45,7 +48,7 @@ export function CalendarDayRefresh() {
 
     const poll = window.setInterval(() => {
       void syncCalendarDay()
-    }, 5 * 60_000)
+    }, POLL_MS)
 
     const onVisible = () => {
       if (document.visibilityState === "visible") {

@@ -2,25 +2,26 @@ import {
   HOME_FEED_WEEK_PREFETCH_URL,
   PUBLIC_WEEK_FEED_PREFETCH_URL,
 } from "./home-feed-intent"
+import { warmClientFeedUrl } from "./client-fetch-json"
 
 let weekFeedPrefetched = false
 let weekFeedPrefetchedAt = 0
-const WEEK_PREFETCH_TTL_MS = 60_000
+const WEEK_PREFETCH_TTL_MS = 300_000
 
 /** Prefetch del API week público (apps / explorar). */
 export function prefetchPublicWeekFeedOnce(): void {
   if (typeof window === "undefined") return
   try {
-    void fetch(PUBLIC_WEEK_FEED_PREFETCH_URL, {
-      priority: "low",
-      credentials: "omit",
-    })
+    void warmClientFeedUrl(PUBLIC_WEEK_FEED_PREFETCH_URL)
   } catch {
     /* ignore */
   }
 }
 
-/** Una sola petición de prefetch del feed semanal por sesión de página. */
+/**
+ * Calienta el feed semanal sin duplicar descargas: ETag + TTL 5 min.
+ * El `<link rel="prefetch">` en home ya calienta CDN; esto revalida barato.
+ */
 export function prefetchHomeFeedWeekOnce(): void {
   if (typeof window === "undefined") return
   const now = Date.now()
@@ -29,10 +30,7 @@ export function prefetchHomeFeedWeekOnce(): void {
   weekFeedPrefetchedAt = now
 
   try {
-    void fetch(HOME_FEED_WEEK_PREFETCH_URL, {
-      priority: "low",
-      credentials: "same-origin",
-    })
+    void warmClientFeedUrl(HOME_FEED_WEEK_PREFETCH_URL)
   } catch {
     weekFeedPrefetched = false
   }

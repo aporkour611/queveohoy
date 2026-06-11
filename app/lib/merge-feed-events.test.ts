@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { EventRow } from "../components/types";
-import { mergeFeedEvents } from "./merge-feed-events";
+import { mergeFeedEvents, pruneFeedEventsToWindow } from "./merge-feed-events";
+import { getMadridTodayKey } from "./seo-date";
 
 describe("mergeFeedEvents", () => {
   it("conserva eventos SSR si la respuesta nueva viene vacía", () => {
@@ -61,5 +62,16 @@ describe("mergeFeedEvents", () => {
     expect(merged.find((event) => event.external_id === "football_1")?.title).toBe(
       "Partido API"
     );
+  });
+
+  it("poda eventos fuera de la ventana de 7 días Madrid", () => {
+    const today = getMadridTodayKey();
+    const events: EventRow[] = [
+      { id: 1, title: "Viejo", date: "2020-01-01", time: "21:00" },
+      { id: 2, title: "Hoy", date: today, time: "21:00" },
+    ];
+
+    const pruned = pruneFeedEventsToWindow(events, 7, "Europe/Madrid");
+    expect(pruned.map((event) => event.id)).toEqual([2]);
   });
 });

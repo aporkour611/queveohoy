@@ -4,16 +4,27 @@ import {
   prefetchPublicWeekFeedOnce,
   resetWeekFeedPrefetchForTests,
 } from "./perf-prefetch"
+import { resetClientFetchInflightForTests } from "./client-fetch-json"
+
+function mockWarmResponse() {
+  return {
+    ok: true,
+    status: 200,
+    headers: { get: () => null },
+    arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
+  }
+}
 
 describe("perf-prefetch", () => {
   afterEach(() => {
     resetWeekFeedPrefetchForTests()
+    resetClientFetchInflightForTests()
     vi.unstubAllGlobals()
     vi.restoreAllMocks()
   })
 
   it("prefetches week feed only once", () => {
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true })
+    const fetchMock = vi.fn().mockResolvedValue(mockWarmResponse())
     vi.stubGlobal("fetch", fetchMock)
     vi.stubGlobal("window", {} as Window & typeof globalThis)
 
@@ -25,7 +36,7 @@ describe("perf-prefetch", () => {
   })
 
   it("prefetches public week API", () => {
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true })
+    const fetchMock = vi.fn().mockResolvedValue(mockWarmResponse())
     vi.stubGlobal("fetch", fetchMock)
     vi.stubGlobal("window", {} as Window & typeof globalThis)
 
@@ -33,7 +44,7 @@ describe("perf-prefetch", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/v1/feed/week",
-      expect.objectContaining({ credentials: "omit" })
+      expect.any(Object)
     )
   })
 })
