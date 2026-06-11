@@ -2,6 +2,16 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.70.0] - 2026-06-11
+
+### Added
+- ROADMAP maratón 2.41–2.70 (30 ciclos, segundo sprint continuo)
+- Guía activación `PERF_GATE_BLOCKING` en deploy y VERCEL audit
+
+### Changed
+- Versión del producto: **2.70.0**
+- Backlog priorizado: Expo 54 + widget iOS
+
 ## [2.60.0] - 2026-06-11
 
 ### Added

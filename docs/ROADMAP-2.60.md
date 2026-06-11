@@ -22,7 +22,3 @@ Maratón **2.51 → 2.60** (ciclos 41–50).
 ## Siguiente (2.61+)
 
 Ver [ROADMAP-2.70.md](./ROADMAP-2.70.md).
-
-- Cierre maratón 2.41–2.70
-- PERF gate bloqueante documentado
-- Backlog Expo 54 + widget iOS

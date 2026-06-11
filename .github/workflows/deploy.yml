@@ -225,6 +225,7 @@ jobs:
 
       - uses: browser-actions/setup-chrome@v1
 
+      # PERF_GATE_BLOCKING=1 en GitHub vars → falla deploy si LCP >3s (v2.7+)
       - name: PSI presupuesto LCP en producción
         continue-on-error: true
         env:

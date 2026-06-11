@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.70.0",
+    date: "2026-06-11",
+    title: "Cierre maratón 2.41–2.70",
+    highlights: [
+      "30 ciclos: hubs SEO, weekCount, app 1.0.0",
+      "289 tests · E2E hub + feed-meta",
+      "Listo para PSI bloqueante e iOS widget",
+    ],
+  },
+  {
     version: "2.60.0",
     date: "2026-06-11",
     title: "Observabilidad semana",
