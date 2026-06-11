@@ -13,7 +13,9 @@ export const KEEP_WARM_ORIGIN_PATHS = [
   "/api/feed-meta",
   "/api/health",
   "/api/v2/feed",
+  "/api/v1/feed/week",
   "/explorar",
+  "/futbol",
   "/",
 ] as const
 

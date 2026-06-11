@@ -42,7 +42,7 @@ export function SiteFooter() {
             <ul className="qvh-site-footer-nav-list">
               {SEO_FOOTER_HUB_SLUGS.map((slug) => (
                 <li key={slug}>
-                  <Link href={slug === "partidos-hoy" ? "/partidos-hoy" : `/${slug}`}>
+                  <Link href={slug === "partidos-hoy" ? "/partidos-hoy" : `/${slug}`} prefetch>
                     {hubTitleBySlug[slug] ?? slug}
                   </Link>
                 </li>

@@ -1,10 +1,25 @@
-"use client"
-
 import { Platform, StyleSheet, Text, View } from "react-native"
 import { useTheme } from "@/lib/theme-context"
 
 export function WidgetHint() {
   const { colors } = useTheme()
+
+  if (Platform.OS === "ios") {
+    return (
+      <View
+        style={[
+          styles.box,
+          { backgroundColor: colors.bgElevated, borderColor: colors.border },
+        ]}
+      >
+        <Text style={[styles.title, { color: colors.text }]}>Widget iOS</Text>
+        <Text style={[styles.lead, { color: colors.textMuted }]}>
+          Próximamente: widget <Text style={{ fontWeight: "700" }}>Próximo favorito</Text>{" "}
+          con Expo 54. Mientras tanto, usa favoritos en la pestaña ♥.
+        </Text>
+      </View>
+    )
+  }
 
   if (Platform.OS !== "android") return null
 

@@ -55,5 +55,7 @@ describe("warmOriginPath", () => {
   it("exports all origin paths including home", () => {
     expect(KEEP_WARM_ORIGIN_PATHS).toContain("/")
     expect(KEEP_WARM_ORIGIN_PATHS).toContain("/api/feed-meta")
+    expect(KEEP_WARM_ORIGIN_PATHS).toContain("/futbol")
+    expect(KEEP_WARM_ORIGIN_PATHS).toContain("/api/v1/feed/week")
   })
 })

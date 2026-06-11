@@ -6,7 +6,7 @@ import {
 } from "../lib/timezone";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import type { SeoHubConfig } from "../lib/seo-hubs";
-import { buildWeekViewHomeUrl } from "../lib/filter-url";
+import { HubWeekCtaLink } from "./HubWeekCtaLink";
 import { filterEventsForHub } from "../lib/seo-hubs";
 import { HubFaq } from "./HubFaq";
 import { HubJsonLd } from "./HubJsonLd";
@@ -83,9 +83,9 @@ export function SeoHubPage({ hub, events, weekAgendaCount = 0 }: Props) {
             ) : null}
 
             <p className="fh-seo-hub-cta">
-              <Link href={buildWeekViewHomeUrl()}>
+              <HubWeekCtaLink>
                 Ver semana completa en la agenda →
-              </Link>
+              </HubWeekCtaLink>
               {" · "}
               <Link href="/explorar" prefetch>
                 Explorar categorías

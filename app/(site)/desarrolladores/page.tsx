@@ -87,7 +87,8 @@ export default function DesarrolladoresPage() {
               </li>
               <li>
                 <code>GET /api/feed-meta</code> — frescura del feed, conteo de
-                eventos y <code>weekCount</code> (ventana semanal).
+                eventos y <code>weekCount</code> (ventana semanal). Incluye{" "}
+                <code>todayCount</code> (eventos de hoy en Madrid).
               </li>
             </ul>
             <p>

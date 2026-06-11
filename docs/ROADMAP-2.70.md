@@ -27,6 +27,4 @@ Maratón **2.41 → 2.70** (30 ciclos encadenados, segundo sprint continuo).
 
 ## Siguiente (2.71+)
 
-- **Expo 54** + `expo-widgets` (widget iOS — requiere upgrade mayor)
-- Activar **`PERF_GATE_BLOCKING=1`** en GitHub → Settings → Variables cuando LCP ≤3s sea estable 2 semanas
-- EAS credentials widget iOS + TestFlight
+Ver [ROADMAP-2.80.md](./ROADMAP-2.80.md) (maratón 2.71–3.00 en curso).

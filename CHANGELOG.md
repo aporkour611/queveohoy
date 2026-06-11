@@ -2,6 +2,20 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.80.0] - 2026-06-11
+
+### Added
+- `buildFeedMetaPayload()` testable para `/api/feed-meta`
+- `HubWeekCtaLink` — intent semanal desde hubs SEO
+- WidgetHint iOS (backlog Expo 54 documentado)
+- Keep-warm incluye hub `/futbol` y API week pública
+
+### Changed
+- `FeedFreshness` muestra conteo de hoy (`todayCount`)
+- Footer SEO prefetch en enlaces de hubs
+- App móvil: enlace web en pantalla login
+- Versión del producto: **2.80.0**
+
 ## [2.70.0] - 2026-06-11
 
 ### Added

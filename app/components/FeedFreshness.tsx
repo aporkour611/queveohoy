@@ -6,6 +6,7 @@ import { FEED_REVALIDATE_SECONDS } from "@/app/lib/cache-config"
 type FeedMeta = {
   generatedAt: string
   eventCount: number
+  todayCount?: number
   weekCount?: number
   revalidateSeconds: number
 }
@@ -103,7 +104,10 @@ export function FeedFreshness({ initialEventCount = 0 }: Props) {
     >
       <span className="qvh-feed-freshness-dot" aria-hidden />
       Agenda actualizada {display.label}
-      {meta.eventCount > 0 ? ` · ${meta.eventCount} eventos en ventana` : null}
+      {typeof meta.todayCount === "number" && meta.todayCount > 0
+        ? ` · ${meta.todayCount} hoy`
+        : null}
+      {meta.eventCount > 0 ? ` · ${meta.eventCount} en ventana` : null}
       {typeof meta.weekCount === "number" && meta.weekCount > 0
         ? ` · ${meta.weekCount} esta semana`
         : null}

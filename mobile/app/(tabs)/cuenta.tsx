@@ -316,6 +316,18 @@ export default function CuentaScreen() {
       </Pressable>
 
       <Text style={styles.hint}>
+        También puedes gestionar favoritos y exportar datos en{" "}
+        <Text
+          style={{ color: colors.accent, textDecorationLine: "underline" }}
+          onPress={() => void Linking.openURL(`${SITE_URL}/cuenta`)}
+          accessibilityRole="link"
+        >
+          la web
+        </Text>
+        .
+      </Text>
+
+      <Text style={styles.hint}>
         En Supabase añade redirect: queveohoy://auth/callback
       </Text>
     </ScrollView>

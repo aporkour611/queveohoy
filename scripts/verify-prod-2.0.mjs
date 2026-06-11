@@ -93,6 +93,10 @@ if (metaBody && typeof metaBody.weekCount === "number")
   pass("feed-meta weekCount", String(metaBody.weekCount))
 else if (metaRes.ok) fail("feed-meta weekCount", "campo ausente")
 
+if (metaBody && typeof metaBody.todayCount === "number")
+  pass("feed-meta todayCount", String(metaBody.todayCount))
+else if (metaRes.ok) fail("feed-meta todayCount", "campo ausente")
+
 const metaCache = metaRes.headers.get("cache-control") ?? ""
 const metaVercelCache = metaRes.headers.get("x-vercel-cache") ?? ""
 const metaAge = metaRes.headers.get("age") ?? ""

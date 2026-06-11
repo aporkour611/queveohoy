@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.80.0",
+    date: "2026-06-11",
+    title: "feed-meta testable y warm hubs",
+    highlights: [
+      "Payload feed-meta extraído y testeado",
+      "HubWeekCtaLink + todayCount en frescura",
+      "Keep-warm hub fútbol y API week",
+    ],
+  },
+  {
     version: "2.70.0",
     date: "2026-06-11",
     title: "Cierre maratón 2.41–2.70",
