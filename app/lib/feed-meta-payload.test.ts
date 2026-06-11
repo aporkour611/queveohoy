@@ -45,4 +45,14 @@ describe("buildFeedMetaPayload", () => {
 
     expect(payload.error).toBe("db down")
   })
+
+  it("surfaces week error when feed ok", () => {
+    const payload = buildFeedMetaPayload({
+      events: [],
+      weekEvents: [],
+      weekError: "week timeout",
+    })
+
+    expect(payload.error).toBe("week timeout")
+  })
 })

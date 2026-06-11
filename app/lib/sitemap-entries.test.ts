@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { buildStaticSitemapEntries } from "./sitemap-entries"
 import { SEO_HUBS } from "./seo-hubs"
+import { SEO_GUIDES } from "./seo-guides"
 import { siteUrl } from "./seo"
 
 describe("buildStaticSitemapEntries", () => {
@@ -15,6 +16,10 @@ describe("buildStaticSitemapEntries", () => {
 
     for (const hub of SEO_HUBS) {
       expect(urls).toContain(`${siteUrl}/${hub.slug}`)
+    }
+
+    for (const guide of SEO_GUIDES) {
+      expect(urls).toContain(`${siteUrl}/guia/${guide.slug}`)
     }
   })
 })

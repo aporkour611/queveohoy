@@ -150,6 +150,12 @@ test.describe("smoke", () => {
     expect(typeof body.date).toBe("string")
   })
 
+  test("deep link week=1 limpia la URL", async ({ page }) => {
+    await page.goto("/?week=1")
+    await page.waitForFunction(() => !window.location.search.includes("week=1"))
+    expect(page.url()).not.toContain("week=1")
+  })
+
   test("widget categorías embed carga", async ({ page }) => {
     await page.goto("/embed/categorias")
     await expect(page.getByText("Explorar")).toBeVisible()

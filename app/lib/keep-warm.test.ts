@@ -56,6 +56,7 @@ describe("warmOriginPath", () => {
     expect(KEEP_WARM_ORIGIN_PATHS).toContain("/")
     expect(KEEP_WARM_ORIGIN_PATHS).toContain("/api/feed-meta")
     expect(KEEP_WARM_ORIGIN_PATHS).toContain("/futbol")
+    expect(KEEP_WARM_ORIGIN_PATHS).toContain("/champions")
     expect(KEEP_WARM_ORIGIN_PATHS).toContain("/api/v1/feed/week")
   })
 })

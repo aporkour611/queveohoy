@@ -97,6 +97,10 @@ if (metaBody && typeof metaBody.todayCount === "number")
   pass("feed-meta todayCount", String(metaBody.todayCount))
 else if (metaRes.ok) fail("feed-meta todayCount", "campo ausente")
 
+if (metaBody?.date && /^\d{4}-\d{2}-\d{2}$/.test(metaBody.date))
+  pass("feed-meta date Madrid", metaBody.date)
+else if (metaRes.ok) fail("feed-meta date", "campo ausente o inválido")
+
 const metaCache = metaRes.headers.get("cache-control") ?? ""
 const metaVercelCache = metaRes.headers.get("x-vercel-cache") ?? ""
 const metaAge = metaRes.headers.get("age") ?? ""

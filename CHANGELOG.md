@@ -2,6 +2,18 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [3.20.0] - 2026-06-11
+
+### Added
+- E2E deep link `/?week=1` limpia URL tras hidratar
+- verify-prod valida `date` en feed-meta
+- Keep-warm hub `/champions`
+
+### Changed
+- Sitemap tests incluyen guías SEO
+- Docs desarrolladores: deep link semana
+- Versión del producto: **3.20.0**
+
 ## [3.10.0] - 2026-06-11
 
 ### Added
