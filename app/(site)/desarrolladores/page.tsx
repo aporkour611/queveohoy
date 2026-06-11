@@ -33,6 +33,8 @@ export default function DesarrolladoresPage() {
   const v2FeedExample = `${siteUrl}/api/v2/feed`
   const embedTonight = `${siteUrl}/embed/esta-noche`
   const embedCategories = `${siteUrl}/embed/categorias`
+  const feedMetaExample = `${siteUrl}/api/feed-meta`
+  const widgetFavoriteExample = `${siteUrl}/api/v1/widget/next-favorite`
 
   return (
     <div className="fh-body">
@@ -97,7 +99,24 @@ export default function DesarrolladoresPage() {
               datos.
             </p>
             <pre className="qvh-dev-code">
-              <code>{`curl "${feedExample}"\ncurl "${weekFeedExample}"\ncurl "${categoriesExample}"\ncurl -I "${v2FeedExample}"`}</code>
+              <code>{`curl "${feedExample}"\ncurl "${weekFeedExample}"\ncurl "${feedMetaExample}"\ncurl "${categoriesExample}"\ncurl -I "${v2FeedExample}"`}</code>
+            </pre>
+          </section>
+
+          <section>
+            <h2>Widget app — próximo favorito</h2>
+            <p>
+              Apps nativas con sesión Supabase: devuelve el favorito más próximo
+              en el tiempo (Madrid). Sin token → <code>401</code>.
+            </p>
+            <ul>
+              <li>
+                <code>GET /api/v1/widget/next-favorite</code> — cabecera{" "}
+                <code>Authorization: Bearer &lt;access_token&gt;</code>
+              </li>
+            </ul>
+            <pre className="qvh-dev-code">
+              <code>{`curl -H "Authorization: Bearer TU_TOKEN" "${widgetFavoriteExample}"`}</code>
             </pre>
           </section>
 

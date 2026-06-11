@@ -8,7 +8,10 @@ import {
   HOME_FEED_ACTIVATE_EVENT,
   markHomeFeedWeekIntent,
 } from "@/app/lib/home-feed-intent";
-import { readWeekViewFromSearch, WEEK_VIEW_PARAM } from "@/app/lib/filter-url";
+import {
+  readWeekViewFromSearch,
+  stripWeekViewFromSearch,
+} from "@/app/lib/filter-url";
 import { EventDrawerProvider } from "./EventDrawerProvider";
 import { HomeResetProvider } from "./HomeResetContext";
 
@@ -25,12 +28,11 @@ export function HomeFeedGate(props: HomeFeedProps) {
   const [initialWeekView, setInitialWeekView] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
     if (readWeekViewFromSearch(window.location.search)) {
       markHomeFeedWeekIntent()
       setInitialWeekView(true)
-      params.delete(WEEK_VIEW_PARAM)
-      const next = `${window.location.pathname}${params.toString() ? `?${params}` : ""}${window.location.hash}`
+      const remainder = stripWeekViewFromSearch(window.location.search)
+      const next = `${window.location.pathname}${remainder ? `?${remainder}` : ""}${window.location.hash}`
       window.history.replaceState(null, "", next)
     }
 

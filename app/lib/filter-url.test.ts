@@ -3,6 +3,7 @@ import {
   buildFilterParam,
   buildWeekViewHomeUrl,
   readWeekViewFromSearch,
+  stripWeekViewFromSearch,
   syncFilterParamInUrl,
 } from "./filter-url"
 
@@ -15,6 +16,11 @@ describe("buildWeekViewHomeUrl", () => {
     expect(readWeekViewFromSearch("?week=1")).toBe(true)
     expect(readWeekViewFromSearch("?week=0")).toBe(false)
     expect(readWeekViewFromSearch("")).toBe(false)
+  })
+
+  it("strips week param preserving other query keys", () => {
+    expect(stripWeekViewFromSearch("?week=1&filtros=futbol")).toBe("filtros=futbol")
+    expect(stripWeekViewFromSearch("?week=1")).toBe("")
   })
 })
 

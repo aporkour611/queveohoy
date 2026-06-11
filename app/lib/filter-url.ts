@@ -15,6 +15,14 @@ export function readWeekViewFromSearch(search: string): boolean {
   return new URLSearchParams(raw).get(WEEK_VIEW_PARAM) === WEEK_VIEW_VALUE
 }
 
+/** Quita `week=1` del query string (sin prefijo `?`). */
+export function stripWeekViewFromSearch(search: string): string {
+  const raw = search.startsWith("?") ? search.slice(1) : search
+  const params = new URLSearchParams(raw)
+  params.delete(WEEK_VIEW_PARAM)
+  return params.toString()
+}
+
 /** IDs válidos separados por coma (sin espacios). */
 export function parseFilterParam(raw: string | null | undefined): string[] {
   if (!raw?.trim()) return []

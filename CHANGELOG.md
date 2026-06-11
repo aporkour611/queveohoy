@@ -2,6 +2,18 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [3.10.0] - 2026-06-11
+
+### Added
+- `stripWeekViewFromSearch()` — limpia `week=1` sin perder `?filtros=`
+- Rollover medianoche invalida hub `/futbol` y `/api/v1/feed/week`
+- Docs widget `GET /api/v1/widget/next-favorite`
+- App: botón export RGPD (web) en Cuenta
+
+### Changed
+- HomeEventOutline y hubs vacíos con prefetch / intent semanal
+- Versión del producto: **3.10.0**
+
 ## [3.00.0] - 2026-06-11
 
 ### Added

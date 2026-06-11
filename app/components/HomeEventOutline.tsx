@@ -51,7 +51,7 @@ export function HomeEventOutline({ events }: Props) {
       {days.map((day) => (
         <div key={day.date} className="fh-seo-outline-day">
           <h3 id={`seo-day-${day.date}`}>
-            <Link href={partidosHoyDatePath(day.date)}>{day.title}</Link>
+            <Link href={partidosHoyDatePath(day.date)} prefetch>{day.title}</Link>
           </h3>
           <ul>
             {day.events.map((event) => {
@@ -65,7 +65,7 @@ export function HomeEventOutline({ events }: Props) {
                     <>
                       {" "}
                       ·{" "}
-                      <Link href={`/${hub.slug}`}>{hub.title}</Link>
+                      <Link href={`/${hub.slug}`} prefetch>{hub.title}</Link>
                     </>
                   ) : null}
                 </li>

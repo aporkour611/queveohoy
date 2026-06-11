@@ -186,6 +186,14 @@ export default function CuentaScreen() {
         >
           <Text style={styles.secondaryText}>Gestionar en la web</Text>
         </Pressable>
+        <Pressable
+          style={[styles.outlineBtn, { marginTop: 12 }]}
+          onPress={() => void Linking.openURL(`${SITE_URL}/cuenta`)}
+          accessibilityRole="link"
+          accessibilityLabel="Exportar datos RGPD en la web"
+        >
+          <Text style={styles.outlineText}>Exportar datos RGPD (web)</Text>
+        </Pressable>
         <Text style={[styles.hint, { marginTop: 8 }]}>
           App móvil v{APP_VERSION} · API {SITE_URL.replace("https://", "")}
         </Text>

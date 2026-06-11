@@ -33,8 +33,4 @@ Maratón **2.71 → 3.00** (30 ciclos, tercer sprint continuo).
 | 2 | 2.41 → 2.70 | 2.70.0 |
 | 3 | 2.71 → 3.00 | **3.00.0** |
 
-## Siguiente (3.01+)
-
-- Expo 54 + widget iOS (ver `mobile/docs/IOS-WIDGET.md`)
-- Activar `PERF_GATE_BLOCKING=1` (ver `docs/DEPLOY-PERF-GATE.md`)
-- EAS TestFlight + credenciales widget
+Ver [ROADMAP-3.10.md](./ROADMAP-3.10.md) (maratón 3.01–3.30 en curso).

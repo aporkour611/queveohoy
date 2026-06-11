@@ -98,8 +98,9 @@ export function SeoHubPage({ hub, events, weekAgendaCount = 0 }: Props) {
                   No hay eventos de {hub.title.toLowerCase()} en este momento.
                 </p>
                 <p>
-                  <Link href="/">Consulta la agenda completa</Link> para ver
-                  todos los eventos de la semana.
+                  <HubWeekCtaLink>
+                    Consulta la agenda completa esta semana →
+                  </HubWeekCtaLink>
                 </p>
               </div>
             ) : (

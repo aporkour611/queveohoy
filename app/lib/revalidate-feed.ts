@@ -6,14 +6,16 @@ import {
   fetchWeekViewFeedEvents,
 } from "./events-feed-server";
 
-const ROLLOVER_PATHS = [
+export const ROLLOVER_PATHS = [
   "/",
   "/explorar",
+  "/futbol",
   "/embed/esta-noche",
   "/sitemap.xml",
   "/feed.xml",
   "/api/events",
   "/api/home-feed",
+  "/api/v1/feed/week",
   "/api/v2/feed",
   "/api/feed-meta",
 ] as const;
