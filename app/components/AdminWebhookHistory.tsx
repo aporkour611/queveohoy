@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import type { PartnerWebhookHistoryEntry } from "@/app/lib/partner-webhook-history-store"
+import { deferClientStateUpdate } from "@/app/lib/defer-client-state"
 
 type HistoryResponse = {
   storeConfigured?: boolean
@@ -49,7 +50,9 @@ export function AdminWebhookHistory({
   }, [])
 
   useEffect(() => {
-    void load()
+    deferClientStateUpdate(() => {
+      void load()
+    })
   }, [load, refreshKey])
 
   if (loading) {

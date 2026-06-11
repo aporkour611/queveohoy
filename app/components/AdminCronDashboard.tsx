@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import type { CronMetricsSummary } from "@/app/lib/cron-metrics"
+import { deferClientStateUpdate } from "@/app/lib/defer-client-state"
 
 type CronStatusResponse = {
   version?: string
@@ -54,7 +55,9 @@ export function AdminCronDashboard({
   }, [])
 
   useEffect(() => {
-    void load()
+    deferClientStateUpdate(() => {
+      void load()
+    })
   }, [load, refreshKey])
 
   if (loading) {
