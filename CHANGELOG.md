@@ -2,6 +2,19 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.50.0] - 2026-06-11
+
+### Added
+- Hubs SEO: prefetch semanal (`HubWeekWarm` + `<link prefetch>`)
+- `GET /api/feed-meta` campo `weekCount`
+- Helper `buildWeekViewHomeUrl()` centralizado en `filter-url`
+- App móvil: enlace «Gestionar en la web» en Cuenta
+- E2E hub `/futbol` y assert `weekCount` en feed-meta
+
+### Changed
+- Versión del producto: **2.50.0** · app **1.0.0**
+- Hubs muestran meta de agenda global semanal y CTAs a semana/explorar
+
 ## [2.40.0] - 2026-06-11
 
 ### Added

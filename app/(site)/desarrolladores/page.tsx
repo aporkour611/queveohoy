@@ -86,8 +86,8 @@ export default function DesarrolladoresPage() {
                 <code>GET /api/health</code> — estado del servicio y versión.
               </li>
               <li>
-                <code>GET /api/feed-meta</code> — frescura del feed y conteo de
-                eventos.
+                <code>GET /api/feed-meta</code> — frescura del feed, conteo de
+                eventos y <code>weekCount</code> (ventana semanal).
               </li>
             </ul>
             <p>

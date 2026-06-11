@@ -17,7 +17,9 @@ export function SeoHubLinks({ current }: Props) {
             {hub.slug === current ? (
               <span aria-current="page">{hub.title}</span>
             ) : (
-              <Link href={`/${hub.slug}`}>{hub.title}</Link>
+              <Link href={`/${hub.slug}`} prefetch>
+                {hub.title}
+              </Link>
             )}
           </li>
         ))}

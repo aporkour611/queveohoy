@@ -6,6 +6,7 @@ import {
 } from "../lib/timezone";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
 import type { SeoHubConfig } from "../lib/seo-hubs";
+import { buildWeekViewHomeUrl } from "../lib/filter-url";
 import { filterEventsForHub } from "../lib/seo-hubs";
 import { HubFaq } from "./HubFaq";
 import { HubJsonLd } from "./HubJsonLd";
@@ -20,9 +21,10 @@ import { SeoHubEventFeed } from "./SeoHubEventFeed";
 type Props = {
   hub: SeoHubConfig;
   events: EventRow[];
+  weekAgendaCount?: number;
 };
 
-export function SeoHubPage({ hub, events }: Props) {
+export function SeoHubPage({ hub, events, weekAgendaCount = 0 }: Props) {
   const filtered = filterEventsForHub(events, hub);
   const dayCount = hub.dayScope === "today" ? 1 : FEED_DAY_COUNT;
 
@@ -62,6 +64,12 @@ export function SeoHubPage({ hub, events }: Props) {
 
             <h1 className="fh-page-title">{hub.h1}</h1>
             <p className="fh-page-lead">{hub.lead}</p>
+            {weekAgendaCount > 0 && hub.dayScope !== "today" ? (
+              <p className="fh-seo-hub-week-meta">
+                Agenda global:{" "}
+                <strong>{weekAgendaCount} eventos</strong> esta semana en Madrid.
+              </p>
+            ) : null}
 
             {totalEvents > 0 ? (
               <div className="qvh-calendar-hero-stats qvh-calendar-hero-stats-hub">
@@ -75,7 +83,13 @@ export function SeoHubPage({ hub, events }: Props) {
             ) : null}
 
             <p className="fh-seo-hub-cta">
-              <Link href="/">Ver agenda interactiva con filtros →</Link>
+              <Link href={buildWeekViewHomeUrl()}>
+                Ver semana completa en la agenda →
+              </Link>
+              {" · "}
+              <Link href="/explorar" prefetch>
+                Explorar categorías
+              </Link>
             </p>
 
             {days.length === 0 ? (

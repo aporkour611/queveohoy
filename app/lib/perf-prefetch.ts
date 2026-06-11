@@ -1,4 +1,7 @@
-import { HOME_FEED_WEEK_PREFETCH_URL } from "./home-feed-intent"
+import {
+  HOME_FEED_WEEK_PREFETCH_URL,
+  PUBLIC_WEEK_FEED_PREFETCH_URL,
+} from "./home-feed-intent"
 
 let weekFeedPrefetched = false
 let weekFeedPrefetchedAt = 0
@@ -8,7 +11,7 @@ const WEEK_PREFETCH_TTL_MS = 60_000
 export function prefetchPublicWeekFeedOnce(): void {
   if (typeof window === "undefined") return
   try {
-    void fetch("/api/v1/feed/week", {
+    void fetch(PUBLIC_WEEK_FEED_PREFETCH_URL, {
       priority: "low",
       credentials: "omit",
     })

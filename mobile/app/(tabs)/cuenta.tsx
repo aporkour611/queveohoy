@@ -4,6 +4,7 @@ import { WidgetHint } from "@/components/WidgetHint"
 import { useMemo, useState } from "react"
 import {
   ActivityIndicator,
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -177,6 +178,14 @@ export default function CuentaScreen() {
         <PushSettings />
         <ThemeSettings />
         <WidgetHint />
+        <Pressable
+          style={[styles.secondaryBtn, { marginTop: 16 }]}
+          onPress={() => void Linking.openURL(`${SITE_URL}/cuenta`)}
+          accessibilityRole="link"
+          accessibilityLabel="Gestionar cuenta en la web"
+        >
+          <Text style={styles.secondaryText}>Gestionar en la web</Text>
+        </Pressable>
         <Text style={[styles.hint, { marginTop: 8 }]}>
           App móvil v{APP_VERSION} · API {SITE_URL.replace("https://", "")}
         </Text>

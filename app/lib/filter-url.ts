@@ -2,6 +2,19 @@ import { ALL_SPORT_IDS } from "./filter-config"
 
 const FILTER_PARAM = "filtros"
 
+export const WEEK_VIEW_PARAM = "week"
+export const WEEK_VIEW_VALUE = "1"
+
+/** Deep link `/?week=1` para abrir la vista semanal al hidratar. */
+export function buildWeekViewHomeUrl(): string {
+  return `/?${WEEK_VIEW_PARAM}=${WEEK_VIEW_VALUE}`
+}
+
+export function readWeekViewFromSearch(search: string): boolean {
+  const raw = search.startsWith("?") ? search.slice(1) : search
+  return new URLSearchParams(raw).get(WEEK_VIEW_PARAM) === WEEK_VIEW_VALUE
+}
+
 /** IDs válidos separados por coma (sin espacios). */
 export function parseFilterParam(raw: string | null | undefined): string[] {
   if (!raw?.trim()) return []

@@ -112,6 +112,17 @@ test.describe("smoke", () => {
     const body = await response.json()
     expect(body.generatedAt).toBeTruthy()
     expect(typeof body.eventCount).toBe("number")
+    expect(typeof body.todayCount).toBe("number")
+    expect(typeof body.weekCount).toBe("number")
+  })
+
+  test("hub fútbol carga agenda SEO", async ({ page }) => {
+    await page.goto("/futbol")
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/fútbol/i)
+    await expect(page.getByRole("link", { name: /Agenda completa/i })).toBeVisible()
+    await expect(
+      page.getByRole("link", { name: /Ver semana completa en la agenda/i })
+    ).toBeVisible()
   })
 
   test("API v1 feed filtra categories", async ({ request }) => {

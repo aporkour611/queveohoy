@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { HubWeekWarm } from "../../components/HubWeekWarm";
+import { HomeWeekPrefetchHead } from "../../components/HomeWeekPrefetchHead";
 import { SeoHubPage } from "../../components/SeoHubPage";
-import { getFeedEventsForPage } from "../../lib/events-feed-server";
+import {
+  getFeedEventsForPage,
+  getWeekViewFeedEventsForPage,
+} from "../../lib/events-feed-server";
 import { buildHubMetadataTitle, getSeoHub } from "../../lib/seo-hubs";
 import { pageMetadata } from "../../lib/seo";
 
@@ -31,7 +36,20 @@ export default async function HubRoute({ params }: PageProps) {
   const hub = getSeoHub(slug);
   if (!hub) notFound();
 
-  const { events } = await getFeedEventsForPage();
+  const [{ events }, { events: weekAgendaEvents }] = await Promise.all([
+    getFeedEventsForPage(),
+    getWeekViewFeedEventsForPage(),
+  ]);
 
-  return <SeoHubPage hub={hub} events={events} />;
+  return (
+    <>
+      <HomeWeekPrefetchHead />
+      <HubWeekWarm />
+      <SeoHubPage
+        hub={hub}
+        events={events}
+        weekAgendaCount={weekAgendaEvents.length}
+      />
+    </>
+  );
 }

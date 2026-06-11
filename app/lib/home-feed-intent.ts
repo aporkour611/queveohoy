@@ -8,6 +8,8 @@ export const HOME_FEED_WEEK_INTENT_KEY = "qvh-home-feed-week-intent";
 
 export const HOME_FEED_WEEK_PREFETCH_URL = "/api/events?scope=week";
 
+export const PUBLIC_WEEK_FEED_PREFETCH_URL = "/api/v1/feed/week";
+
 export function prefetchHomeFeedWeek(): void {
   prefetchHomeFeedWeekOnce();
 }

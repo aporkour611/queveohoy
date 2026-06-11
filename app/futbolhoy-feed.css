@@ -1829,6 +1829,16 @@
   text-decoration: underline;
 }
 
+.fh-seo-hub-week-meta {
+  color: var(--qvh-text-muted, #a3a3a3);
+  font-size: 0.875rem;
+  margin: 0 0 12px;
+}
+
+.fh-seo-hub-week-meta strong {
+  color: var(--qvh-text, #fafafa);
+}
+
 .fh-seo-hub-back {
   color: var(--qvh-text, #fff);
   text-decoration: none;

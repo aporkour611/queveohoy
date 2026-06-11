@@ -25,6 +25,7 @@ Maratón **2.13 → 2.40** (30 entregas encadenadas).
 
 ## Siguiente (2.41+)
 
+Ver [ROADMAP-2.50.md](./ROADMAP-2.50.md) (maratón 2.41–2.70 en curso).
+
 - Expo 54 + widget iOS (`expo-widgets`)
 - Activar `PERF_GATE_BLOCKING=1` en GitHub
-- Hubs SEO prefetch semana

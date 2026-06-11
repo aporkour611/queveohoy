@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server"
 import { enforceApiRateLimit, rateLimitResponse } from "@/app/lib/api-rate-limit"
 import { FEED_REVALIDATE_SECONDS } from "@/app/lib/cache-config"
-import { fetchFeedEvents } from "@/app/lib/events-feed-server"
+import {
+  fetchFeedEvents,
+  fetchWeekViewFeedEvents,
+} from "@/app/lib/events-feed-server"
 import { getMadridTodayKey } from "@/app/lib/seo-date"
 import { MADRID_TZ } from "@/app/lib/timezone"
 
@@ -12,7 +15,10 @@ export async function GET(request: Request) {
   const rate = await enforceApiRateLimit(request, "feed-meta")
   if (!rate.ok) return rateLimitResponse(rate.retryAfterSec)
 
-  const { events, error } = await fetchFeedEvents()
+  const [{ events, error }, weekFeed] = await Promise.all([
+    fetchFeedEvents(),
+    fetchWeekViewFeedEvents(),
+  ])
   const todayKey = getMadridTodayKey()
   const todayCount = events.filter((e) => e.date === todayKey).length
 
@@ -23,8 +29,9 @@ export async function GET(request: Request) {
       date: todayKey,
       eventCount: events.length,
       todayCount,
+      weekCount: weekFeed.events.length,
       revalidateSeconds: FEED_REVALIDATE_SECONDS,
-      error: error ?? null,
+      error: error ?? weekFeed.error ?? null,
     },
     {
       headers: {

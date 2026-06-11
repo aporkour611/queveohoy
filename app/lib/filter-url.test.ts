@@ -1,5 +1,22 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { buildFilterParam, syncFilterParamInUrl } from "./filter-url"
+import {
+  buildFilterParam,
+  buildWeekViewHomeUrl,
+  readWeekViewFromSearch,
+  syncFilterParamInUrl,
+} from "./filter-url"
+
+describe("buildWeekViewHomeUrl", () => {
+  it("builds week deep link", () => {
+    expect(buildWeekViewHomeUrl()).toBe("/?week=1")
+  })
+
+  it("reads week intent from search", () => {
+    expect(readWeekViewFromSearch("?week=1")).toBe(true)
+    expect(readWeekViewFromSearch("?week=0")).toBe(false)
+    expect(readWeekViewFromSearch("")).toBe(false)
+  })
+})
 
 describe("buildFilterParam", () => {
   it("drops unknown ids", () => {
