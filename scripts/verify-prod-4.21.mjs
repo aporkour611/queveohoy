@@ -1,0 +1,181 @@
+/**
+ * Verificación lanzamiento 4.21.0 — Semana UFC Casablanca.
+ * Uso: npm run verify:prod:4.21
+ */
+import { readFileSync } from "node:fs"
+import { spawnSync } from "node:child_process"
+
+const BASE = process.env.VERIFY_URL ?? "https://queveohoy.es"
+const checks = []
+const pass = (name, detail = "") => checks.push({ ok: true, name, detail })
+const fail = (name, detail = "") => checks.push({ ok: false, name, detail })
+
+const versionPattern = /[1-4]\.\d+\.\d/
+
+const readExpectedVersion = () => {
+  try {
+    const src = readFileSync("app/lib/product-version.ts", "utf8")
+    const match = src.match(/PRODUCT_VERSION\s*=\s*"([^"]+)"/)
+    return match?.[1] ?? "4.21.0"
+  } catch {
+    return "4.21.0"
+  }
+}
+
+const expectedVersion = readExpectedVersion()
+const ufcWindowStart = "2026-05-30"
+const ufcWindowEnd = "2026-06-15"
+
+const fetchText = async (path, init = {}) => {
+  const res = await fetch(`${BASE}${path}`, {
+    cache: "no-store",
+    headers: { "Cache-Control": "no-cache" },
+    ...init,
+  })
+  return { res, text: await res.text() }
+}
+
+const { res: homeRes, text: homeHtml } = await fetchText("/")
+if (homeRes.ok) pass("HTTP 200 home")
+else fail("HTTP 200 home", String(homeRes.status))
+
+if (versionPattern.test(homeHtml)) pass("Footer versión producto")
+else fail("Footer versión", "Despliegue pendiente o caché antigua")
+
+if (homeHtml.includes(expectedVersion))
+  pass(`Footer muestra ${expectedVersion}`)
+else fail(`Footer muestra ${expectedVersion}`, "Sigue versión anterior en HTML")
+
+if (homeHtml.includes("data-qvh-filter-intent"))
+  pass("Intent prefetch filtros en shell")
+else fail("Intent prefetch filtros en shell")
+
+const warmCronSecret = process.env.CRON_SECRET?.trim()
+const warmHeaders = {
+  "Cache-Control": "no-cache",
+  ...(warmCronSecret ? { Authorization: `Bearer ${warmCronSecret}` } : {}),
+}
+const warmCandidates = [
+  ["/api/health?warm=1", "health warm"],
+  ["/api/warm", "warm"],
+]
+let warmOk = false
+for (const [warmPath] of warmCandidates) {
+  const warmRes = await fetch(`${BASE}${warmPath}`, {
+    cache: "no-store",
+    headers: warmHeaders,
+  })
+  const warmType = warmRes.headers.get("content-type") ?? ""
+  if (warmRes.status === 404 || !warmType.includes("application/json")) continue
+  const warmBody = await warmRes.json()
+  warmOk = true
+  if (warmBody.ok) pass(`GET ${warmPath}`, `ms=${warmBody.ms ?? "?"}`)
+  else
+    pass(`GET ${warmPath} (degraded)`, JSON.stringify(warmBody.data ?? warmBody).slice(0, 80))
+  break
+}
+if (!warmOk) fail("Keep-warm endpoint", "Necesita /api/health?warm=1 o /api/warm tras deploy")
+
+const { res: healthRes, text: healthText } = await fetchText("/api/health")
+if (healthRes.ok) pass("GET /api/health")
+else fail("GET /api/health", String(healthRes.status))
+
+if (healthText.includes(`"version":"${expectedVersion}"`))
+  pass(`Health versión ${expectedVersion}`)
+else if (versionPattern.test(healthText))
+  pass(`Health versión producto`, `esperado ${expectedVersion}`)
+else fail("Health versión", healthText.slice(0, 120))
+
+const metaRes = await fetch(`${BASE}/api/feed-meta`, { cache: "no-store" })
+if (metaRes.ok) pass("GET /api/feed-meta")
+else fail("GET /api/feed-meta", String(metaRes.status))
+
+const metaBody = metaRes.ok ? await metaRes.json() : null
+if (metaBody && typeof metaBody.weekCount === "number")
+  pass("feed-meta weekCount", String(metaBody.weekCount))
+else if (metaRes.ok) fail("feed-meta weekCount", "campo ausente")
+
+if (metaBody && typeof metaBody.todayCount === "number")
+  pass("feed-meta todayCount", String(metaBody.todayCount))
+else if (metaRes.ok) fail("feed-meta todayCount", "campo ausente")
+
+if (metaBody?.date && /^\d{4}-\d{2}-\d{2}$/.test(metaBody.date))
+  pass("feed-meta date Madrid", metaBody.date)
+else if (metaRes.ok) fail("feed-meta date", "campo ausente o inválido")
+
+if (metaBody?.timezone === "Europe/Madrid")
+  pass("feed-meta timezone", metaBody.timezone)
+else if (metaRes.ok) fail("feed-meta timezone", String(metaBody?.timezone ?? "ausente"))
+
+if (metaBody && typeof metaBody.revalidateSeconds === "number")
+  pass("feed-meta revalidateSeconds", String(metaBody.revalidateSeconds))
+else if (metaRes.ok) fail("feed-meta revalidateSeconds", "campo ausente")
+
+if (metaBody?.generatedAt && !Number.isNaN(Date.parse(metaBody.generatedAt)))
+  pass("feed-meta generatedAt", metaBody.generatedAt.slice(0, 19))
+else if (metaRes.ok) fail("feed-meta generatedAt", "campo ausente o inválido")
+
+const metaCache = metaRes.headers.get("cache-control") ?? ""
+const metaVercelCache = metaRes.headers.get("x-vercel-cache") ?? ""
+const metaAge = metaRes.headers.get("age") ?? ""
+const metaCached =
+  /s-maxage=60/.test(metaCache) ||
+  /^(HIT|STALE)/i.test(metaVercelCache) ||
+  (metaAge !== "" && Number(metaAge) >= 0)
+
+if (metaCached) pass("feed-meta cache CDN", metaVercelCache || metaCache || `age=${metaAge}`)
+else fail("feed-meta cache CDN", metaCache || "sin Cache-Control")
+
+const homeFeed = await fetch(`${BASE}/api/home-feed`, {
+  cache: "no-store",
+  headers: { "Cache-Control": "no-cache" },
+})
+if (homeFeed.ok) pass("GET /api/home-feed")
+else fail("GET /api/home-feed", String(homeFeed.status))
+
+const etag = homeFeed.headers.get("etag")
+if (etag) pass("home-feed ETag", etag)
+else fail("home-feed ETag")
+
+if (etag) {
+  const again = await fetch(`${BASE}/api/home-feed`, {
+    cache: "no-store",
+    headers: { "If-None-Match": etag },
+  })
+  if (again.status === 304) pass("home-feed 304 Not Modified")
+  else fail("home-feed 304", String(again.status))
+}
+
+const madridDate = metaBody?.date ?? ""
+const inUfcWeek =
+  madridDate >= ufcWindowStart && madridDate <= ufcWindowEnd
+
+if (inUfcWeek) {
+  if (homeHtml.includes('data-site-week="ufc-casablanca"'))
+    pass("Temática UFC en html")
+  else fail("Temática UFC en html", 'data-site-week="ufc-casablanca" ausente')
+
+  if (homeHtml.includes("qvh-ufc-week-hero"))
+    pass("Hero UFC Casablanca en home")
+  else fail("Hero UFC Casablanca en home")
+
+  if (/Topuria|Ilia/i.test(homeHtml))
+    pass("Main event Topuria en home")
+  else fail("Main event Topuria en home")
+} else {
+  pass("Ventana UFC Casablanca", `fuera de ventana (${madridDate || "?"})`)
+}
+
+const legacy = spawnSync(process.execPath, ["scripts/verify-prod-1.0.mjs"], {
+  stdio: "inherit",
+  env: { ...process.env, VERIFY_URL: BASE },
+})
+if (legacy.status === 0) pass("verify-prod-1.0 (contrato base)")
+else fail("verify-prod-1.0 (contrato base)", `exit ${legacy.status ?? "?"}`)
+
+const failed = checks.filter((c) => !c.ok)
+for (const c of checks) {
+  console.log(c.ok ? "OK" : "FAIL", c.name, c.detail ? `— ${c.detail}` : "")
+}
+console.log(`\n${checks.length - failed.length}/${checks.length} OK`)
+process.exit(failed.length > 0 ? 1 : 0)

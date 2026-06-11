@@ -213,8 +213,8 @@ jobs:
               -o /tmp/rollover.json || echo "::warning::midnight-rollover post-deploy falló"
             node -e "try{const d=require('/tmp/rollover.json');console.log('rollover',d.calendarDay,d.ok)}catch(e){console.log('rollover skip')}" || true
           fi
-          echo "Verificación lanzamiento 2.0…"
-          node scripts/verify-prod-2.0.mjs
+          echo "Verificación lanzamiento 4.21…"
+          node scripts/verify-prod-4.21.mjs
           echo "Integraciones en producción…"
           node scripts/check-integrations.mjs
           if [ "$events" = "0" ] && [ -n "${CRON_SECRET:-}" ]; then

@@ -24,6 +24,7 @@
     "verify:prod:1.0": "node scripts/verify-prod-1.0.mjs",
     "verify:prod:1.9": "node scripts/verify-prod-1.9.mjs",
     "verify:prod:2.0": "node scripts/verify-prod-2.0.mjs",
+    "verify:prod:4.21": "node scripts/verify-prod-4.21.mjs",
     "keep-warm:prod": "node scripts/keep-warm-prod.mjs",
     "apple:client-secret": "node scripts/generate-apple-client-secret.mjs",
     "check:integrations": "node scripts/check-integrations.mjs",
