@@ -1,3 +1,5 @@
+import { ensureHttpsOrigin } from "./ensure-https"
+
 export type FeedEvent = {
   id: number
   title: string
@@ -18,8 +20,12 @@ export type FeedResponse = {
   error?: string | null
 }
 
-const API_BASE =
-  process.env.EXPO_PUBLIC_API_BASE?.replace(/\/$/, "") ?? "https://queveohoy.es"
+export const API_BASE = ensureHttpsOrigin(
+  process.env.EXPO_PUBLIC_API_BASE,
+  "https://queveohoy.es"
+)
+
+export const SITE_URL = API_BASE
 
 export async function fetchTodayFeed(limit = 40): Promise<FeedResponse> {
   const url = `${API_BASE}/api/v1/feed?limit=${limit}`

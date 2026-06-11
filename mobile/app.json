@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "backgroundColor": "#0a0a0a"
       },
-      "package": "es.queveohoy.app"
+      "package": "es.queveohoy.app",
+      "usesCleartextTraffic": false
     },
     "web": {
       "bundler": "metro",

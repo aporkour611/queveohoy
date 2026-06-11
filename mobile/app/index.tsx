@@ -2,13 +2,15 @@ import { useCallback, useEffect, useState } from "react"
 import {
   ActivityIndicator,
   FlatList,
+  Linking,
   Pressable,
   RefreshControl,
   StyleSheet,
   Text,
   View,
 } from "react-native"
-import { fetchTodayFeed, formatEventMeta, type FeedEvent } from "@/lib/api"
+import { fetchTodayFeed, formatEventMeta, SITE_URL, type FeedEvent } from "@/lib/api"
+import { formatMobileNetworkError } from "@/lib/ensure-https"
 
 type LoadState =
   | { kind: "loading" }
@@ -32,9 +34,10 @@ export default function HomeScreen() {
         date: feed.date,
       })
     } catch (err) {
+      const raw = err instanceof Error ? err.message : "Error de red"
       setState({
         kind: "error",
-        message: err instanceof Error ? err.message : "Error de red",
+        message: formatMobileNetworkError(raw),
       })
     }
   }, [])
@@ -64,6 +67,16 @@ export default function HomeScreen() {
         <Text style={styles.error} accessibilityRole="alert">
           {state.message}
         </Text>
+        <Pressable
+          style={styles.linkBtn}
+          onPress={() => {
+            void Linking.openURL(SITE_URL)
+          }}
+          accessibilityRole="link"
+          accessibilityLabel="Abrir queveohoy.es en el navegador"
+        >
+          <Text style={styles.linkText}>Abrir {SITE_URL.replace("https://", "")}</Text>
+        </Pressable>
         <Pressable
           style={styles.retryBtn}
           onPress={() => {
@@ -149,6 +162,15 @@ const styles = StyleSheet.create({
     color: "#fca5a5",
     textAlign: "center",
     marginBottom: 16,
+  },
+  linkBtn: {
+    marginBottom: 12,
+    paddingHorizontal: 8,
+  },
+  linkText: {
+    color: "#a3e635",
+    fontWeight: "600",
+    textDecorationLine: "underline",
   },
   retryBtn: {
     backgroundColor: "#a3e635",

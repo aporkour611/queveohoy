@@ -15,7 +15,18 @@ npm install
 npm start
 ```
 
-Escanea el QR con Expo Go. La agenda carga desde `https://queveohoy.es/api/v1/feed`.
+Escanea el QR **desde la app Expo Go** (no con la cámara del móvil ni Chrome).
+
+## «La conexión no es segura» en el móvil
+
+| Causa | Qué hacer |
+|-------|-----------|
+| Abriste el QR en **Safari/Chrome** | Eso abre `http://192.168.x.x:8081` (desarrollo). Instala [Expo Go](https://expo.dev/go) y escanea desde ahí |
+| Entras a la **web** sin https | Usa siempre **https://queveohoy.es** (con candado) |
+| Red local / firewall | `npm run start:tunnel` y escanea el QR de túnel |
+| Fecha del móvil incorrecta | Ajusta hora automática en Ajustes |
+
+La web en producción **sí tiene HTTPS** válido. El aviso aparece casi siempre al abrir la URL de desarrollo (`http://…`) en el navegador.
 
 ## Variables
 

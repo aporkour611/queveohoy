@@ -6,7 +6,11 @@ function resolveSiteUrl(): string {
   if (!raw) return fallback;
   try {
     const normalized = raw.includes("://") ? raw : `https://${raw}`;
-    return new URL(normalized).origin;
+    const url = new URL(normalized);
+    if (url.protocol === "http:" && !url.hostname.match(/^(localhost|127\.0\.0\.1)$/)) {
+      url.protocol = "https:";
+    }
+    return url.origin;
   } catch {
     return fallback;
   }
