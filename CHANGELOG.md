@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [3.40.0] - 2026-06-11
+
+### Added
+- `buildWeekViewHomeUrlWithFilters()` — deep link semana + categorías
+- Keep-warm hub `/laliga` y rollover `/champions`
+- Docs desarrolladores: gate PSI (`DEPLOY-PERF-GATE`)
+
+### Changed
+- SeoGuidesPromo prefetch en enlaces de guías
+- Versión del producto: **3.40.0**
+
 ## [3.30.0] - 2026-06-11
 
 ### Added

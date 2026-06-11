@@ -36,8 +36,4 @@ Maratón **3.01 → 3.30** (30 ciclos, cuarto sprint continuo).
 
 **Total: 120 ciclos** desde 2.13
 
-## Siguiente (3.31+)
-
-- Expo 54 + widget iOS ([mobile/docs/IOS-WIDGET.md](../mobile/docs/IOS-WIDGET.md))
-- `PERF_GATE_BLOCKING=1` ([DEPLOY-PERF-GATE.md](./DEPLOY-PERF-GATE.md))
-- EAS TestFlight
+Ver [ROADMAP-3.40.md](./ROADMAP-3.40.md) (maratón 3.31–3.60 en curso).

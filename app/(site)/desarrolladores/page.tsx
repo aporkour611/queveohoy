@@ -211,6 +211,21 @@ export default function DesarrolladoresPage() {
           </section>
 
           <section>
+            <h2>Operaciones y rendimiento</h2>
+            <p>
+              Gate PSI post-deploy (LCP ≤3 s). Por defecto warning; activar modo
+              bloqueante con variable GitHub{" "}
+              <code>PERF_GATE_BLOCKING=1</code>.
+            </p>
+            <p>
+              Guía:{" "}
+              <a href="https://github.com/aporkour611/queveohoy/blob/main/docs/DEPLOY-PERF-GATE.md">
+                docs/DEPLOY-PERF-GATE.md
+              </a>
+            </p>
+          </section>
+
+          <section>
             <h2>Documentación</h2>
             <p>
               Especificación completa en{" "}

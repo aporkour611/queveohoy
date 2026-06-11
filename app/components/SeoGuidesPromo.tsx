@@ -24,6 +24,7 @@ export function SeoGuidesPromo() {
               <Link
                 href={`/guia/${guide.slug}`}
                 className="qvh-guides-promo-link"
+                prefetch
               >
                 {guide.title}
               </Link>
@@ -31,7 +32,9 @@ export function SeoGuidesPromo() {
           ))}
         </ul>
         <p className="qvh-guides-promo-more">
-          <Link href="/guia">Ver todas las guías →</Link>
+          <Link href="/guia" prefetch>
+            Ver todas las guías →
+          </Link>
         </p>
       </div>
     </aside>

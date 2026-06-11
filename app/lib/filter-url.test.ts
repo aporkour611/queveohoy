@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import {
   buildFilterParam,
   buildWeekViewHomeUrl,
+  buildWeekViewHomeUrlWithFilters,
   readWeekViewFromSearch,
   stripWeekViewFromSearch,
   syncFilterParamInUrl,
@@ -21,6 +22,13 @@ describe("buildWeekViewHomeUrl", () => {
   it("strips week param preserving other query keys", () => {
     expect(stripWeekViewFromSearch("?week=1&filtros=futbol")).toBe("filtros=futbol")
     expect(stripWeekViewFromSearch("?week=1")).toBe("")
+  })
+
+  it("combines week view with filters", () => {
+    expect(buildWeekViewHomeUrlWithFilters(["futbol", "tenis"])).toBe(
+      "/?filtros=futbol%2Ctenis&week=1"
+    )
+    expect(buildWeekViewHomeUrlWithFilters([])).toBe("/?week=1")
   })
 })
 

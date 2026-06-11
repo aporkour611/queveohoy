@@ -10,6 +10,16 @@ export function buildWeekViewHomeUrl(): string {
   return `/?${WEEK_VIEW_PARAM}=${WEEK_VIEW_VALUE}`
 }
 
+/** Semana + filtros activos (`/?week=1&filtros=futbol`). */
+export function buildWeekViewHomeUrlWithFilters(ids: string[]): string {
+  const filterSearch = buildFilterSearch(ids)
+  if (!filterSearch) return buildWeekViewHomeUrl()
+
+  const params = new URLSearchParams(filterSearch.slice(1))
+  params.set(WEEK_VIEW_PARAM, WEEK_VIEW_VALUE)
+  return `/?${params.toString()}`
+}
+
 export function readWeekViewFromSearch(search: string): boolean {
   const raw = search.startsWith("?") ? search.slice(1) : search
   return new URLSearchParams(raw).get(WEEK_VIEW_PARAM) === WEEK_VIEW_VALUE
