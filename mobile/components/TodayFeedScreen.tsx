@@ -15,6 +15,7 @@ import {
   SITE_URL,
   type FeedEvent,
 } from "@/lib/api"
+import { readCachedTodayFeed, writeCachedTodayFeed } from "@/lib/feed-cache"
 import { formatMobileNetworkError } from "@/lib/ensure-https"
 import { getSupabaseClient } from "@/lib/supabase"
 import { isEventFavorited, toggleFavorite } from "@/lib/favorites"
@@ -54,10 +55,22 @@ export function TodayFeedScreen() {
   )
 
   const load = useCallback(async () => {
+    const cached = await readCachedTodayFeed()
+    if (cached && cached.events.length > 0) {
+      setState({
+        kind: "ready",
+        events: cached.events,
+        date: cached.date,
+      })
+      await syncFavorites(cached.events)
+    }
+
     try {
       const feed = await fetchTodayFeed()
       if (feed.error) {
-        setState({ kind: "error", message: feed.error })
+        if (!cached) {
+          setState({ kind: "error", message: feed.error })
+        }
         return
       }
       setState({
@@ -65,8 +78,10 @@ export function TodayFeedScreen() {
         events: feed.events,
         date: feed.date,
       })
+      await writeCachedTodayFeed(feed)
       await syncFavorites(feed.events)
     } catch (err) {
+      if (cached) return
       const raw = err instanceof Error ? err.message : "Error de red"
       setState({
         kind: "error",

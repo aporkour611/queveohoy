@@ -31,7 +31,15 @@ En **Supabase → Authentication → Redirect URLs** añade:
 | **Hoy** | `GET /api/v1/feed` + ♥ favoritos (con sesión) |
 | **Semana** | 7 días de agenda |
 | **Favoritos** | Tabla `favorites` de Supabase |
-| **Cuenta** | Google o enlace mágico |
+| **Cuenta** | Google, Apple o magic link + toggle push |
+
+## Offline
+
+La pestaña **Hoy** guarda la última agenda en el móvil (15 min) por si falla la red.
+
+## Push nativo
+
+En **Cuenta → Avisos de eventos** (requiere build EAS, no simulador). El servidor usa la misma cola que web push (~45 min antes del evento).
 
 ## Build nativo (EAS)
 

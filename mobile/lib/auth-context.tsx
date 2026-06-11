@@ -21,6 +21,7 @@ type AuthContextValue = {
   user: User | null
   session: Session | null
   signInWithGoogle: () => Promise<string | null>
+  signInWithApple: () => Promise<string | null>
   signInWithEmail: (email: string) => Promise<string | null>
   signOut: () => Promise<void>
   completeAuthFromUrl: (url: string) => Promise<string | null>
@@ -60,6 +61,29 @@ async function setSessionFromUrl(url: string): Promise<string | null> {
   return "Enlace de sesión inválido."
 }
 
+async function signInWithOAuthProvider(
+  provider: "google" | "apple"
+): Promise<string | null> {
+  const supabase = getSupabaseClient()
+  if (!supabase) return "Supabase no configurado."
+
+  const redirectTo = authRedirectUri()
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo, skipBrowserRedirect: true },
+  })
+
+  if (error) return error.message
+  if (!data?.url) return "No se pudo abrir el proveedor."
+
+  const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo)
+  if (result.type !== "success") {
+    return result.type === "cancel" ? null : "Inicio de sesión cancelado."
+  }
+
+  return setSessionFromUrl(result.url)
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(isSupabaseConfigured)
   const [session, setSession] = useState<Session | null>(null)
@@ -87,24 +111,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signInWithGoogle = useCallback(async () => {
-    const supabase = getSupabaseClient()
-    if (!supabase) return "Supabase no configurado."
+    return signInWithOAuthProvider("google")
+  }, [])
 
-    const redirectTo = authRedirectUri()
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo, skipBrowserRedirect: true },
-    })
-
-    if (error) return error.message
-    if (!data?.url) return "No se pudo abrir Google."
-
-    const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo)
-    if (result.type !== "success") {
-      return result.type === "cancel" ? null : "Inicio de sesión cancelado."
-    }
-
-    return setSessionFromUrl(result.url)
+  const signInWithApple = useCallback(async () => {
+    return signInWithOAuthProvider("apple")
   }, [])
 
   const signInWithEmail = useCallback(async (email: string) => {
@@ -139,11 +150,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: session?.user ?? null,
       session,
       signInWithGoogle,
+      signInWithApple,
       signInWithEmail,
       signOut,
       completeAuthFromUrl,
     }),
-    [loading, session, signInWithGoogle, signInWithEmail, signOut, completeAuthFromUrl]
+    [loading, session, signInWithGoogle, signInWithApple, signInWithEmail, signOut, completeAuthFromUrl]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -1,7 +1,9 @@
+import { PushSettings } from "@/components/PushSettings"
 import { useState } from "react"
 import {
   ActivityIndicator,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -16,6 +18,7 @@ export default function CuentaScreen() {
     loading,
     user,
     signInWithGoogle,
+    signInWithApple,
     signInWithEmail,
     signOut,
   } = useAuth()
@@ -34,12 +37,13 @@ export default function CuentaScreen() {
 
   if (user) {
     return (
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Tu cuenta</Text>
         <Text style={styles.email}>{user.email}</Text>
         <Text style={styles.lead}>
           Tus favoritos se sincronizan con la web en {SITE_URL.replace("https://", "")}.
         </Text>
+        <PushSettings />
         <Pressable
           style={styles.outlineBtn}
           onPress={() => void signOut()}
@@ -47,7 +51,7 @@ export default function CuentaScreen() {
         >
           <Text style={styles.outlineText}>Cerrar sesión</Text>
         </Pressable>
-      </View>
+      </ScrollView>
     )
   }
 
@@ -70,8 +74,17 @@ export default function CuentaScreen() {
     setBusy(false)
   }
 
+  const handleApple = async () => {
+    setBusy(true)
+    setError(null)
+    setMessage(null)
+    const err = await signInWithApple()
+    if (err) setError(err)
+    setBusy(false)
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Iniciar sesión</Text>
       <Text style={styles.lead}>
         Guarda favoritos sincronizados con la web. Google o enlace mágico por correo.
@@ -103,6 +116,17 @@ export default function CuentaScreen() {
         </Text>
       </Pressable>
 
+      <Pressable
+        style={styles.appleBtn}
+        onPress={() => void handleApple()}
+        disabled={busy || !configured}
+        accessibilityRole="button"
+      >
+        <Text style={styles.appleText}>
+          {busy ? "Conectando…" : "Continuar con Apple"}
+        </Text>
+      </Pressable>
+
       <Text style={styles.divider}>o</Text>
 
       <TextInput
@@ -129,7 +153,7 @@ export default function CuentaScreen() {
       <Text style={styles.hint}>
         En Supabase añade redirect: queveohoy://auth/callback
       </Text>
-    </View>
+    </ScrollView>
   )
 }
 
@@ -141,7 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0a0a0a",
   },
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
     backgroundColor: "#0a0a0a",
   },
@@ -181,6 +205,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   primaryText: {
+    color: "#0a0a0a",
+    fontWeight: "700",
+    fontSize: 16,
+  },
+  appleBtn: {
+    backgroundColor: "#fafafa",
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    marginBottom: 0,
+  },
+  appleText: {
     color: "#0a0a0a",
     fontWeight: "700",
     fontSize: 16,

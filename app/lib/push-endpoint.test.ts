@@ -8,6 +8,10 @@ describe("push-endpoint", () => {
     ).toBe(true)
   })
 
+  it("allows expo push endpoints", () => {
+    expect(isAllowedPushEndpoint("expo:ExponentPushToken[abc123]")).toBe(true)
+  })
+
   it("rejects non-https endpoints", () => {
     expect(isAllowedPushEndpoint("http://fcm.googleapis.com/x")).toBe(false)
   })

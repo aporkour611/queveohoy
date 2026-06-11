@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.9.0",
+    date: "2026-06-11",
+    title: "Push Expo + offline + EAS CI",
+    highlights: [
+      "Notificaciones push nativas vía Expo (misma cola que web push)",
+      "Agenda Hoy en caché 15 min sin red",
+      "Apple login en app + workflow EAS Build",
+    ],
+  },
+  {
     version: "2.8.0",
     date: "2026-06-11",
     title: "App móvil — auth y favoritos",

@@ -1,4 +1,6 @@
 /** Hosts permitidos para endpoints Web Push (RFC 8030). */
+import { isExpoPushEndpoint } from "./expo-push-token"
+
 const PUSH_ENDPOINT_HOSTS = new Set([
   "fcm.googleapis.com",
   "updates.push.services.mozilla.com",
@@ -10,6 +12,7 @@ const PUSH_ENDPOINT_HOSTS = new Set([
 ])
 
 export function isAllowedPushEndpoint(endpoint: string): boolean {
+  if (isExpoPushEndpoint(endpoint)) return true
   try {
     const url = new URL(endpoint)
     if (url.protocol !== "https:") return false

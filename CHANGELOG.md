@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.9.0] - 2026-06-11
+
+### Added
+- Push notifications Expo en app + envío server vía `exp.host`
+- API push: `platform: expo` + auth Bearer para móvil
+- Caché offline agenda Hoy (15 min) en AsyncStorage
+- Login Apple en app + workflow **EAS Build** (manual)
+
+### Changed
+- Versión del producto: **2.9.0**
+
 ## [2.8.0] - 2026-06-11
 
 ### Added

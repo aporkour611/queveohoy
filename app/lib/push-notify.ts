@@ -1,4 +1,11 @@
 import webpush from "web-push";
+import {
+  buildExpoPushEndpoint,
+  isExpoPushEndpoint,
+  isValidExpoPushToken,
+  parseExpoPushTokenFromEndpoint,
+} from "./expo-push-token";
+import { sendExpoPushMessage } from "./expo-push-send";
 import { isAllowedPushEndpoint } from "./push-endpoint";
 import type { EventRow } from "../components/types";
 import { partidoPath } from "./event-slug";
@@ -138,30 +145,51 @@ async function sendToSubscription(
 
   if (alreadySent) return "skipped";
 
-  ensureVapid();
   const copy = eventNotificationCopy(event);
   const url = `${siteUrl}${partidoPath(event)}`;
 
-  try {
-    await webpush.sendNotification(
-      {
-        endpoint: row.endpoint,
-        keys: { p256dh: row.p256dh, auth: row.auth },
-      },
-      JSON.stringify({
-        title: `Empieza pronto: ${copy.title}`,
-        body: copy.body,
-        url,
-        tag: `qvh-event-${event.id}`,
-      })
-    );
-  } catch (error) {
-    const status = (error as { statusCode?: number }).statusCode;
-    if (status === 404 || status === 410) {
+  if (isExpoPushEndpoint(row.endpoint)) {
+    const token = parseExpoPushTokenFromEndpoint(row.endpoint);
+    if (!token) return "skipped";
+
+    const result = await sendExpoPushMessage(token, {
+      title: `Empieza pronto: ${copy.title}`,
+      body: copy.body,
+      data: { url, eventId: event.id },
+    });
+
+    if (result === "expired") {
       await admin.from("push_subscriptions").delete().eq("id", row.id);
       return "expired";
     }
-    throw error;
+    if (result === "error") {
+      throw new Error("Expo push failed");
+    }
+  } else {
+    if (!isPushConfigured()) return "skipped";
+
+    ensureVapid();
+    try {
+      await webpush.sendNotification(
+        {
+          endpoint: row.endpoint,
+          keys: { p256dh: row.p256dh, auth: row.auth },
+        },
+        JSON.stringify({
+          title: `Empieza pronto: ${copy.title}`,
+          body: copy.body,
+          url,
+          tag: `qvh-event-${event.id}`,
+        })
+      );
+    } catch (error) {
+      const status = (error as { statusCode?: number }).statusCode;
+      if (status === 404 || status === 410) {
+        await admin.from("push_subscriptions").delete().eq("id", row.id);
+        return "expired";
+      }
+      throw error;
+    }
   }
 
   await admin.from("push_sent").upsert({
@@ -186,7 +214,14 @@ export async function dispatchPushForEvents(
   expired: number;
   errors: string[];
 }> {
-  if (!isPushConfigured()) {
+  const admin = createSupabaseAdmin();
+  const { count: expoCount } = await admin
+    .from("push_subscriptions")
+    .select("id", { count: "exact", head: true })
+    .like("endpoint", "expo:%");
+
+  const hasExpoSubs = (expoCount ?? 0) > 0;
+  if (!isPushConfigured() && !hasExpoSubs) {
     return {
       ok: true,
       configured: false,
@@ -282,10 +317,43 @@ export type PushSubscriptionPayload = {
   favoritesOnly?: boolean;
 };
 
+export type ExpoPushSubscriptionPayload = {
+  expoPushToken: string;
+  topics?: PushTopicId[];
+  userAgent?: string | null;
+  userId?: string | null;
+  favoritesOnly?: boolean;
+};
+
+export async function upsertExpoPushSubscription(
+  payload: ExpoPushSubscriptionPayload
+): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  const token = payload.expoPushToken.trim();
+  if (!isValidExpoPushToken(token)) {
+    return { ok: false, error: "Token Expo inválido" };
+  }
+
+  const endpoint = buildExpoPushEndpoint(token);
+  if (!endpoint) {
+    return { ok: false, error: "Token Expo inválido" };
+  }
+
+  return upsertPushSubscription({
+    endpoint,
+    keys: { p256dh: "expo", auth: "expo" },
+    topics: payload.topics,
+    userAgent: payload.userAgent,
+    userId: payload.userId,
+    favoritesOnly: payload.favoritesOnly,
+  });
+}
+
 export async function upsertPushSubscription(
   payload: PushSubscriptionPayload
 ): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
-  if (!payload.endpoint || !payload.keys.p256dh || !payload.keys.auth) {
+  const isExpo = isExpoPushEndpoint(payload.endpoint);
+
+  if (!isExpo && (!payload.keys.p256dh || !payload.keys.auth)) {
     return { ok: false, error: "Suscripción incompleta" };
   }
 

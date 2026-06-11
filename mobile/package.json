@@ -1,6 +1,6 @@
 {
   "name": "queveohoy-mobile",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -9,7 +9,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "lint": "tsc --noEmit",
-    "eas:preview": "eas build --profile preview --platform all"
+    "eas:preview": "eas build --profile preview --platform all",
+    "eas:production": "eas build --profile production --platform all"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",
@@ -17,7 +18,9 @@
     "expo": "~52.0.46",
     "expo-auth-session": "~6.0.3",
     "expo-constants": "~17.0.8",
+    "expo-device": "~7.0.3",
     "expo-linking": "~7.0.5",
+    "expo-notifications": "~0.29.14",
     "expo-router": "~4.0.20",
     "expo-status-bar": "~2.0.1",
     "expo-web-browser": "~14.0.2",

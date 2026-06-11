@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
-import { createServerClient } from "@/app/lib/supabase/server-auth"
 import { publicApiErrorMessage } from "@/app/lib/api-error"
+import { resolveRequestUser } from "@/app/lib/supabase/request-user"
 import {
   deletePushSubscription,
+  upsertExpoPushSubscription,
   upsertPushSubscription,
 } from "../../../lib/push-notify"
 import { isPushConfigured } from "../../../lib/push-vapid"
@@ -13,6 +14,8 @@ import { clientIp } from "../../../lib/rate-limit"
 type SubscribeBody = {
   endpoint?: string
   keys?: { p256dh?: string; auth?: string }
+  expoPushToken?: string
+  platform?: "web" | "expo"
   topics?: PushTopicId[]
   userAgent?: string
   userId?: string | null
@@ -29,13 +32,6 @@ export async function POST(request: Request) {
     )
   }
 
-  if (!isPushConfigured()) {
-    return NextResponse.json(
-      { error: "Push no configurado en el servidor" },
-      { status: 503 }
-    )
-  }
-
   let body: SubscribeBody
   try {
     body = (await request.json()) as SubscribeBody
@@ -43,22 +39,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 })
   }
 
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const isExpoRequest =
+    body.platform === "expo" || Boolean(body.expoPushToken?.trim())
 
-  const result = await upsertPushSubscription({
-    endpoint: body.endpoint ?? "",
-    keys: {
-      p256dh: body.keys?.p256dh ?? "",
-      auth: body.keys?.auth ?? "",
-    },
-    topics: body.topics,
-    userAgent: body.userAgent ?? request.headers.get("user-agent"),
-    userId: user?.id ?? null,
-    favoritesOnly: body.favoritesOnly,
-  })
+  if (!isPushConfigured() && !isExpoRequest) {
+    return NextResponse.json(
+      { error: "Push no configurado en el servidor" },
+      { status: 503 }
+    )
+  }
+
+  const user = await resolveRequestUser(request)
+
+  const result = isExpoRequest
+    ? await upsertExpoPushSubscription({
+        expoPushToken: body.expoPushToken ?? "",
+        topics: body.topics,
+        userAgent: body.userAgent ?? request.headers.get("user-agent"),
+        userId: user?.id ?? null,
+        favoritesOnly: body.favoritesOnly,
+      })
+    : await upsertPushSubscription({
+        endpoint: body.endpoint ?? "",
+        keys: {
+          p256dh: body.keys?.p256dh ?? "",
+          auth: body.keys?.auth ?? "",
+        },
+        topics: body.topics,
+        userAgent: body.userAgent ?? request.headers.get("user-agent"),
+        userId: user?.id ?? null,
+        favoritesOnly: body.favoritesOnly,
+      })
 
   if (!result.ok) {
     return NextResponse.json(

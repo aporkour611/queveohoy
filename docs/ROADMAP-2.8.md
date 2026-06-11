@@ -22,9 +22,10 @@ En **Authentication → URL Configuration** añade:
 
 Copia en `mobile/.env` las mismas claves anon que Vercel (`EXPO_PUBLIC_SUPABASE_*`).
 
-## Siguiente (2.9+)
+## Siguiente (2.10+)
 
-- EAS Build en CI + TestFlight / Play Internal
-- Push Expo (`expo-notifications`)
-- Apple / Microsoft OAuth en app nativa
-- Offline cache AsyncStorage del feed
+Ver [ROADMAP-2.9.md](./ROADMAP-2.9.md) (entregado).
+
+- TestFlight / Play automático
+- Push solo favoritos en app
+- Cache semana offline
