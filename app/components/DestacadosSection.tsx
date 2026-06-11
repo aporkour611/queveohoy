@@ -4,7 +4,7 @@ import { FEED_DAY_COUNT } from "../lib/events-feed";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { ChampionsWeekHero } from "./ChampionsWeekHero";
 import { DestacadosStaticRow } from "./DestacadosStaticRow";
-import { UfcWeekHero } from "./UfcWeekHero";
+import { UfcFighterFlank, UfcWeekHero } from "./UfcWeekHero";
 
 type Props = {
   events: EventRow[];
@@ -35,7 +35,19 @@ export function DestacadosSection({ events }: Props) {
         <div className="qvh-ufc-week-shell">
           <UfcWeekHero context={hero.context} />
           {weekFeatured.length > 0 ? (
-            <DestacadosStaticRow {...rowProps} />
+            <div className="qvh-ufc-week-panel">
+              <UfcFighterFlank
+                src={hero.context.fighter1Image}
+                name={hero.context.fighter1}
+                align="left"
+              />
+              <DestacadosStaticRow {...rowProps} />
+              <UfcFighterFlank
+                src={hero.context.fighter2Image}
+                name={hero.context.fighter2}
+                align="right"
+              />
+            </div>
           ) : null}
         </div>
       ) : hero?.type === "champions" ? (

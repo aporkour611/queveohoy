@@ -168,7 +168,7 @@ if (inUfcWeek) {
     pass("Temática UFC en html")
   else fail("Temática UFC en html", 'data-site-week="ufc-casablanca" ausente')
 
-  if (homeHtml.includes("qvh-ufc-week-hero"))
+  if (homeHtml.includes("qvh-ufc-week-panel") || homeHtml.includes("qvh-ufc-week-hero"))
     pass("Hero UFC Casablanca en home")
   else fail("Hero UFC Casablanca en home")
 

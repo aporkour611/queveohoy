@@ -9,14 +9,23 @@ type Props = {
   context: UfcWeekContext;
 };
 
-function FighterPortrait({
-  src,
-  name,
-}: {
+type PortraitProps = {
   src?: string | null;
   name: string;
-}) {
+  variant?: "inline" | "flank";
+};
+
+export function UfcFighterPortrait({
+  src,
+  name,
+  variant = "inline",
+}: PortraitProps) {
   const safe = safeRemoteImageUrl(src);
+  const className =
+    variant === "flank"
+      ? "qvh-ufc-week-fighter qvh-ufc-week-fighter-flank"
+      : "qvh-ufc-week-fighter";
+
   if (!safe) {
     const parts = name.trim().split(/\s+/);
     const initials =
@@ -25,23 +34,52 @@ function FighterPortrait({
         : name.slice(0, 2).toUpperCase();
 
     return (
-      <span className="qvh-ufc-week-fighter qvh-ufc-week-fighter-fallback" aria-hidden>
+      <span
+        className={`${className} qvh-ufc-week-fighter-fallback`}
+        aria-hidden
+      >
         {initials}
       </span>
     );
   }
+
+  const size = variant === "flank" ? 68 : 36;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={safe}
       alt=""
-      width={36}
-      height={36}
-      className="qvh-ufc-week-fighter"
+      width={size}
+      height={size}
+      className={className}
       loading="eager"
       decoding="async"
     />
+  );
+}
+
+function fighterShortName(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length <= 1) return name;
+  return parts[parts.length - 1] ?? name;
+}
+
+type FlankProps = {
+  src?: string | null;
+  name: string;
+  align: "left" | "right";
+};
+
+export function UfcFighterFlank({ src, name, align }: FlankProps) {
+  return (
+    <aside
+      className={`qvh-ufc-week-flank qvh-ufc-week-flank-${align}`}
+      aria-hidden
+    >
+      <UfcFighterPortrait src={src} name={name} variant="flank" />
+      <span className="qvh-ufc-week-flank-name">{fighterShortName(name)}</span>
+    </aside>
   );
 }
 
@@ -51,15 +89,13 @@ export function UfcWeekHero({ context }: Props) {
     kicker,
     headline,
     stageLabel,
-    fighter1,
-    fighter2,
-    fighter1Image,
-    fighter2Image,
     dateLabel,
     time,
     channels,
     venueLabel,
     mainEvent,
+    fighter1,
+    fighter2,
   } = context;
 
   const partidoHref = partidoPath(mainEvent);
@@ -81,8 +117,8 @@ export function UfcWeekHero({ context }: Props) {
             <Image
               src="/competition-logos/ufc.svg"
               alt=""
-              width={30}
-              height={30}
+              width={28}
+              height={28}
               className="qvh-ufc-week-logo"
             />
           </div>
@@ -94,29 +130,15 @@ export function UfcWeekHero({ context }: Props) {
               <span className="qvh-ufc-week-stage-badge">{stageLabel}</span>
             </div>
 
-            <div className="qvh-ufc-week-hero-detail">
-              <div className="qvh-ufc-week-matchup">
-                <div className="qvh-ufc-week-side">
-                  <FighterPortrait src={fighter1Image} name={fighter1} />
-                  <span className="qvh-ufc-week-fighter-name">{fighter1}</span>
-                </div>
-                <span className="qvh-ufc-week-vs">VS</span>
-                <div className="qvh-ufc-week-side">
-                  <FighterPortrait src={fighter2Image} name={fighter2} />
-                  <span className="qvh-ufc-week-fighter-name">{fighter2}</span>
-                </div>
-              </div>
-
-              <div className="qvh-ufc-week-meta">
-                <span className="qvh-ufc-week-venue">{venueLabel}</span>
-                {dateLabel ? (
-                  <span className="qvh-ufc-week-date">{dateLabel}</span>
-                ) : null}
-                {time ? <span className="qvh-ufc-week-time">{time}</span> : null}
-                {channels.length > 0 ? (
-                  <ChannelBadges channels={channels} variant="spotlight" />
-                ) : null}
-              </div>
+            <div className="qvh-ufc-week-hero-meta">
+              <span className="qvh-ufc-week-venue">{venueLabel}</span>
+              {dateLabel ? (
+                <span className="qvh-ufc-week-date">{dateLabel}</span>
+              ) : null}
+              {time ? <span className="qvh-ufc-week-time">{time}</span> : null}
+              {channels.length > 0 ? (
+                <ChannelBadges channels={channels} variant="spotlight" />
+              ) : null}
             </div>
           </div>
         </div>

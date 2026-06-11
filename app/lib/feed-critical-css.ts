@@ -60,11 +60,11 @@ html{overflow-anchor:none;background:#0a0a10}
 
 .qvh-cl-week-kicker,.qvh-cl-week-headline{white-space:nowrap}
 
-.qvh-ufc-week-matchup,.qvh-ufc-week-hero-detail{display:none}
-
 .qvh-ufc-week-hero-titleline{flex-wrap:nowrap;align-items:baseline}
 
 .qvh-ufc-week-kicker,.qvh-ufc-week-headline{white-space:nowrap}
+
+.qvh-ufc-week-panel{grid-template-columns:44px minmax(0,1fr) 44px;gap:2px}
 
 }
 

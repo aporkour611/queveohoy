@@ -69,7 +69,7 @@ html[data-site-week="ufc-casablanca"] .fh-body {
 }
 
 html[data-site-week="ufc-casablanca"] .fh-content {
-  background: linear-gradient(180deg, #120808 0%, #0a0606 240px);
+  background: linear-gradient(180deg, #120808 0%, #0a0606 120px);
 }
 
 html[data-site-week="ufc-casablanca"] .fh-navbar,
@@ -92,6 +92,8 @@ html[data-site-week="ufc-casablanca"] .qvh-destacados-dot {
 }
 
 html[data-site-week="ufc-casablanca"] .qvh-destacados-stack {
+  margin: 0 0 10px;
+  padding: 0;
   border-bottom-color: rgba(210, 10, 10, 0.2);
 }
 
@@ -125,7 +127,7 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
 .qvh-ufc-week-shell {
   width: 100%;
   max-width: 100%;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   overflow: hidden;
   border-radius: 10px;
   border: 1px solid rgba(210, 10, 10, 0.22);
@@ -208,16 +210,16 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 6px 10px 4px;
 }
 
 .qvh-ufc-week-emblem {
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 196, 0, 0.25);
@@ -236,8 +238,8 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px 8px;
-  margin-bottom: 6px;
+  gap: 4px 6px;
+  margin-bottom: 0;
 }
 
 .qvh-ufc-week-kicker {
@@ -252,7 +254,7 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
 .qvh-ufc-week-headline {
   margin: 0;
   font-family: var(--font-barlow-condensed, inherit);
-  font-size: clamp(1.15rem, 4.5vw, 1.55rem);
+  font-size: clamp(1.05rem, 4.2vw, 1.45rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0.02em;
@@ -273,23 +275,14 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
   border: 1px solid rgba(255, 196, 0, 0.35);
 }
 
-.qvh-ufc-week-hero-detail {
+.qvh-ufc-week-hero-meta {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.qvh-ufc-week-matchup {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-}
-
-.qvh-ufc-week-side {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
+  gap: 4px 8px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .qvh-ufc-week-fighter {
@@ -300,6 +293,16 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
   object-position: top center;
   border: 2px solid rgba(255, 196, 0, 0.35);
   background: #1a0a0a;
+  flex-shrink: 0;
+}
+
+.qvh-ufc-week-fighter-flank {
+  width: 52px;
+  height: 52px;
+  border-width: 2px;
+  box-shadow:
+    0 0 0 2px rgba(210, 10, 10, 0.25),
+    0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
 .qvh-ufc-week-fighter-fallback {
@@ -310,30 +313,53 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
   color: #ffc400;
 }
 
-.qvh-ufc-week-fighter-name {
+.qvh-ufc-week-fighter-flank.qvh-ufc-week-fighter-fallback {
   font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
+}
+
+.qvh-ufc-week-panel {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  gap: 4px;
+  align-items: start;
+  padding: 2px 4px 6px;
+  background: linear-gradient(180deg, #0e0606 0%, #0a0606 100%);
+  border-top: 1px solid rgba(210, 10, 10, 0.14);
+}
+
+.qvh-ufc-week-panel > .qvh-destacados {
+  min-width: 0;
+  padding: 0;
+  border-top: none;
+}
+
+.qvh-ufc-week-panel > .qvh-destacados-week {
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top: none;
+}
+
+.qvh-ufc-week-flank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  padding-top: 34px;
+}
+
+.qvh-ufc-week-flank-name {
+  max-width: 100%;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(255, 196, 0, 0.88);
+  line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 9rem;
-}
-
-.qvh-ufc-week-vs {
-  flex-shrink: 0;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: rgba(255, 196, 0, 0.9);
-}
-
-.qvh-ufc-week-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 10px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.82);
+  white-space: nowrap;
 }
 
 .qvh-ufc-week-venue {
@@ -354,15 +380,23 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
 }
 
 .qvh-ufc-week-destacados {
-  border-top-color: rgba(210, 10, 10, 0.12);
+  padding: 0;
+  border-top: none;
+  background: transparent;
+}
+
+.qvh-ufc-week-destacados .qvh-destacados-head {
+  margin-bottom: 6px;
 }
 
 .qvh-ufc-week-destacados .qvh-destacados-title {
   color: #fff;
+  font-size: 1.05rem;
 }
 
 .qvh-ufc-week-destacados .qvh-destacados-sub {
   color: rgba(255, 220, 180, 0.75);
+  font-size: 0.76rem;
 }
 
 .qvh-ufc-week-feed-block {
@@ -385,11 +419,6 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
 }
 
 @media (max-width: 767px) {
-  .qvh-ufc-week-matchup,
-  .qvh-ufc-week-hero-detail {
-    display: none;
-  }
-
   .qvh-ufc-week-hero-titleline {
     flex-wrap: nowrap;
     align-items: baseline;
@@ -400,8 +429,45 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
     white-space: nowrap;
   }
 
+  .qvh-ufc-week-hero-meta {
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .qvh-ufc-week-panel {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 2px;
+    padding-inline: 2px;
+  }
+
+  .qvh-ufc-week-fighter-flank {
+    width: 42px;
+    height: 42px;
+  }
+
+  .qvh-ufc-week-flank {
+    padding-top: 30px;
+  }
+
   html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
     display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .qvh-ufc-week-panel {
+    grid-template-columns: 72px minmax(0, 1fr) 72px;
+    gap: 8px;
+    padding: 2px 8px 8px;
+  }
+
+  .qvh-ufc-week-fighter-flank {
+    width: 68px;
+    height: 68px;
+  }
+
+  .qvh-ufc-week-flank-name {
+    font-size: 10px;
   }
 }
 
