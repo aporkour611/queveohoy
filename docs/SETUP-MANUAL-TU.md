@@ -139,7 +139,23 @@ http://localhost:3000/auth/callback
 Supabase → **Authentication** → **Providers**:
 
 - **Google**: Client ID / Secret desde Google Cloud Console; redirect en Google: `https://TU-PROyecto.supabase.co/auth/v1/callback`
-- **Apple**: Service ID, clave `.p8`, Team ID (ver [Supabase Apple](https://supabase.com/docs/guides/auth/social-login/auth-apple))
+- **Apple** (OAuth web — queveohoy.es):
+  1. En [Apple Developer](https://developer.apple.com/account/resources/identifiers/list/serviceId): crea un **Services ID** (no el App ID del bundle).
+  2. En **Keys**: crea clave «Sign in with Apple» y descarga `AuthKey_XXXXXXXXXX.p8` (guárdala; no la subas al repo).
+  3. En el Services ID → **Configure**: dominio `TU-PROYECTO.supabase.co`, Return URL `https://TU-PROYECTO.supabase.co/auth/v1/callback`.
+  4. **Secret Key en Supabase ≠ el archivo .p8.** Supabase pide un **JWT** (`eyJhbGci...`). Genera uno en local:
+
+     ```bash
+     APPLE_TEAM_ID=TU_TEAM_ID \
+     APPLE_KEY_ID=XXXXXXXXXX \
+     APPLE_SERVICES_ID=com.tudominio.queveohoy.auth \
+     APPLE_P8_PATH=./AuthKey_XXXXXXXXXX.p8 \
+     npm run apple:client-secret
+     ```
+
+     Copia la línea `eyJ...` en **Supabase → Apple → Secret Key**. Alternativa: [generador oficial Supabase](https://supabase.com/docs/guides/auth/social-login/auth-apple) (Chrome/Firefox, no Safari).
+  5. **Client ID** en Supabase = el **Services ID** (ej. `com.tudominio.queveohoy.auth`).
+  6. El JWT caduca en ~**6 meses**; renueva con el mismo comando y actualiza Supabase (pon recordatorio en calendario).
 - **Azure (Microsoft)**: Application ID y secret de Entra ID; redirect URI del registro apuntando al callback de Supabase
 
 Sin activar un proveedor, el botón en `/cuenta/login` fallará al redirigir.
