@@ -2,6 +2,18 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [3.80.0] - 2026-06-11
+
+### Added
+- E2E health versión 3.x y feed-meta `revalidateSeconds`
+- verify-prod valida `revalidateSeconds`
+- keep-warm-prod full warm incluye `/laliga`
+
+### Changed
+- Sitemap test incluye índice `/guia`
+- README móvil documenta deep links web
+- Versión del producto: **3.80.0**
+
 ## [3.70.0] - 2026-06-11
 
 ### Added

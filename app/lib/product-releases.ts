@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "3.80.0",
+    date: "2026-06-11",
+    title: "Verify revalidate y warm LaLiga prod",
+    highlights: [
+      "verify-prod revalidateSeconds",
+      "E2E health 3.x",
+      "keep-warm-prod laliga",
+    ],
+  },
+  {
     version: "3.70.0",
     date: "2026-06-11",
     title: "Explorar week+filtros y warm F1",

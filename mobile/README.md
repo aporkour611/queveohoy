@@ -41,6 +41,8 @@ Requiere EAS (`npm run eas:preview`); no funciona en Expo Go.
 
 Plan widget **iOS**: [docs/IOS-WIDGET.md](./docs/IOS-WIDGET.md). PERF gate: [docs/DEPLOY-PERF-GATE.md](../docs/DEPLOY-PERF-GATE.md).
 
+Deep links web: `/?week=1`, `/?week=1&filtros=futbol` (ver `mobile/lib/deep-links.ts`).
+
 ## Offline
 
 **Hoy** y **Semana** guardan la última agenda (15 min). Tras cargar Hoy se prefetch de mañana en segundo plano.

@@ -15,6 +15,7 @@ describe("buildStaticSitemapEntries", () => {
     expect(urls).toContain(`${siteUrl}/desarrolladores`)
     expect(urls).toContain(`${siteUrl}/novedades`)
     expect(urls).toContain(`${siteUrl}/contacto`)
+    expect(urls).toContain(`${siteUrl}/guia`)
 
     for (const hub of SEO_HUBS) {
       expect(urls).toContain(`${siteUrl}/${hub.slug}`)
