@@ -2,6 +2,16 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [4.10.0] - 2026-06-11
+
+### Added
+- verify-prod y E2E validan `generatedAt` en feed-meta
+- E2E health exige versión 4.x
+- keep-warm-prod full warm incluye formula-1 y premier-league
+
+### Changed
+- Versión del producto: **4.10.0**
+
 ## [4.00.0] - 2026-06-11
 
 ### Added

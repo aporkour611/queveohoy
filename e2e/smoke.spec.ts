@@ -150,19 +150,27 @@ test.describe("smoke", () => {
     expect(typeof body.date).toBe("string")
   })
 
+  test("API feed-meta incluye generatedAt ISO", async ({ request }) => {
+    const response = await request.get("/api/feed-meta")
+    expect(response.ok()).toBeTruthy()
+    const body = await response.json()
+    expect(body.generatedAt).toBeTruthy()
+    expect(Number.isNaN(Date.parse(body.generatedAt))).toBe(false)
+  })
+
+  test("API health versión 4.x", async ({ request }) => {
+    const response = await request.get("/api/health")
+    const body = await response.json()
+    expect(body.version).toMatch(/^4\./)
+    expect(body.ok).toBe(true)
+  })
+
   test("API feed-meta incluye revalidateSeconds", async ({ request }) => {
     const response = await request.get("/api/feed-meta")
     expect(response.ok()).toBeTruthy()
     const body = await response.json()
     expect(typeof body.revalidateSeconds).toBe("number")
     expect(body.revalidateSeconds).toBeGreaterThan(0)
-  })
-
-  test("API health versión 3.x", async ({ request }) => {
-    const response = await request.get("/api/health")
-    const body = await response.json()
-    expect(body.version).toMatch(/^3\./)
-    expect(body.ok).toBe(true)
   })
 
   test("deep link week=1 preserva filtros", async ({ page }) => {

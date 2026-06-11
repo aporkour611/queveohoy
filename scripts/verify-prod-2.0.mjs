@@ -109,6 +109,10 @@ if (metaBody && typeof metaBody.revalidateSeconds === "number")
   pass("feed-meta revalidateSeconds", String(metaBody.revalidateSeconds))
 else if (metaRes.ok) fail("feed-meta revalidateSeconds", "campo ausente")
 
+if (metaBody?.generatedAt && !Number.isNaN(Date.parse(metaBody.generatedAt)))
+  pass("feed-meta generatedAt", metaBody.generatedAt.slice(0, 19))
+else if (metaRes.ok) fail("feed-meta generatedAt", "campo ausente o inválido")
+
 const metaCache = metaRes.headers.get("cache-control") ?? ""
 const metaVercelCache = metaRes.headers.get("x-vercel-cache") ?? ""
 const metaAge = metaRes.headers.get("age") ?? ""
