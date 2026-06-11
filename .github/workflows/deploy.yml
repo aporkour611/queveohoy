@@ -213,8 +213,8 @@ jobs:
               -o /tmp/rollover.json || echo "::warning::midnight-rollover post-deploy falló"
             node -e "try{const d=require('/tmp/rollover.json');console.log('rollover',d.calendarDay,d.ok)}catch(e){console.log('rollover skip')}" || true
           fi
-          echo "Verificación lanzamiento 4.21…"
-          node scripts/verify-prod-4.21.mjs
+          echo "Verificación producción (verify:prod)…"
+          node scripts/verify-prod-current.mjs
           echo "Integraciones en producción…"
           node scripts/check-integrations.mjs
           if [ "$events" = "0" ] && [ -n "${CRON_SECRET:-}" ]; then
@@ -252,7 +252,25 @@ jobs:
           fi
 
       - name: Deployment summary
-        run: echo "### Production ${{ steps.deploy.outputs.deployment_url }}" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          set -euo pipefail
+          health=$(curl -sf "https://queveohoy.es/api/health" || echo '{}')
+          version=$(node -e "try{console.log(JSON.parse(process.argv[1]).version||'?')}catch{console.log('?')}" "$health")
+          events=$(node -e "try{console.log(JSON.parse(process.argv[1]).checks?.feedEventCount??'?')}catch{console.log('?')}" "$health")
+          ufc=$(curl -sf "https://queveohoy.es/" | grep -q 'data-site-week="ufc-casablanca"' && echo "UFC Casablanca activa" || echo "temática estándar")
+          {
+            echo "### Production v${version}"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| URL | https://queveohoy.es |"
+            echo "| Versión | **${version}** |"
+            echo "| Eventos feed | ${events} |"
+            echo "| Temática | ${ufc} |"
+            echo "| Deploy | ${{ steps.deploy.outputs.deployment_url }} |"
+            echo ""
+            echo "Smoke: \`npm run verify:prod\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   gate:
     needs: [validate, e2e, deploy]

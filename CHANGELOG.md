@@ -11,6 +11,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 ### Changed
 - UFC Casablanca prioriza Champions en hero y metadata SEO
 - Depuración: código muerto, lint mobile, fix `madridCalendarDay`
+- Ops: `npm run verify:prod` y `release:prod` automatizados · CI con resumen deploy
 
 ### Fixed
 - Build: declaración duplicada de `admin` en `push-notify.ts`

@@ -2,7 +2,7 @@
  * Verificación lanzamiento 1.0.0 — consolidación v14→v20.
  * Uso: npm run verify:prod:1.0
  */
-const BASE = "https://queveohoy.es";
+const BASE = process.env.VERIFY_URL ?? "https://queveohoy.es";
 
 const checks = [];
 const pass = (name, detail = "") => checks.push({ ok: true, name, detail });

@@ -39,7 +39,9 @@ Maratón **3.91 → 4.20** (30 ciclos, séptimo sprint continuo).
 
 **Total: 210 ciclos** desde 2.13
 
-## Siguiente (4.21+)
+## Siguiente (4.22+)
+
+Ver [ROADMAP-4.21.md](./ROADMAP-4.21.md) — **4.21.0** Semana UFC Casablanca en producción.
 
 - Expo 54 + widget iOS ([mobile/docs/IOS-WIDGET.md](../mobile/docs/IOS-WIDGET.md))
 - `PERF_GATE_BLOCKING=1` ([DEPLOY-PERF-GATE.md](./DEPLOY-PERF-GATE.md))

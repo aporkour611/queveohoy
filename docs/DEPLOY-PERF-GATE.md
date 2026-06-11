@@ -5,7 +5,7 @@ Infra lista desde **v2.7**. El deploy ejecuta Lighthouse PSI post-producción; p
 ## Cuándo activar
 
 - LCP móvil estable **≤ 3 s** durante **2 semanas** en producción
-- `npm run verify:prod:2.0` en verde de forma consistente
+- `npm run verify:prod` en verde de forma consistente
 
 ## Cómo activar
 

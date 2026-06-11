@@ -67,8 +67,8 @@ openssl rand -base64 32
 ## Comprobar después del deploy
 
 ```bash
-CRON_SECRET=... npm run check:integrations
-npm run verify:prod:1.0
+npm run verify:prod
+CRON_SECRET=... npm run release:prod
 ```
 
 Health público (`/api/health`) no expone integraciones. Con `CRON_SECRET` el script las lista.
