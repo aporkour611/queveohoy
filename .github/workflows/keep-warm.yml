@@ -2,8 +2,8 @@ name: Keep warm (prod)
 
 on:
   schedule:
-    # Máximo permitido por GitHub Actions (5 min) — respaldo al cron Vercel (1 min)
-    - cron: "*/5 * * * *"
+    # Respaldo al cron Vercel (cachés cada 5 min, origen cada 15 min)
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 concurrency:
@@ -25,4 +25,5 @@ jobs:
         env:
           SITE_URL: https://queveohoy.es
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          KEEP_WARM_FULL: "1"
         run: node scripts/keep-warm-prod.mjs

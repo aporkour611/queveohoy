@@ -2,20 +2,20 @@
 /**
  * Precalienta producción (Vercel + Supabase + ISR).
  * Uso: npm run keep-warm:prod
- * GitHub Actions: keep-warm.yml (cada 5 min, máximo permitido por schedule).
+ * GitHub Actions: keep-warm.yml (cada 15 min, respaldo a crons Vercel).
  */
 const SITE = (process.env.SITE_URL ?? "https://queveohoy.es").replace(/\/$/, "")
 const CRON_SECRET = process.env.CRON_SECRET?.trim()
 
+/** Solo cachés (ligero). El warm completo lo hace /api/warm cada 15 min en Vercel. */
 const PATHS = [
-  "/api/health?warm=1",
-  "/api/warm",
+  "/api/health?warm=1&origins=0",
   "/api/feed-meta",
   "/api/health",
   "/api/v2/feed",
-  "/explorar",
-  "/",
 ]
+
+const FULL_WARM_PATHS = ["/api/warm", "/explorar", "/"]
 
 async function ping(path) {
   const url = `${SITE}${path}`
@@ -51,13 +51,21 @@ async function ping(path) {
   }
 }
 
+const fullWarm = process.env.KEEP_WARM_FULL === "1"
+
 let failed = 0
 for (const path of PATHS) {
   if (!(await ping(path))) failed += 1
 }
 
+if (fullWarm) {
+  for (const path of FULL_WARM_PATHS) {
+    if (!(await ping(path))) failed += 1
+  }
+}
+
 if (failed > 0) {
-  console.error(`\n${failed}/${PATHS.length} rutas fallaron`)
+  console.error(`\n${failed} rutas fallaron`)
   process.exit(1)
 }
 

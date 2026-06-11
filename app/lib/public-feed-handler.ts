@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { FEED_REVALIDATE_SECONDS } from "./cache-config"
-import { fetchFeedEvents } from "./events-feed-server"
+import { fetchEventsForDate } from "./events-feed-server"
 import {
   enforcePublicFeedRateLimit,
   extractApiKeyFromRequest,
@@ -11,7 +11,6 @@ import {
   buildPublicApiFeedResponse,
   buildPublicApiV2FeedResponse,
   filterPublicApiEventsByCategories,
-  filterPublicApiEventsByDate,
   paginatePublicApiEvents,
   parsePublicApiCategories,
   parsePublicApiPageSize,
@@ -63,7 +62,7 @@ export async function handlePublicFeedGet(
     request.nextUrl.searchParams.get("categories")
   )
 
-  const { events, error } = await fetchFeedEvents()
+  const { events, error } = await fetchEventsForDate(dateKey)
   if (error) {
     return NextResponse.json(
       { error, events: [] },
@@ -74,14 +73,10 @@ export async function handlePublicFeedGet(
     )
   }
 
-  let publicEvents = dateParam
-    ? filterPublicApiEventsByDate(events, dateKey)
-    : toPublicApiEvents(events).filter((event) => event.date === dateKey)
+  let publicEvents = toPublicApiEvents(events)
 
   if (categories.length > 0) {
-    publicEvents = filterPublicApiEventsByCategories(events, categories).filter(
-      (event) => event.date === dateKey
-    )
+    publicEvents = filterPublicApiEventsByCategories(events, categories)
   }
 
   const page = paginatePublicApiEvents(publicEvents, { limit, cursor })

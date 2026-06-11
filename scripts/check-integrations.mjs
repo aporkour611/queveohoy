@@ -16,7 +16,7 @@ const LABELS = {
   pandascoreApi: "PANDASCORE_API_KEY (opcional)",
   balldontlieApi: "BALLDONTLIE_API_KEY (opcional)",
   indexNow: "INDEXNOW_KEY",
-  upstashRateLimit: "Upstash rate limit (opcional)",
+  upstashRateLimit: "Upstash Redis (recomendado Pro: rate limit + cron snapshot)",
   openaiAssistant: "OPENAI_API_KEY (opcional)",
   pushVapid: "Web Push VAPID (opcional)",
   cronAlerts: "CRON_ALERT_WEBHOOK_URL (opcional)",

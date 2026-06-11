@@ -28,6 +28,15 @@ export function findEventBySlug(
   return events.find((event) => eventSlug(event) === slug);
 }
 
+/** Slug `/partido/2026-06-11-real-madrid-barcelona` → fecha + resto. */
+export function parsePartidoSlug(
+  slug: string
+): { date: string; labelSlug: string } | null {
+  const match = slug.match(/^(\d{4}-\d{2}-\d{2})-(.+)$/);
+  if (!match?.[1] || !match[2]) return null;
+  return { date: match[1], labelSlug: match[2] };
+}
+
 export const SITEMAP_PARTIDO_LIMIT = 200;
 
 export function partidoSlugsForSitemap(

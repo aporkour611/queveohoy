@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { EventRow } from "../components/types";
-import { eventSlug, partidoPath, partidoSlugsForSitemap } from "./event-slug";
+import { eventSlug, parsePartidoSlug, partidoPath, partidoSlugsForSitemap } from "./event-slug";
 
 function event(partial: Partial<EventRow> & { id: number }): EventRow {
   return {
@@ -31,5 +31,15 @@ describe("event-slug", () => {
     const slugs = partidoSlugsForSitemap(rows, 10);
     expect(slugs).toHaveLength(2);
     expect(slugs[0]).toBe("2026-05-27-real-madrid-vs-barcelona");
+  });
+
+  it("parsePartidoSlug extrae fecha", () => {
+    expect(
+      parsePartidoSlug("2026-05-27-real-madrid-vs-barcelona")
+    ).toEqual({
+      date: "2026-05-27",
+      labelSlug: "real-madrid-vs-barcelona",
+    });
+    expect(parsePartidoSlug("invalid")).toBeNull();
   });
 });

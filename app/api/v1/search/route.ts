@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { filterEventsByAgendaQuery } from "@/app/lib/agenda-search"
 import { FEED_REVALIDATE_SECONDS } from "@/app/lib/cache-config"
-import { fetchFeedEvents } from "@/app/lib/events-feed-server"
+import { searchEventsByAgendaQuery } from "@/app/lib/events-feed-server"
 import {
   enforcePublicApiRateLimitAsync,
   paginatePublicApiEvents,
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
   const dateKey =
     dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam) ? dateParam : todayKey
 
-  const { events, error } = await fetchFeedEvents()
+  const { events, error } = await searchEventsByAgendaQuery(q, dateParam ? dateKey : undefined)
   if (error) {
     return NextResponse.json(
       { error, events: [] },
@@ -57,9 +57,7 @@ export async function GET(request: NextRequest) {
   }
 
   const matched = filterEventsByAgendaQuery(events, q)
-  const dated = dateParam
-    ? matched.filter((event) => event.date === dateKey)
-    : matched
+  const dated = dateParam ? matched.filter((event) => event.date === dateKey) : matched
   const publicEvents = toPublicApiEvents(dated)
   const page = paginatePublicApiEvents(publicEvents, { limit, cursor })
 

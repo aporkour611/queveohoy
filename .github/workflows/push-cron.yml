@@ -19,13 +19,6 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Keep-warm antes de push cron
-        env:
-          SITE_URL: https://queveohoy.es
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        run: node scripts/keep-warm-prod.mjs
-        continue-on-error: true
-
       - name: Disparar /api/push/cron
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}

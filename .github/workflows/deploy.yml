@@ -205,7 +205,7 @@ jobs:
             exit 1
           fi
           echo "Keep-warm completo post-deploy…"
-          CRON_SECRET="${CRON_SECRET:-}" node scripts/keep-warm-prod.mjs || echo "::warning::keep-warm post-deploy falló"
+          CRON_SECRET="${CRON_SECRET:-}" KEEP_WARM_FULL=1 node scripts/keep-warm-prod.mjs || echo "::warning::keep-warm post-deploy falló"
           echo "Verificación lanzamiento 2.0…"
           node scripts/verify-prod-2.0.mjs
           echo "Integraciones en producción…"

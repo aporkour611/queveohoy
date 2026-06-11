@@ -9,6 +9,7 @@ import {
 import { FEED_DAY_COUNT, FEED_EVENT_SELECT, normalizeFeedEvents } from "./events-feed";
 import { HOME_SSR_DAY_COUNT } from "./home-feed-config";
 import { CURATED_MOVIES } from "./movies-curated";
+import { findEventBySlug, parsePartidoSlug } from "./event-slug";
 import { isSupabaseConfigured } from "./supabase-config";
 import { createClient } from "./supabase/server";
 import {
@@ -254,8 +255,54 @@ export const getDestacadosFeedEventsForPage = cache(fetchDestacadosFeedEvents);
 
 export const getFeedEventsForPage = cache(fetchFeedEvents);
 
-/** Evento por ID — query directa (API pública v1). */
-export async function fetchEventById(
+const getCachedEventsForDate = unstable_cache(
+  async (dateKey: string) => {
+    if (!isSupabaseConfigured()) {
+      return supabaseMissingFallback();
+    }
+    try {
+      const supabase = createClient();
+      const { data, error } = await withFeedQuerySignal(
+        supabase
+          .from("events")
+          .select(FEED_EVENT_SELECT)
+          .eq("date", dateKey)
+          .order("time", { ascending: true })
+          .limit(FEED_QUERY_ROW_LIMIT)
+      );
+      if (error) {
+        return { events: [] as EventRow[], error: error.message };
+      }
+      return {
+        events: normalizeFeedEvents((data ?? []) as EventRow[]),
+        error: null,
+      };
+    } catch (err) {
+      return {
+        events: [] as EventRow[],
+        error: err instanceof Error ? err.message : String(err),
+      };
+    }
+  },
+  ["feed-date"],
+  { revalidate: FEED_REVALIDATE_SECONDS, tags: ["feed"] }
+);
+
+/** Eventos de un solo día (API pública, partido por slug). */
+export async function fetchEventsForDate(dateKey: string) {
+  return readCachedFeed(
+    () => getCachedEventsForDate(dateKey),
+    FEED_TIMEOUT_FALLBACK
+  );
+}
+
+const getCachedEventById = unstable_cache(
+  async (id: number) => fetchEventByIdUncached(id),
+  ["event-by-id"],
+  { revalidate: FEED_REVALIDATE_SECONDS, tags: ["feed"] }
+);
+
+async function fetchEventByIdUncached(
   id: number
 ): Promise<{ event: EventRow | null; error: string | null }> {
   if (!isSupabaseConfigured()) {
@@ -285,5 +332,87 @@ export async function fetchEventById(
     const message =
       err instanceof Error ? err.message : "No se pudo cargar el evento";
     return { event: null, error: message };
+  }
+}
+
+/** Evento por ID — query directa (API pública v1). */
+export async function fetchEventById(
+  id: number
+): Promise<{ event: EventRow | null; error: string | null }> {
+  return getCachedEventById(id);
+}
+
+/** Partido por slug sin cargar la semana entera. */
+export async function fetchEventBySlug(
+  slug: string
+): Promise<{ event: EventRow | null; error: string | null }> {
+  const parsed = parsePartidoSlug(slug);
+  if (!parsed) {
+    return { event: null, error: null };
+  }
+
+  const { events, error } = await fetchEventsForDate(parsed.date);
+  if (error) {
+    return { event: null, error };
+  }
+
+  return { event: findEventBySlug(events, slug) ?? null, error: null };
+}
+
+export const getEventBySlugForPage = cache(fetchEventBySlug);
+
+/** Búsqueda en BD (título/equipos) en ventana semanal. */
+export async function searchEventsByAgendaQuery(
+  query: string,
+  dateKey?: string
+): Promise<{ events: EventRow[]; error: string | null }> {
+  if (!isSupabaseConfigured()) {
+    const fallback = supabaseMissingFallback();
+    return { events: [], error: fallback.error };
+  }
+
+  const trimmed = query.trim();
+  if (trimmed.length < 2) {
+    return { events: [], error: null };
+  }
+
+  const pattern = `%${trimmed.replace(/[%_\\]/g, "")}%`;
+
+  try {
+    const supabase = createClient();
+    const { from, to } = getEventsQueryDateRangeTight(FEED_DAY_COUNT);
+
+    let builder = supabase
+      .from("events")
+      .select(FEED_EVENT_SELECT)
+      .or(
+        `title.ilike.${pattern},home_team.ilike.${pattern},away_team.ilike.${pattern},competition.ilike.${pattern}`
+      );
+
+    if (dateKey) {
+      builder = builder.eq("date", dateKey);
+    } else {
+      builder = builder.gte("date", from).lte("date", to);
+    }
+
+    const { data, error } = await withFeedQuerySignal(
+      builder
+        .order("date", { ascending: true })
+        .order("time", { ascending: true })
+        .limit(FEED_QUERY_ROW_LIMIT)
+    );
+    if (error) {
+      return { events: [], error: error.message };
+    }
+
+    return {
+      events: normalizeFeedEvents((data ?? []) as EventRow[]),
+      error: null,
+    };
+  } catch (err) {
+    return {
+      events: [],
+      error: err instanceof Error ? err.message : String(err),
+    };
   }
 }

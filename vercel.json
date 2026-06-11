@@ -7,6 +7,33 @@
   "regions": ["cdg1"],
   "headers": [
     {
+      "source": "/posters/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/deportes/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/icons/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
       "source": "/api/feed-meta",
       "headers": [
         {
@@ -26,35 +53,52 @@
   ],
   "functions": {
     "app/api/cron/route.ts": {
-      "maxDuration": 120
+      "maxDuration": 120,
+      "memory": 3009
     },
     "app/api/push/cron/route.ts": {
       "maxDuration": 60
     },
     "app/api/warm/route.ts": {
+      "maxDuration": 60,
+      "memory": 3009
+    },
+    "app/api/health/route.ts": {
       "maxDuration": 60
     }
   },
   "crons": [
     {
-      "path": "/api/health?warm=1",
-      "schedule": "* * * * *"
-    },
-    {
-      "path": "/api/warm",
+      "path": "/api/health?warm=1&origins=0",
       "schedule": "*/5 * * * *"
     },
     {
-      "path": "/api/cron",
+      "path": "/api/warm",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron?phase=core",
       "schedule": "0 6 * * *"
     },
     {
-      "path": "/api/cron",
+      "path": "/api/cron?phase=core",
       "schedule": "0 12 * * *"
     },
     {
-      "path": "/api/cron",
+      "path": "/api/cron?phase=core",
       "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/cron?phase=extended",
+      "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/cron?phase=extended",
+      "schedule": "30 12 * * *"
+    },
+    {
+      "path": "/api/cron?phase=extended",
+      "schedule": "30 18 * * *"
     },
     {
       "path": "/api/push/cron",

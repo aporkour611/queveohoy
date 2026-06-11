@@ -1,8 +1,7 @@
 import { ImageResponse } from "next/og";
 import { notFound } from "next/navigation";
 import { resolveChannelsForEvent } from "../../lib/channels";
-import { fetchFeedEvents } from "../../lib/events-feed-server";
-import { findEventBySlug } from "../../lib/event-slug";
+import { getEventBySlugForPage } from "../../lib/events-feed-server";
 import { displayTime } from "../../lib/madrid-time";
 import { eventLabel } from "../../lib/seo-events";
 
@@ -16,8 +15,7 @@ type Props = {
 
 export default async function Image({ params }: Props) {
   const { slug } = await params;
-  const { events } = await fetchFeedEvents();
-  const event = findEventBySlug(events, slug);
+  const { event } = await getEventBySlugForPage(slug);
   if (!event) notFound();
 
   const label = eventLabel(event);

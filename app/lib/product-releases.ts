@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.6.0",
+    date: "2026-06-11",
+    title: "Vercel Pro — auditoría completa",
+    highlights: [
+      "Keep-warm optimizado (5/15 min) y health ligero",
+      "Cron core/extended, Edge rate limit, previews en PR",
+      "Partido y API por consultas DB, no feed completo",
+    ],
+  },
+  {
     version: "2.5.0",
     date: "2026-05-31",
     title: "Admin — historial webhooks",

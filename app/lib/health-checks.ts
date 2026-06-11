@@ -1,17 +1,51 @@
-import { fetchFeedEvents } from "./events-feed-server"
 import { createSupabaseAdmin } from "./supabase-admin"
 import { isSupabaseConfigured } from "./supabase-config"
 import { log } from "./logger"
 import { raceWithTimeout } from "./race-with-timeout"
+import { getMadridTodayKey } from "./seo-date"
+import { addDaysToDateKey } from "./madrid-time"
 
 const HEALTH_DB_PROBE_MS = 4_000
-const HEALTH_FEED_PROBE_MS = 8_000
+const HEALTH_FEED_PROBE_MS = 5_000
 
 export type HealthProbeResult = {
   database: boolean
   feed: boolean
   feedEventCount: number
   feedError: string | null
+}
+
+/** Comprueba que hay eventos en la ventana de la agenda (sin cargar el feed completo). */
+async function probeFeedEventCount(): Promise<{
+  count: number
+  error: string | null
+}> {
+  if (!isSupabaseConfigured()) {
+    return { count: 0, error: null }
+  }
+
+  const today = getMadridTodayKey()
+  const to = addDaysToDateKey(today, 7)
+
+  try {
+    const supabase = createSupabaseAdmin({ fetchTimeoutMs: HEALTH_FEED_PROBE_MS })
+    const { count, error } = await supabase
+      .from("events")
+      .select("id", { count: "exact", head: true })
+      .gte("date", today)
+      .lte("date", to)
+
+    if (error) {
+      return { count: 0, error: error.message }
+    }
+
+    return { count: count ?? 0, error: null }
+  } catch (err) {
+    return {
+      count: 0,
+      error: err instanceof Error ? err.message : String(err),
+    }
+  }
 }
 
 export async function runHealthProbes(): Promise<HealthProbeResult> {
@@ -51,19 +85,15 @@ export async function runHealthProbes(): Promise<HealthProbeResult> {
 
   try {
     const feedResult = await raceWithTimeout(
-      fetchFeedEvents(),
+      probeFeedEventCount(),
       HEALTH_FEED_PROBE_MS,
-      () => ({
-        events: [] as Awaited<ReturnType<typeof fetchFeedEvents>>["events"],
-        error: "health feed probe timeout",
-      })
+      () => ({ count: 0, error: "health feed probe timeout" })
     )
-    const { events, error } = feedResult
-    result.feedEventCount = events.length
-    result.feedError = error
-    result.feed = !error && events.length > 0
-    if (error) {
-      log.warn("health.feed_probe_failed", { message: error })
+    result.feedEventCount = feedResult.count
+    result.feedError = feedResult.error
+    result.feed = !feedResult.error && feedResult.count > 0
+    if (feedResult.error) {
+      log.warn("health.feed_probe_failed", { message: feedResult.error })
     }
   } catch (err) {
     result.feedError = err instanceof Error ? err.message : String(err)

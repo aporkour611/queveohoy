@@ -723,7 +723,18 @@ export async function runCronJob(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const url = new URL(request.url);
+  const phaseParam = url.searchParams.get("phase");
+  const phase =
+    phaseParam === "core" || phaseParam === "extended" || phaseParam === "full"
+      ? phaseParam
+      : "full";
+  const runCore = phase === "core" || phase === "full";
+  const runExtended = phase === "extended" || phase === "full";
+  const runPost = phase === "core" || phase === "full";
+
   log.info("cron.started", {
+    phase,
     supabase: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
     football: Boolean(process.env.FOOTBALL_DATA_API_KEY),
     pandascore: Boolean(process.env.PANDASCORE_API_KEY),
@@ -735,28 +746,32 @@ export async function runCronJob(request: Request) {
     ok: false,
     skipped: true,
   };
-  try {
-    dbIndex = await ensureEventsDateIndex();
-    if (dbIndex.ok) console.log("✓ events_date_time_idx OK");
-    else if (!dbIndex.skipped) console.warn("DB index:", dbIndex.error);
-  } catch (e) {
-    console.warn("DB index error:", e);
+  if (runCore) {
+    try {
+      dbIndex = await ensureEventsDateIndex();
+      if (dbIndex.ok) console.log("✓ events_date_time_idx OK");
+      else if (!dbIndex.skipped) console.warn("DB index:", dbIndex.error);
+    } catch (e) {
+      console.warn("DB index error:", e);
+    }
   }
 
   let pastDayPurge: Awaited<ReturnType<typeof purgePastDayEvents>> = {
     purged: 0,
     todayKey: toMadridDateKey(new Date()),
   };
-  try {
-    pastDayPurge = await purgePastDayEvents(getSupabase());
-    if (pastDayPurge.purged > 0) {
-      console.log(
-        `✓ Eventos anteriores a ${pastDayPurge.todayKey} eliminados: ${pastDayPurge.purged}`
-      );
+  if (runCore) {
+    try {
+      pastDayPurge = await purgePastDayEvents(getSupabase());
+      if (pastDayPurge.purged > 0) {
+        console.log(
+          `✓ Eventos anteriores a ${pastDayPurge.todayKey} eliminados: ${pastDayPurge.purged}`
+        );
+      }
+    } catch (e) {
+      console.error("✗ Purge past day error:", e);
+      pastDayPurge.error = String(e);
     }
-  } catch (e) {
-    console.error("✗ Purge past day error:", e);
-    pastDayPurge.error = String(e);
   }
 
   let football = { count: 0, dateFrom: "", dateTo: "", errors: [] as string[] };
@@ -783,98 +798,140 @@ export async function runCronJob(request: Request) {
   };
 
   // TheSportsDB rate-limita si tenis compite con el resto de fuentes en paralelo
-  try {
-    leagues = await fetchLeagueSports();
-  } catch (e) {
-    console.error("Error fetching TheSportsDB leagues (prefetch):", e);
+  if (runExtended) {
+    try {
+      leagues = await fetchLeagueSports();
+    } catch (e) {
+      console.error("Error fetching TheSportsDB leagues (prefetch):", e);
+    }
   }
 
-  const ingest = await Promise.allSettled([
-    fetchFootball(),
-    fetchEsports(),
-    fetchF1(),
-    fetchMotos(),
-    fetchRally(),
-    fetchBasketball(),
-    fetchTmdb(),
-    fetchAnime(),
-    fetchRealityTv(),
-    fetchSpanishTv(),
-    fetchUfc(),
-  ]);
+  const ingestTasks: Promise<unknown>[] = [];
+  if (runCore) {
+    ingestTasks.push(
+      fetchFootball(),
+      fetchEsports(),
+      fetchF1(),
+      fetchMotos(),
+      fetchRally(),
+      fetchBasketball(),
+      fetchTmdb()
+    );
+  }
+  if (runExtended) {
+    ingestTasks.push(
+      fetchAnime(),
+      fetchRealityTv(),
+      fetchSpanishTv(),
+      fetchUfc()
+    );
+  }
 
-  if (ingest[0].status === "fulfilled") football = ingest[0].value;
-  else football.errors.push(String(ingest[0].reason));
+  const ingest = await Promise.allSettled(ingestTasks);
 
-  if (ingest[1].status === "fulfilled") esports = ingest[1].value;
-  if (ingest[2].status === "fulfilled") f1 = ingest[2].value;
-  if (ingest[3].status === "fulfilled") motos = ingest[3].value;
-  if (ingest[4].status === "fulfilled") rally = ingest[4].value;
-  if (ingest[5].status === "fulfilled") basket = ingest[5].value;
-  if (ingest[6].status === "fulfilled") tmdb = ingest[6].value;
-  if (ingest[7].status === "fulfilled") anime = ingest[7].value;
-  if (ingest[8].status === "fulfilled") reality = ingest[8].value;
-  if (ingest[9].status === "fulfilled") spanishTv = ingest[9].value;
-  if (ingest[10].status === "fulfilled") ufc = ingest[10].value;
+  let ingestIndex = 0;
+  if (runCore) {
+    if (ingest[ingestIndex]?.status === "fulfilled")
+      football = ingest[ingestIndex].value as typeof football;
+    else football.errors.push(String((ingest[ingestIndex] as PromiseRejectedResult).reason));
+    ingestIndex++;
 
-  console.log("✓ Ingesta paralela completada");
+    if (ingest[ingestIndex]?.status === "fulfilled")
+      esports = ingest[ingestIndex].value as CountResult;
+    ingestIndex++;
+    if (ingest[ingestIndex]?.status === "fulfilled")
+      f1 = ingest[ingestIndex].value as CountResult;
+    ingestIndex++;
+    if (ingest[ingestIndex]?.status === "fulfilled")
+      motos = ingest[ingestIndex].value as CountResult;
+    ingestIndex++;
+    if (ingest[ingestIndex]?.status === "fulfilled")
+      rally = ingest[ingestIndex].value as CountResult;
+    ingestIndex++;
+    if (ingest[ingestIndex]?.status === "fulfilled")
+      basket = ingest[ingestIndex].value as CountResult;
+    ingestIndex++;
+    if (ingest[ingestIndex]?.status === "fulfilled")
+      tmdb = ingest[ingestIndex].value as typeof tmdb;
+    ingestIndex++;
+  }
+
+  if (runExtended) {
+    const extStart = runCore ? ingestIndex : 0;
+    if (ingest[extStart]?.status === "fulfilled")
+      anime = ingest[extStart].value as typeof anime;
+    if (ingest[extStart + 1]?.status === "fulfilled")
+      reality = ingest[extStart + 1].value as CountResult;
+    if (ingest[extStart + 2]?.status === "fulfilled")
+      spanishTv = ingest[extStart + 2].value as typeof spanishTv;
+    if (ingest[extStart + 3]?.status === "fulfilled")
+      ufc = ingest[extStart + 3].value as CountResult;
+  }
+
+  console.log(`✓ Ingesta ${phase} completada`);
 
   let enrich: { enriched: number; error?: string } = { enriched: 0 };
-  try {
-    enrich = await enrichImportantEventsMissingCrests();
-    console.log("✓ Crest enrich done");
-  } catch (e) {
-    console.error("✗ Crest enrich error:", e);
-  }
-
   let dedupe: { removed: number; error?: string } = { removed: 0 };
-  try {
-    dedupe = await removeDuplicateRows();
-    console.log("✓ Dedupe done");
-  } catch (e) {
-    console.error("✗ Dedupe error:", e);
-  }
-
   let blockedSportsPurge: { purged: number; error?: string } = { purged: 0 };
-  try {
-    blockedSportsPurge = await purgeBlockedSportEvents();
-    if (blockedSportsPurge.purged > 0) {
-      console.log(`✓ Blocked sports purge: ${blockedSportsPurge.purged}`);
+
+  if (runCore || runExtended) {
+    try {
+      enrich = await enrichImportantEventsMissingCrests();
+      console.log("✓ Crest enrich done");
+    } catch (e) {
+      console.error("✗ Crest enrich error:", e);
     }
-  } catch (e) {
-    console.error("✗ Blocked sports purge error:", e);
+
+    try {
+      dedupe = await removeDuplicateRows();
+      console.log("✓ Dedupe done");
+    } catch (e) {
+      console.error("✗ Dedupe error:", e);
+    }
+
+    try {
+      blockedSportsPurge = await purgeBlockedSportEvents();
+      if (blockedSportsPurge.purged > 0) {
+        console.log(`✓ Blocked sports purge: ${blockedSportsPurge.purged}`);
+      }
+    } catch (e) {
+      console.error("✗ Blocked sports purge error:", e);
+    }
   }
 
-  log.info("cron.finished");
+  log.info("cron.finished", { phase });
 
   let indexNow: Awaited<ReturnType<typeof pingIndexNow>> = {
     ok: false,
     skipped: true,
   };
-  try {
-    indexNow = await pingIndexNow();
-    if (indexNow.ok) {
-      console.log("✓ IndexNow ping OK");
-    } else if (!indexNow.skipped) {
-      console.warn("IndexNow ping:", indexNow.error ?? indexNow.status);
-    }
-  } catch (e) {
-    console.warn("IndexNow error:", e);
-  }
-
   let feedCache: Awaited<ReturnType<typeof warmFeedCacheAfterCron>> = {
     ok: false,
     error: "skipped",
   };
-  try {
-    feedCache = await warmFeedCacheAfterCron();
-    if (feedCache.ok) {
-      console.log("✓ Feed cache warmed");
-    } else {
-      console.warn("Feed cache warm:", feedCache.error);
+
+  if (runPost) {
+    try {
+      indexNow = await pingIndexNow();
+      if (indexNow.ok) {
+        console.log("✓ IndexNow ping OK");
+      } else if (!indexNow.skipped) {
+        console.warn("IndexNow ping:", indexNow.error ?? indexNow.status);
+      }
+    } catch (e) {
+      console.warn("IndexNow error:", e);
     }
-  } catch (e) {
-    console.warn("Feed cache warm error:", e);
+
+    try {
+      feedCache = await warmFeedCacheAfterCron();
+      if (feedCache.ok) {
+        console.log("✓ Feed cache warmed");
+      } else {
+        console.warn("Feed cache warm:", feedCache.error);
+      }
+    } catch (e) {
+      console.warn("Feed cache warm error:", e);
+    }
   }
 
   const supabaseConfigured = Boolean(
@@ -885,6 +942,7 @@ export async function runCronJob(request: Request) {
 
   const cronResult = {
     ok: true,
+    phase,
     supabaseConfigured,
     timestamp: new Date().toISOString(),
     dbIndex,
@@ -935,38 +993,42 @@ export async function runCronJob(request: Request) {
         : undefined,
   };
 
-  try {
-    for (const alert of evaluateCronHealth(cronResult)) {
-      await sendCronAlert(alert);
+  if (runPost) {
+    try {
+      for (const alert of evaluateCronHealth(cronResult)) {
+        await sendCronAlert(alert);
+      }
+    } catch (e) {
+      console.warn("Cron health alerts failed:", e);
     }
-  } catch (e) {
-    console.warn("Cron health alerts failed:", e);
-  }
 
-  try {
-    const stored = await saveLastCronRun(cronResult);
-    if (stored) console.log("✓ Last cron snapshot saved");
-  } catch (e) {
-    console.warn("Cron snapshot save failed:", e);
+    try {
+      const stored = await saveLastCronRun(cronResult);
+      if (stored) console.log("✓ Last cron snapshot saved");
+    } catch (e) {
+      console.warn("Cron snapshot save failed:", e);
+    }
   }
 
   let partnerWebhooks = { configured: 0, sent: 0, failed: 0 };
-  try {
-    const { events } = await fetchFeedEvents();
-    partnerWebhooks = await notifyPartnerFeedWebhooks({
-      event: "feed.updated",
-      generatedAt: cronResult.timestamp,
-      date: getMadridTodayKey(),
-      eventCount: events.length,
-      version: PRODUCT_VERSION,
-    });
-    if (partnerWebhooks.configured > 0) {
-      console.log(
-        `✓ Partner webhooks ${partnerWebhooks.sent}/${partnerWebhooks.configured}`
-      );
+  if (runPost) {
+    try {
+      const { events } = await fetchFeedEvents();
+      partnerWebhooks = await notifyPartnerFeedWebhooks({
+        event: "feed.updated",
+        generatedAt: cronResult.timestamp,
+        date: getMadridTodayKey(),
+        eventCount: events.length,
+        version: PRODUCT_VERSION,
+      });
+      if (partnerWebhooks.configured > 0) {
+        console.log(
+          `✓ Partner webhooks ${partnerWebhooks.sent}/${partnerWebhooks.configured}`
+        );
+      }
+    } catch (e) {
+      console.warn("Partner webhooks failed:", e);
     }
-  } catch (e) {
-    console.warn("Partner webhooks failed:", e);
   }
 
   return NextResponse.json({ ...cronResult, partnerWebhooks });

@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PartidoJsonLd } from "../../components/PartidoJsonLd";
 import { PartidoPage } from "../../components/PartidoPage";
-import { getFeedEventsForPage } from "../../lib/events-feed-server";
-import { findEventBySlug } from "../../lib/event-slug";
+import { getEventBySlugForPage } from "../../lib/events-feed-server";
 import { eventLabel } from "../../lib/seo-events";
 import { displayTime } from "../../lib/madrid-time";
 import { pageMetadata } from "../../lib/seo";
@@ -18,8 +17,7 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { events } = await getFeedEventsForPage();
-  const event = findEventBySlug(events, slug);
+  const { event } = await getEventBySlugForPage(slug);
   if (!event) return {};
 
   const label = eventLabel(event);
@@ -38,8 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PartidoRoute({ params }: PageProps) {
   const { slug } = await params;
-  const { events } = await getFeedEventsForPage();
-  const event = findEventBySlug(events, slug);
+  const { event } = await getEventBySlugForPage(slug);
 
   if (!event) notFound();
 

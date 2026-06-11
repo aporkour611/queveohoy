@@ -2,6 +2,20 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.6.0] - 2026-06-11
+
+### Added
+- Auditoría Vercel Pro: [VERCEL-PRO-AUDIT.md](./docs/VERCEL-PRO-AUDIT.md)
+- Rate limit Edge en `/api/*` (Upstash)
+- Preview deploy en PRs (`preview.yml`)
+- Consultas por día/slug/búsqueda en BD (partido, API v1)
+- Cron partido `?phase=core|extended`
+
+### Changed
+- Keep-warm: 5 min (cachés) + 15 min (origen); health ligero sin feed completo
+- Cache CDN 1 año en `/posters`, `/deportes`, `/icons`
+- Versión del producto: **2.6.0**
+
 ## [2.5.0] - 2026-05-31
 
 ### Added

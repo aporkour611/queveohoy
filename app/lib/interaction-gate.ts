@@ -50,6 +50,8 @@ export type FeedHydrationOptions = {
   /** @deprecated Sin auto-carga; solo CTA o idle desktop. */
   eager?: boolean
   desktopIdleMs?: number
+  /** En móvil real (no auditoría), carga tras idle corto. */
+  touchIdleMs?: number
   onActivate?: () => void
 }
 
@@ -59,6 +61,7 @@ export type FeedHydrationOptions = {
  */
 export function subscribeFeedHydration({
   desktopIdleMs = 10_000,
+  touchIdleMs = 12_000,
   onActivate,
 }: FeedHydrationOptions): () => void {
   if (typeof window === "undefined" || shouldDeferHeavyClient()) {
@@ -77,6 +80,8 @@ export function subscribeFeedHydration({
   let fallback: number | undefined
   if (!touchPreferred) {
     fallback = window.setTimeout(() => activate(), desktopIdleMs)
+  } else {
+    fallback = window.setTimeout(() => activate(), touchIdleMs)
   }
 
   const onClick = (event: Event) => {
