@@ -30,7 +30,11 @@ html{overflow-anchor:none;background:#0a0a10}
 
 .qvh-cl-week-shell{min-height:0;max-width:100%;min-width:0}
 
-.qvh-ufc-week-shell{min-height:0;max-width:100%;min-width:0}
+.qvh-ufc-week-shell{min-height:0;max-width:100%;min-width:0;border-radius:14px}
+
+.qvh-ufc-week-layout{display:grid;grid-template-columns:minmax(56px,17%) minmax(0,1fr) minmax(56px,17%)}
+
+.qvh-ufc-week-showcase{display:flex;flex-direction:column;align-items:center;padding:10px 8px}
 
 .qvh-home-feed-slot{min-height:420px}
 
@@ -60,11 +64,9 @@ html{overflow-anchor:none;background:#0a0a10}
 
 .qvh-cl-week-kicker,.qvh-cl-week-headline{white-space:nowrap}
 
-.qvh-ufc-week-hero-titleline{flex-wrap:nowrap;align-items:baseline}
+.qvh-ufc-week-headline{font-size:clamp(1.1rem,5vw,1.35rem)}
 
-.qvh-ufc-week-kicker,.qvh-ufc-week-headline{white-space:nowrap}
-
-.qvh-ufc-week-panel{grid-template-columns:44px minmax(0,1fr) 44px;gap:2px}
+.qvh-ufc-week-bout-name{font-size:.62rem}
 
 }
 

@@ -168,13 +168,13 @@ if (inUfcWeek) {
     pass("Temática UFC en html")
   else fail("Temática UFC en html", 'data-site-week="ufc-casablanca" ausente')
 
-  if (homeHtml.includes("qvh-ufc-week-panel") || homeHtml.includes("qvh-ufc-week-hero"))
+  if (homeHtml.includes("qvh-ufc-week-showcase") || homeHtml.includes("qvh-ufc-week-layout"))
     pass("Hero UFC Casablanca en home")
   else fail("Hero UFC Casablanca en home")
 
-  if (/Topuria|Ilia/i.test(homeHtml))
-    pass("Main event Topuria en home")
-  else fail("Main event Topuria en home")
+  if (homeHtml.includes("qvh-ufc-week-corner-photo-wrap"))
+    pass("Retratos luchadores en panel")
+  else fail("Retratos luchadores en panel")
 } else {
   pass("Ventana UFC Casablanca", `fuera de ventana (${madridDate || "?"})`)
 }
