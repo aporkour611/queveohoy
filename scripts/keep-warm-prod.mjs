@@ -11,6 +11,7 @@ const CRON_SECRET = process.env.CRON_SECRET?.trim()
 const PATHS = [
   "/api/health?warm=1&origins=0",
   "/api/feed-meta",
+  "/api/v1/feed/week",
   "/api/health",
   "/api/v2/feed",
 ]

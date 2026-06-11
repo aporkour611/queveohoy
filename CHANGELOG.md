@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.90.0] - 2026-06-11
+
+### Added
+- Test sitemap estático (hubs SEO + explorar)
+- E2E widget next-favorite 401 y feed-meta `todayCount`
+- keep-warm-prod precalienta `/api/v1/feed/week`
+
+### Changed
+- Hub SEO prefetch en enlace «Agenda completa»
+- Versión del producto: **2.90.0**
+
 ## [2.80.0] - 2026-06-11
 
 ### Added

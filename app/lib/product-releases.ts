@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.90.0",
+    date: "2026-06-11",
+    title: "Sitemap, widget API y warm prod",
+    highlights: [
+      "Tests sitemap y widget 401",
+      "keep-warm-prod API week",
+      "E2E feed-meta todayCount",
+    ],
+  },
+  {
     version: "2.80.0",
     date: "2026-06-11",
     title: "feed-meta testable y warm hubs",

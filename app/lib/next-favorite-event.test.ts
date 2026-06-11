@@ -30,6 +30,19 @@ describe("pickNextFavoriteEvent", () => {
     expect(picked?.title).toBe("Partido")
   })
 
+  it("picks earliest when multiple upcoming", () => {
+    const now = new Date("2026-06-11T12:00:00.000Z")
+    const picked = pickNextFavoriteEvent(
+      [
+        event({ id: 1, title: "Tarde", date: "2026-06-11", time: "22:00" }),
+        event({ id: 2, title: "Pronto", date: "2026-06-11", time: "20:00" }),
+      ],
+      now
+    )
+
+    expect(picked?.id).toBe(2)
+  })
+
   it("returns null when all past", () => {
     const now = new Date("2026-06-20T12:00:00.000Z")
     const picked = pickNextFavoriteEvent(

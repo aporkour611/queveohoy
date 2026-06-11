@@ -46,7 +46,7 @@ export function SeoHubPage({ hub, events, weekAgendaCount = 0 }: Props) {
           <div className="fh-navbar-inner">
             <Logo />
             <div className="fh-nav-links">
-              <Link href="/" className="fh-seo-hub-back">
+              <Link href="/" className="fh-seo-hub-back" prefetch>
                 Agenda completa
               </Link>
             </div>

@@ -135,6 +135,21 @@ test.describe("smoke", () => {
     expect(body.categoriesApplied).toContain("futbol")
   })
 
+  test("API widget next-favorite requiere auth", async ({ request }) => {
+    const response = await request.get("/api/v1/widget/next-favorite")
+    expect(response.status()).toBe(401)
+    const body = await response.json()
+    expect(body.error).toBeTruthy()
+  })
+
+  test("API feed-meta incluye todayCount", async ({ request }) => {
+    const response = await request.get("/api/feed-meta")
+    expect(response.ok()).toBeTruthy()
+    const body = await response.json()
+    expect(typeof body.todayCount).toBe("number")
+    expect(typeof body.date).toBe("string")
+  })
+
   test("widget categorías embed carga", async ({ page }) => {
     await page.goto("/embed/categorias")
     await expect(page.getByText("Explorar")).toBeVisible()
