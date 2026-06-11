@@ -19,7 +19,9 @@ import { readCachedTodayFeed, writeCachedTodayFeed } from "@/lib/feed-cache"
 import { formatMobileNetworkError } from "@/lib/ensure-https"
 import { getSupabaseClient } from "@/lib/supabase"
 import { isEventFavorited, toggleFavorite } from "@/lib/favorites"
+import { fetchRemoteWidgetSnapshot } from "@/lib/widget-snapshot"
 import { useAuth } from "@/lib/auth-context"
+import { useTheme } from "@/lib/theme-context"
 
 type LoadState =
   | { kind: "loading" }
@@ -27,7 +29,8 @@ type LoadState =
   | { kind: "error"; message: string }
 
 export function TodayFeedScreen() {
-  const { user } = useAuth()
+  const { user, session } = useAuth()
+  const { colors } = useTheme()
   const [state, setState] = useState<LoadState>({ kind: "loading" })
   const [refreshing, setRefreshing] = useState(false)
   const [stale, setStale] = useState(false)
@@ -121,25 +124,28 @@ export function TodayFeedScreen() {
           else next.add(eventId)
           return next
         })
+        if (session?.access_token) {
+          void fetchRemoteWidgetSnapshot(session.access_token)
+        }
       }
       setBusyId(null)
     },
-    [favoriteIds, user]
+    [favoriteIds, user, session?.access_token]
   )
 
   if (state.kind === "loading") {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#a3e635" />
-        <Text style={styles.muted}>Cargando agenda…</Text>
+      <View style={[styles.center, { backgroundColor: colors.bg }]}>
+        <ActivityIndicator size="large" color={colors.accent} />
+        <Text style={[styles.muted, { color: colors.textSubtle }]}>Cargando agenda…</Text>
       </View>
     )
   }
 
   if (state.kind === "error") {
     return (
-      <View style={styles.center}>
-        <Text style={styles.error} accessibilityRole="alert">
+      <View style={[styles.center, { backgroundColor: colors.bg }]}>
+        <Text style={[styles.error, { color: colors.error }]} accessibilityRole="alert">
           {state.message}
         </Text>
         <Pressable
@@ -147,10 +153,15 @@ export function TodayFeedScreen() {
           onPress={() => void Linking.openURL(SITE_URL)}
           accessibilityRole="link"
         >
-          <Text style={styles.linkText}>Abrir queveohoy.es</Text>
+          <Text style={[styles.linkText, { color: colors.accent }]}>
+            Abrir queveohoy.es
+          </Text>
         </Pressable>
-        <Pressable style={styles.retryBtn} onPress={() => void load()}>
-          <Text style={styles.retryText}>Reintentar</Text>
+        <Pressable
+          style={[styles.retryBtn, { backgroundColor: colors.accent }]}
+          onPress={() => void load()}
+        >
+          <Text style={[styles.retryText, { color: colors.bg }]}>Reintentar</Text>
         </Pressable>
       </View>
     )
@@ -160,16 +171,20 @@ export function TodayFeedScreen() {
     <FlatList
       data={state.events}
       keyExtractor={(item) => String(item.id)}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={[styles.list, { backgroundColor: colors.bg }]}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
       ListHeaderComponent={
         <>
           {stale ? (
-            <Text style={styles.stale}>Agenda guardada (sin conexión)</Text>
+            <Text style={[styles.stale, { color: colors.warning }]}>
+              Agenda guardada (sin conexión)
+            </Text>
           ) : null}
-          <Text style={styles.dateHeader}>Hoy · {state.date}</Text>
+          <Text style={[styles.dateHeader, { color: colors.accent }]}>
+            Hoy · {state.date}
+          </Text>
         </>
       }
       renderItem={({ item }) => (
@@ -182,7 +197,9 @@ export function TodayFeedScreen() {
         />
       )}
       ListEmptyComponent={
-        <Text style={styles.muted}>Sin eventos para hoy.</Text>
+        <Text style={[styles.muted, { color: colors.textSubtle }]}>
+          Sin eventos para hoy.
+        </Text>
       }
     />
   )
@@ -194,28 +211,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
-    backgroundColor: "#0a0a0a",
   },
   list: {
     padding: 16,
   },
   dateHeader: {
-    color: "#a3e635",
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 8,
   },
   stale: {
-    color: "#fbbf24",
     fontSize: 13,
     marginBottom: 6,
   },
   muted: {
-    color: "#737373",
     marginTop: 12,
   },
   error: {
-    color: "#fca5a5",
     textAlign: "center",
     marginBottom: 16,
   },
@@ -223,18 +235,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   linkText: {
-    color: "#a3e635",
     fontWeight: "600",
     textDecorationLine: "underline",
   },
   retryBtn: {
-    backgroundColor: "#a3e635",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 999,
   },
   retryText: {
-    color: "#0a0a0a",
     fontWeight: "700",
   },
 })

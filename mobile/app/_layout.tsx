@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import * as Linking from "expo-linking"
 import * as Notifications from "expo-notifications"
 import { AuthProvider } from "@/lib/auth-context"
+import { ThemeProvider, useTheme } from "@/lib/theme-context"
 import { Stack } from "expo-router"
 import { StatusBar } from "expo-status-bar"
 import { SITE_URL } from "@/lib/api"
@@ -33,17 +34,18 @@ function usePushDeepLinks() {
   }, [])
 }
 
-export default function RootLayout() {
+function ThemedStack() {
+  const { colors, resolved } = useTheme()
   usePushDeepLinks()
 
   return (
-    <AuthProvider>
-      <StatusBar style="light" />
+    <>
+      <StatusBar style={resolved === "light" ? "dark" : "light"} />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: "#0a0a0a" },
-          headerTintColor: "#fafafa",
-          contentStyle: { backgroundColor: "#0a0a0a" },
+          headerStyle: { backgroundColor: colors.bg },
+          headerTintColor: colors.text,
+          contentStyle: { backgroundColor: colors.bg },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -52,6 +54,16 @@ export default function RootLayout() {
           options={{ title: "Iniciando sesión", headerShown: false }}
         />
       </Stack>
-    </AuthProvider>
+    </>
+  )
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <ThemedStack />
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

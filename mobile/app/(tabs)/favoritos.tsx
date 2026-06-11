@@ -11,11 +11,17 @@ import { EventCard } from "@/components/EventCard"
 import { useAuth } from "@/lib/auth-context"
 import type { FeedEvent } from "@/lib/api"
 import { loadFavoriteEvents } from "@/lib/favorites"
+import {
+  fetchRemoteWidgetSnapshot,
+  updateWidgetSnapshotFromEvents,
+} from "@/lib/widget-snapshot"
 import { getSupabaseClient } from "@/lib/supabase"
 import { Link } from "expo-router"
+import { useTheme } from "@/lib/theme-context"
 
 export default function FavoritosScreen() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading, session } = useAuth()
+  const { colors } = useTheme()
   const [events, setEvents] = useState<FeedEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -32,8 +38,13 @@ export default function FavoritosScreen() {
     const result = await loadFavoriteEvents(supabase)
     setEvents(result.events)
     setError(result.error)
+    if (session?.access_token) {
+      await fetchRemoteWidgetSnapshot(session.access_token)
+    } else {
+      await updateWidgetSnapshotFromEvents(result.events)
+    }
     setLoading(false)
-  }, [user])
+  }, [user, session?.access_token])
 
   useEffect(() => {
     if (!authLoading) void load()
@@ -47,17 +58,19 @@ export default function FavoritosScreen() {
 
   if (authLoading || loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#a3e635" />
+      <View style={[styles.center, { backgroundColor: colors.bg }]}>
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     )
   }
 
   if (!user) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.lead}>Inicia sesión para ver tus favoritos.</Text>
-        <Link href="/(tabs)/cuenta" style={styles.link}>
+      <View style={[styles.center, { backgroundColor: colors.bg }]}>
+        <Text style={[styles.lead, { color: colors.text }]}>
+          Inicia sesión para ver tus favoritos.
+        </Text>
+        <Link href="/(tabs)/cuenta" style={[styles.link, { color: colors.accent }]}>
           Ir a Cuenta
         </Link>
       </View>
@@ -68,20 +81,20 @@ export default function FavoritosScreen() {
     <FlatList
       data={events}
       keyExtractor={(item) => String(item.id)}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={[styles.list, { backgroundColor: colors.bg }]}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
       ListHeaderComponent={
         error ? (
-          <Text style={styles.error} accessibilityRole="alert">
+          <Text style={[styles.error, { color: colors.error }]} accessibilityRole="alert">
             {error}
           </Text>
         ) : null
       }
       renderItem={({ item }) => <EventCard event={item} />}
       ListEmptyComponent={
-        <Text style={styles.muted}>
+        <Text style={[styles.muted, { color: colors.textSubtle }]}>
           Aún no tienes favoritos. Márcalos con ♥ en la pestaña Hoy.
         </Text>
       }
@@ -95,27 +108,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
-    backgroundColor: "#0a0a0a",
   },
   list: {
     padding: 16,
   },
   lead: {
-    color: "#fafafa",
     fontSize: 16,
     marginBottom: 16,
     textAlign: "center",
   },
   link: {
-    color: "#a3e635",
     fontWeight: "700",
     fontSize: 16,
   },
-  muted: {
-    color: "#737373",
-  },
+  muted: {},
   error: {
-    color: "#fca5a5",
     marginBottom: 12,
   },
 })

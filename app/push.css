@@ -179,3 +179,19 @@
     border-radius: 16px;
   }
 }
+
+.qvh-push-panel-inline {
+  position: static;
+  transform: none;
+  width: 100%;
+  max-width: none;
+  margin-top: 12px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.qvh-push-panel-inline .qvh-push-panel-actions {
+  margin-top: 8px;
+}

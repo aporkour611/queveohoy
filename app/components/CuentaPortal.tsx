@@ -12,6 +12,7 @@ import {
   type UserPreferences,
 } from "@/app/lib/user-preferences"
 import { syncStoredUserPlatforms } from "@/app/lib/user-platforms-client"
+import { PushSettingsInline } from "@/app/components/PushNotifications"
 
 type FavoriteItem = {
   event: EventRow
@@ -246,15 +247,10 @@ export function CuentaPortal({
               <section className="fh-settings-block">
                 <h2>Preferencias de notificación</h2>
                 <p>
-                  Gestiona categorías y activación de notificaciones desde la home.
+                  Sincronizadas con la app móvil cuando inicias sesión con la misma
+                  cuenta. Cambios aquí se reflejan en todos tus dispositivos.
                 </p>
-                <p className="fh-settings-muted">
-                  Pulsa el icono de campana en la barra superior para abrir los ajustes
-                  de avisos. Con cuenta activa puedes usar el modo «solo favoritos».
-                </p>
-                <Link href="/" className="fh-account-menu-link">
-                  Ir a ajustes push →
-                </Link>
+                <PushSettingsInline />
               </section>
             </>
           ) : null}

@@ -168,3 +168,45 @@ export async function refreshPushPreferencesOnServer(options: {
     favoritesOnly: options.favoritesOnly,
   })
 }
+
+export type RemotePushPreferences = {
+  hasSubscription: boolean
+  favoritesOnly: boolean
+  topics: string[]
+  platforms?: Array<"web" | "expo">
+}
+
+export async function fetchRemotePushPreferences(
+  accessToken?: string | null
+): Promise<RemotePushPreferences | null> {
+  const headers: Record<string, string> = { Accept: "application/json" }
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`
+  }
+
+  const res = await fetch(`${API_BASE}/api/push/subscribe`, { headers })
+  if (res.status === 401) return null
+  if (!res.ok) return null
+  return (await res.json()) as RemotePushPreferences
+}
+
+export async function syncPushPreferencesFromServer(options: {
+  accessToken?: string | null
+}): Promise<void> {
+  const remote = await fetchRemotePushPreferences(options.accessToken)
+  if (!remote?.hasSubscription) return
+
+  await persistPushState({
+    enabled: await isMobilePushEnabledLocally(),
+    favoritesOnly: remote.favoritesOnly,
+  })
+
+  const token = await getStoredPushToken()
+  if (token && (await isMobilePushEnabledLocally())) {
+    await syncPushTokenWithServer({
+      expoPushToken: token,
+      accessToken: options.accessToken,
+      favoritesOnly: remote.favoritesOnly,
+    })
+  }
+}

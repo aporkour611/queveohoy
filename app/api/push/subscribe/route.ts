@@ -6,6 +6,7 @@ import {
   upsertExpoPushSubscription,
   upsertPushSubscription,
 } from "../../../lib/push-notify"
+import { getUserPushPreferences } from "../../../lib/push-user-preferences"
 import { isPushConfigured } from "../../../lib/push-vapid"
 import type { PushTopicId } from "../../../lib/push-preferences"
 import { checkRateLimitDistributed } from "../../../lib/rate-limit-distributed"
@@ -20,6 +21,19 @@ type SubscribeBody = {
   userAgent?: string
   userId?: string | null
   favoritesOnly?: boolean
+}
+
+export async function GET(request: Request) {
+  const user = await resolveRequestUser(request)
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const preferences = await getUserPushPreferences(user.id)
+  return NextResponse.json({
+    configured: isPushConfigured(),
+    ...preferences,
+  })
 }
 
 export async function POST(request: Request) {

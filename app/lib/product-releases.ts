@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.11.0",
+    date: "2026-06-11",
+    title: "Tema app + push sync + widget data",
+    highlights: [
+      "Push sincronizado entre web y app móvil",
+      "Tema claro/oscuro/sistema en la app",
+      "Datos de widget «próximo favorito» listos para iOS/Android",
+    ],
+  },
+  {
     version: "2.10.0",
     date: "2026-06-11",
     title: "App stores-ready + push favoritos",

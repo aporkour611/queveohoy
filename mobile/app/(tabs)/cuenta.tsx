@@ -1,5 +1,6 @@
 import { PushSettings } from "@/components/PushSettings"
-import { useState } from "react"
+import { ThemeSettings } from "@/components/ThemeSettings"
+import { useMemo, useState } from "react"
 import {
   ActivityIndicator,
   Pressable,
@@ -11,8 +12,10 @@ import {
 } from "react-native"
 import { useAuth } from "@/lib/auth-context"
 import { SITE_URL } from "@/lib/api"
+import { useTheme } from "@/lib/theme-context"
 
 export default function CuentaScreen() {
+  const { colors } = useTheme()
   const {
     configured,
     loading,
@@ -28,10 +31,135 @@ export default function CuentaScreen() {
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        center: {
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: colors.bg,
+        },
+        container: {
+          flexGrow: 1,
+          padding: 20,
+          backgroundColor: colors.bg,
+        },
+        title: {
+          color: colors.text,
+          fontSize: 24,
+          fontWeight: "800",
+          marginBottom: 8,
+        },
+        email: {
+          color: colors.accent,
+          fontSize: 16,
+          marginBottom: 12,
+        },
+        lead: {
+          color: colors.textMuted,
+          fontSize: 15,
+          lineHeight: 22,
+          marginBottom: 20,
+        },
+        warn: {
+          color: colors.warning,
+          marginBottom: 12,
+        },
+        error: {
+          color: colors.error,
+          marginBottom: 12,
+        },
+        success: {
+          color: colors.success,
+          marginBottom: 12,
+        },
+        primaryBtn: {
+          backgroundColor: colors.accent,
+          paddingVertical: 14,
+          borderRadius: 12,
+          alignItems: "center",
+        },
+        primaryText: {
+          color: colors.bg,
+          fontWeight: "700",
+          fontSize: 16,
+        },
+        appleBtn: {
+          backgroundColor: colors.text,
+          paddingVertical: 14,
+          borderRadius: 12,
+          alignItems: "center",
+          marginBottom: 0,
+        },
+        appleText: {
+          color: colors.bg,
+          fontWeight: "700",
+          fontSize: 16,
+        },
+        microsoftBtn: {
+          backgroundColor: "#2563eb",
+          paddingVertical: 14,
+          borderRadius: 12,
+          alignItems: "center",
+          marginTop: 10,
+        },
+        microsoftText: {
+          color: "#fafafa",
+          fontWeight: "700",
+          fontSize: 16,
+        },
+        secondaryBtn: {
+          borderWidth: 1,
+          borderColor: colors.border,
+          paddingVertical: 14,
+          borderRadius: 12,
+          alignItems: "center",
+        },
+        secondaryText: {
+          color: colors.text,
+          fontWeight: "600",
+        },
+        outlineBtn: {
+          marginTop: 24,
+          borderWidth: 1,
+          borderColor: colors.textSubtle,
+          paddingVertical: 12,
+          borderRadius: 12,
+          alignItems: "center",
+        },
+        outlineText: {
+          color: colors.text,
+          fontWeight: "600",
+        },
+        divider: {
+          color: colors.textSubtle,
+          textAlign: "center",
+          marginVertical: 16,
+        },
+        input: {
+          backgroundColor: colors.inputBg,
+          borderWidth: 1,
+          borderColor: colors.border,
+          borderRadius: 12,
+          paddingHorizontal: 14,
+          paddingVertical: 12,
+          color: colors.text,
+          marginBottom: 12,
+        },
+        hint: {
+          color: colors.textSubtle,
+          fontSize: 12,
+          marginTop: 20,
+        },
+      }),
+    [colors]
+  )
+
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#a3e635" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     )
   }
@@ -45,6 +173,7 @@ export default function CuentaScreen() {
           Tus favoritos se sincronizan con la web en {SITE_URL.replace("https://", "")}.
         </Text>
         <PushSettings />
+        <ThemeSettings />
         <Pressable
           style={styles.outlineBtn}
           onPress={() => void signOut()}
@@ -155,7 +284,7 @@ export default function CuentaScreen() {
         value={email}
         onChangeText={setEmail}
         placeholder="tu@correo.com"
-        placeholderTextColor="#737373"
+        placeholderTextColor={colors.textSubtle}
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
@@ -177,124 +306,3 @@ export default function CuentaScreen() {
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#0a0a0a",
-  },
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#0a0a0a",
-  },
-  title: {
-    color: "#fafafa",
-    fontSize: 24,
-    fontWeight: "800",
-    marginBottom: 8,
-  },
-  email: {
-    color: "#a3e635",
-    fontSize: 16,
-    marginBottom: 12,
-  },
-  lead: {
-    color: "#a3a3a3",
-    fontSize: 15,
-    lineHeight: 22,
-    marginBottom: 20,
-  },
-  warn: {
-    color: "#fbbf24",
-    marginBottom: 12,
-  },
-  error: {
-    color: "#fca5a5",
-    marginBottom: 12,
-  },
-  success: {
-    color: "#86efac",
-    marginBottom: 12,
-  },
-  primaryBtn: {
-    backgroundColor: "#a3e635",
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  primaryText: {
-    color: "#0a0a0a",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  appleBtn: {
-    backgroundColor: "#fafafa",
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    marginBottom: 0,
-  },
-  appleText: {
-    color: "#0a0a0a",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  microsoftBtn: {
-    backgroundColor: "#2563eb",
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  microsoftText: {
-    color: "#fafafa",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  secondaryBtn: {
-    borderWidth: 1,
-    borderColor: "#404040",
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  secondaryText: {
-    color: "#fafafa",
-    fontWeight: "600",
-  },
-  outlineBtn: {
-    marginTop: 24,
-    borderWidth: 1,
-    borderColor: "#525252",
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  outlineText: {
-    color: "#fafafa",
-    fontWeight: "600",
-  },
-  divider: {
-    color: "#737373",
-    textAlign: "center",
-    marginVertical: 16,
-  },
-  input: {
-    backgroundColor: "#171717",
-    borderWidth: 1,
-    borderColor: "#404040",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    color: "#fafafa",
-    marginBottom: 12,
-  },
-  hint: {
-    color: "#525252",
-    fontSize: 12,
-    marginTop: 20,
-  },
-})

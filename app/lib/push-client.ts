@@ -74,7 +74,7 @@ export async function registerPushServiceWorker(): Promise<ServiceWorkerRegistra
 
 export const PUSH_FAVORITES_ONLY_KEY = "qvh-push-favorites-only";
 
-function readLocalPushFavoritesOnly(): boolean {
+export function readLocalPushFavoritesOnly(): boolean {
   if (typeof window === "undefined") return false;
 
   try {
@@ -266,4 +266,34 @@ export async function isPushSubscribedLocally(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export type RemotePushPreferences = {
+  configured?: boolean;
+  hasSubscription: boolean;
+  favoritesOnly: boolean;
+  topics: PushTopicId[];
+  platforms?: Array<"web" | "expo">;
+  updatedAt?: string | null;
+};
+
+export async function fetchRemotePushPreferences(): Promise<RemotePushPreferences | null> {
+  try {
+    const res = await fetch("/api/push/subscribe", {
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (res.status === 401) return null;
+    if (!res.ok) return null;
+    return (await res.json()) as RemotePushPreferences;
+  } catch {
+    return null;
+  }
+}
+
+export function applyRemotePushPreferencesLocally(
+  prefs: RemotePushPreferences
+): void {
+  writeLocalPushFavoritesOnly(prefs.favoritesOnly);
+  writeLocalPushTopics(prefs.topics);
 }

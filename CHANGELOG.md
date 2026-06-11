@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.11.0] - 2026-06-11
+
+### Added
+- `GET /api/push/subscribe` — preferencias push sincronizadas web ↔ app
+- Ajustes push inline en `/cuenta` → Avisos
+- App: tema claro / oscuro / sistema en Cuenta
+- API `GET /api/v1/widget/next-favorite` + snapshot local para widget nativo
+
+### Changed
+- Versión del producto: **2.11.0**
+
 ## [2.10.0] - 2026-06-11
 
 ### Added

@@ -8,9 +8,12 @@ import {
   hasPreferenceConsent,
 } from "../lib/cookie-consent";
 import {
+  applyRemotePushPreferencesLocally,
   dismissPushPrompt,
+  fetchRemotePushPreferences,
   isPushSubscribedLocally,
   isPushSupported,
+  readLocalPushFavoritesOnly,
   readLocalPushTopics,
   subscribeToPush,
   unsubscribeFromPush,
@@ -53,12 +56,14 @@ type PushSettingsPanelProps = {
   open: boolean;
   onClose: () => void;
   onPreferencesSaved?: () => void;
+  inline?: boolean;
 };
 
 export function PushSettingsPanel({
   open,
   onClose,
   onPreferencesSaved,
+  inline = false,
 }: PushSettingsPanelProps) {
   const [topics, setTopics] = useState<PushTopicId[]>(() =>
     readLocalPushTopics()
@@ -71,16 +76,13 @@ export function PushSettingsPanel({
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open && !inline) return;
 
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
       setTopics(readLocalPushTopics());
-      setFavoritesOnly(
-        typeof window !== "undefined" &&
-          localStorage.getItem("qvh-push-favorites-only") === "1"
-      );
+      setFavoritesOnly(readLocalPushFavoritesOnly());
       setStatus("");
     });
 
@@ -93,13 +95,22 @@ export function PushSettingsPanel({
         if (cancelled) return;
         setLoggedIn(Boolean(data.user));
         setUserId(data.user?.id ?? null);
+
+        if (data.user) {
+          void fetchRemotePushPreferences().then((remote) => {
+            if (cancelled || !remote?.hasSubscription) return;
+            applyRemotePushPreferencesLocally(remote);
+            setTopics(remote.topics);
+            setFavoritesOnly(remote.favoritesOnly);
+          });
+        }
       });
     }
 
     return () => {
       cancelled = true;
     };
-  }, [open]);
+  }, [open, inline]);
 
   const toggleTopic = useCallback((topicId: PushTopicId) => {
     setTopics((current) => {
@@ -163,21 +174,15 @@ export function PushSettingsPanel({
     setStatus("Avisos desactivados.");
   }, []);
 
-  if (!open) return null;
+  if (!open && !inline) return null;
 
-  return (
-    <>
-      <div
-        className="qvh-push-panel-backdrop"
-        onClick={onClose}
-        aria-hidden
-      />
-      <div
-        className="qvh-push-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Avisos de eventos"
-      >
+  const panel = (
+    <div
+      className={inline ? "qvh-push-panel qvh-push-panel-inline" : "qvh-push-panel"}
+      role={inline ? "region" : "dialog"}
+      aria-modal={inline ? undefined : true}
+      aria-label="Avisos de eventos"
+    >
         <h2>Avisos en el móvil</h2>
         <p>
           Te avisamos unos 45 minutos antes de los eventos de{" "}
@@ -261,11 +266,56 @@ export function PushSettingsPanel({
             onClick={onClose}
             disabled={busy}
           >
-            Cerrar
+            {inline ? "Ocultar" : "Cerrar"}
           </button>
         </div>
       </div>
+  );
+
+  if (inline) return panel;
+
+  return (
+    <>
+      <div
+        className="qvh-push-panel-backdrop"
+        onClick={onClose}
+        aria-hidden
+      />
+      {panel}
     </>
+  );
+}
+
+export function PushSettingsInline() {
+  const [visible, setVisible] = useState(true);
+
+  if (!isPushSupported()) {
+    return (
+      <p className="fh-settings-muted">
+        Tu navegador no admite notificaciones push. Usa la app móvil o Chrome/Edge
+        en Android.
+      </p>
+    );
+  }
+
+  if (!visible) {
+    return (
+      <button
+        type="button"
+        className="fh-btn fh-btn-secondary"
+        onClick={() => setVisible(true)}
+      >
+        Mostrar ajustes push
+      </button>
+    );
+  }
+
+  return (
+    <PushSettingsPanel
+      inline
+      open
+      onClose={() => setVisible(false)}
+    />
   );
 }
 

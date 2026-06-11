@@ -16,7 +16,10 @@ import {
   type WeekDayCache,
 } from "@/lib/feed-cache"
 
+import { useTheme } from "@/lib/theme-context"
+
 export default function SemanaScreen() {
+  const { colors } = useTheme()
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -68,33 +71,39 @@ export default function SemanaScreen() {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#a3e635" />
+      <View style={[styles.center, { backgroundColor: colors.bg }]}>
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     )
   }
 
   return (
     <ScrollView
-      contentContainerStyle={styles.list}
+      contentContainerStyle={[styles.list, { backgroundColor: colors.bg }]}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
     >
       {stale ? (
-        <Text style={styles.stale}>Mostrando agenda guardada (sin conexión)</Text>
+        <Text style={[styles.stale, { color: colors.warning }]}>
+          Mostrando agenda guardada (sin conexión)
+        </Text>
       ) : null}
       {error ? (
-        <Text style={styles.error} accessibilityRole="alert">
+        <Text style={[styles.error, { color: colors.error }]} accessibilityRole="alert">
           {error}
         </Text>
       ) : null}
       {days.length === 0 ? (
-        <Text style={styles.muted}>Sin eventos esta semana.</Text>
+        <Text style={[styles.muted, { color: colors.textSubtle }]}>
+          Sin eventos esta semana.
+        </Text>
       ) : (
         days.map((day) => (
           <View key={day.date} style={styles.dayBlock}>
-            <Text style={styles.dayTitle}>{formatDayTitle(day.date)}</Text>
+            <Text style={[styles.dayTitle, { color: colors.accent }]}>
+              {formatDayTitle(day.date)}
+            </Text>
             {day.events.map((event: FeedEvent) => (
               <EventCard key={event.id} event={event} />
             ))}
@@ -110,14 +119,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#0a0a0a",
   },
   list: {
     padding: 16,
     paddingBottom: 32,
   },
   stale: {
-    color: "#fbbf24",
     fontSize: 13,
     marginBottom: 10,
   },
@@ -125,17 +132,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   dayTitle: {
-    color: "#a3e635",
     fontSize: 15,
     fontWeight: "700",
     marginBottom: 8,
     textTransform: "capitalize",
   },
-  muted: {
-    color: "#737373",
-  },
+  muted: {},
   error: {
-    color: "#fca5a5",
     marginBottom: 12,
   },
 })

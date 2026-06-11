@@ -21,6 +21,7 @@ Extiende [ROADMAP-2.9.md](./ROADMAP-2.9.md).
 
 ## Siguiente (2.11+)
 
-- Widget iOS / Android (próximo evento favorito)
-- Tema claro en app
-- Sincronizar preferencias push con `/cuenta` web
+Ver [ROADMAP-2.11.md](./ROADMAP-2.11.md).
+
+- Widget nativo en stores
+- Prefetch semana web
