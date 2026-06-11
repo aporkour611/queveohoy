@@ -8,28 +8,49 @@ import {
   View,
 } from "react-native"
 import { EventCard } from "@/components/EventCard"
-import { fetchWeekFeed, formatDayTitle } from "@/lib/api"
+import { fetchWeekFeed, formatDayTitle, type FeedEvent } from "@/lib/api"
 import { formatMobileNetworkError } from "@/lib/ensure-https"
+import {
+  readCachedWeekFeed,
+  writeCachedWeekFeed,
+  type WeekDayCache,
+} from "@/lib/feed-cache"
 
 export default function SemanaScreen() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [days, setDays] = useState<
-    { date: string; events: import("@/lib/api").FeedEvent[] }[]
-  >([])
+  const [stale, setStale] = useState(false)
+  const [days, setDays] = useState<WeekDayCache[]>([])
 
   const load = useCallback(async () => {
+    const cached = await readCachedWeekFeed()
+    if (cached && cached.length > 0) {
+      setDays(cached)
+      setStale(false)
+      setLoading(false)
+    }
+
     try {
       const result = await fetchWeekFeed(7)
-      setDays(result.days)
+      if (result.days.length > 0) {
+        setDays(result.days)
+        await writeCachedWeekFeed(result.days)
+        setStale(false)
+      } else if (!cached?.length) {
+        setDays([])
+      }
       setError(result.error)
     } catch (err) {
-      setError(
-        formatMobileNetworkError(
-          err instanceof Error ? err.message : "Error de red"
+      if (!cached?.length) {
+        setError(
+          formatMobileNetworkError(
+            err instanceof Error ? err.message : "Error de red"
+          )
         )
-      )
+      } else {
+        setStale(true)
+      }
     } finally {
       setLoading(false)
     }
@@ -60,6 +81,9 @@ export default function SemanaScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
     >
+      {stale ? (
+        <Text style={styles.stale}>Mostrando agenda guardada (sin conexión)</Text>
+      ) : null}
       {error ? (
         <Text style={styles.error} accessibilityRole="alert">
           {error}
@@ -71,7 +95,7 @@ export default function SemanaScreen() {
         days.map((day) => (
           <View key={day.date} style={styles.dayBlock}>
             <Text style={styles.dayTitle}>{formatDayTitle(day.date)}</Text>
-            {day.events.map((event) => (
+            {day.events.map((event: FeedEvent) => (
               <EventCard key={event.id} event={event} />
             ))}
           </View>
@@ -91,6 +115,11 @@ const styles = StyleSheet.create({
   list: {
     padding: 16,
     paddingBottom: 32,
+  },
+  stale: {
+    color: "#fbbf24",
+    fontSize: 13,
+    marginBottom: 10,
   },
   dayBlock: {
     marginBottom: 20,

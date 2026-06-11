@@ -15,14 +15,37 @@ Notifications.setNotificationHandler({
 })
 
 const PUSH_ENABLED_KEY = "qvh:mobile:push-enabled"
+const PUSH_TOKEN_KEY = "qvh:mobile:push-token"
+const PUSH_FAVORITES_ONLY_KEY = "qvh:mobile:push-favorites-only"
 
 export async function isMobilePushEnabledLocally(): Promise<boolean> {
-  const value = await AsyncStorage.getItem(PUSH_ENABLED_KEY)
-  return value === "1"
+  return (await AsyncStorage.getItem(PUSH_ENABLED_KEY)) === "1"
 }
 
-export async function setMobilePushEnabledLocally(enabled: boolean): Promise<void> {
-  await AsyncStorage.setItem(PUSH_ENABLED_KEY, enabled ? "1" : "0")
+export async function isMobilePushFavoritesOnlyLocally(): Promise<boolean> {
+  return (await AsyncStorage.getItem(PUSH_FAVORITES_ONLY_KEY)) === "1"
+}
+
+export async function getStoredPushToken(): Promise<string | null> {
+  return AsyncStorage.getItem(PUSH_TOKEN_KEY)
+}
+
+async function persistPushState(options: {
+  enabled: boolean
+  token?: string | null
+  favoritesOnly?: boolean
+}): Promise<void> {
+  await AsyncStorage.setItem(PUSH_ENABLED_KEY, options.enabled ? "1" : "0")
+  if (options.token !== undefined) {
+    if (options.token) await AsyncStorage.setItem(PUSH_TOKEN_KEY, options.token)
+    else await AsyncStorage.removeItem(PUSH_TOKEN_KEY)
+  }
+  if (options.favoritesOnly !== undefined) {
+    await AsyncStorage.setItem(
+      PUSH_FAVORITES_ONLY_KEY,
+      options.favoritesOnly ? "1" : "0"
+    )
+  }
 }
 
 export async function registerForPushNotifications(): Promise<{
@@ -30,7 +53,10 @@ export async function registerForPushNotifications(): Promise<{
   error: string | null
 }> {
   if (!Device.isDevice) {
-    return { token: null, error: "Las notificaciones requieren un dispositivo físico." }
+    return {
+      token: null,
+      error: "Las notificaciones requieren un dispositivo físico.",
+    }
   }
 
   if (Platform.OS === "android") {
@@ -79,13 +105,15 @@ export async function syncPushTokenWithServer(options: {
     headers.Authorization = `Bearer ${options.accessToken}`
   }
 
+  const favoritesOnly = options.favoritesOnly ?? false
+
   const res = await fetch(`${API_BASE}/api/push/subscribe`, {
     method: "POST",
     headers,
     body: JSON.stringify({
       platform: "expo",
       expoPushToken: options.expoPushToken,
-      favoritesOnly: options.favoritesOnly ?? false,
+      favoritesOnly,
       topics: ["futbol", "ufc", "series", "motor"],
     }),
   })
@@ -95,7 +123,11 @@ export async function syncPushTokenWithServer(options: {
     return body.error ?? `HTTP ${res.status}`
   }
 
-  await setMobilePushEnabledLocally(true)
+  await persistPushState({
+    enabled: true,
+    token: options.expoPushToken,
+    favoritesOnly,
+  })
   return null
 }
 
@@ -119,5 +151,20 @@ export async function unregisterPushFromServer(
     body: JSON.stringify({ endpoint }),
   }).catch(() => undefined)
 
-  await setMobilePushEnabledLocally(false)
+  await persistPushState({ enabled: false, token: null })
+}
+
+export async function refreshPushPreferencesOnServer(options: {
+  accessToken?: string | null
+  favoritesOnly: boolean
+}): Promise<string | null> {
+  const token = await getStoredPushToken()
+  if (!token) return null
+  if (!(await isMobilePushEnabledLocally())) return null
+
+  return syncPushTokenWithServer({
+    expoPushToken: token,
+    accessToken: options.accessToken,
+    favoritesOnly: options.favoritesOnly,
+  })
 }

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import {
   ActivityIndicator,
-  Pressable,
   StyleSheet,
   Switch,
   Text,
@@ -9,7 +8,10 @@ import {
 } from "react-native"
 import { useAuth } from "@/lib/auth-context"
 import {
+  getStoredPushToken,
   isMobilePushEnabledLocally,
+  isMobilePushFavoritesOnlyLocally,
+  refreshPushPreferencesOnServer,
   registerForPushNotifications,
   syncPushTokenWithServer,
   unregisterPushFromServer,
@@ -18,24 +20,35 @@ import {
 export function PushSettings() {
   const { user, session } = useAuth()
   const [enabled, setEnabled] = useState(false)
+  const [favoritesOnly, setFavoritesOnly] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [token, setToken] = useState<string | null>(null)
 
   useEffect(() => {
-    void isMobilePushEnabledLocally().then(setEnabled)
+    void Promise.all([
+      isMobilePushEnabledLocally(),
+      isMobilePushFavoritesOnlyLocally(),
+      getStoredPushToken(),
+    ]).then(([pushEnabled, favOnly, storedToken]) => {
+      setEnabled(pushEnabled)
+      setFavoritesOnly(favOnly)
+      setToken(storedToken)
+    })
   }, [])
 
-  const handleToggle = useCallback(
+  const handlePushToggle = useCallback(
     async (next: boolean) => {
       setBusy(true)
       setError(null)
 
       if (!next) {
-        if (token) {
-          await unregisterPushFromServer(token, session?.access_token)
+        const activeToken = token ?? (await getStoredPushToken())
+        if (activeToken) {
+          await unregisterPushFromServer(activeToken, session?.access_token)
         }
         setEnabled(false)
+        setToken(null)
         setBusy(false)
         return
       }
@@ -53,7 +66,7 @@ export function PushSettings() {
       const syncError = await syncPushTokenWithServer({
         expoPushToken: expoToken,
         accessToken: session?.access_token,
-        favoritesOnly: false,
+        favoritesOnly,
       })
 
       if (syncError) {
@@ -65,7 +78,24 @@ export function PushSettings() {
       setEnabled(true)
       setBusy(false)
     },
-    [session?.access_token, token]
+    [favoritesOnly, session?.access_token, token]
+  )
+
+  const handleFavoritesToggle = useCallback(
+    async (next: boolean) => {
+      setFavoritesOnly(next)
+      if (!enabled) return
+
+      setBusy(true)
+      setError(null)
+      const syncError = await refreshPushPreferencesOnServer({
+        accessToken: session?.access_token,
+        favoritesOnly: next,
+      })
+      if (syncError) setError(syncError)
+      setBusy(false)
+    },
+    [enabled, session?.access_token]
   )
 
   if (!user) return null
@@ -76,6 +106,7 @@ export function PushSettings() {
       <Text style={styles.lead}>
         Te avisamos ~45 min antes de partidos y estrenos (máx. 2/día).
       </Text>
+
       <View style={styles.row}>
         <Text style={styles.label}>Activar push</Text>
         {busy ? (
@@ -83,19 +114,39 @@ export function PushSettings() {
         ) : (
           <Switch
             value={enabled}
-            onValueChange={(value) => void handleToggle(value)}
+            onValueChange={(value) => void handlePushToggle(value)}
             trackColor={{ false: "#404040", true: "#365314" }}
             thumbColor={enabled ? "#a3e635" : "#737373"}
             accessibilityLabel="Activar notificaciones push"
           />
         )}
       </View>
+
+      <View style={styles.row}>
+        <View style={styles.labelBlock}>
+          <Text style={styles.label}>Solo mis favoritos</Text>
+          <Text style={styles.sublabel}>
+            Solo eventos que marques con ♥ en Hoy
+          </Text>
+        </View>
+        <Switch
+          value={favoritesOnly}
+          onValueChange={(value) => void handleFavoritesToggle(value)}
+          disabled={busy || !enabled}
+          trackColor={{ false: "#404040", true: "#365314" }}
+          thumbColor={favoritesOnly ? "#a3e635" : "#737373"}
+          accessibilityLabel="Solo avisos de favoritos"
+        />
+      </View>
+
       {error ? (
         <Text style={styles.error} accessibilityRole="alert">
           {error}
         </Text>
       ) : null}
-      <Text style={styles.hint}>Requiere build nativo (EAS); no funciona en simulador.</Text>
+      <Text style={styles.hint}>
+        Requiere build nativo (EAS); no funciona en simulador.
+      </Text>
     </View>
   )
 }
@@ -124,18 +175,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  labelBlock: {
+    flex: 1,
+    paddingRight: 12,
   },
   label: {
     color: "#fafafa",
     fontSize: 15,
   },
+  sublabel: {
+    color: "#737373",
+    fontSize: 12,
+    marginTop: 2,
+  },
   error: {
     color: "#fca5a5",
-    marginTop: 10,
+    marginTop: 4,
   },
   hint: {
     color: "#525252",
     fontSize: 12,
-    marginTop: 10,
+    marginTop: 4,
   },
 })

@@ -19,6 +19,7 @@ export default function CuentaScreen() {
     user,
     signInWithGoogle,
     signInWithApple,
+    signInWithMicrosoft,
     signInWithEmail,
     signOut,
   } = useAuth()
@@ -83,11 +84,20 @@ export default function CuentaScreen() {
     setBusy(false)
   }
 
+  const handleMicrosoft = async () => {
+    setBusy(true)
+    setError(null)
+    setMessage(null)
+    const err = await signInWithMicrosoft()
+    if (err) setError(err)
+    setBusy(false)
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Iniciar sesión</Text>
       <Text style={styles.lead}>
-        Guarda favoritos sincronizados con la web. Google o enlace mágico por correo.
+        Guarda favoritos sincronizados con la web. Google, Apple, Microsoft o correo.
       </Text>
 
       {!configured ? (
@@ -127,7 +137,18 @@ export default function CuentaScreen() {
         </Text>
       </Pressable>
 
-      <Text style={styles.divider}>o</Text>
+      <Pressable
+        style={styles.microsoftBtn}
+        onPress={() => void handleMicrosoft()}
+        disabled={busy || !configured}
+        accessibilityRole="button"
+      >
+        <Text style={styles.microsoftText}>
+          {busy ? "Conectando…" : "Continuar con Microsoft"}
+        </Text>
+      </Pressable>
+
+      <Text style={styles.divider}>o correo</Text>
 
       <TextInput
         style={styles.input}
@@ -218,6 +239,18 @@ const styles = StyleSheet.create({
   },
   appleText: {
     color: "#0a0a0a",
+    fontWeight: "700",
+    fontSize: 16,
+  },
+  microsoftBtn: {
+    backgroundColor: "#2563eb",
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  microsoftText: {
+    color: "#fafafa",
     fontWeight: "700",
     fontSize: 16,
   },

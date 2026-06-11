@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.10.0] - 2026-06-11
+
+### Added
+- App: push «solo favoritos», caché offline Semana, login Microsoft
+- EAS perfiles `preview-store` / `production-store` con auto-submit
+- Tag `mobile-v*` dispara build + submit Play Internal
+- Deep link al pulsar notificación push
+
+### Changed
+- Versión del producto: **2.10.0**
+
 ## [2.9.0] - 2026-06-11
 
 ### Added

@@ -22,6 +22,7 @@ type AuthContextValue = {
   session: Session | null
   signInWithGoogle: () => Promise<string | null>
   signInWithApple: () => Promise<string | null>
+  signInWithMicrosoft: () => Promise<string | null>
   signInWithEmail: (email: string) => Promise<string | null>
   signOut: () => Promise<void>
   completeAuthFromUrl: (url: string) => Promise<string | null>
@@ -62,7 +63,7 @@ async function setSessionFromUrl(url: string): Promise<string | null> {
 }
 
 async function signInWithOAuthProvider(
-  provider: "google" | "apple"
+  provider: "google" | "apple" | "azure"
 ): Promise<string | null> {
   const supabase = getSupabaseClient()
   if (!supabase) return "Supabase no configurado."
@@ -118,6 +119,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return signInWithOAuthProvider("apple")
   }, [])
 
+  const signInWithMicrosoft = useCallback(async () => {
+    return signInWithOAuthProvider("azure")
+  }, [])
+
   const signInWithEmail = useCallback(async (email: string) => {
     const supabase = getSupabaseClient()
     if (!supabase) return "Supabase no configurado."
@@ -151,11 +156,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       signInWithGoogle,
       signInWithApple,
+      signInWithMicrosoft,
       signInWithEmail,
       signOut,
       completeAuthFromUrl,
     }),
-    [loading, session, signInWithGoogle, signInWithApple, signInWithEmail, signOut, completeAuthFromUrl]
+    [loading, session, signInWithGoogle, signInWithApple, signInWithMicrosoft, signInWithEmail, signOut, completeAuthFromUrl]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

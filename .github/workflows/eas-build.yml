@@ -8,7 +8,9 @@ on:
         type: choice
         options:
           - preview
+          - preview-store
           - production
+          - production-store
         default: preview
       platform:
         description: Plataforma
@@ -18,6 +20,14 @@ on:
           - ios
           - all
         default: android
+      submit:
+        description: Auto-submit a stores (usa perfil *-store o --auto-submit)
+        type: boolean
+        default: false
+
+  push:
+    tags:
+      - "mobile-v*"
 
 jobs:
   build:
@@ -44,8 +54,32 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
+          set -euo pipefail
           if [ -z "${EXPO_TOKEN:-}" ]; then
             echo "::warning::EXPO_TOKEN no configurado — salta build EAS"
             exit 0
           fi
-          eas build --non-interactive --profile "${{ inputs.profile }}" --platform "${{ inputs.platform }}"
+
+          PROFILE="${{ inputs.profile }}"
+          PLATFORM="${{ inputs.platform }}"
+          AUTO_SUBMIT="${{ inputs.submit }}"
+
+          if [ "${{ github.event_name }}" = "push" ]; then
+            PROFILE="preview-store"
+            PLATFORM="android"
+            AUTO_SUBMIT="true"
+          fi
+
+          ARGS=(build --non-interactive --profile "$PROFILE" --platform "$PLATFORM")
+
+          if [ "$AUTO_SUBMIT" = "true" ] || [[ "$PROFILE" == *-store ]]; then
+            ARGS+=(--auto-submit)
+          fi
+
+          eas "${ARGS[@]}"
+
+      - name: Resumen
+        if: success()
+        run: |
+          echo "### EAS Build OK — perfil ${{ inputs.profile }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Plataforma: ${{ inputs.platform }}" >> "$GITHUB_STEP_SUMMARY"

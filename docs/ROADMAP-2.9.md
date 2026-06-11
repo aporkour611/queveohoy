@@ -22,9 +22,10 @@ Endpoint almacenado como `expo:ExponentPushToken[...]` en `push_subscriptions` (
 3. Supabase redirect: `queveohoy://auth/callback`
 4. Opcional: **`EXPO_ACCESS_TOKEN`** en Vercel para mayor cuota push
 
-## Siguiente (2.10+)
+## Siguiente (2.11+)
 
-- TestFlight / Play Internal automático tras EAS
-- Push «solo favoritos» en app
-- Cache semana offline
-- Microsoft OAuth en app
+Ver [ROADMAP-2.10.md](./ROADMAP-2.10.md) (entregado).
+
+- Widget próximo evento
+- Tema claro app
+- Preferencias push sync web

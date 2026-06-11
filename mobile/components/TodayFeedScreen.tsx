@@ -30,6 +30,7 @@ export function TodayFeedScreen() {
   const { user } = useAuth()
   const [state, setState] = useState<LoadState>({ kind: "loading" })
   const [refreshing, setRefreshing] = useState(false)
+  const [stale, setStale] = useState(false)
   const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set())
   const [busyId, setBusyId] = useState<number | null>(null)
 
@@ -62,6 +63,7 @@ export function TodayFeedScreen() {
         events: cached.events,
         date: cached.date,
       })
+      setStale(false)
       await syncFavorites(cached.events)
     }
 
@@ -78,10 +80,14 @@ export function TodayFeedScreen() {
         events: feed.events,
         date: feed.date,
       })
+      setStale(false)
       await writeCachedTodayFeed(feed)
       await syncFavorites(feed.events)
     } catch (err) {
-      if (cached) return
+      if (cached) {
+        setStale(true)
+        return
+      }
       const raw = err instanceof Error ? err.message : "Error de red"
       setState({
         kind: "error",
@@ -159,7 +165,12 @@ export function TodayFeedScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
       ListHeaderComponent={
-        <Text style={styles.dateHeader}>Hoy · {state.date}</Text>
+        <>
+          {stale ? (
+            <Text style={styles.stale}>Agenda guardada (sin conexión)</Text>
+          ) : null}
+          <Text style={styles.dateHeader}>Hoy · {state.date}</Text>
+        </>
       }
       renderItem={({ item }) => (
         <EventCard
@@ -193,6 +204,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 8,
+  },
+  stale: {
+    color: "#fbbf24",
+    fontSize: 13,
+    marginBottom: 6,
   },
   muted: {
     color: "#737373",
