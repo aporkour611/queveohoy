@@ -11,11 +11,16 @@ import {
 } from "react-native"
 import { EventCard } from "@/components/EventCard"
 import {
+  fetchFeedByDate,
   fetchTodayFeed,
   SITE_URL,
   type FeedEvent,
 } from "@/lib/api"
-import { readCachedTodayFeed, writeCachedTodayFeed } from "@/lib/feed-cache"
+import {
+  prefetchTomorrowFeed,
+  readCachedTodayFeed,
+  writeCachedTodayFeed,
+} from "@/lib/feed-cache"
 import { formatMobileNetworkError } from "@/lib/ensure-https"
 import { getSupabaseClient } from "@/lib/supabase"
 import { isEventFavorited, toggleFavorite } from "@/lib/favorites"
@@ -85,6 +90,7 @@ export function TodayFeedScreen() {
       })
       setStale(false)
       await writeCachedTodayFeed(feed)
+      void prefetchTomorrowFeed(feed.date, fetchFeedByDate)
       await syncFavorites(feed.events)
     } catch (err) {
       if (cached) {
@@ -190,6 +196,7 @@ export function TodayFeedScreen() {
       renderItem={({ item }) => (
         <EventCard
           event={item}
+          showShare
           showFavorite={Boolean(user)}
           favorited={favoriteIds.has(item.id)}
           favoriteBusy={busyId === item.id}

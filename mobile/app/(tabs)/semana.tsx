@@ -105,7 +105,7 @@ export default function SemanaScreen() {
               {formatDayTitle(day.date)}
             </Text>
             {day.events.map((event: FeedEvent) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} event={event} showShare />
             ))}
           </View>
         ))

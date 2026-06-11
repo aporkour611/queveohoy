@@ -92,7 +92,7 @@ export default function FavoritosScreen() {
           </Text>
         ) : null
       }
-      renderItem={({ item }) => <EventCard event={item} />}
+      renderItem={({ item }) => <EventCard event={item} showShare />}
       ListEmptyComponent={
         <Text style={[styles.muted, { color: colors.textSubtle }]}>
           Aún no tienes favoritos. Márcalos con ♥ en la pestaña Hoy.

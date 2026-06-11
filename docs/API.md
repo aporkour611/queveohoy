@@ -74,6 +74,16 @@ Eventos del día en Madrid.
 
 ---
 
+## `GET /api/v1/feed/week`
+
+Agenda de **7 días** (ventana semanal completa). Misma forma que `/api/v1/feed` más `scope: "week"` y `days: 7`.
+
+```bash
+curl -s "https://queveohoy.es/api/v1/feed/week" | jq '.count,.scope'
+```
+
+---
+
 ## `GET /api/v1/search`
 
 Búsqueda de eventos por texto (equipos, competición, plataforma). Coincidencia por tokens: todas las palabras deben aparecer.

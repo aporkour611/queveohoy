@@ -1,5 +1,6 @@
 import { PushSettings } from "@/components/PushSettings"
 import { ThemeSettings } from "@/components/ThemeSettings"
+import { WidgetHint } from "@/components/WidgetHint"
 import { useMemo, useState } from "react"
 import {
   ActivityIndicator,
@@ -12,6 +13,7 @@ import {
 } from "react-native"
 import { useAuth } from "@/lib/auth-context"
 import { SITE_URL } from "@/lib/api"
+import { APP_VERSION } from "@/lib/app-version"
 import { useTheme } from "@/lib/theme-context"
 
 export default function CuentaScreen() {
@@ -174,6 +176,10 @@ export default function CuentaScreen() {
         </Text>
         <PushSettings />
         <ThemeSettings />
+        <WidgetHint />
+        <Text style={[styles.hint, { marginTop: 8 }]}>
+          App móvil v{APP_VERSION} · API {SITE_URL.replace("https://", "")}
+        </Text>
         <Pressable
           style={styles.outlineBtn}
           onPress={() => void signOut()}

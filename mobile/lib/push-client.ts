@@ -92,6 +92,7 @@ export async function syncPushTokenWithServer(options: {
   expoPushToken: string
   accessToken?: string | null
   favoritesOnly?: boolean
+  topics?: string[]
 }): Promise<string | null> {
   const endpoint = buildExpoPushEndpoint(options.expoPushToken)
   if (!endpoint) return "Token Expo inválido"
@@ -106,6 +107,7 @@ export async function syncPushTokenWithServer(options: {
   }
 
   const favoritesOnly = options.favoritesOnly ?? false
+  const topics = options.topics ?? ["futbol", "ufc", "series", "motor"]
 
   const res = await fetch(`${API_BASE}/api/push/subscribe`, {
     method: "POST",
@@ -114,7 +116,7 @@ export async function syncPushTokenWithServer(options: {
       platform: "expo",
       expoPushToken: options.expoPushToken,
       favoritesOnly,
-      topics: ["futbol", "ufc", "series", "motor"],
+      topics,
     }),
   })
 
@@ -200,6 +202,19 @@ export async function syncPushPreferencesFromServer(options: {
     enabled: await isMobilePushEnabledLocally(),
     favoritesOnly: remote.favoritesOnly,
   })
+
+  if (remote.topics?.length && (await isMobilePushEnabledLocally())) {
+    const token = await getStoredPushToken()
+    if (token) {
+      await syncPushTokenWithServer({
+        expoPushToken: token,
+        accessToken: options.accessToken,
+        favoritesOnly: remote.favoritesOnly,
+        topics: remote.topics,
+      })
+      return
+    }
+  }
 
   const token = await getStoredPushToken()
   if (token && (await isMobilePushEnabledLocally())) {

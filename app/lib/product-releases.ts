@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.20.0",
+    date: "2026-06-11",
+    title: "Explorar + API week + share móvil",
+    highlights: [
+      "Explorar con semana precargada e ISR",
+      "API pública /api/v1/feed/week",
+      "Compartir eventos y export push en RGPD",
+    ],
+  },
+  {
     version: "2.12.0",
     date: "2026-06-11",
     title: "Semana instantánea + widget Android",

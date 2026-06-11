@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native"
 import type { FeedEvent } from "@/lib/api"
 import { formatEventMeta } from "@/lib/api"
 import { useTheme } from "@/lib/theme-context"
+import { shareEvent } from "@/lib/share-event"
 
 type Props = {
   event: FeedEvent
@@ -10,6 +11,7 @@ type Props = {
   favoriteBusy?: boolean
   onToggleFavorite?: () => void
   showFavorite?: boolean
+  showShare?: boolean
 }
 
 export function EventCard({
@@ -18,6 +20,7 @@ export function EventCard({
   favoriteBusy = false,
   onToggleFavorite,
   showFavorite = false,
+  showShare = false,
 }: Props) {
   const { colors } = useTheme()
   const styles = useMemo(
@@ -64,6 +67,19 @@ export function EventCard({
           color: colors.accent,
           fontSize: 18,
         },
+        shareBtn: {
+          width: 36,
+          height: 36,
+          borderRadius: 18,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: colors.border,
+          marginLeft: 4,
+        },
+        shareIcon: {
+          color: colors.textMuted,
+          fontSize: 16,
+        },
       }),
     [colors]
   )
@@ -77,6 +93,16 @@ export function EventCard({
             <Text style={styles.meta}>{formatEventMeta(event)}</Text>
           ) : null}
         </View>
+        {showShare ? (
+          <Pressable
+            style={styles.shareBtn}
+            onPress={() => void shareEvent(event)}
+            accessibilityRole="button"
+            accessibilityLabel="Compartir evento"
+          >
+            <Text style={styles.shareIcon}>↗</Text>
+          </Pressable>
+        ) : null}
         {showFavorite ? (
           <Pressable
             style={[styles.favBtn, favorited ? styles.favActive : null]}

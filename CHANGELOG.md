@@ -2,6 +2,21 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.20.0] - 2026-06-11
+
+### Added
+- `/explorar` ISR + warm prefetch semanal + contador de eventos
+- `GET /api/v1/feed/week` — agenda 7 días en API pública
+- Compartir eventos en app (Hoy, Semana, Favoritos)
+- Export RGPD con preferencias push
+- Prefetch offline de mañana en app
+- Deep link `/?week=1` y Explorar → semana completa
+- Sync topics push servidor → app móvil
+
+### Changed
+- Versión del producto: **2.20.0**
+- App móvil: **0.7.0**
+
 ## [2.12.0] - 2026-06-11
 
 ### Added

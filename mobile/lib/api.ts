@@ -63,6 +63,33 @@ export async function fetchWeekFeed(days = 7): Promise<{
   days: { date: string; events: FeedEvent[] }[]
   error: string | null
 }> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/feed/week`, {
+      headers: { Accept: "application/json" },
+    })
+    if (res.ok) {
+      const body = (await res.json()) as {
+        events?: FeedEvent[]
+        date?: string
+        error?: string
+      }
+      if (body.events?.length) {
+        const grouped = new Map<string, FeedEvent[]>()
+        for (const event of body.events) {
+          const list = grouped.get(event.date) ?? []
+          list.push(event)
+          grouped.set(event.date, list)
+        }
+        const days = [...grouped.entries()]
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([date, events]) => ({ date, events }))
+        return { days, error: body.error ?? null }
+      }
+    }
+  } catch {
+    /* fallback below */
+  }
+
   const today = madridTodayKey()
   const dates = Array.from({ length: days }, (_, i) => addDays(today, i))
 

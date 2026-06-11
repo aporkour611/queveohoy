@@ -22,6 +22,21 @@ test.describe("smoke", () => {
     expect(response.headers()["access-control-allow-origin"]).toBe("*")
   })
 
+  test("API v1 feed week responde JSON", async ({ request }) => {
+    const response = await request.get("/api/v1/feed/week")
+    expect(response.ok()).toBeTruthy()
+    const body = await response.json()
+    expect(body.version).toBe("1")
+    expect(body.scope).toBe("week")
+    expect(Array.isArray(body.events)).toBeTruthy()
+  })
+
+  test("explorar carga panel de categorías", async ({ page }) => {
+    await page.goto("/explorar")
+    await expect(page.getByRole("heading", { name: "Explorar categorías" })).toBeVisible()
+    await expect(page.getByRole("button", { name: "Ver en la agenda" })).toBeVisible()
+  })
+
   test("API v1 search responde JSON", async ({ request }) => {
     const response = await request.get("/api/v1/search?q=real&limit=5")
     expect(response.ok()).toBeTruthy()

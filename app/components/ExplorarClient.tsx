@@ -6,7 +6,11 @@ import { CategoryGroupsPanel } from "./CategoryGroupsPanel"
 import { formatFilterSummary } from "@/app/lib/filter-config"
 import { buildFilterSearch } from "@/app/lib/filter-url"
 
-export const ExplorarClient = memo(function ExplorarClient() {
+export const ExplorarClient = memo(function ExplorarClient({
+  weekEventCount = 0,
+}: {
+  weekEventCount?: number
+}) {
   const router = useRouter()
   const [draft, setDraft] = useState<string[]>([])
 
@@ -23,6 +27,10 @@ export const ExplorarClient = memo(function ExplorarClient() {
   }, [])
 
   const handleApply = useCallback(() => {
+    if (draft.length === 0) {
+      router.push("/?week=1")
+      return
+    }
     const query = buildFilterSearch(draft)
     router.push(`/${query}`)
   }, [draft, router])
@@ -32,11 +40,16 @@ export const ExplorarClient = memo(function ExplorarClient() {
   return (
     <div className="qvh-explorar">
       <header className="qvh-explorar-head">
-        <p className="qvh-explorar-kicker">Producto · v11</p>
+        <p className="qvh-explorar-kicker">Agenda · semana precargada</p>
         <h1>Explorar categorías</h1>
         <p className="qvh-explorar-lead">
-          Elige grupos neon y abre la agenda con tus filtros aplicados. Diseño
-          aprobado en v10, experiencia dedicada en v11.
+          Elige grupos neon y abre la agenda con tus filtros aplicados.
+          {weekEventCount > 0 ? (
+            <>
+              {" "}
+              <strong>{weekEventCount} eventos</strong> esta semana en agenda.
+            </>
+          ) : null}
         </p>
       </header>
 

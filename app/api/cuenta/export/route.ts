@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createServerClient } from "@/app/lib/supabase/server-auth"
+import { getUserPushPreferences } from "@/app/lib/push-user-preferences"
 import { parseUserPreferences } from "@/app/lib/user-preferences"
 
 export async function GET() {
@@ -30,6 +31,9 @@ export async function GET() {
         .maybeSingle(),
     ])
 
+  const preferences = parseUserPreferences(preferencesRow)
+  const pushPreferences = await getUserPushPreferences(user.id)
+
   const payload = {
     exportedAt: new Date().toISOString(),
     account: {
@@ -38,7 +42,8 @@ export async function GET() {
       createdAt: user.created_at,
     },
     profile: profile ?? null,
-    preferences: parseUserPreferences(preferencesRow),
+    preferences,
+    pushPreferences,
     preferencesUpdatedAt: preferencesRow?.updated_at ?? null,
     favorites: favorites ?? [],
   }

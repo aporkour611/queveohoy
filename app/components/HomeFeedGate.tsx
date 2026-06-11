@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import {
   consumeHomeFeedWeekIntent,
   HOME_FEED_ACTIVATE_EVENT,
+  markHomeFeedWeekIntent,
 } from "@/app/lib/home-feed-intent";
 import { EventDrawerProvider } from "./EventDrawerProvider";
 import { HomeResetProvider } from "./HomeResetContext";
@@ -23,6 +24,12 @@ export function HomeFeedGate(props: HomeFeedProps) {
   const [initialWeekView, setInitialWeekView] = useState(false);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("week") === "1") {
+      markHomeFeedWeekIntent()
+      setInitialWeekView(true)
+    }
+
     const onActivateFeed = () => {
       if (consumeHomeFeedWeekIntent()) setInitialWeekView(true);
     };

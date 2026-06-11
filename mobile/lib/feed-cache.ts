@@ -57,6 +57,28 @@ export async function readCachedWeekFeed(): Promise<WeekDayCache[] | null> {
   }
 }
 
+const TOMORROW_CACHE_KEY = "qvh:feed:tomorrow:v1"
+
+export async function prefetchTomorrowFeed(
+  todayDate: string,
+  fetcher: (date: string) => Promise<FeedResponse>
+): Promise<void> {
+  try {
+    const tomorrow = addDaysKey(todayDate, 1)
+    const feed = await fetcher(tomorrow)
+    const payload: CachedFeed = { savedAt: Date.now(), feed }
+    await AsyncStorage.setItem(TOMORROW_CACHE_KEY, JSON.stringify(payload))
+  } catch {
+    /* best-effort */
+  }
+}
+
+function addDaysKey(dateKey: string, days: number): string {
+  const [y, m, d] = dateKey.split("-").map(Number)
+  const date = new Date(Date.UTC(y, m - 1, d + days))
+  return date.toISOString().slice(0, 10)
+}
+
 export async function writeCachedWeekFeed(days: WeekDayCache[]): Promise<void> {
   try {
     const payload: CachedWeek = { savedAt: Date.now(), days }
