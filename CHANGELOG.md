@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.40.0] - 2026-06-11
+
+### Added
+- ROADMAP maratón 2.13–2.40 (30 ciclos)
+- Footer prefetch Explorar y Desarrolladores
+- Test prefetch API week pública
+
+### Changed
+- Versión del producto: **2.40.0** · app **0.9.0**
+- Docs operativas listas para PERF gate bloqueante
+
 ## [2.30.0] - 2026-06-11
 
 ### Added

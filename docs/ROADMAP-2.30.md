@@ -14,8 +14,9 @@ Extiende [ROADMAP-2.20.md](./ROADMAP-2.20.md).
 | 16 | Cuenta web menciona export push RGPD |
 | 17–20 | Docs API, smoke e2e, versión app dinámica (2.20) |
 
-## Siguiente (2.31+)
+## Siguiente (2.41+)
+
+Ver [ROADMAP-2.40.md](./ROADMAP-2.40.md) (maratón 2.13–2.40 cerrado).
 
 - Expo 54 + widget iOS
-- Hubs SEO prefetch semana
-- `PERF_GATE_BLOCKING=1`
+- PERF gate bloqueante

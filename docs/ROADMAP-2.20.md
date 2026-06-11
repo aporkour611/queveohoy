@@ -17,8 +17,9 @@ Extiende [ROADMAP-2.12.md](./ROADMAP-2.12.md).
 | 9 | Sync push topics desde servidor en app |
 | 10 | Widget hint Android + versión app en Cuenta |
 
-## Siguiente (2.21+)
+## Siguiente (2.41+)
+
+Ver [ROADMAP-2.40.md](./ROADMAP-2.40.md) (maratón 2.13–2.40).
 
 - Expo 54 + widget iOS
-- `PERF_GATE_BLOCKING=1` en GitHub vars
-- Prefetch categorías en hubs SEO
+- `PERF_GATE_BLOCKING=1` cuando LCP ≤3s estable
