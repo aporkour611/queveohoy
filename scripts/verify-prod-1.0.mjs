@@ -22,11 +22,11 @@ if (homeRes.ok) pass("HTTP 200 home");
 else fail("HTTP 200 home", String(homeRes.status));
 
 const footerVersion =
-  /2\.0\.\d|1\.9\.\d|1\.0\.(1[0-9]|[2-9]\d)|1\.[1-8]\.\d/.test(homeHtml)
+  /2\.\d+\.\d|1\.9\.\d|1\.0\.(1[0-9]|[2-9]\d)|1\.[1-8]\.\d/.test(homeHtml)
 
 if (footerVersion || homeHtml.includes("1.0.0"))
-  pass("Footer versión 1.0.x");
-else fail("Footer versión 1.0.x", "Aún no desplegado o caché antigua");
+  pass("Footer versión producto")
+else fail("Footer versión producto", "Aún no desplegado o caché antigua")
 
 if (homeHtml.includes('id="main-content"')) pass("#main-content en home");
 else fail("#main-content en home");
