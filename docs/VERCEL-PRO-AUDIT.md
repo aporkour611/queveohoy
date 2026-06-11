@@ -48,6 +48,6 @@ Plan ejecutado tras upgrade a Vercel Pro. Detalle operativo en [OPS-UPTIME.md](.
 
 ## Siguiente (backlog)
 
-- App Expo
+- EAS Build + favoritos en app — ver [ROADMAP-2.7.md](./ROADMAP-2.7.md)
 - Apple OAuth (pospuesto)
-- PSI gate bloqueante cuando deploy estable 2 semanas
+- PSI gate bloqueante: `PERF_GATE_BLOCKING=1` en GitHub vars cuando LCP estable ≤3s

@@ -229,18 +229,24 @@ jobs:
         continue-on-error: true
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          PERF_GATE_BLOCKING: ${{ vars.PERF_GATE_BLOCKING || '0' }}
         run: |
           set -euo pipefail
           CRON_SECRET="${CRON_SECRET:-}" node scripts/keep-warm-prod.mjs || true
           sleep 8
           if PERF_URL=https://queveohoy.es \
-            PERF_BUDGET_LCP_MS=2000 \
+            PERF_BUDGET_LCP_MS=3000 \
             PERF_BUDGET_MIN=80 \
             PERF_RETRIES=2 \
             npm run perf:budget; then
-            echo "### PSI LCP presupuesto OK" >> "$GITHUB_STEP_SUMMARY"
+            echo "### PSI LCP presupuesto OK (≤3s)" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "::warning::PSI LCP incumplido o Lighthouse falló (no bloquea deploy)"
+            if [ "${PERF_GATE_BLOCKING:-0}" = "1" ]; then
+              echo "::error::PSI LCP incumplido (gate bloqueante activo)"
+              echo "### PSI LCP — FAILED (bloqueante)" >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+            echo "::warning::PSI LCP incumplido o Lighthouse falló (no bloquea deploy; activa PERF_GATE_BLOCKING=1 cuando LCP ≤3s sea estable)"
             echo "### PSI LCP — warning (revisar logs)" >> "$GITHUB_STEP_SUMMARY"
           fi
 

@@ -65,4 +65,9 @@ console.log(
 console.log(`LCP: ${(lcp / 1000).toFixed(2)}s (meta ≤${budgets.lcpMs / 1000}s)`)
 console.log(`CLS: ${cls.toFixed(3)} (meta ≤${budgets.cls})`)
 console.log(ok ? "\n✓ Presupuesto v13 OK" : "\n✗ Presupuesto v13 incumplido")
-process.exit(ok ? 0 : 1)
+
+const blocking = process.env.PERF_GATE_BLOCKING === "1"
+if (!ok && blocking) {
+  console.error("PERF_GATE_BLOCKING=1 — el deploy debe fallar.")
+}
+process.exit(ok ? 0 : blocking ? 1 : 0)

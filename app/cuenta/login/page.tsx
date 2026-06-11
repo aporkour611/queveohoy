@@ -2,7 +2,12 @@ import { CuentaLoginForm } from "./CuentaLoginForm"
 import "../../futbolhoy-feed.css"
 
 type Props = {
-  searchParams: Promise<{ next?: string; error?: string }>
+  searchParams: Promise<{
+    next?: string
+    error?: string
+    provider?: string
+    detail?: string
+  }>
 }
 
 export default async function CuentaLoginPage({ searchParams }: Props) {
@@ -11,6 +16,8 @@ export default async function CuentaLoginPage({ searchParams }: Props) {
     <CuentaLoginForm
       nextPath={params.next}
       errorKey={params.error}
+      errorProvider={params.provider}
+      errorDetail={params.detail}
     />
   )
 }

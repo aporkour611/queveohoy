@@ -37,7 +37,7 @@ describe("partner-webhook-history-store", () => {
                     configured: 1,
                     sent: 1,
                     failed: 0,
-                    deliveries: [{ partnerId: "demo", ok: true, status: 200 }],
+                    deliveries: [{ partnerId: "demo", ok: true, status: 200, attempts: 1 }],
                   }
                 )
               ),
@@ -60,7 +60,7 @@ describe("partner-webhook-history-store", () => {
       configured: 1,
       sent: 0,
       failed: 1,
-      deliveries: [{ partnerId: "x", ok: false, error: "timeout" }],
+      deliveries: [{ partnerId: "x", ok: false, attempts: 3, error: "timeout" }],
     }
     const entry = buildWebhookHistoryEntry(
       {
@@ -89,7 +89,7 @@ describe("partner-webhook-history-store", () => {
         configured: 1,
         sent: 1,
         failed: 0,
-        deliveries: [{ partnerId: "p1", ok: true, status: 200 }],
+        deliveries: [{ partnerId: "p1", ok: true, status: 200, attempts: 1 }],
       }
     )
     expect(ok).toBe(true)

@@ -8,6 +8,17 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.7.0",
+    date: "2026-06-11",
+    title: "Partners, auth y app móvil",
+    highlights: [
+      "Webhooks con reintentos y backoff exponencial",
+      "Errores OAuth legibles (Google, Apple, Microsoft)",
+      "Scaffold Expo en mobile/ consumiendo API v1",
+      "PSI LCP ≤3s en deploy (preparado para gate bloqueante)",
+    ],
+  },
+  {
     version: "2.6.2",
     date: "2026-06-11",
     title: "Esta semana — estrenos de cine al día",

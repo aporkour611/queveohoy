@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.7.0] - 2026-06-11
+
+### Added
+- Reintentos webhook partners (backoff 3× en 5xx/429)
+- Errores OAuth por proveedor en callback y login
+- App Expo scaffold en `mobile/` (API v1)
+- PSI gate post-deploy (LCP ≤3s warning; `PERF_GATE_BLOCKING` para bloquear)
+
+### Changed
+- Versión del producto: **2.7.0**
+
 ## [2.6.2] - 2026-06-11
 
 ### Fixed

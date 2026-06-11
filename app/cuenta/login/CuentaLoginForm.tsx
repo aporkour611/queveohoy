@@ -9,11 +9,8 @@ import {
   OAUTH_PROVIDERS,
   type OAuthProviderId,
 } from "@/app/lib/oauth-providers"
+import { resolveOAuthLoginErrorMessage } from "@/app/lib/oauth-callback-errors"
 import "../../futbolhoy-feed.css"
-
-const ERROR_MESSAGES: Record<string, string> = {
-  auth: "No se pudo completar el inicio de sesión. Prueba de nuevo.",
-}
 
 const SUPABASE_UNAVAILABLE =
   "El inicio de sesión no está disponible: faltan variables de Supabase en el entorno (SUPABASE_URL y clave anon/publishable)."
@@ -21,9 +18,16 @@ const SUPABASE_UNAVAILABLE =
 type Props = {
   nextPath?: string
   errorKey?: string
+  errorProvider?: string
+  errorDetail?: string
 }
 
-export const CuentaLoginForm = ({ nextPath = "/cuenta", errorKey }: Props) => {
+export const CuentaLoginForm = ({
+  nextPath = "/cuenta",
+  errorKey,
+  errorProvider,
+  errorDetail,
+}: Props) => {
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">(
     "idle"
@@ -91,7 +95,11 @@ export const CuentaLoginForm = ({ nextPath = "/cuenta", errorKey }: Props) => {
     setMessage("Te hemos enviado un enlace mágico. Revisa tu bandeja de entrada.")
   }
 
-  const errorMessage = errorKey ? ERROR_MESSAGES[errorKey] : null
+  const errorMessage = resolveOAuthLoginErrorMessage(
+    errorKey,
+    errorProvider,
+    errorDetail
+  )
   const isLoading = status === "loading"
 
   return (

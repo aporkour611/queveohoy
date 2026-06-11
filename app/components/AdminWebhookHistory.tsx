@@ -151,6 +151,7 @@ export function AdminWebhookHistory({
                               ? `HTTP ${d.status}`
                               : "ok"
                             : d.error ?? "error"}
+                          {d.attempts > 1 ? ` · ${d.attempts} intentos` : null}
                         </span>
                       </li>
                     ))}
