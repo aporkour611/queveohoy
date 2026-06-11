@@ -829,43 +829,44 @@ export async function runCronJob(request: Request) {
 
   const ingest = await Promise.allSettled(ingestTasks);
 
+  const takeFulfilled = <T,>(
+    result: PromiseSettledResult<unknown> | undefined,
+    fallback: T
+  ): T => {
+    if (result?.status === "fulfilled") return result.value as T;
+    return fallback;
+  };
+
   let ingestIndex = 0;
   if (runCore) {
-    if (ingest[ingestIndex]?.status === "fulfilled")
-      football = ingest[ingestIndex].value as typeof football;
-    else football.errors.push(String((ingest[ingestIndex] as PromiseRejectedResult).reason));
+    const footballResult = ingest[ingestIndex];
+    if (footballResult?.status === "fulfilled") {
+      football = footballResult.value as typeof football;
+    } else if (footballResult?.status === "rejected") {
+      football.errors.push(String(footballResult.reason));
+    }
     ingestIndex++;
 
-    if (ingest[ingestIndex]?.status === "fulfilled")
-      esports = ingest[ingestIndex].value as CountResult;
+    esports = takeFulfilled(ingest[ingestIndex], esports);
     ingestIndex++;
-    if (ingest[ingestIndex]?.status === "fulfilled")
-      f1 = ingest[ingestIndex].value as CountResult;
+    f1 = takeFulfilled(ingest[ingestIndex], f1);
     ingestIndex++;
-    if (ingest[ingestIndex]?.status === "fulfilled")
-      motos = ingest[ingestIndex].value as CountResult;
+    motos = takeFulfilled(ingest[ingestIndex], motos);
     ingestIndex++;
-    if (ingest[ingestIndex]?.status === "fulfilled")
-      rally = ingest[ingestIndex].value as CountResult;
+    rally = takeFulfilled(ingest[ingestIndex], rally);
     ingestIndex++;
-    if (ingest[ingestIndex]?.status === "fulfilled")
-      basket = ingest[ingestIndex].value as CountResult;
+    basket = takeFulfilled(ingest[ingestIndex], basket);
     ingestIndex++;
-    if (ingest[ingestIndex]?.status === "fulfilled")
-      tmdb = ingest[ingestIndex].value as typeof tmdb;
+    tmdb = takeFulfilled(ingest[ingestIndex], tmdb);
     ingestIndex++;
   }
 
   if (runExtended) {
     const extStart = runCore ? ingestIndex : 0;
-    if (ingest[extStart]?.status === "fulfilled")
-      anime = ingest[extStart].value as typeof anime;
-    if (ingest[extStart + 1]?.status === "fulfilled")
-      reality = ingest[extStart + 1].value as CountResult;
-    if (ingest[extStart + 2]?.status === "fulfilled")
-      spanishTv = ingest[extStart + 2].value as typeof spanishTv;
-    if (ingest[extStart + 3]?.status === "fulfilled")
-      ufc = ingest[extStart + 3].value as CountResult;
+    anime = takeFulfilled(ingest[extStart], anime);
+    reality = takeFulfilled(ingest[extStart + 1], reality);
+    spanishTv = takeFulfilled(ingest[extStart + 2], spanishTv);
+    ufc = takeFulfilled(ingest[extStart + 3], ufc);
   }
 
   console.log(`✓ Ingesta ${phase} completada`);
