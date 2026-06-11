@@ -2,6 +2,18 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.30.0] - 2026-06-11
+
+### Added
+- Prefetch doble en Explorar (interno + `/api/v1/feed/week`)
+- `readCachedTomorrowFeed` en app móvil
+- Docs desarrolladores para feed semanal
+
+### Changed
+- TTL prefetch semanal: 60s
+- URL `/?week=1` se limpia tras hidratar feed
+- Versión del producto: **2.30.0** · app **0.8.0**
+
 ## [2.20.0] - 2026-06-11
 
 ### Added

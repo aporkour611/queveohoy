@@ -65,7 +65,7 @@ Consolidación de v1.6–v1.8 como release mayor:
 
 ## Siguiente (backlog)
 
-- App Expo ✅ v2.20 ([ROADMAP-2.20.md](./ROADMAP-2.20.md))
+- Plataforma ✅ v2.30 ([ROADMAP-2.30.md](./ROADMAP-2.30.md))
 - Internacionalización (MX/AR) — baja prioridad
 - API v2 con filtros avanzados y claves de partner — ✅ v2.2
 - OAuth Apple / Microsoft — ✅ v2.4 ([ROADMAP-2.4.md](./ROADMAP-2.4.md))

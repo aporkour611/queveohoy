@@ -248,7 +248,7 @@ export function CuentaPortal({
                 <h2>Preferencias de notificación</h2>
                 <p>
                   Sincronizadas con la app móvil cuando inicias sesión con la misma
-                  cuenta. Cambios aquí se reflejan en todos tus dispositivos.
+                  cuenta. El export RGPD incluye preferencias push del servidor.
                 </p>
                 <PushSettingsInline />
               </section>

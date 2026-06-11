@@ -28,6 +28,7 @@ export const revalidate = 0
 
 export default function DesarrolladoresPage() {
   const feedExample = `${siteUrl}/api/v1/feed`
+  const weekFeedExample = `${siteUrl}/api/v1/feed/week`
   const categoriesExample = `${siteUrl}/api/v1/feed?categories=futbol,formula1&limit=10`
   const v2FeedExample = `${siteUrl}/api/v2/feed`
   const embedTonight = `${siteUrl}/embed/esta-noche`
@@ -61,6 +62,10 @@ export default function DesarrolladoresPage() {
                 <code>?cursor=...</code>.
               </li>
               <li>
+                <code>GET /api/v1/feed/week</code> — ventana semanal completa (7
+                días Madrid). Incluye <code>scope: &quot;week&quot;</code>.
+              </li>
+              <li>
                 <code>GET /api/v1/feed?categories=...</code> — filtro por
                 categorías (v1.1). IDs separados por coma:{" "}
                 <code>futbol</code>, <code>formula1</code>, <code>tv-reality</code>, etc.
@@ -91,7 +96,7 @@ export default function DesarrolladoresPage() {
               datos.
             </p>
             <pre className="qvh-dev-code">
-              <code>{`curl "${feedExample}"\ncurl "${categoriesExample}"\ncurl -I "${v2FeedExample}"`}</code>
+              <code>{`curl "${feedExample}"\ncurl "${weekFeedExample}"\ncurl "${categoriesExample}"\ncurl -I "${v2FeedExample}"`}</code>
             </pre>
           </section>
 

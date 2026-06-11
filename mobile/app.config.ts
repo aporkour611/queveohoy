@@ -20,7 +20,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: "Qué veo hoy",
   slug: "queveohoy",
-  version: "0.7.0",
+  version: "0.8.0",
   orientation: "portrait",
   scheme: "queveohoy",
   userInterfaceStyle: "automatic",

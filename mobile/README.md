@@ -28,8 +28,8 @@ En **Supabase → Authentication → Redirect URLs** añade:
 
 | Tab | Qué hace |
 |-----|----------|
-| **Hoy** | `GET /api/v1/feed` + ♥ favoritos (con sesión) |
-| **Semana** | 7 días de agenda |
+| **Hoy** | `GET /api/v1/feed` + ♥ favoritos + compartir ↗ |
+| **Semana** | `GET /api/v1/feed/week` (fallback por día) + offline 15 min |
 | **Favoritos** | Tabla `favorites` de Supabase |
 | **Cuenta** | Google, Apple o magic link + toggle push |
 
@@ -41,7 +41,11 @@ Requiere EAS (`npm run eas:preview`); no funciona en Expo Go.
 
 ## Offline
 
-La pestaña **Hoy** guarda la última agenda en el móvil (15 min) por si falla la red.
+**Hoy** y **Semana** guardan la última agenda (15 min). Tras cargar Hoy se prefetch de mañana en segundo plano.
+
+## Tema
+
+**Cuenta → Apariencia**: claro, oscuro o sistema.
 
 ## Push nativo
 

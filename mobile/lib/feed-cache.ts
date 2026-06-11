@@ -59,6 +59,18 @@ export async function readCachedWeekFeed(): Promise<WeekDayCache[] | null> {
 
 const TOMORROW_CACHE_KEY = "qvh:feed:tomorrow:v1"
 
+export async function readCachedTomorrowFeed(): Promise<FeedResponse | null> {
+  try {
+    const raw = await AsyncStorage.getItem(TOMORROW_CACHE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as CachedFeed
+    if (!isFresh(parsed.savedAt)) return null
+    return parsed.feed
+  } catch {
+    return null
+  }
+}
+
 export async function prefetchTomorrowFeed(
   todayDate: string,
   fetcher: (date: string) => Promise<FeedResponse>

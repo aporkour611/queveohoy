@@ -28,6 +28,9 @@ export function HomeFeedGate(props: HomeFeedProps) {
     if (params.get("week") === "1") {
       markHomeFeedWeekIntent()
       setInitialWeekView(true)
+      params.delete("week")
+      const next = `${window.location.pathname}${params.toString() ? `?${params}` : ""}${window.location.hash}`
+      window.history.replaceState(null, "", next)
     }
 
     const onActivateFeed = () => {
