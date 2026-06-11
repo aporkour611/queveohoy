@@ -33,6 +33,48 @@ describe("pickWeekDestacados", () => {
     expect(week.some((event) => event.id === 10)).toBe(true);
   });
 
+  it("excluye estrenos de cine ya pasados (p. ej. El drama)", () => {
+    const drama: EventRow = {
+      id: -1325734,
+      external_id: "tmdb_movie_1325734",
+      title: "El drama",
+      date: "2026-05-29",
+      sport: "cine",
+      competition: "Cine",
+      platform: "Cines",
+    };
+
+    const week = pickWeekDestacados([drama], {
+      todayKey: "2026-06-11",
+      windowDays: 7,
+    });
+
+    expect(week.some((event) => event.external_id === drama.external_id)).toBe(
+      false
+    );
+  });
+
+  it("incluye estreno de cine cuando cae en la ventana semanal", () => {
+    const drama: EventRow = {
+      id: -1325734,
+      external_id: "tmdb_movie_1325734",
+      title: "El drama",
+      date: "2026-05-29",
+      sport: "cine",
+      competition: "Cine",
+      platform: "Cines",
+    };
+
+    const week = pickWeekDestacados([drama], {
+      todayKey: "2026-05-27",
+      windowDays: 7,
+    });
+
+    expect(week.some((event) => event.external_id === drama.external_id)).toBe(
+      true
+    );
+  });
+
   it("incluye Roland Garros en Esta semana", () => {
     const rg: EventRow = {
       id: 20,

@@ -2,6 +2,14 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.6.2] - 2026-06-11
+
+### Fixed
+- **Esta semana**: los estrenos de cine editoriales ya no permanecen 21 días tras el estreno (p. ej. *El drama*); solo entran si el estreno cae en la ventana de la semana, igual que las series.
+
+### Changed
+- Versión del producto: **2.6.2**
+
 ## [2.6.1] - 2026-06-11
 
 ### Added

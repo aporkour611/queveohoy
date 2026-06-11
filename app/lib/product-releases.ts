@@ -8,6 +8,15 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.6.2",
+    date: "2026-06-11",
+    title: "Esta semana — estrenos de cine al día",
+    highlights: [
+      "El drama y estrenos pasados salen del carrusel semanal",
+      "Misma regla que series: solo lo que cae en la ventana de la semana",
+    ],
+  },
+  {
     version: "2.6.1",
     date: "2026-06-11",
     title: "Calendario — rollover medianoche",

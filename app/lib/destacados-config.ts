@@ -55,8 +55,6 @@ export { FOLLOWED_SERIES_PATTERNS as DESTACADOS_SERIES_PATTERNS } from "./destac
 
 const MAX_DESTACADOS_TODAY = 10;
 const MAX_DESTACADOS_WEEK = 10;
-/** Estrenos editoriales visibles en Destacados tras la fecha de estreno. */
-const CURATED_MOVIE_GRACE_DAYS = 21;
 
 /** Cuántas tarjetas se ven antes de mostrar flechas de navegación. */
 export const DESTACADOS_VISIBLE_SLOTS = 3;
@@ -124,6 +122,17 @@ function isPinnedWeekDestacado(event: EventRow): boolean {
   );
 }
 
+function curatedMovieReleaseInWeek(
+  event: EventRow,
+  todayKey: string,
+  weekEnd: string
+): boolean {
+  if (!isCuratedMovieEvent(event)) return false;
+  const curated = curatedMovieByExternalId(event.external_id);
+  const releaseDate = curated?.releaseDate ?? event.date ?? "";
+  return releaseDate >= todayKey && releaseDate <= weekEnd;
+}
+
 function weekPoolFor(
   events: EventRow[],
   todayKey: string,
@@ -131,10 +140,6 @@ function weekPoolFor(
   excludeIds: Set<number>
 ): EventRow[] {
   const weekEnd = addDaysToDateKey(todayKey, windowDays - 1);
-  const curatedGraceStart = addDaysToDateKey(
-    todayKey,
-    -CURATED_MOVIE_GRACE_DAYS
-  );
 
   return events.filter((event) => {
     if (!event.date) return false;
@@ -142,13 +147,7 @@ function weekPoolFor(
 
     if (event.date >= todayKey && event.date <= weekEnd) return true;
 
-    if (isCuratedMovieEvent(event)) {
-      const curated = curatedMovieByExternalId(event.external_id);
-      const releaseDate = curated?.releaseDate ?? event.date;
-      return releaseDate >= curatedGraceStart && releaseDate <= weekEnd;
-    }
-
-    return false;
+    return curatedMovieReleaseInWeek(event, todayKey, weekEnd);
   });
 }
 
