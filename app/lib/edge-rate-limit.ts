@@ -23,6 +23,7 @@ function shouldEdgeRateLimit(pathname: string): boolean {
     pathname.startsWith("/api/cron") ||
     pathname.startsWith("/api/health") ||
     pathname.startsWith("/api/warm") ||
+    pathname.startsWith("/api/midnight-rollover") ||
     pathname.startsWith("/api/push/cron") ||
     pathname.startsWith("/api/admin/")
   ) {

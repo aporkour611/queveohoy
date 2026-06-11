@@ -11,6 +11,7 @@ import { HOME_SSR_DAY_COUNT } from "./home-feed-config";
 import { CURATED_MOVIES } from "./movies-curated";
 import { findEventBySlug, parsePartidoSlug } from "./event-slug";
 import { isSupabaseConfigured } from "./supabase-config";
+import { getMadridTodayKey } from "./seo-date";
 import { createClient } from "./supabase/server";
 import {
   getEventsQueryDateRange,
@@ -130,7 +131,7 @@ async function loadDestacadosEvents(): Promise<{
 }
 
 const getCachedDestacadosFeed = unstable_cache(
-  async () => {
+  async (_calendarDay: string) => {
     const result = await loadDestacadosEvents();
     if (isUncacheableFeedResult(result)) {
       throw new Error(result.error ?? "destacados-feed-empty");
@@ -194,7 +195,7 @@ async function loadFeedEvents(
 
 /** dayCount + tight forman parte de la clave de cache (evita colisión home/full). */
 const getCachedFeed = unstable_cache(
-  async (dayCount: number, tight: boolean) => {
+  async (dayCount: number, tight: boolean, _calendarDay: string) => {
     const result = await loadFeedEvents(dayCount, tight);
     if (isUncacheableFeedResult(result)) {
       throw new Error(result.error ?? "feed-empty");
@@ -218,32 +219,36 @@ async function readCachedFeed<T>(
 
 /** Feed completo (7 días) — hubs, sitemap, RSS. */
 export async function fetchFeedEvents() {
+  const calendarDay = getMadridTodayKey();
   return readCachedFeed(
-    () => getCachedFeed(FEED_DAY_COUNT, false),
+    () => getCachedFeed(FEED_DAY_COUNT, false, calendarDay),
     FEED_TIMEOUT_FALLBACK
   );
 }
 
 /** Feed semanal ajustado (7 días exactos) — vista «Semana completa» en home. */
 export async function fetchWeekViewFeedEvents() {
+  const calendarDay = getMadridTodayKey();
   return readCachedFeed(
-    () => getCachedFeed(FEED_DAY_COUNT, true),
+    () => getCachedFeed(FEED_DAY_COUNT, true, calendarDay),
     FEED_TIMEOUT_FALLBACK
   );
 }
 
 /** Feed ligero para la home (hoy + mañana). */
 export async function fetchHomeFeedEvents() {
+  const calendarDay = getMadridTodayKey();
   return readCachedFeed(
-    () => getCachedFeed(HOME_SSR_DAY_COUNT, true),
+    () => getCachedFeed(HOME_SSR_DAY_COUNT, true, calendarDay),
     FEED_TIMEOUT_FALLBACK
   );
 }
 
 /** Semana + estrenos editoriales recientes para Destacados. */
 export async function fetchDestacadosFeedEvents() {
+  const calendarDay = getMadridTodayKey();
   return readCachedFeed(
-    () => getCachedDestacadosFeed(),
+    () => getCachedDestacadosFeed(calendarDay),
     FEED_TIMEOUT_FALLBACK
   );
 }

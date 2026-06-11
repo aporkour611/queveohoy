@@ -52,27 +52,27 @@ export function shouldRunMidnightRollover(now = new Date(), { force = false } = 
   return true;
 }
 
-async function callCron(secret) {
-  const res = await fetch(`${SITE}/api/cron`, {
+async function callMidnightRollover(secret) {
+  const res = await fetch(`${SITE}/api/midnight-rollover?force=1`, {
     headers: { Authorization: `Bearer ${secret}` },
   });
   const body = await res.text();
   if (!res.ok) {
-    console.error("Cron failed:", res.status, body.slice(0, 400));
+    console.error("Midnight rollover failed:", res.status, body.slice(0, 400));
     process.exit(1);
   }
   try {
     const json = JSON.parse(body);
     console.log(
-      "Cron OK — purged past:",
-      json.pastDayPurged,
-      "| football:",
-      json.football?.count,
-      "| feedCache:",
-      json.feedCache?.ok
+      "Rollover OK — día:",
+      json.calendarDay,
+      "| cron purged:",
+      json.cron?.pastDayPurged,
+      "| revalidate:",
+      json.revalidate?.ok
     );
   } catch {
-    console.log("Cron OK:", body.slice(0, 200));
+    console.log("Rollover OK:", body.slice(0, 200));
   }
 }
 
@@ -90,7 +90,7 @@ async function main() {
   }
 
   console.log("=== Midnight rollover queveohoy ===");
-  await callCron(cronSecret);
+  await callMidnightRollover(cronSecret);
 
   console.log("\n--- Portadas editoriales (TV + deportes flagship) ---");
   if (env.TMDB_API_KEY?.trim()) {

@@ -65,9 +65,21 @@
     },
     "app/api/health/route.ts": {
       "maxDuration": 60
+    },
+    "app/api/midnight-rollover/route.ts": {
+      "maxDuration": 120,
+      "memory": 3009
     }
   },
   "crons": [
+    {
+      "path": "/api/midnight-rollover",
+      "schedule": "0 22 * * *"
+    },
+    {
+      "path": "/api/midnight-rollover",
+      "schedule": "0 23 * * *"
+    },
     {
       "path": "/api/health?warm=1&origins=0",
       "schedule": "*/5 * * * *"

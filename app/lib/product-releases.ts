@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.6.1",
+    date: "2026-06-11",
+    title: "Calendario — rollover medianoche",
+    highlights: [
+      "A las 00:00 Madrid purga, ingesta e invalida caché automáticamente",
+      "El navegador recarga solo al cambiar de día",
+      "Feed cacheado por fecha (no arrastra el día anterior)",
+    ],
+  },
+  {
     version: "2.6.0",
     date: "2026-06-11",
     title: "Vercel Pro — auditoría completa",

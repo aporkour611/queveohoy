@@ -2,6 +2,16 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.6.1] - 2026-06-11
+
+### Added
+- Rollover automático a las **00:00 Madrid**: `/api/midnight-rollover` + crons Vercel
+- Recarga del navegador al cambiar de día (`CalendarDayRefresh`)
+- Caché del feed keyed por día de calendario (no arrastra ayer)
+
+### Changed
+- Versión del producto: **2.6.1**
+
 ## [2.6.0] - 2026-06-11
 
 ### Added

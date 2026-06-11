@@ -18,7 +18,8 @@ La producción (`queveohoy.es`) vive en **Vercel + Supabase**. Cursor no la mant
 | **Cron Vercel** `GET /api/warm` | Cada **15 min** | Ciclo completo + home/explorar |
 | **GitHub Actions** `keep-warm.yml` | Cada **15 min** | Respaldo (`KEEP_WARM_FULL=1`) |
 | **push-cron.yml** | Cada 15 min | Solo notificaciones push |
-| **deploy.yml** | Tras cada deploy | Keep-warm completo |
+| **Cron Vercel** `GET /api/midnight-rollover` | **00:00 Madrid** (22:00 y 23:00 UTC) | Purga ayer, ingesta, invalida caché, calienta home |
+| **GitHub Actions** `midnight-rollover.yml` | **00:00 Madrid** (respaldo) | Mismo rollover + portadas editoriales |
 
 Vercel envía `Authorization: Bearer CRON_SECRET` en crons (configura `CRON_SECRET` en el proyecto).
 

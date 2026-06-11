@@ -4,6 +4,7 @@ import "./globals.css";
 import "./theme.css";
 import { CookieConsentRoot } from "./components/CookieConsentRoot";
 import { Analytics } from "./components/Analytics";
+import { CalendarDayRefresh } from "./components/CalendarDayRefresh";
 import { SpeedInsights } from "./components/SpeedInsights";
 import { buildSupabaseBootstrapScript } from "./lib/supabase/browser-runtime";
 import { resolveBrowserSupabaseConfig } from "./lib/supabase-config";
@@ -85,6 +86,7 @@ export default function RootLayout({
           Saltar al contenido
         </a>
         <CookieConsentRoot>{children}</CookieConsentRoot>
+        <CalendarDayRefresh />
         <Analytics />
         <SpeedInsights />
       </body>

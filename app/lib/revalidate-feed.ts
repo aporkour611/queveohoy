@@ -6,27 +6,51 @@ import {
   fetchWeekViewFeedEvents,
 } from "./events-feed-server";
 
+const ROLLOVER_PATHS = [
+  "/",
+  "/explorar",
+  "/embed/esta-noche",
+  "/sitemap.xml",
+  "/feed.xml",
+  "/api/events",
+  "/api/home-feed",
+  "/api/v2/feed",
+  "/api/feed-meta",
+] as const;
+
+/** Invalida HTML/API del calendario (cambio de día Madrid). */
+export async function rolloverDayContent(options?: {
+  preload?: boolean;
+}): Promise<{ ok: boolean; error?: string }> {
+  try {
+    if (options?.preload !== false) {
+      await Promise.all([
+        fetchHomeFeedEvents(),
+        fetchWeekViewFeedEvents(),
+        fetchFeedEvents(),
+        fetchDestacadosFeedEvents(),
+      ]);
+    }
+
+    revalidateTag("feed", { expire: 0 });
+    revalidateTag("destacados", { expire: 0 });
+
+    for (const path of ROLLOVER_PATHS) {
+      revalidatePath(path);
+    }
+
+    return { ok: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn("rolloverDayContent:", message);
+    return { ok: false, error: message };
+  }
+}
+
 /** Tras el cron: precarga el feed y luego invalida HTML (evita ventana sin caché). */
 export async function warmFeedCacheAfterCron(): Promise<{
   ok: boolean;
   error?: string;
 }> {
-  try {
-    await Promise.all([
-      fetchHomeFeedEvents(),
-      fetchWeekViewFeedEvents(),
-      fetchFeedEvents(),
-      fetchDestacadosFeedEvents(),
-    ]);
-    revalidateTag("feed", { expire: 0 });
-    revalidatePath("/");
-    revalidatePath("/sitemap.xml");
-    revalidatePath("/api/events");
-    revalidatePath("/api/home-feed");
-    return { ok: true };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.warn("warmFeedCacheAfterCron:", message);
-    return { ok: false, error: message };
-  }
+  return rolloverDayContent({ preload: true });
 }
