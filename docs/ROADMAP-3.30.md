@@ -36,4 +36,4 @@ Maratón **3.01 → 3.30** (30 ciclos, cuarto sprint continuo).
 
 **Total: 120 ciclos** desde 2.13
 
-Ver [ROADMAP-3.40.md](./ROADMAP-3.40.md) (maratón 3.31–3.60 en curso).
+Ver [ROADMAP-3.40.md](./ROADMAP-3.40.md) (maratón 3.31–3.60 cerrado en [ROADMAP-3.60.md](./ROADMAP-3.60.md)).
