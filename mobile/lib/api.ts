@@ -27,8 +27,23 @@ export const API_BASE = ensureHttpsOrigin(
 
 export const SITE_URL = API_BASE
 
-export async function fetchTodayFeed(limit = 40): Promise<FeedResponse> {
-  const url = `${API_BASE}/api/v1/feed?limit=${limit}`
+function madridTodayKey(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Madrid",
+  }).format(new Date())
+}
+
+function addDays(dateKey: string, days: number): string {
+  const [y, m, d] = dateKey.split("-").map(Number)
+  const date = new Date(Date.UTC(y, m - 1, d + days))
+  return date.toISOString().slice(0, 10)
+}
+
+export async function fetchFeedByDate(
+  date: string,
+  limit = 50
+): Promise<FeedResponse> {
+  const url = `${API_BASE}/api/v1/feed?date=${encodeURIComponent(date)}&limit=${limit}`
   const res = await fetch(url, {
     headers: { Accept: "application/json" },
   })
@@ -40,7 +55,50 @@ export async function fetchTodayFeed(limit = 40): Promise<FeedResponse> {
   return res.json() as Promise<FeedResponse>
 }
 
+export async function fetchTodayFeed(limit = 50): Promise<FeedResponse> {
+  return fetchFeedByDate(madridTodayKey(), limit)
+}
+
+export async function fetchWeekFeed(days = 7): Promise<{
+  days: { date: string; events: FeedEvent[] }[]
+  error: string | null
+}> {
+  const today = madridTodayKey()
+  const dates = Array.from({ length: days }, (_, i) => addDays(today, i))
+
+  const results = await Promise.allSettled(
+    dates.map((date) => fetchFeedByDate(date, 30))
+  )
+
+  const out: { date: string; events: FeedEvent[] }[] = []
+  let error: string | null = null
+
+  results.forEach((result, index) => {
+    const date = dates[index]!
+    if (result.status === "fulfilled") {
+      if (result.value.events.length > 0) {
+        out.push({ date, events: result.value.events })
+      }
+      if (result.value.error) error = result.value.error
+    } else {
+      error = result.reason instanceof Error ? result.reason.message : "Error de red"
+    }
+  })
+
+  return { days: out, error }
+}
+
 export function formatEventMeta(event: FeedEvent): string {
   const parts = [event.time, event.platform, event.competition].filter(Boolean)
   return parts.join(" · ")
+}
+
+export function formatDayTitle(dateKey: string): string {
+  const [y, m, d] = dateKey.split("-").map(Number)
+  const date = new Date(y, m - 1, d)
+  return date.toLocaleDateString("es-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  })
 }

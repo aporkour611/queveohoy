@@ -48,6 +48,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="preconnect" href={siteUrl} />
         <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
         <script

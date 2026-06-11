@@ -9,17 +9,49 @@ import {
   Text,
   View,
 } from "react-native"
-import { fetchTodayFeed, formatEventMeta, SITE_URL, type FeedEvent } from "@/lib/api"
+import { EventCard } from "@/components/EventCard"
+import {
+  fetchTodayFeed,
+  SITE_URL,
+  type FeedEvent,
+} from "@/lib/api"
 import { formatMobileNetworkError } from "@/lib/ensure-https"
+import { getSupabaseClient } from "@/lib/supabase"
+import { isEventFavorited, toggleFavorite } from "@/lib/favorites"
+import { useAuth } from "@/lib/auth-context"
 
 type LoadState =
   | { kind: "loading" }
   | { kind: "ready"; events: FeedEvent[]; date: string }
   | { kind: "error"; message: string }
 
-export default function HomeScreen() {
+export function TodayFeedScreen() {
+  const { user } = useAuth()
   const [state, setState] = useState<LoadState>({ kind: "loading" })
   const [refreshing, setRefreshing] = useState(false)
+  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set())
+  const [busyId, setBusyId] = useState<number | null>(null)
+
+  const syncFavorites = useCallback(
+    async (events: FeedEvent[]) => {
+      const supabase = getSupabaseClient()
+      if (!supabase || !user) {
+        setFavoriteIds(new Set())
+        return
+      }
+
+      const ids = new Set<number>()
+      await Promise.all(
+        events.map(async (event) => {
+          if (await isEventFavorited(supabase, event.id)) {
+            ids.add(event.id)
+          }
+        })
+      )
+      setFavoriteIds(ids)
+    },
+    [user]
+  )
 
   const load = useCallback(async () => {
     try {
@@ -33,6 +65,7 @@ export default function HomeScreen() {
         events: feed.events,
         date: feed.date,
       })
+      await syncFavorites(feed.events)
     } catch (err) {
       const raw = err instanceof Error ? err.message : "Error de red"
       setState({
@@ -40,7 +73,7 @@ export default function HomeScreen() {
         message: formatMobileNetworkError(raw),
       })
     }
-  }, [])
+  }, [syncFavorites])
 
   useEffect(() => {
     void load()
@@ -51,6 +84,27 @@ export default function HomeScreen() {
     await load()
     setRefreshing(false)
   }, [load])
+
+  const handleToggleFavorite = useCallback(
+    async (eventId: number) => {
+      const supabase = getSupabaseClient()
+      if (!supabase || !user) return
+
+      setBusyId(eventId)
+      const favorited = favoriteIds.has(eventId)
+      const error = await toggleFavorite(supabase, user.id, eventId, favorited)
+      if (!error) {
+        setFavoriteIds((prev) => {
+          const next = new Set(prev)
+          if (favorited) next.delete(eventId)
+          else next.add(eventId)
+          return next
+        })
+      }
+      setBusyId(null)
+    },
+    [favoriteIds, user]
+  )
 
   if (state.kind === "loading") {
     return (
@@ -69,23 +123,12 @@ export default function HomeScreen() {
         </Text>
         <Pressable
           style={styles.linkBtn}
-          onPress={() => {
-            void Linking.openURL(SITE_URL)
-          }}
+          onPress={() => void Linking.openURL(SITE_URL)}
           accessibilityRole="link"
-          accessibilityLabel="Abrir queveohoy.es en el navegador"
         >
-          <Text style={styles.linkText}>Abrir {SITE_URL.replace("https://", "")}</Text>
+          <Text style={styles.linkText}>Abrir queveohoy.es</Text>
         </Pressable>
-        <Pressable
-          style={styles.retryBtn}
-          onPress={() => {
-            setState({ kind: "loading" })
-            void load()
-          }}
-          accessibilityRole="button"
-          accessibilityLabel="Reintentar carga de agenda"
-        >
+        <Pressable style={styles.retryBtn} onPress={() => void load()}>
           <Text style={styles.retryText}>Reintentar</Text>
         </Pressable>
       </View>
@@ -101,15 +144,16 @@ export default function HomeScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
       ListHeaderComponent={
-        <Text style={styles.dateHeader}>Agenda · {state.date}</Text>
+        <Text style={styles.dateHeader}>Hoy · {state.date}</Text>
       }
       renderItem={({ item }) => (
-        <View style={styles.card} accessibilityRole="text">
-          <Text style={styles.title}>{item.title}</Text>
-          {formatEventMeta(item) ? (
-            <Text style={styles.meta}>{formatEventMeta(item)}</Text>
-          ) : null}
-        </View>
+        <EventCard
+          event={item}
+          showFavorite={Boolean(user)}
+          favorited={favoriteIds.has(item.id)}
+          favoriteBusy={busyId === item.id}
+          onToggleFavorite={() => void handleToggleFavorite(item.id)}
+        />
       )}
       ListEmptyComponent={
         <Text style={styles.muted}>Sin eventos para hoy.</Text>
@@ -128,31 +172,12 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 16,
-    gap: 12,
   },
   dateHeader: {
     color: "#a3e635",
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 8,
-  },
-  card: {
-    backgroundColor: "#171717",
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#262626",
-  },
-  title: {
-    color: "#fafafa",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  meta: {
-    color: "#a3a3a3",
-    fontSize: 13,
-    marginTop: 4,
   },
   muted: {
     color: "#737373",
@@ -165,7 +190,6 @@ const styles = StyleSheet.create({
   },
   linkBtn: {
     marginBottom: 12,
-    paddingHorizontal: 8,
   },
   linkText: {
     color: "#a3e635",

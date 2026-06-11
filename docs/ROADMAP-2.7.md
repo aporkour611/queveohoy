@@ -13,8 +13,9 @@ Extiende [ROADMAP-2.6](./VERCEL-PRO-AUDIT.md) (auditoría Vercel Pro + rollover 
 
 ## Siguiente (2.8+)
 
-- EAS Build + TestFlight / Play Internal
-- Favoritos y sesión Supabase en la app
-- Push Expo (sustituir web-push en móvil)
+Ver [ROADMAP-2.8.md](./ROADMAP-2.8.md) (entregado).
+
+- EAS Build en CI + TestFlight / Play Internal
+- Push Expo
 - Apple OAuth en Supabase (manual dashboard)
 - Activar `PERF_GATE_BLOCKING` cuando LCP ≤3s sea estable 2 semanas

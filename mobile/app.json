@@ -2,7 +2,7 @@
   "expo": {
     "name": "Qué veo hoy",
     "slug": "queveohoy",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "orientation": "portrait",
     "scheme": "queveohoy",
     "userInterfaceStyle": "automatic",
@@ -16,7 +16,21 @@
         "backgroundColor": "#0a0a0a"
       },
       "package": "es.queveohoy.app",
-      "usesCleartextTraffic": false
+      "usesCleartextTraffic": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": false,
+          "data": [
+            {
+              "scheme": "queveohoy",
+              "host": "auth",
+              "pathPrefix": "/callback"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

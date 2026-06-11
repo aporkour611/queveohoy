@@ -1,48 +1,67 @@
 # App móvil QueveoHoy (Expo)
 
-Cliente nativo que consume la [API pública v1](https://queveohoy.es/desarrolladores) de queveohoy.es.
+Cliente nativo con **agenda**, **semana**, **favoritos** y **cuenta** — misma API y Supabase que la web.
 
 ## Requisitos
 
 - Node 22+
-- [Expo Go](https://expo.dev/go) en el móvil (desarrollo) o EAS Build (producción)
+- [Expo Go](https://expo.dev/go) (desarrollo) o [EAS Build](https://docs.expo.dev/build/introduction/) (APK/TestFlight)
 
-## Desarrollo
+## Configuración
 
 ```bash
 cd mobile
+cp .env.example .env
+# Rellena EXPO_PUBLIC_SUPABASE_URL y EXPO_PUBLIC_SUPABASE_ANON_KEY (mismas que Vercel)
 npm install
 npm start
 ```
 
-Escanea el QR **desde la app Expo Go** (no con la cámara del móvil ni Chrome).
+Escanea el QR **desde Expo Go** (no desde Safari/Chrome).
 
-## «La conexión no es segura» en el móvil
+En **Supabase → Authentication → Redirect URLs** añade:
+
+- `queveohoy://auth/callback`
+- `exp://127.0.0.1:8081/--/auth/callback` (solo desarrollo Expo Go)
+
+## Pestañas
+
+| Tab | Qué hace |
+|-----|----------|
+| **Hoy** | `GET /api/v1/feed` + ♥ favoritos (con sesión) |
+| **Semana** | 7 días de agenda |
+| **Favoritos** | Tabla `favorites` de Supabase |
+| **Cuenta** | Google o enlace mágico |
+
+## Build nativo (EAS)
+
+```bash
+npm i -g eas-cli
+eas login
+eas init   # una vez, vincula proyecto Expo
+npm run eas:preview
+```
+
+Perfiles en `eas.json`: `development`, `preview` (APK/internal), `production`.
+
+## «La conexión no es segura»
 
 | Causa | Qué hacer |
 |-------|-----------|
-| Abriste el QR en **Safari/Chrome** | Eso abre `http://192.168.x.x:8081` (desarrollo). Instala [Expo Go](https://expo.dev/go) y escanea desde ahí |
-| Entras a la **web** sin https | Usa siempre **https://queveohoy.es** (con candado) |
-| Red local / firewall | `npm run start:tunnel` y escanea el QR de túnel |
-| Fecha del móvil incorrecta | Ajusta hora automática en Ajustes |
-
-La web en producción **sí tiene HTTPS** válido. El aviso aparece casi siempre al abrir la URL de desarrollo (`http://…`) en el navegador.
+| QR abierto en **Safari/Chrome** | Usa **Expo Go** para escanear |
+| URL `http://192.168…` | Normal en dev; no uses el navegador |
+| Web en móvil | Solo **https://queveohoy.es** |
 
 ## Variables
 
-| Variable | Default | Descripción |
-|----------|---------|-------------|
-| `EXPO_PUBLIC_API_BASE` | `https://queveohoy.es` | Base URL de la API |
+| Variable | Default |
+|----------|---------|
+| `EXPO_PUBLIC_API_BASE` | `https://queveohoy.es` |
+| `EXPO_PUBLIC_SUPABASE_URL` | (requerido para login/favoritos) |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | (requerido para login/favoritos) |
 
-Copia `.env.example` a `.env` para overrides locales.
+## Red local
 
-## Estructura
-
-- `app/` — Expo Router (pantalla agenda + detalle)
-- `lib/api.ts` — cliente tipado de `/api/v1/feed`
-
-## Siguiente
-
-- Favoritos con Supabase auth (misma sesión que web)
-- Push notifications (web-push → Expo)
-- EAS + stores (ver ROADMAP-2.7)
+```bash
+npm run start:tunnel
+```

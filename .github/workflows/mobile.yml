@@ -1,0 +1,28 @@
+name: Mobile lint
+
+on:
+  pull_request:
+    paths:
+      - "mobile/**"
+  push:
+    branches: [main]
+    paths:
+      - "mobile/**"
+
+jobs:
+  tsc:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - name: Install
+        run: npm install
+      - name: Typecheck
+        run: npm run lint

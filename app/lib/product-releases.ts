@@ -8,6 +8,17 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.8.0",
+    date: "2026-06-11",
+    title: "App móvil — auth y favoritos",
+    highlights: [
+      "4 pestañas: Hoy, Semana, Favoritos, Cuenta",
+      "Login Google/magic link con Supabase en Expo",
+      "Favoritos compartidos con la web",
+      "EAS preview + workflow CI mobile",
+    ],
+  },
+  {
     version: "2.7.0",
     date: "2026-06-11",
     title: "Partners, auth y app móvil",

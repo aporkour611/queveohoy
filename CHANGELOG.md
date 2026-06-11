@@ -2,6 +2,18 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.8.0] - 2026-06-11
+
+### Added
+- App móvil: tabs Hoy / Semana / Favoritos / Cuenta
+- Auth Supabase en app (Google + magic link) + deep link `queveohoy://auth/callback`
+- Favoritos sincronizados con la web (♥ en agenda)
+- EAS Build config (`mobile/eas.json`) + CI `mobile.yml`
+- Preconnect al origen en home (LCP posters locales)
+
+### Changed
+- Versión del producto: **2.8.0**
+
 ## [2.7.0] - 2026-06-11
 
 ### Added
