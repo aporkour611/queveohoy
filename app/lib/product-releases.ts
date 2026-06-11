@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "4.00.0",
+    date: "2026-06-11",
+    title: "Hubs SEO centralizados (v4)",
+    highlights: [
+      "PRIORITY_SEO_HUB_PATHS warm + rollover",
+      "Premier League en keep-warm",
+      "Plataforma 4.0.0",
+    ],
+  },
+  {
     version: "3.90.0",
     date: "2026-06-11",
     title: "Cierre maratón 3.61–3.90",

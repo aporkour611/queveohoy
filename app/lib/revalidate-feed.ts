@@ -5,13 +5,12 @@ import {
   fetchHomeFeedEvents,
   fetchWeekViewFeedEvents,
 } from "./events-feed-server";
+import { PRIORITY_SEO_HUB_PATHS } from "./seo-hub-warm-paths";
 
 export const ROLLOVER_PATHS = [
   "/",
   "/explorar",
-  "/futbol",
-  "/champions",
-  "/laliga",
+  ...PRIORITY_SEO_HUB_PATHS,
   "/embed/esta-noche",
   "/sitemap.xml",
   "/feed.xml",

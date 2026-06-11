@@ -7,6 +7,7 @@ import {
 } from "./events-feed-server"
 import { isSupabaseConfigured } from "./supabase-config"
 import { siteUrl } from "./seo"
+import { PRIORITY_SEO_HUB_PATHS } from "./seo-hub-warm-paths"
 
 /** Rutas que mantienen calientes ISR, CDN y funciones serverless. */
 export const KEEP_WARM_ORIGIN_PATHS = [
@@ -15,10 +16,7 @@ export const KEEP_WARM_ORIGIN_PATHS = [
   "/api/v2/feed",
   "/api/v1/feed/week",
   "/explorar",
-  "/futbol",
-  "/champions",
-  "/laliga",
-  "/formula-1",
+  ...PRIORITY_SEO_HUB_PATHS,
   "/",
 ] as const
 

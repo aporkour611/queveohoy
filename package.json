@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "3.90.0",
+  "version": "4.00.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

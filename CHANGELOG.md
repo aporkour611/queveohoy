@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [4.00.0] - 2026-06-11
+
+### Added
+- `PRIORITY_SEO_HUB_PATHS` — fuente única para keep-warm y rollover
+- Hub `/premier-league` en calentamiento e invalidación
+- `buildWeekViewWebUrlWithFilters()` en app móvil
+
+### Changed
+- Footer prefetch en novedades e índice de guías
+- Versión del producto: **4.00.0** (v4)
+
 ## [3.90.0] - 2026-06-11
 
 ### Added

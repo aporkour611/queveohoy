@@ -54,7 +54,9 @@ export function SiteFooter() {
             <p className="qvh-site-footer-nav-kicker">Guías y proyecto</p>
             <ul className="qvh-site-footer-nav-list">
               <li>
-                <Link href="/guia">Todas las guías</Link>
+                <Link href="/guia" prefetch>
+                  Todas las guías
+                </Link>
               </li>
               {FOOTER_GUIDE_SLUGS.map((slug) => {
                 const guide = SEO_GUIDES.find((g) => g.slug === slug);
@@ -69,7 +71,9 @@ export function SiteFooter() {
                 <Link href="/sobre">Sobre nosotros</Link>
               </li>
               <li>
-                <Link href="/novedades">Novedades</Link>
+                <Link href="/novedades" prefetch>
+                  Novedades
+                </Link>
               </li>
               <li>
                 <Link href="/contacto">Contacto</Link>

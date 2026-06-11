@@ -1,2 +1,2 @@
 /** Versión pública del producto (footer, novedades, docs). */
-export const PRODUCT_VERSION = "3.90.0"
+export const PRODUCT_VERSION = "4.00.0"

@@ -7,6 +7,8 @@ describe("ROLLOVER_PATHS", () => {
     expect(ROLLOVER_PATHS).toContain("/champions")
     expect(ROLLOVER_PATHS).toContain("/laliga")
     expect(ROLLOVER_PATHS).toContain("/api/v1/feed/week")
+    expect(ROLLOVER_PATHS).toContain("/formula-1")
+    expect(ROLLOVER_PATHS).toContain("/premier-league")
     expect(ROLLOVER_PATHS).toContain("/api/feed-meta")
   })
 })
