@@ -206,6 +206,13 @@ jobs:
           fi
           echo "Keep-warm completo post-deploy…"
           CRON_SECRET="${CRON_SECRET:-}" KEEP_WARM_FULL=1 node scripts/keep-warm-prod.mjs || echo "::warning::keep-warm post-deploy falló"
+          if [ -n "${CRON_SECRET:-}" ]; then
+            echo "Rollover calendario post-deploy…"
+            curl -sf "https://queveohoy.es/api/midnight-rollover?force=1" \
+              -H "Authorization: Bearer ${CRON_SECRET}" \
+              -o /tmp/rollover.json || echo "::warning::midnight-rollover post-deploy falló"
+            node -e "try{const d=require('/tmp/rollover.json');console.log('rollover',d.calendarDay,d.ok)}catch(e){console.log('rollover skip')}" || true
+          fi
           echo "Verificación lanzamiento 2.0…"
           node scripts/verify-prod-2.0.mjs
           echo "Integraciones en producción…"
