@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [3.00.0] - 2026-06-11
+
+### Added
+- ROADMAP maratón 2.71–3.00 (tercer sprint 30 ciclos)
+- `docs/DEPLOY-PERF-GATE.md` — activar PSI bloqueante
+- `mobile/docs/IOS-WIDGET.md` — plan widget iOS Expo 54
+
+### Changed
+- Versión del producto: **3.00.0** · app **1.1.0**
+- Resumen global tres maratones (2.13→3.00)
+
 ## [2.90.0] - 2026-06-11
 
 ### Added

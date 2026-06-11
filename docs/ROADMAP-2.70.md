@@ -27,4 +27,4 @@ Maratón **2.41 → 2.70** (30 ciclos encadenados, segundo sprint continuo).
 
 ## Siguiente (2.71+)
 
-Ver [ROADMAP-2.80.md](./ROADMAP-2.80.md) (maratón 2.71–3.00 en curso).
+Ver [ROADMAP-2.80.md](./ROADMAP-2.80.md) (maratón 2.71–3.00 cerrado en [ROADMAP-3.00.md](./ROADMAP-3.00.md)).

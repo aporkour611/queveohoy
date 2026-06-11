@@ -39,6 +39,8 @@ Tras build nativo, añade el widget **Próximo favorito** desde el launcher. Se 
 
 Requiere EAS (`npm run eas:preview`); no funciona en Expo Go.
 
+Plan widget **iOS**: [docs/IOS-WIDGET.md](./docs/IOS-WIDGET.md).
+
 ## Offline
 
 **Hoy** y **Semana** guardan la última agenda (15 min). Tras cargar Hoy se prefetch de mañana en segundo plano.

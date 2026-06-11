@@ -48,6 +48,6 @@ Plan ejecutado tras upgrade a Vercel Pro. Detalle operativo en [OPS-UPTIME.md](.
 
 ## Siguiente (backlog)
 
-- Maratón plataforma ✅ v2.40 + v2.70 ([ROADMAP-2.40.md](./ROADMAP-2.40.md), [ROADMAP-2.70.md](./ROADMAP-2.70.md))
-- PSI gate bloqueante: GitHub → Settings → Variables → `PERF_GATE_BLOCKING=1` cuando LCP estable ≤3s (infra lista desde v2.7; ver deploy.yml)
-- Expo 54 + widget iOS (`expo-widgets`)
+- Maratón plataforma ✅ v2.40 + v2.70 + **v3.00** ([ROADMAP-3.00.md](./ROADMAP-3.00.md))
+- PSI gate bloqueante: [DEPLOY-PERF-GATE.md](./DEPLOY-PERF-GATE.md)
+- Expo 54 + widget iOS ([mobile/docs/IOS-WIDGET.md](../mobile/docs/IOS-WIDGET.md))
