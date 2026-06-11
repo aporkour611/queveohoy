@@ -25,13 +25,9 @@ import { raceWithTimeout } from "../lib/race-with-timeout";
 import { resolveHomeLcpPreloadEntries } from "../lib/home-lcp";
 import { buildHomeMetadataDescription, buildHomeMetadataTitle } from "../lib/seo-jsonld";
 import { defaultDescription, pageMetadata, seoKeywords } from "../lib/seo";
-import { pickWeekDestacados } from "../lib/destacados-config";
-import { resolveChampionsWeekContext } from "../lib/champions-week";
+import { buildWeekDestacadosPresentation } from "../lib/destacados-week-present";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
-import {
-  getSpotlightCardModel,
-  spotlightHasCompleteTeamCover,
-} from "../lib/featured-card";
+import { isUfcWeekEditorialWindow } from "../lib/ufc-week";
 
 const HomeFaq = dynamic(
   () => import("../components/HomeFaq").then((mod) => mod.HomeFaq),
@@ -115,34 +111,20 @@ function resolveDestacadosEnhancerProps(
   weekEvents: EventRow[],
   todayKey: string
 ) {
-  const championsWeek = resolveChampionsWeekContext(
+  const presentation = buildWeekDestacadosPresentation(
     weekEvents,
     todayKey,
     FEED_DAY_COUNT
   );
-  const championsFinalId = championsWeek?.finalEvent.id;
 
-  const weekFeatured = pickWeekDestacados(weekEvents, { todayKey }).filter(
-    (event) => {
-      if (championsFinalId != null && event.id === championsFinalId) return true;
-      return spotlightHasCompleteTeamCover(getSpotlightCardModel(event, MADRID_TZ));
-    }
-  );
-
-  if (weekFeatured.length === 0) return null;
-
-  const subtitle = championsWeek
-    ? "La gran final y lo más esperado del fin de semana"
-    : "Estrenos, finales y series que marcan la semana";
+  if (presentation.weekFeatured.length === 0) return null;
 
   return {
     title: "Esta semana",
-    subtitle,
-    items: weekFeatured,
+    subtitle: presentation.subtitle,
+    items: presentation.weekFeatured,
     ariaLabel: "Destacados de la semana",
-    className: `qvh-destacados-week qvh-destacados-week-first${
-      championsWeek ? " qvh-cl-week-destacados" : ""
-    }`,
+    className: `qvh-destacados-week qvh-destacados-week-first${presentation.destacadosClassSuffix}`,
   };
 }
 
@@ -171,17 +153,26 @@ export default async function Page() {
   const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
   const tonightEvents = mergeFeedEvents(ssrEvents, weekEvents);
   const todayKey = initialDay?.date ?? "";
+  const weekPresentation = buildWeekDestacadosPresentation(
+    weekEvents,
+    todayKey,
+    FEED_DAY_COUNT
+  );
   const destacadosEnhancer = resolveDestacadosEnhancerProps(weekEvents, todayKey);
 
   return (
     <>
       <HomeWeekPrefetchHead />
       <HomeLcpPreload entries={lcpPreloadEntries} />
-      <div className="fh-body">
+      <div className={`fh-body${weekPresentation.bodyClassSuffix}`}>
           <HomeNav />
           <main id="main-content" className="fh-content">
             <div className="fh-container fh-main">
-                <h1 className="sr-only">Qué ver hoy en TV</h1>
+                <h1 className="sr-only">
+                  {isUfcWeekEditorialWindow(todayKey)
+                    ? "Topuria vs Gaethje — UFC Casablanca, horario y TV en España"
+                    : "Qué ver hoy en TV"}
+                </h1>
 
                 <DestacadosSection events={weekEvents} />
 

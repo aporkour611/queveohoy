@@ -1,4 +1,5 @@
 /* Carga diferida — heroes Champions, Roland Garros, basket duel */
 @import "./champions-week.css";
+@import "./ufc-week.css";
 @import "./roland-garros.css";
 @import "./basket-duel.css";

@@ -2,6 +2,19 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [4.21.0] - 2026-06-11
+
+### Added
+- Semana de UFC Casablanca: hero Topuria vs Gaethje, temática global del sitio
+- Módulos `ufc-week`, `week-hero`, `UfcWeekHero` y tier `ufc-week` en destacados
+
+### Changed
+- UFC Casablanca prioriza Champions en hero y metadata SEO
+- Depuración: código muerto, lint mobile, fix `madridCalendarDay`
+
+### Fixed
+- Build: declaración duplicada de `admin` en `push-notify.ts`
+
 ## [4.20.0] - 2026-06-11
 
 ### Added

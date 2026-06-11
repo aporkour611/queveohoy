@@ -25,6 +25,7 @@ import {
   isRolandGarrosEvent,
   isRolandGarrosKnockout,
 } from "./roland-garros";
+import { isUfcWeekMainEvent } from "./ufc-week";
 
 const COMPETITION_PRIORITY: { match: RegExp; score: number }[] = [
   { match: /champions|mundial|world cup/i, score: 100 },
@@ -121,6 +122,10 @@ export function eventPriority(e: EventRow): number {
     else score += 8;
   }
 
+  if (isUfcWeekMainEvent(e)) {
+    score = Math.max(score, 108);
+  }
+
   if (e.sport === "futbol") {
     const home = e.home_team ?? "";
     const away = e.away_team ?? "";
@@ -205,6 +210,8 @@ export function isSuperRelevantEvent(e: EventRow): boolean {
   }
 
   if (isRolandGarrosEvent(e)) return true;
+
+  if (isUfcWeekMainEvent(e)) return true;
 
   if (e.sport === "futbol") {
     const home = e.home_team ?? "";

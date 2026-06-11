@@ -1,0 +1,415 @@
+/* ── Semana de UFC Casablanca (Freedom 250 · Topuria) ── */
+
+@keyframes qvh-ufc-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+@keyframes qvh-ufc-hero-sheen {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+  45%,
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+@keyframes qvh-ufc-shell-border-pulse {
+  0%,
+  100% {
+    border-color: rgba(210, 10, 10, 0.22);
+    box-shadow:
+      0 8px 24px rgba(20, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  50% {
+    border-color: rgba(255, 196, 0, 0.45);
+    box-shadow:
+      0 14px 32px rgba(40, 0, 0, 0.45),
+      0 0 28px rgba(210, 10, 10, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+}
+
+@keyframes qvh-ufc-logo-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(210, 10, 10, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(255, 196, 0, 0.35);
+  }
+}
+
+/* ── Temática global del sitio ── */
+
+html[data-site-week="ufc-casablanca"] {
+  --qvh-week-accent: #d20a0a;
+  --qvh-week-accent-soft: rgba(210, 10, 10, 0.16);
+  --qvh-week-gold: #ffc400;
+}
+
+html[data-site-week="ufc-casablanca"] body,
+html[data-site-week="ufc-casablanca"] .fh-body {
+  background: #0a0606;
+}
+
+html[data-site-week="ufc-casablanca"] .fh-content {
+  background: linear-gradient(180deg, #120808 0%, #0a0606 240px);
+}
+
+html[data-site-week="ufc-casablanca"] .fh-navbar,
+html[data-site-week="ufc-casablanca"] .fh-navbar-volumetric {
+  background: linear-gradient(180deg, #1c0a0a 0%, #120606 100%);
+  border-bottom-color: rgba(210, 10, 10, 0.35);
+}
+
+html[data-site-week="ufc-casablanca"] .fh-header-depth {
+  background: radial-gradient(
+    ellipse 80% 100% at 50% 0%,
+    rgba(210, 10, 10, 0.12),
+    transparent 70%
+  );
+}
+
+html[data-site-week="ufc-casablanca"] .qvh-destacados-dot {
+  background: #d20a0a;
+  box-shadow: 0 0 10px rgba(210, 10, 10, 0.55);
+}
+
+html[data-site-week="ufc-casablanca"] .qvh-destacados-stack {
+  border-bottom-color: rgba(210, 10, 10, 0.2);
+}
+
+html[data-site-week="ufc-casablanca"] .qvh-site-footer {
+  border-top-color: rgba(210, 10, 10, 0.15);
+}
+
+html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
+  content: "UFC";
+  margin-left: 8px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: linear-gradient(135deg, #d20a0a, #8a0505);
+  vertical-align: middle;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .qvh-ufc-week-shell {
+    animation: qvh-ufc-shell-border-pulse 4.2s ease-in-out infinite;
+  }
+
+  .qvh-ufc-week-logo {
+    animation: qvh-ufc-logo-pulse 3s ease-in-out infinite;
+  }
+}
+
+.qvh-ufc-week-shell {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 12px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid rgba(210, 10, 10, 0.22);
+  box-shadow:
+    0 8px 24px rgba(20, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.qvh-ufc-week-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    155deg,
+    #080404 0%,
+    #1a0505 24%,
+    #2a0808 48%,
+    #140404 76%,
+    #080404 100%
+  );
+}
+
+.qvh-ufc-week-hero-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.qvh-ufc-week-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 58%
+  );
+  transform: translateX(-120%);
+  animation: qvh-ufc-hero-sheen 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.qvh-ufc-week-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.qvh-ufc-week-hero-glow {
+  position: absolute;
+  top: -45%;
+  left: 50%;
+  width: 110%;
+  height: 75%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse 55% 45% at 50% 0%,
+    rgba(210, 10, 10, 0.28),
+    transparent 68%
+  );
+  animation: qvh-ufc-glow-breathe 6.5s ease-in-out infinite;
+}
+
+.qvh-ufc-week-hero-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  background-image: linear-gradient(
+      rgba(255, 196, 0, 0.35) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(255, 196, 0, 0.2) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+}
+
+.qvh-ufc-week-hero-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.qvh-ufc-week-emblem {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 196, 0, 0.25);
+}
+
+.qvh-ufc-week-logo {
+  filter: drop-shadow(0 0 6px rgba(210, 10, 10, 0.45));
+}
+
+.qvh-ufc-week-hero-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.qvh-ufc-week-hero-titleline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+  margin-bottom: 6px;
+}
+
+.qvh-ufc-week-kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 196, 0, 0.85);
+}
+
+.qvh-ufc-week-headline {
+  margin: 0;
+  font-family: var(--font-barlow-condensed, inherit);
+  font-size: clamp(1.15rem, 4.5vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(210, 10, 10, 0.35);
+}
+
+.qvh-ufc-week-stage-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, #d20a0a, #9a0808);
+  border: 1px solid rgba(255, 196, 0, 0.35);
+}
+
+.qvh-ufc-week-hero-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qvh-ufc-week-matchup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qvh-ufc-week-side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.qvh-ufc-week-fighter {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top center;
+  border: 2px solid rgba(255, 196, 0, 0.35);
+  background: #1a0a0a;
+}
+
+.qvh-ufc-week-fighter-fallback {
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffc400;
+}
+
+.qvh-ufc-week-fighter-name {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 9rem;
+}
+
+.qvh-ufc-week-vs {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(255, 196, 0, 0.9);
+}
+
+.qvh-ufc-week-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.qvh-ufc-week-venue {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 10px;
+  color: #ffc400;
+  background: rgba(210, 10, 10, 0.2);
+  border: 1px solid rgba(255, 196, 0, 0.2);
+}
+
+.qvh-ufc-week-date,
+.qvh-ufc-week-time {
+  font-weight: 600;
+}
+
+.qvh-ufc-week-destacados {
+  border-top-color: rgba(210, 10, 10, 0.12);
+}
+
+.qvh-ufc-week-destacados .qvh-destacados-title {
+  color: #fff;
+}
+
+.qvh-ufc-week-destacados .qvh-destacados-sub {
+  color: rgba(255, 220, 180, 0.75);
+}
+
+.qvh-ufc-week-feed-block {
+  border: 1px solid rgba(210, 10, 10, 0.2);
+  border-radius: 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(210, 10, 10, 0.08) 0%,
+    rgba(10, 6, 6, 0.4) 100%
+  );
+  padding: 4px 0 8px;
+}
+
+.qvh-ufc-week-feed-block .qvh-feed-group-head {
+  padding-inline: 10px;
+}
+
+.qvh-ufc-week-feed-block .qvh-feed-group-title {
+  color: #ffc400;
+}
+
+@media (max-width: 767px) {
+  .qvh-ufc-week-matchup,
+  .qvh-ufc-week-hero-detail {
+    display: none;
+  }
+
+  .qvh-ufc-week-hero-titleline {
+    flex-wrap: nowrap;
+    align-items: baseline;
+  }
+
+  .qvh-ufc-week-kicker,
+  .qvh-ufc-week-headline {
+    white-space: nowrap;
+  }
+
+  html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qvh-ufc-week-shell,
+  .qvh-ufc-week-hero-glow,
+  .qvh-ufc-week-hero::after,
+  .qvh-ufc-week-logo {
+    animation: none !important;
+  }
+}

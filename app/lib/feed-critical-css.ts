@@ -30,6 +30,8 @@ html{overflow-anchor:none;background:#0a0a10}
 
 .qvh-cl-week-shell{min-height:0;max-width:100%;min-width:0}
 
+.qvh-ufc-week-shell{min-height:0;max-width:100%;min-width:0}
+
 .qvh-home-feed-slot{min-height:420px}
 
 .qvh-spotlight-card{display:block;color:inherit;text-decoration:none}
@@ -57,6 +59,12 @@ html{overflow-anchor:none;background:#0a0a10}
 .qvh-cl-week-hero-titleline{flex-wrap:nowrap;align-items:baseline}
 
 .qvh-cl-week-kicker,.qvh-cl-week-headline{white-space:nowrap}
+
+.qvh-ufc-week-matchup,.qvh-ufc-week-hero-detail{display:none}
+
+.qvh-ufc-week-hero-titleline{flex-wrap:nowrap;align-items:baseline}
+
+.qvh-ufc-week-kicker,.qvh-ufc-week-headline{white-space:nowrap}
 
 }
 

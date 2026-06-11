@@ -28,21 +28,28 @@ export function HomeFeedGate(props: HomeFeedProps) {
   const [initialWeekView, setInitialWeekView] = useState(false);
 
   useEffect(() => {
+    let weekFromUrl = false
+
     if (readWeekViewFromSearch(window.location.search)) {
       markHomeFeedWeekIntent()
-      setInitialWeekView(true)
+      weekFromUrl = true
       const remainder = stripWeekViewFromSearch(window.location.search)
       const next = `${window.location.pathname}${remainder ? `?${remainder}` : ""}${window.location.hash}`
       window.history.replaceState(null, "", next)
     }
 
     const onActivateFeed = () => {
-      if (consumeHomeFeedWeekIntent()) setInitialWeekView(true);
-    };
+      if (consumeHomeFeedWeekIntent()) setInitialWeekView(true)
+    }
 
-    window.addEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
-    return () => window.removeEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
-  }, []);
+    window.addEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed)
+
+    if (weekFromUrl) {
+      queueMicrotask(onActivateFeed)
+    }
+
+    return () => window.removeEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed)
+  }, [])
 
   return (
     <HomeResetProvider>

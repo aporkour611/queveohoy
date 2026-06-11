@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./brand.css";
+@import "./ufc-week.css";
 
 :root {
   --background: #000000;

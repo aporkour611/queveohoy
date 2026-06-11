@@ -4,11 +4,13 @@ import { eventPriority } from "./featured";
 import { isCuratedSeriesEvent } from "./curated-series-events";
 import { isCuratedMovieEvent } from "./movies-curated";
 import { isRolandGarrosWeekDestacado } from "./roland-garros";
+import { isUfcWeekMainEvent } from "./ufc-week";
 import { matchesSpanishTvFlagship } from "./spanish-tv-curated";
 import { getTvShowCategory, isTvFictionSeriesEvent } from "./tv-show-category";
 /** Orden editorial de categorías en destacados (1 ficha por categoría). */
 export const DESTACADO_IMPORTANCE_TIERS = [
   "cine",
+  "ufc-week",
   "champions",
   "ufc",
   "roland-garros",
@@ -85,6 +87,7 @@ export function getDestacadoImportanceTier(
   event: EventRow
 ): DestacadoImportanceTier {
   if (isCineDestacado(event)) return "cine";
+  if (isUfcWeekMainEvent(event)) return "ufc-week";
   if (isChampionsWeekDestacado(event)) return "champions";
   if (event.sport === "ufc") return "ufc";
   if (isRolandGarrosWeekDestacado(event)) return "roland-garros";

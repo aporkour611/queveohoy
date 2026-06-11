@@ -6,6 +6,8 @@ import {
   MADRID_TZ,
 } from "./timezone";
 import { HOME_SSR_DAY_COUNT } from "./home-feed-config";
+import { isUfcWeekEditorialWindow } from "./ufc-week";
+import { getMadridTodayKey } from "./seo-date";
 import type { SeoHubConfig } from "./seo-hubs";
 import {
   buildDateMetadataDescription,
@@ -529,6 +531,10 @@ export function buildHubJsonLd(hub: SeoHubConfig, events: EventRow[]) {
 }
 
 export function buildHomeMetadataDescription(events: EventRow[]): string {
+  if (isUfcWeekEditorialWindow(getMadridTodayKey())) {
+    return "Topuria vs Gaethje en UFC Casablanca (Freedom 250): horario en España, Paramount+ y toda la agenda TV de la semana.";
+  }
+
   const todayEvents = filterEventsInWeek(
     mapEventsToTimezone(events, MADRID_TZ),
     MADRID_TZ,
@@ -552,6 +558,10 @@ export function buildHomeMetadataDescription(events: EventRow[]): string {
 }
 
 export function buildHomeMetadataTitle(): string {
+  if (isUfcWeekEditorialWindow(getMadridTodayKey())) {
+    return "Topuria vs Gaethje — UFC Casablanca | Qué veo hoy";
+  }
+
   const today = new Date().toLocaleDateString("es-ES", {
     timeZone: MADRID_TZ,
     weekday: "long",
@@ -563,6 +573,10 @@ export function buildHomeMetadataTitle(): string {
 }
 
 export function buildHomePageLead(events: EventRow[]): string {
+  if (isUfcWeekEditorialWindow(getMadridTodayKey())) {
+    return "Semana de UFC Casablanca: Topuria vs Gaethje en Freedom 250, horario en península y resto de la agenda TV.";
+  }
+
   const todayEvents = filterEventsInWeek(
     mapEventsToTimezone(events, MADRID_TZ),
     MADRID_TZ,

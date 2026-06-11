@@ -256,7 +256,6 @@ export async function dispatchPushForEvents(
     };
   }
 
-  const admin = createSupabaseAdmin();
   const { data: subscriptions, error } = await admin
     .from("push_subscriptions")
     .select(

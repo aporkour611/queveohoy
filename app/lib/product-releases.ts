@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "4.21.0",
+    date: "2026-06-11",
+    title: "Semana UFC Casablanca y depuración",
+    highlights: [
+      "Hero y temática global Topuria vs Gaethje (Freedom 250)",
+      "Prioridad editorial sobre Champions · SEO y feed",
+      "307 tests · lint limpio · fix build push-notify",
+    ],
+  },
+  {
     version: "4.20.0",
     date: "2026-06-11",
     title: "Cierre maratón 3.91–4.20",

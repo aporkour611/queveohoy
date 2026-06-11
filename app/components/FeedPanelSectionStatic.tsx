@@ -6,6 +6,7 @@ import { competitionAccentClass, sportAccentClass } from "../lib/sport-accent";
 import {
   isChampionsCompetitionTitle,
 } from "../lib/champions-week";
+import { isUfcWeekMainEvent } from "../lib/ufc-week";
 import { isChampionsFinal } from "../lib/event-card-stamp";
 import type { EventDayGroups } from "../lib/event-day-group";
 import {
@@ -93,12 +94,15 @@ function buildSportSubgroups(
 
   for (const { label, sportId, events: evs } of entries) {
     if (evs.length === 0) continue;
+    const isUfcWeekBlock =
+      sportId === "ufc" && evs.some((event) => isUfcWeekMainEvent(event));
     result.push({
       key: sportId,
       label,
       iconId: sportId,
       accentClass: sportAccentClass(sportId),
       events: evs,
+      shellClassName: isUfcWeekBlock ? "qvh-ufc-week-feed-block" : undefined,
       cardLayout: "match",
     });
   }

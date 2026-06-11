@@ -1,5 +1,5 @@
 import { getMadridTodayKey } from "./seo-date"
-import { addDaysToDateKey, madridDateTimeToUtc } from "./madrid-time"
+import { addDaysToDateKey, madridDateTimeToUtc, toMadridDateKey } from "./madrid-time"
 
 export function isMadridMidnightHour(now = new Date()): boolean {
   const hour = Number(
@@ -21,5 +21,5 @@ export function msUntilNextMadridMidnight(now = new Date()): number {
 }
 
 export function madridCalendarDay(now = new Date()): string {
-  return getMadridTodayKey()
+  return toMadridDateKey(now)
 }

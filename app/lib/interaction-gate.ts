@@ -122,13 +122,3 @@ export function subscribeFeedHydration({
     cta?.removeEventListener("touchstart", onCtaTouch)
   }
 }
-
-/** @deprecated Use subscribeFeedHydration */
-export function subscribeFeedScopedGate(options: FeedHydrationOptions): () => void {
-  return subscribeFeedHydration(options)
-}
-
-/** @deprecated Use subscribeFeedHydration */
-export function subscribeInteractionGate(options: FeedHydrationOptions): () => void {
-  return subscribeFeedHydration(options)
-}

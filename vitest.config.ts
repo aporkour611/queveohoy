@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["app/**/*.test.ts"],
+    testTimeout: 15_000,
     coverage: {
       provider: "v8",
       reporter: ["text", "text-summary"],

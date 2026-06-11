@@ -35,8 +35,8 @@ export function pickNextFavoriteEvent(
 
   return {
     id: best.event.id,
-    title: best.event.title,
-    date: best.event.date,
+    title: best.event.title?.trim() || "Evento",
+    date: best.event.date ?? "",
     time: best.event.time ?? null,
     sport: best.event.sport ?? null,
     startsAt: best.start.toISOString(),

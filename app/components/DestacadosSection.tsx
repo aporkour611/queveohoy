@@ -1,14 +1,10 @@
 import type { EventRow } from "./types";
-import { pickWeekDestacados } from "../lib/destacados-config";
-import { resolveChampionsWeekContext } from "../lib/champions-week";
+import { buildWeekDestacadosPresentation } from "../lib/destacados-week-present";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
-import {
-  getSpotlightCardModel,
-  spotlightHasCompleteTeamCover,
-} from "../lib/featured-card";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { ChampionsWeekHero } from "./ChampionsWeekHero";
 import { DestacadosStaticRow } from "./DestacadosStaticRow";
+import { UfcWeekHero } from "./UfcWeekHero";
 
 type Props = {
   events: EventRow[];
@@ -16,39 +12,35 @@ type Props = {
 
 export function DestacadosSection({ events }: Props) {
   const todayKey = buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "";
-  const championsWeek = resolveChampionsWeekContext(
+  const presentation = buildWeekDestacadosPresentation(
     events,
     todayKey,
     FEED_DAY_COUNT
   );
-  const championsFinalId = championsWeek?.finalEvent.id;
+  const { hero, weekFeatured, subtitle, destacadosClassSuffix } = presentation;
 
-  const weekFeatured = pickWeekDestacados(events, { todayKey }).filter((event) => {
-    if (championsFinalId != null && event.id === championsFinalId) return true;
-    return spotlightHasCompleteTeamCover(getSpotlightCardModel(event, MADRID_TZ));
-  });
-
-  if (weekFeatured.length === 0 && !championsWeek) return null;
-
-  const subtitle = championsWeek
-    ? "La gran final y lo más esperado del fin de semana"
-    : "Estrenos, finales y series que marcan la semana";
+  if (weekFeatured.length === 0 && !hero) return null;
 
   const rowProps = {
     title: "Esta semana",
     subtitle,
     items: weekFeatured,
     ariaLabel: "Destacados de la semana",
-    className: `qvh-destacados-week qvh-destacados-week-first${
-      championsWeek ? " qvh-cl-week-destacados" : ""
-    }`,
+    className: `qvh-destacados-week qvh-destacados-week-first${destacadosClassSuffix}`,
   };
 
   return (
     <div className="qvh-destacados-stack">
-      {championsWeek ? (
+      {hero?.type === "ufc" ? (
+        <div className="qvh-ufc-week-shell">
+          <UfcWeekHero context={hero.context} />
+          {weekFeatured.length > 0 ? (
+            <DestacadosStaticRow {...rowProps} />
+          ) : null}
+        </div>
+      ) : hero?.type === "champions" ? (
         <div className="qvh-cl-week-shell">
-          <ChampionsWeekHero context={championsWeek} />
+          <ChampionsWeekHero context={hero.context} />
           {weekFeatured.length > 0 ? (
             <DestacadosStaticRow {...rowProps} />
           ) : null}

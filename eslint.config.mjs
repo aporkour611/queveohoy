@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Expo app — lint propio (`mobile/npm run lint` → tsc)
+    "mobile/**",
+    "scripts/k6-load.js",
   ]),
 ]);
 

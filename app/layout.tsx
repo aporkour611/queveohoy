@@ -10,6 +10,8 @@ import { buildSupabaseBootstrapScript } from "./lib/supabase/browser-runtime";
 import { resolveBrowserSupabaseConfig } from "./lib/supabase-config";
 import { rootMetadata, siteUrl } from "./lib/seo";
 import { THEME_STORAGE_KEY } from "./lib/theme";
+import { resolveSiteWeekTheme } from "./lib/ufc-week";
+import { getMadridTodayKey } from "./lib/seo-date";
 
 /** Funciones cerca de Supabase / usuarios en España (menos latencia). */
 export const preferredRegion = ["cdg1", "fra1"];
@@ -40,11 +42,13 @@ export default function RootLayout({
   const supabaseBrowserConfig = resolveBrowserSupabaseConfig();
   const supabaseBootstrapScript =
     buildSupabaseBootstrapScript(supabaseBrowserConfig);
+  const siteWeekTheme = resolveSiteWeekTheme(getMadridTodayKey());
 
   return (
     <html
       lang="es"
       className={`${barlowCondensed.variable} h-full antialiased`}
+      data-site-week={siteWeekTheme ?? undefined}
       suppressHydrationWarning
     >
       <head>

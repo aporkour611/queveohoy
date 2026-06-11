@@ -131,7 +131,8 @@ async function loadDestacadosEvents(): Promise<{
 }
 
 const getCachedDestacadosFeed = unstable_cache(
-  async (_calendarDay: string) => {
+  async (calendarDay: string) => {
+    void calendarDay
     const result = await loadDestacadosEvents();
     if (isUncacheableFeedResult(result)) {
       throw new Error(result.error ?? "destacados-feed-empty");
@@ -195,7 +196,8 @@ async function loadFeedEvents(
 
 /** dayCount + tight forman parte de la clave de cache (evita colisión home/full). */
 const getCachedFeed = unstable_cache(
-  async (dayCount: number, tight: boolean, _calendarDay: string) => {
+  async (dayCount: number, tight: boolean, calendarDay: string) => {
+    void calendarDay
     const result = await loadFeedEvents(dayCount, tight);
     if (isUncacheableFeedResult(result)) {
       throw new Error(result.error ?? "feed-empty");

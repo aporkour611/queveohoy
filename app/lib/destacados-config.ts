@@ -16,6 +16,7 @@ import {
 import { isSpanishTvDestacadosEligible } from "./spanish-tv-curated";
 import { isTvFictionSeriesEvent } from "./tv-show-category";
 import { isSeasonPremiereEvent } from "./tmdb";
+import { mergeUfcWeekEvents } from "./curated-ufc-events";
 import { pickOneDestacadoPerTier } from "./destacados-importance";
 
 export {
@@ -43,6 +44,11 @@ export const DESTACADOS_RULES: DestacadoRule[] = [
     id: "el-drama",
     externalId: "tmdb_movie_1325734",
     titleMatch: /^(the\s+)?drama\b|^el\s+drama\b/i,
+  },
+  {
+    id: "topuria-gaethje",
+    titleMatch: /topuria/i,
+    teams: { a: /topuria|ilia/i, b: /gaethje|justin/i },
   },
   {
     id: "psg-arsenal",
@@ -77,14 +83,17 @@ function mergeDestacadosEvents(
   todayKey: string,
   windowDays: number
 ): EventRow[] {
-  return mergeCuratedSpanishTvEvents(
-    mergeCuratedSeriesEvents(
-      mergeCuratedMovieEvents(events, todayKey),
+  return mergeUfcWeekEvents(
+    mergeCuratedSpanishTvEvents(
+      mergeCuratedSeriesEvents(
+        mergeCuratedMovieEvents(events, todayKey),
+        todayKey,
+        windowDays
+      ),
       todayKey,
       windowDays
     ),
-    todayKey,
-    windowDays
+    todayKey
   );
 }
 
