@@ -22,7 +22,3 @@ Maratón **2.41 → 2.50** (ciclos 31–40).
 ## Siguiente (2.51+)
 
 Ver [ROADMAP-2.60.md](./ROADMAP-2.60.md).
-
-- FeedFreshness muestra conteo semanal
-- verify-prod valida `weekCount`
-- Tests intent URLs semanales

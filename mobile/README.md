@@ -31,7 +31,7 @@ En **Supabase → Authentication → Redirect URLs** añade:
 | **Hoy** | `GET /api/v1/feed` + ♥ favoritos + compartir ↗ |
 | **Semana** | `GET /api/v1/feed/week` (fallback por día) + offline 15 min |
 | **Favoritos** | Tabla `favorites` de Supabase |
-| **Cuenta** | Google, Apple o magic link + toggle push |
+| **Cuenta** | Google, Apple, Microsoft o magic link + push + **Gestionar en la web** (`/cuenta`) |
 
 ## Widget Android (EAS)
 

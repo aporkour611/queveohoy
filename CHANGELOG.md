@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.60.0] - 2026-06-11
+
+### Added
+- FeedFreshness muestra eventos de la semana (`weekCount`)
+- Test unitario URLs prefetch semanal
+- verify-prod valida `weekCount` en feed-meta
+
+### Changed
+- Versión del producto: **2.60.0**
+- README móvil documenta enlace a cuenta web
+
 ## [2.50.0] - 2026-06-11
 
 ### Added

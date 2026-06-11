@@ -88,6 +88,11 @@ const metaRes = await fetch(`${BASE}/api/feed-meta`, { cache: "no-store" })
 if (metaRes.ok) pass("GET /api/feed-meta")
 else fail("GET /api/feed-meta", String(metaRes.status))
 
+const metaBody = metaRes.ok ? await metaRes.json() : null
+if (metaBody && typeof metaBody.weekCount === "number")
+  pass("feed-meta weekCount", String(metaBody.weekCount))
+else if (metaRes.ok) fail("feed-meta weekCount", "campo ausente")
+
 const metaCache = metaRes.headers.get("cache-control") ?? ""
 const metaVercelCache = metaRes.headers.get("x-vercel-cache") ?? ""
 const metaAge = metaRes.headers.get("age") ?? ""
