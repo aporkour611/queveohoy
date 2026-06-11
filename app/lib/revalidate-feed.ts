@@ -11,6 +11,7 @@ export const ROLLOVER_PATHS = [
   "/explorar",
   "/futbol",
   "/champions",
+  "/laliga",
   "/embed/esta-noche",
   "/sitemap.xml",
   "/feed.xml",

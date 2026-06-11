@@ -18,6 +18,7 @@ export const KEEP_WARM_ORIGIN_PATHS = [
   "/futbol",
   "/champions",
   "/laliga",
+  "/formula-1",
   "/",
 ] as const
 

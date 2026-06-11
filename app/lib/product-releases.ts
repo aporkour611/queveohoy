@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "3.70.0",
+    date: "2026-06-11",
+    title: "Explorar week+filtros y warm F1",
+    highlights: [
+      "Explorar abre vista semanal con filtros",
+      "Rollover laliga y warm formula-1",
+      "Deep links centralizados en app móvil",
+    ],
+  },
+  {
     version: "3.60.0",
     date: "2026-06-11",
     title: "Cierre maratón 3.31–3.60",

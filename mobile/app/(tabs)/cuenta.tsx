@@ -14,6 +14,7 @@ import {
 } from "react-native"
 import { useAuth } from "@/lib/auth-context"
 import { SITE_URL } from "@/lib/api"
+import { CUENTA_WEB_URL } from "@/lib/deep-links"
 import { APP_VERSION } from "@/lib/app-version"
 import { useTheme } from "@/lib/theme-context"
 
@@ -180,7 +181,7 @@ export default function CuentaScreen() {
         <WidgetHint />
         <Pressable
           style={[styles.secondaryBtn, { marginTop: 16 }]}
-          onPress={() => void Linking.openURL(`${SITE_URL}/cuenta`)}
+          onPress={() => void Linking.openURL(CUENTA_WEB_URL)}
           accessibilityRole="link"
           accessibilityLabel="Gestionar cuenta en la web"
         >
@@ -188,7 +189,7 @@ export default function CuentaScreen() {
         </Pressable>
         <Pressable
           style={[styles.outlineBtn, { marginTop: 12 }]}
-          onPress={() => void Linking.openURL(`${SITE_URL}/cuenta`)}
+          onPress={() => void Linking.openURL(CUENTA_WEB_URL)}
           accessibilityRole="link"
           accessibilityLabel="Exportar datos RGPD en la web"
         >
@@ -327,7 +328,7 @@ export default function CuentaScreen() {
         También puedes gestionar favoritos y exportar datos en{" "}
         <Text
           style={{ color: colors.accent, textDecorationLine: "underline" }}
-          onPress={() => void Linking.openURL(`${SITE_URL}/cuenta`)}
+          onPress={() => void Linking.openURL(CUENTA_WEB_URL)}
           accessibilityRole="link"
         >
           la web

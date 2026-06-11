@@ -57,7 +57,7 @@ export function SeoHubPage({ hub, events, weekAgendaCount = 0 }: Props) {
         <PageMain className="fh-content">
           <div className="fh-container fh-main fh-seo-hub-page">
             <nav className="fh-seo-breadcrumb" aria-label="Breadcrumb">
-              <Link href="/">Inicio</Link>
+              <Link href="/" prefetch>Inicio</Link>
               <span aria-hidden>›</span>
               <span aria-current="page">{hub.title}</span>
             </nav>

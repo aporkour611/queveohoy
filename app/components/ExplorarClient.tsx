@@ -4,7 +4,7 @@ import { memo, useCallback, useState } from "react"
 import { useRouter } from "next/navigation"
 import { CategoryGroupsPanel } from "./CategoryGroupsPanel"
 import { formatFilterSummary } from "@/app/lib/filter-config"
-import { buildFilterSearch, buildWeekViewHomeUrl } from "@/app/lib/filter-url"
+import { buildWeekViewHomeUrl, buildWeekViewHomeUrlWithFilters } from "@/app/lib/filter-url"
 
 export const ExplorarClient = memo(function ExplorarClient({
   weekEventCount = 0,
@@ -31,8 +31,7 @@ export const ExplorarClient = memo(function ExplorarClient({
       router.push(buildWeekViewHomeUrl())
       return
     }
-    const query = buildFilterSearch(draft)
-    router.push(`/${query}`)
+    router.push(buildWeekViewHomeUrlWithFilters(draft))
   }, [draft, router])
 
   const summary = formatFilterSummary(draft)

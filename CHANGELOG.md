@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [3.70.0] - 2026-06-11
+
+### Added
+- Explorar abre semana con filtros (`/?week=1&filtros=...`)
+- Keep-warm hub `/formula-1` y rollover `/laliga`
+- `mobile/lib/deep-links.ts` para URLs web
+
+### Changed
+- Hub SEO breadcrumb con prefetch
+- Versión del producto: **3.70.0**
+
 ## [3.60.0] - 2026-06-11
 
 ### Added
