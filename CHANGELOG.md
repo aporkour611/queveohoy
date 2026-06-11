@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [3.30.0] - 2026-06-11
+
+### Added
+- ROADMAP maratón 3.01–3.30 (cuarto sprint 30 ciclos)
+- Resumen global 120 ciclos (2.13→3.30)
+
+### Changed
+- Versión del producto: **3.30.0** · app **1.2.0**
+
 ## [3.20.0] - 2026-06-11
 
 ### Added

@@ -33,4 +33,4 @@ Maratón **2.71 → 3.00** (30 ciclos, tercer sprint continuo).
 | 2 | 2.41 → 2.70 | 2.70.0 |
 | 3 | 2.71 → 3.00 | **3.00.0** |
 
-Ver [ROADMAP-3.10.md](./ROADMAP-3.10.md) (maratón 3.01–3.30 en curso).
+Ver [ROADMAP-3.10.md](./ROADMAP-3.10.md) (maratón 3.01–3.30 cerrado en [ROADMAP-3.30.md](./ROADMAP-3.30.md)).

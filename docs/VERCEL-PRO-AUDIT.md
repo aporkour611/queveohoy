@@ -48,6 +48,6 @@ Plan ejecutado tras upgrade a Vercel Pro. Detalle operativo en [OPS-UPTIME.md](.
 
 ## Siguiente (backlog)
 
-- Maratón plataforma ✅ v2.40 + v2.70 + **v3.00** ([ROADMAP-3.00.md](./ROADMAP-3.00.md))
+- Maratón plataforma ✅ hasta **v3.30** ([ROADMAP-3.30.md](./ROADMAP-3.30.md))
 - PSI gate bloqueante: [DEPLOY-PERF-GATE.md](./DEPLOY-PERF-GATE.md)
 - Expo 54 + widget iOS ([mobile/docs/IOS-WIDGET.md](../mobile/docs/IOS-WIDGET.md))
