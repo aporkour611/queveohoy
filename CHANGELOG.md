@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [2.12.0] - 2026-06-11
+
+### Added
+- SSR feed semanal en home (vista «Semana completa» sin fetch extra)
+- Prefetch `<link>` del API week en documento
+- Widget Android «Próximo favorito» (`NextFavorite`) en build EAS
+
+### Changed
+- Versión del producto: **2.12.0**
+- Mobile `app.json` → `app.config.ts` con plugin widget
+
 ## [2.11.0] - 2026-06-11
 
 ### Added

@@ -33,6 +33,12 @@ En **Supabase → Authentication → Redirect URLs** añade:
 | **Favoritos** | Tabla `favorites` de Supabase |
 | **Cuenta** | Google, Apple o magic link + toggle push |
 
+## Widget Android (EAS)
+
+Tras build nativo, añade el widget **Próximo favorito** desde el launcher. Se actualiza cuando cambias favoritos en la app.
+
+Requiere EAS (`npm run eas:preview`); no funciona en Expo Go.
+
 ## Offline
 
 La pestaña **Hoy** guarda la última agenda en el móvil (15 min) por si falla la red.

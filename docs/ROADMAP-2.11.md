@@ -26,8 +26,9 @@ Cuando LCP ≤3s sea estable 2 semanas en producción:
 GitHub → Settings → Variables → PERF_GATE_BLOCKING = 1
 ```
 
-## Siguiente (2.12+)
+## Siguiente (2.13+)
 
-- Widget iOS/Android nativo en store build
-- Prefetch semana en web (ISR)
-- Apple OAuth en dashboard Supabase (prod)
+Ver [ROADMAP-2.12.md](./ROADMAP-2.12.md) (entregado).
+
+- Widget iOS (Expo 54)
+- Apple OAuth Supabase prod

@@ -75,6 +75,7 @@ function setSsrDayHeaderVisible(visible: boolean) {
 type Props = {
   initialEvents?: EventRow[];
   initialDestacadosEvents?: EventRow[];
+  initialWeekEvents?: EventRow[];
   initialError?: string | null;
   /** Fecha del encabezado ya renderizado en servidor (día 0). */
   serverDayHeaderDate?: string | null;
@@ -142,14 +143,19 @@ function runFeedViewTransition(update: () => void) {
 export function HomeFeed({
   initialEvents = [],
   initialDestacadosEvents = [],
+  initialWeekEvents = [],
   initialError = null,
   serverDayHeaderDate = null,
   feedControlsShell,
   children,
   initialWeekView = false,
 }: Props = {}) {
+  const hasSsrWeekData = initialWeekEvents.length > 0;
   const [events, setEvents] = useState(() =>
-    mergeFeedEvents(initialEvents, initialDestacadosEvents)
+    mergeFeedEvents(
+      mergeFeedEvents(initialEvents, initialDestacadosEvents),
+      initialWeekEvents
+    )
   );
   const [loading, setLoading] = useState(initialEvents.length === 0);
   const [refreshing, setRefreshing] = useState(false);
@@ -162,8 +168,8 @@ export function HomeFeed({
   const [filterSearching, setFilterSearching] = useState(false);
   const { onlyMyPlatforms, setOnlyMyPlatforms } = useHomeOnlyMyPlatforms();
   const userPlatforms = useUserPlatforms();
-  const [hasFullWeek, setHasFullWeek] = useState(initialWeekView);
-  const [fullWeekReady, setFullWeekReady] = useState(false);
+  const [hasFullWeek, setHasFullWeek] = useState(initialWeekView || hasSsrWeekData);
+  const [fullWeekReady, setFullWeekReady] = useState(hasSsrWeekData);
   const scrollLockRef = useRef(false);
   const scrollLockTimerRef = useRef<number | null>(null);
   const pinnedScrollYRef = useRef<number | null>(null);

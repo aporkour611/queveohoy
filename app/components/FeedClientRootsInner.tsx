@@ -38,6 +38,7 @@ type DestacadosRowProps = {
 export type FeedClientRootsProps = {
   initialEvents: EventRow[];
   initialDestacadosEvents: EventRow[];
+  initialWeekEvents: EventRow[];
   initialError: string | null;
   serverDayHeaderDate: string | null;
   initialEventCount: number;
@@ -50,6 +51,7 @@ export type FeedClientRootsProps = {
 export function FeedClientRootsInner({
   initialEvents,
   initialDestacadosEvents,
+  initialWeekEvents,
   initialError,
   serverDayHeaderDate,
   initialEventCount,
@@ -65,6 +67,7 @@ export function FeedClientRootsInner({
       <HomeFeedGate
         initialEvents={initialEvents}
         initialDestacadosEvents={initialDestacadosEvents}
+        initialWeekEvents={initialWeekEvents}
         initialError={initialError}
         serverDayHeaderDate={serverDayHeaderDate}
       />

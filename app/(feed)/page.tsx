@@ -19,6 +19,7 @@ import { eventsForHomeSsrHtml } from "../lib/featured";
 import {
   getDestacadosFeedEventsForPage,
   getHomeFeedEventsForPage,
+  getWeekViewFeedEventsForPage,
 } from "../lib/events-feed-server";
 import { raceWithTimeout } from "../lib/race-with-timeout";
 import { resolveHomeLcpPreloadEntries } from "../lib/home-lcp";
@@ -42,6 +43,7 @@ const SeoGuidesPromo = dynamic(
   { ssr: true }
 );
 import { FeedHydrationBootstrap } from "../components/FeedHydrationBootstrap";
+import { HomeWeekPrefetchHead } from "../components/HomeWeekPrefetchHead";
 
 export const revalidate = 900;
 export const maxDuration = 25;
@@ -54,6 +56,9 @@ const PAGE_DATA_FALLBACK = {
   weekEvents: [] as Awaited<
     ReturnType<typeof getDestacadosFeedEventsForPage>
   >["events"],
+  weekViewEvents: [] as Awaited<
+    ReturnType<typeof getWeekViewFeedEventsForPage>
+  >["events"],
 };
 
 /** Una sola carga por petición (generateMetadata + Page comparten React cache). */
@@ -61,11 +66,15 @@ const loadHomePageData = cache(async (): Promise<{
   events: Awaited<ReturnType<typeof getHomeFeedEventsForPage>>["events"];
   error: string | null;
   weekEvents: Awaited<ReturnType<typeof getDestacadosFeedEventsForPage>>["events"];
+  weekViewEvents: Awaited<
+    ReturnType<typeof getWeekViewFeedEventsForPage>
+  >["events"];
 }> => {
   return raceWithTimeout(
     Promise.allSettled([
       getHomeFeedEventsForPage(),
       getDestacadosFeedEventsForPage(),
+      getWeekViewFeedEventsForPage(),
     ]).then((results) => {
       const home =
         results[0].status === "fulfilled"
@@ -75,15 +84,24 @@ const loadHomePageData = cache(async (): Promise<{
         results[1].status === "fulfilled"
           ? results[1].value
           : { events: [] as EventRow[], error: "No se pudo cargar destacados." };
+      const weekView =
+        results[2].status === "fulfilled"
+          ? results[2].value
+          : { events: [] as EventRow[], error: null };
 
-      const errors = [home.error, destacados.error].filter(Boolean);
+      const errors = [home.error, destacados.error, weekView.error].filter(
+        Boolean
+      );
       return {
         events: home.events,
         weekEvents: destacados.events,
+        weekViewEvents: weekView.events,
         error:
-          home.events.length === 0 && destacados.events.length === 0
+          home.events.length === 0 &&
+          destacados.events.length === 0 &&
+          weekView.events.length === 0
             ? errors[0] ?? PAGE_DATA_FALLBACK.error
-            : errors.length === 2
+            : errors.length === 3
               ? errors.join(" ")
               : null,
       };
@@ -145,7 +163,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const { events, error, weekEvents } = await loadHomePageData();
+  const { events, error, weekEvents, weekViewEvents } = await loadHomePageData();
   const mergedForSsr = mergeFeedEvents(events, weekEvents);
   const ssrEvents = eventsForHomeSsrHtml(mergedForSsr);
   const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
@@ -157,6 +175,7 @@ export default async function Page() {
 
   return (
     <>
+      <HomeWeekPrefetchHead />
       <HomeLcpPreload entries={lcpPreloadEntries} />
       <div className="fh-body">
           <HomeNav />
@@ -192,6 +211,7 @@ export default async function Page() {
                   <FeedHydrationBootstrap
                     initialEvents={ssrEvents}
                     initialDestacadosEvents={weekEvents}
+                    initialWeekEvents={weekViewEvents}
                     initialError={error}
                     serverDayHeaderDate={initialDay?.date ?? null}
                     initialEventCount={ssrEvents.length}

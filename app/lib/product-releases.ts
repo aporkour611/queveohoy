@@ -8,6 +8,16 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "2.12.0",
+    date: "2026-06-11",
+    title: "Semana instantánea + widget Android",
+    highlights: [
+      "Feed semanal precargado en SSR (ISR 15 min)",
+      "Vista Semana completa sin espera al cambiar pestaña",
+      "Widget Android del próximo favorito en EAS build",
+    ],
+  },
+  {
     version: "2.11.0",
     date: "2026-06-11",
     title: "Tema app + push sync + widget data",

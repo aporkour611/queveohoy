@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import type { FeedEvent } from "./api"
 import { API_BASE } from "./api"
+import { refreshAndroidHomeWidget } from "./widget-bridge"
 
 export const WIDGET_SNAPSHOT_KEY = "qvh:widget:next-favorite"
 
@@ -49,9 +50,11 @@ export async function writeWidgetSnapshot(
 ): Promise<void> {
   if (!snapshot) {
     await AsyncStorage.removeItem(WIDGET_SNAPSHOT_KEY)
+    await refreshAndroidHomeWidget()
     return
   }
   await AsyncStorage.setItem(WIDGET_SNAPSHOT_KEY, JSON.stringify(snapshot))
+  await refreshAndroidHomeWidget()
 }
 
 export async function readWidgetSnapshot(): Promise<WidgetFavoriteSnapshot | null> {
