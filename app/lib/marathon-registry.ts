@@ -4,8 +4,8 @@
  */
 
 export const CYCLES_PER_MARATHON = 30;
-export const COMPLETED_MARATHONS = 8;
-export const COMPLETED_CYCLES = 240;
+export const COMPLETED_MARATHONS = 9;
+export const COMPLETED_CYCLES = 840;
 export const FIRST_MARATHON_CYCLE = 1;
 
 /** Maratón global #N (1-based). */
@@ -78,7 +78,7 @@ export function generateMarathonIndex(fromMarathon: number, toMarathon: number) 
             : m <= 1000
               ? "platform-scale"
               : "platform-scale-2",
-      status: m <= COMPLETED_MARATHONS ? "completed" : m === 9 ? "active" : "planned",
+      status: m <= COMPLETED_MARATHONS ? "completed" : m === 10 ? "active" : "planned",
     });
   }
   return entries;

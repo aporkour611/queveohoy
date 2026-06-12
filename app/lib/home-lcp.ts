@@ -6,10 +6,15 @@ import { buildLcpPosterUrl, isTmdbPosterUrl } from "./lcp-poster";
 import { buildDisplayDays, MADRID_TZ } from "./timezone";
 import { FEED_DAY_COUNT } from "./events-feed";
 import {
+  isUfcWeekEditorialWindow,
+  resolveUfcWeekContext,
+} from "./ufc-week";
+import {
   buildSpotlightPreloadEntry,
   type SpotlightPreloadEntry,
 } from "./optimized-image";
 import type { SpotlightCover } from "./spotlight-art";
+import { safeRemoteImageUrl } from "./remote-image";
 
 function lcpCoverScore(cover: SpotlightCover | undefined): number {
   if (!cover?.url) return -1;
@@ -73,6 +78,19 @@ export function resolveHomeLcpPreloadEntries(
 ): SpotlightPreloadEntry[] {
   const today =
     todayKey ?? buildDisplayDays(MADRID_TZ, FEED_DAY_COUNT)[0]?.date ?? "";
+
+  if (isUfcWeekEditorialWindow(today)) {
+    const ctx = resolveUfcWeekContext(events, today);
+    if (ctx) {
+      const entries: SpotlightPreloadEntry[] = [];
+      for (const src of [ctx.fighter1Image, ctx.fighter2Image]) {
+        const href = safeRemoteImageUrl(src);
+        if (href) entries.push({ href });
+      }
+      if (entries.length > 0) return entries.slice(0, 2);
+    }
+  }
+
   const featured = pickWeekDestacados(events, { todayKey: today }).slice(
     0,
     DESTACADOS_VISIBLE_SLOTS

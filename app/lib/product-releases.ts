@@ -8,6 +8,27 @@ export type ProductRelease = {
 /** Historial público de releases (12 meses de producto). */
 export const PRODUCT_RELEASES: ProductRelease[] = [
   {
+    version: "5.0.0",
+    date: "2026-05-30",
+    title: "Lanzamiento oficial",
+    highlights: [
+      "Fichas /partido para UFC Casablanca y eventos editoriales",
+      "Auditoría 20 rankings + maratón lanzamiento 600 ciclos",
+      "Preload LCP UFC, PWA manifest, tarjetas enlazadas",
+      "330+ tests · verify:prod ampliado · quality scorecard",
+    ],
+  },
+  {
+    version: "4.22.0",
+    date: "2026-05-30",
+    title: "Pulido pre-lanzamiento",
+    highlights: [
+      "Hero ficha UFC · Detalles del combate",
+      "Resolver slug partido con curación + fallbacks",
+      "Infra maratones y auditoría calidad ≥95%",
+    ],
+  },
+  {
     version: "4.21.0",
     date: "2026-06-11",
     title: "Semana UFC Casablanca y depuración",

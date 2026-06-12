@@ -148,11 +148,11 @@ export default async function Page() {
   const { events, error, weekEvents, weekViewEvents } = await loadHomePageData();
   const mergedForSsr = mergeFeedEvents(events, weekEvents);
   const ssrEvents = eventsForHomeSsrHtml(mergedForSsr);
-  const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents);
   const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
+  const todayKey = initialDay?.date ?? "";
+  const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents, todayKey);
   const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
   const tonightEvents = mergeFeedEvents(ssrEvents, weekEvents);
-  const todayKey = initialDay?.date ?? "";
   const weekPresentation = buildWeekDestacadosPresentation(
     weekEvents,
     todayKey,

@@ -40,6 +40,7 @@ describe("marathon-registry", () => {
     expect(slice).toHaveLength(3);
     expect(slice[0].marathon).toBe(8);
     expect(slice[0].status).toBe("completed");
-    expect(slice[1].status).toBe("active");
+    expect(slice[1].status).toBe("completed");
+    expect(slice[2].status).toBe("active");
   });
 });

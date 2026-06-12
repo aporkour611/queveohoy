@@ -1,9 +1,12 @@
 {
+  "id": "/",
   "name": "Qué veo hoy",
   "short_name": "Qué veo hoy",
   "description": "Avisos de partidos, series y eventos deportivos en España",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
   "lang": "es",

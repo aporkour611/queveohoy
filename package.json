@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "4.22.0",
+  "version": "5.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -38,6 +38,7 @@
     "marathon:index": "node scripts/marathon-runner.mjs index",
     "marathon:batch": "node scripts/marathon-runner.mjs batch",
     "marathon:program": "node scripts/marathon-runner.mjs program",
+    "marathon:launch": "node scripts/marathon-launch.mjs",
     "lhci": "lhci autorun --config=lighthouserc.json",
     "test:coverage": "vitest run --coverage",
     "posters:compress": "node scripts/compress-posters.mjs",
