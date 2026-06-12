@@ -1,0 +1,206 @@
+{
+  "base": "https://queveohoy.es",
+  "at": "2026-06-12T23:28:47.331Z",
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "ms": 45595,
+      "ok": true,
+      "seo": {
+        "path": "/",
+        "checks": {
+          "hasJsonLd": true,
+          "hasCanonical": true,
+          "hasDescription": true,
+          "hasOgTitle": true,
+          "hasLang": true,
+          "hasH1": true,
+          "jsonLdAtEnd": true
+        },
+        "score": 100
+      }
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200,
+      "ms": 68,
+      "ok": true,
+      "seo": null
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "ms": 781,
+      "ok": true,
+      "seo": null
+    },
+    {
+      "path": "/partidos-hoy",
+      "status": 200,
+      "ms": 7372,
+      "ok": true,
+      "seo": {
+        "path": "/partidos-hoy",
+        "checks": {
+          "hasJsonLd": true,
+          "hasCanonical": true,
+          "hasDescription": true,
+          "hasOgTitle": true,
+          "hasLang": true,
+          "hasH1": true,
+          "jsonLdAtEnd": true
+        },
+        "score": 100
+      }
+    },
+    {
+      "path": "/futbol",
+      "status": 0,
+      "ms": 303362,
+      "ok": false,
+      "error": "fetch failed",
+      "seo": {
+        "path": "/futbol",
+        "checks": {
+          "hasJsonLd": false,
+          "hasCanonical": false,
+          "hasDescription": false,
+          "hasOgTitle": false,
+          "hasLang": false,
+          "hasH1": false,
+          "jsonLdAtEnd": false
+        },
+        "score": 0
+      }
+    },
+    {
+      "path": "/champions",
+      "status": 200,
+      "ms": 8942,
+      "ok": true,
+      "seo": {
+        "path": "/champions",
+        "checks": {
+          "hasJsonLd": true,
+          "hasCanonical": true,
+          "hasDescription": true,
+          "hasOgTitle": true,
+          "hasLang": true,
+          "hasH1": true,
+          "jsonLdAtEnd": true
+        },
+        "score": 100
+      }
+    },
+    {
+      "path": "/laliga",
+      "status": 200,
+      "ms": 6977,
+      "ok": true,
+      "seo": {
+        "path": "/laliga",
+        "checks": {
+          "hasJsonLd": true,
+          "hasCanonical": true,
+          "hasDescription": true,
+          "hasOgTitle": true,
+          "hasLang": true,
+          "hasH1": true,
+          "jsonLdAtEnd": true
+        },
+        "score": 100
+      }
+    },
+    {
+      "path": "/premier-league",
+      "status": 200,
+      "ms": 7379,
+      "ok": true,
+      "seo": {
+        "path": "/premier-league",
+        "checks": {
+          "hasJsonLd": true,
+          "hasCanonical": true,
+          "hasDescription": true,
+          "hasOgTitle": true,
+          "hasLang": true,
+          "hasH1": true,
+          "jsonLdAtEnd": true
+        },
+        "score": 100
+      }
+    },
+    {
+      "path": "/formula-1",
+      "status": 0,
+      "ms": 303254,
+      "ok": false,
+      "error": "fetch failed",
+      "seo": {
+        "path": "/formula-1",
+        "checks": {
+          "hasJsonLd": false,
+          "hasCanonical": false,
+          "hasDescription": false,
+          "hasOgTitle": false,
+          "hasLang": false,
+          "hasH1": false,
+          "jsonLdAtEnd": false
+        },
+        "score": 0
+      }
+    },
+    {
+      "path": "/motogp",
+      "status": 200,
+      "ms": 8094,
+      "ok": true,
+      "seo": {
+        "path": "/motogp",
+        "checks": {
+          "hasJsonLd": true,
+          "hasCanonical": true,
+          "hasDescription": true,
+          "hasOgTitle": true,
+          "hasLang": true,
+          "hasH1": true,
+          "jsonLdAtEnd": true
+        },
+        "score": 100
+      }
+    },
+    {
+      "path": "/ufc",
+      "status": 200,
+      "ms": 9339,
+      "ok": true,
+      "seo": {
+        "path": "/ufc",
+        "checks": {
+          "hasJsonLd": true,
+          "hasCanonical": true,
+          "hasDescription": true,
+          "hasOgTitle": true,
+          "hasLang": true,
+          "hasH1": true,
+          "jsonLdAtEnd": true
+        },
+        "score": 100
+      }
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "P0",
+      "area": "seo",
+      "action": "Añadir JSON-LD en /futbol"
+    },
+    {
+      "priority": "P0",
+      "area": "seo",
+      "action": "Añadir JSON-LD en /formula-1"
+    }
+  ],
+  "hubCount": 19
+}

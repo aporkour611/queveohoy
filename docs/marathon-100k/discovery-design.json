@@ -1,0 +1,33 @@
+{
+  "base": "https://queveohoy.es",
+  "at": "2026-06-12T23:30:30.162Z",
+  "homeStatus": 200,
+  "signals": {
+    "hasViewport": true,
+    "hasMainContent": true,
+    "hasSpotlightCards": true,
+    "hasCriticalInlineCss": true,
+    "hasDeferredHydration": true,
+    "hasUfcHero": true,
+    "hasAdSlotReady": false,
+    "prefetchInHead": false,
+    "cardLeagueClasses": []
+  },
+  "recommendations": [
+    {
+      "priority": "P2",
+      "area": "monetization",
+      "action": "Activar AdSlot con NEXT_PUBLIC_ADS_PREVIEW en staging"
+    },
+    {
+      "priority": "P1",
+      "area": "design",
+      "action": "Tarjetas fh-match: sombra, radius 12px, touch targets móvil (ya en CSS local si pendiente deploy)"
+    },
+    {
+      "priority": "P1",
+      "area": "design",
+      "action": "Filtros por liga (LaLiga, Champions) además de deporte"
+    }
+  ]
+}

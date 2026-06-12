@@ -39,7 +39,6 @@ export function SeoHubPage({ hub, events, weekAgendaCount = 0 }: Props) {
 
   return (
     <>
-      <HubJsonLd hub={hub} events={filtered} />
       <div className="fh-body">
         <header className="fh-header-shell">
         <nav className="fh-navbar" aria-label="Navegación del hub">
@@ -114,6 +113,7 @@ export function SeoHubPage({ hub, events, weekAgendaCount = 0 }: Props) {
           </div>
           <SeoGuidesPromo />
           <SiteFooter />
+          <HubJsonLd hub={hub} events={filtered} />
         </PageMain>
       </div>
     </>

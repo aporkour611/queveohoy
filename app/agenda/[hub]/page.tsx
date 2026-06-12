@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { HubWeekWarm } from "../../components/HubWeekWarm";
-import { HomeWeekPrefetchHead } from "../../components/HomeWeekPrefetchHead";
+import { HomeWeekPrefetchDeferred } from "../../components/HomeWeekPrefetchDeferred";
 import { SeoHubPage } from "../../components/SeoHubPage";
 import {
   getFeedEventsForPage,
@@ -43,7 +43,7 @@ export default async function HubRoute({ params }: PageProps) {
 
   return (
     <>
-      <HomeWeekPrefetchHead />
+      <HomeWeekPrefetchDeferred />
       <HubWeekWarm />
       <SeoHubPage
         hub={hub}

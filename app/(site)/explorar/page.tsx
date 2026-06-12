@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ExplorarClient } from "@/app/components/ExplorarClient"
 import { ExplorarWeekWarm } from "@/app/components/ExplorarWeekWarm"
-import { HomeWeekPrefetchHead } from "@/app/components/HomeWeekPrefetchHead"
+import { HomeWeekPrefetchDeferred } from "@/app/components/HomeWeekPrefetchDeferred"
 import { Logo } from "@/app/components/Logo"
 import { SiteFooter } from "@/app/components/SiteFooter"
 import { getWeekViewFeedEventsForPage } from "@/app/lib/events-feed-server"
@@ -24,7 +24,7 @@ export default async function ExplorarPage() {
 
   return (
     <>
-      <HomeWeekPrefetchHead />
+      <HomeWeekPrefetchDeferred />
       <ExplorarWeekWarm />
       <div className="fh-body">
       <nav className="fh-navbar">

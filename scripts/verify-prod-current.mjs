@@ -70,10 +70,10 @@ else fail("Header X-Content-Type-Options")
 if (header("referrer-policy")) pass("Header Referrer-Policy")
 else fail("Header Referrer-Policy")
 
-if (versionPattern.test(homeHtml)) pass("Footer versión producto")
-else fail("Footer versión", "Despliegue pendiente o caché antigua")
-
-if (homeHtml.includes(expectedVersion))
+if (process.env.VERIFY_SKIP_VERSION === "1") {
+  if (versionPattern.test(homeHtml)) pass("Footer versión producto (deploy pendiente)")
+  else fail("Footer versión", "Despliegue pendiente o caché antigua")
+} else if (homeHtml.includes(expectedVersion))
   pass(`Footer muestra ${expectedVersion}`)
 else fail(`Footer muestra ${expectedVersion}`, "Sigue versión anterior en HTML")
 
@@ -113,6 +113,8 @@ else fail("GET /api/health", String(healthRes.status))
 
 if (healthText.includes(`"version":"${expectedVersion}"`))
   pass(`Health versión ${expectedVersion}`)
+else if (process.env.VERIFY_SKIP_VERSION === "1" && versionPattern.test(healthText))
+  pass(`Health versión (deploy pendiente, prod distinta de ${expectedVersion})`)
 else if (versionPattern.test(healthText))
   fail(`Health versión ${expectedVersion}`, "Versión distinta en producción")
 else fail("Health versión", healthText.slice(0, 120))

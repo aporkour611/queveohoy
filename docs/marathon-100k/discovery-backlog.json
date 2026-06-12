@@ -1,0 +1,314 @@
+{
+  "synthesizedAt": "2026-06-12T23:40:21.141Z",
+  "discoveryRecommendations": [
+    {
+      "priority": "P0",
+      "area": "seo",
+      "action": "Añadir JSON-LD en /futbol"
+    },
+    {
+      "priority": "P0",
+      "area": "seo",
+      "action": "Añadir JSON-LD en /formula-1"
+    },
+    {
+      "priority": "P2",
+      "area": "monetization",
+      "action": "Activar AdSlot con NEXT_PUBLIC_ADS_PREVIEW en staging"
+    },
+    {
+      "priority": "P1",
+      "area": "design",
+      "action": "Tarjetas fh-match: sombra, radius 12px, touch targets móvil (ya en CSS local si pendiente deploy)"
+    },
+    {
+      "priority": "P1",
+      "area": "design",
+      "action": "Filtros por liga (LaLiga, Champions) además de deporte"
+    },
+    {
+      "priority": "P0",
+      "area": "quality",
+      "action": "Subir ranking lh-performance (actual 95%)"
+    },
+    {
+      "priority": "P0",
+      "area": "quality",
+      "action": "Subir ranking cwv-lcp (actual 95%)"
+    }
+  ],
+  "applyPlan": [
+    {
+      "id": "hub-jsonld-footer",
+      "priority": "P1",
+      "files": [
+        "app/components/SeoHubPage.tsx"
+      ],
+      "action": "Mover HubJsonLd al footer (no competir con LCP)"
+    },
+    {
+      "id": "prefetch-deferred",
+      "priority": "P1",
+      "files": [
+        "app/agenda/[hub]/page.tsx",
+        "app/(site)/explorar/page.tsx"
+      ],
+      "action": "HomeWeekPrefetchDeferred en hubs y explorar"
+    },
+    {
+      "id": "warm-new-hubs",
+      "priority": "P2",
+      "files": [
+        "app/lib/seo-hub-warm-paths.ts"
+      ],
+      "action": "Keep-warm /serie-a /ligue-1 /segunda-division"
+    },
+    {
+      "id": "deploy-5-4",
+      "priority": "P0",
+      "files": [
+        "app/lib/product-version.ts"
+      ],
+      "action": "Bump 5.4.0 + validate + push producción"
+    }
+  ],
+  "qualitySummary": {
+    "target": 95,
+    "average": 100,
+    "measured": 20,
+    "total": 20,
+    "passing": 20,
+    "rows": [
+      {
+        "id": "lh-performance",
+        "name": "Lighthouse Performance",
+        "method": "LH mobile · categoría performance (post warm-up)",
+        "phase": 2,
+        "action": "LCP ≤2.5s · lazy HomeFeed · keep-warm pre-audit",
+        "score": 95,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "lh-accessibility",
+        "name": "Lighthouse Accessibility",
+        "method": "LH mobile · categoría accessibility",
+        "phase": 1,
+        "action": "Mantener axe E2E en home + ampliar a explorar/partido",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "lh-best-practices",
+        "name": "Lighthouse Best Practices",
+        "method": "LH mobile · categoría best-practices",
+        "phase": 1,
+        "action": "HTTPS, imágenes aspect-ratio, sin deprecated APIs",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "lh-seo",
+        "name": "Lighthouse SEO",
+        "method": "LH mobile · categoría seo",
+        "phase": 1,
+        "action": "meta, canonical, robots, hreflang ES",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "cwv-lcp",
+        "name": "LCP (Core Web Vital)",
+        "method": "LH lab · largest-contentful-paint",
+        "phase": 2,
+        "action": "preload LCP poster WebP · TMDB w154 · SSR hero",
+        "score": 95,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "cwv-inp",
+        "name": "INP / interactividad",
+        "method": "LH lab · max-potential-fid (proxy INP)",
+        "phase": 3,
+        "action": "defer client islands · interaction-gate · INP RUM",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "cwv-cls",
+        "name": "CLS (Core Web Vital)",
+        "method": "LH lab · cumulative-layout-shift",
+        "phase": 1,
+        "action": "dimensiones fijas en posters y crests",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "cwv-tbt",
+        "name": "TBT (main thread)",
+        "method": "LH lab · total-blocking-time",
+        "phase": 2,
+        "action": "code-split HomeFeed · optimizePackageImports",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "cwv-fcp",
+        "name": "FCP",
+        "method": "LH lab · first-contentful-paint",
+        "phase": 2,
+        "action": "CSS crítico inline · menos JS bloqueante",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "cwv-si",
+        "name": "Speed Index",
+        "method": "LH lab · speed-index",
+        "phase": 2,
+        "action": "prioridad LCP · skeleton above-the-fold",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "ttfb",
+        "name": "TTFB",
+        "method": "curl time_starttransfer · home /",
+        "phase": 2,
+        "action": "ISR feed · edge cache · keep-warm cron",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "security-headers",
+        "name": "Security headers",
+        "method": "Probe HTTP · HSTS CSP XFO XCTO Referrer",
+        "phase": 3,
+        "action": "endurecer CSP scripts · Permissions-Policy",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "prod-smoke",
+        "name": "Production smoke",
+        "method": "verify-prod-current.mjs pass rate",
+        "phase": 1,
+        "action": "22/22 checks verdes tras cada deploy",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "api-contract",
+        "name": "API contract",
+        "method": "health + feed-meta + home-feed ETag",
+        "phase": 1,
+        "action": "304 home-feed · feed-meta revalidate 900s",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "seo-infra",
+        "name": "SEO infrastructure",
+        "method": "HTML home · JSON-LD + sitemap + robots",
+        "phase": 1,
+        "action": "IndexNow ping · hubs OG · FAQ schema",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "a11y-automation",
+        "name": "A11y automation",
+        "method": "LH a11y + landmarks E2E (proxy)",
+        "phase": 2,
+        "action": "axe matrix 5 URLs · contraste CI",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "dependency-security",
+        "name": "Dependency security",
+        "method": "npm audit --audit-level=high",
+        "phase": 3,
+        "action": "0 vulns high+ · Trivy en CI blocking",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "e2e-quality",
+        "name": "E2E quality",
+        "method": "Playwright smoke + quality specs",
+        "phase": 2,
+        "action": "blocking en deploy · mobile viewport",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "cache-cdn",
+        "name": "CDN / cache",
+        "method": "Cache-Control + ETag en APIs clave",
+        "phase": 2,
+        "action": "s-maxage feed · stale-while-revalidate",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      },
+      {
+        "id": "pwa-readiness",
+        "name": "PWA / install readiness",
+        "method": "manifest + SW + LH installable (proxy)",
+        "phase": 4,
+        "action": "manifest completo · SW offline shell opcional",
+        "score": 100,
+        "status": "pass",
+        "gap": 0
+      }
+    ],
+    "byPhase": [
+      {
+        "phase": 1,
+        "total": 7,
+        "passing": 7,
+        "pending": 0,
+        "avg": 100
+      },
+      {
+        "phase": 2,
+        "total": 9,
+        "passing": 9,
+        "pending": 0,
+        "avg": 99
+      },
+      {
+        "phase": 3,
+        "total": 3,
+        "passing": 3,
+        "pending": 0,
+        "avg": 100
+      },
+      {
+        "phase": 4,
+        "total": 1,
+        "passing": 1,
+        "pending": 0,
+        "avg": 100
+      }
+    ]
+  }
+}
