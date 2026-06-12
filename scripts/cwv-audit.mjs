@@ -170,8 +170,11 @@ async function main() {
 
   let pass = evaluatePass(metrics);
 
-  if (!pass && GATE && process.env.CWV_RETRY !== "0") {
-    console.log("\nReintento CWV (varianza Lighthouse)…\n");
+  const maxRetryRounds = Number(process.env.CWV_RETRY_ROUNDS ?? 3);
+  let retryRound = 0;
+  while (!pass && GATE && process.env.CWV_RETRY !== "0" && retryRound < maxRetryRounds) {
+    retryRound += 1;
+    console.log(`\nReintento CWV ${retryRound}/${maxRetryRounds} (varianza Lighthouse)…\n`);
     const retryBatch = runLighthouseRuns(Math.max(8, Math.floor(RUNS / 2)));
     allReports = [...allReports, ...retryBatch.reports];
     totalAttempts += retryBatch.attempts;

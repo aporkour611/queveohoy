@@ -1,8 +1,8 @@
 # Propuesta de mejoras — maratón
 
-Generado: 2026-06-12T21:07:40.961Z
-Maratón: cwv-2000 · 3 / 2000 ciclos
-Versión producto: 5.2.1
+Generado: 2026-06-12T22:41:32.127Z
+Maratón: apex-66000 · 97 / 66000 ciclos
+Versión producto: 5.2.2
 
 ## Aplicado (v5.1.1)
 
@@ -21,6 +21,3 @@ Versión producto: 5.2.1
 - `npm run keep-warm:prod` antes de quality:audit con LH completo
 - Maratón FAST reutiliza `lighthouse-quality-audit.json`
 
-## Fallos en maratón
-
-- Ciclo 243 [audit-baseline] quality:audit: exit 1
