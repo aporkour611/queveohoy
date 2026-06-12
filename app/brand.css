@@ -1454,6 +1454,107 @@
   margin: 0 auto 24px;
 }
 
+.fh-partido-page-ufc .fh-partido-card-wrap {
+  max-width: 480px;
+}
+
+.fh-partido-ufc-hero {
+  position: relative;
+  margin: 0 0 20px;
+  padding: 20px 16px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(210, 10, 10, 0.35);
+  background: linear-gradient(
+    165deg,
+    rgba(28, 0, 0, 0.92) 0%,
+    rgba(12, 0, 0, 0.98) 100%
+  );
+  overflow: hidden;
+  text-align: center;
+}
+
+.fh-partido-ufc-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    rgba(210, 10, 10, 0.28),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.fh-partido-ufc-kicker {
+  position: relative;
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 196, 0, 0.9);
+}
+
+.fh-partido-ufc-title {
+  position: relative;
+  margin: 0 0 4px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.fh-partido-ufc-meta {
+  position: relative;
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+  color: rgba(255, 220, 180, 0.85);
+}
+
+.fh-partido-details {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--qvh-border);
+  background: var(--qvh-surface);
+}
+
+.fh-partido-detail-row {
+  display: grid;
+  grid-template-columns: minmax(88px, 34%) 1fr;
+  gap: 8px 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--qvh-border-subtle);
+}
+
+.fh-partido-detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.fh-partido-detail-row dt {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--qvh-text-muted);
+}
+
+.fh-partido-detail-row dd {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--qvh-text);
+}
+
+.fh-partido-page .fh-seo-hub-cta {
+  text-align: center;
+}
+
+.fh-partido-page .fh-seo-hub-cta .fh-btn {
+  display: inline-flex;
+  min-width: 200px;
+  justify-content: center;
+}
+
 .fh-m-title-link {
   color: inherit;
   text-decoration: none;

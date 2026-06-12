@@ -8,7 +8,7 @@ import { madridDateTimeToUtc } from "./madrid-time";
 import { resolveEventPosterUrl } from "./event-poster";
 
 describe("resolveEventPosterUrl TV", () => {
-  it("prioriza póster TMDB oficial sobre el fallback local", () => {
+  it("prioriza póster editorial local en programas TV flagship", () => {
     const event: EventRow = {
       id: 1,
       title: "Pasapalabra",
@@ -17,13 +17,12 @@ describe("resolveEventPosterUrl TV", () => {
       time: "17:00",
       competition: "Concurso · Pasapalabra",
       platform: "Antena 3 · ATRESPLAYER TV",
-      source: "tmdb|buzz:98",
+      source: "tmdb|buzz:98|/bEjPWrz2InMeqAjaxNycvaqVL59.jpg",
     };
 
     const poster = resolveEventPosterUrl(event, "poster");
 
-    expect(poster).toContain("image.tmdb.org");
-    expect(poster).toContain("bEjPWrz2InMeqAjaxNycvaqVL59");
+    expect(poster).toBe("/posters/pasapalabra.png");
   });
 });
 

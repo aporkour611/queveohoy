@@ -204,14 +204,12 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
     linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
 }
 
-/* ── Layout 3 columnas ── */
+/* ── Layout ── */
 
 .qvh-ufc-week-layout {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(68px, 19%) minmax(0, 1fr) minmax(68px, 19%);
-  align-items: stretch;
+  display: block;
   min-height: 0;
 }
 
@@ -221,7 +219,135 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
   flex-direction: column;
 }
 
-/* ── Corners (luchadores) ── */
+/* ── Fight poster (main event busts) ── */
+
+.qvh-ufc-week-fight-poster {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 0;
+  width: 100%;
+  max-width: 560px;
+  min-height: clamp(148px, 40vw, 228px);
+  margin: 6px auto 2px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 196, 0, 0.24);
+  background:
+    radial-gradient(ellipse 90% 80% at 50% 0%, rgba(210, 10, 10, 0.28), transparent 62%),
+    linear-gradient(180deg, rgba(18, 6, 6, 0.35) 0%, rgba(0, 0, 0, 0.72) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 28px rgba(0, 0, 0, 0.45);
+}
+
+.qvh-ufc-week-poster-fighter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: inherit;
+  padding: 10px 6px 8px;
+  position: relative;
+}
+
+.qvh-ufc-week-poster-fighter-red {
+  background: linear-gradient(
+    135deg,
+    rgba(210, 10, 10, 0.42) 0%,
+    rgba(120, 0, 0, 0.18) 55%,
+    transparent 100%
+  );
+}
+
+.qvh-ufc-week-poster-fighter-blue {
+  background: linear-gradient(
+    -135deg,
+    rgba(0, 72, 190, 0.42) 0%,
+    rgba(0, 24, 90, 0.18) 55%,
+    transparent 100%
+  );
+}
+
+.qvh-ufc-week-poster-bust {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  min-height: clamp(108px, 30vw, 188px);
+  max-height: 196px;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  overflow: visible;
+}
+
+.qvh-ufc-week-poster-bust .qvh-ufc-week-corner-glow {
+  display: none;
+}
+
+.qvh-ufc-week-poster-photo {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-height: clamp(118px, 32vw, 196px);
+  max-width: 100%;
+  margin: 0 auto;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.65));
+}
+
+.qvh-ufc-week-poster-fallback {
+  display: grid;
+  place-items: center;
+  width: min(88px, 42vw);
+  height: min(118px, 34vw);
+  margin: 0 auto;
+  border-radius: 50%;
+  font-family: var(--font-barlow-condensed, inherit);
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--qvh-ufc-gold);
+  background: radial-gradient(circle at 50% 30%, #2a0a0a, #0a0404);
+  border: 1px solid rgba(255, 196, 0, 0.28);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.qvh-ufc-week-poster-name {
+  margin: 6px 0 0;
+  max-width: 100%;
+  font-family: var(--font-barlow-condensed, inherit);
+  font-size: clamp(0.68rem, 2.6vw, 0.92rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #fff;
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.85),
+    0 0 12px rgba(210, 10, 10, 0.25);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qvh-ufc-week-poster-vs {
+  align-self: center;
+  width: clamp(38px, 10vw, 48px);
+  height: clamp(38px, 10vw, 48px);
+  margin-bottom: clamp(28px, 8vw, 42px);
+  z-index: 2;
+  font-size: clamp(0.58rem, 2vw, 0.72rem);
+}
+
+/* ── Corners (legacy flank) ── */
 
 .qvh-ufc-week-corner {
   display: flex;
@@ -460,34 +586,7 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
 }
 
 .qvh-ufc-week-bout {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 100%;
-}
-
-.qvh-ufc-week-bout-name {
-  font-family: var(--font-barlow-condensed, inherit);
-  font-size: clamp(0.72rem, 2.8vw, 0.95rem);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.92);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.qvh-ufc-week-bout-name-left {
-  text-align: right;
-}
-
-.qvh-ufc-week-bout-name-right {
-  text-align: left;
+  display: none;
 }
 
 .qvh-ufc-week-vs-octagon {
@@ -655,22 +754,17 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
 /* ── Responsive ── */
 
 @media (max-width: 767px) {
-  .qvh-ufc-week-layout {
-    grid-template-columns: minmax(56px, 17%) minmax(0, 1fr) minmax(56px, 17%);
+  .qvh-ufc-week-fight-poster {
+    min-height: clamp(132px, 44vw, 168px);
+    margin-top: 4px;
   }
 
-  .qvh-ufc-week-corner {
-    padding: 8px 4px 10px;
-    gap: 4px;
+  .qvh-ufc-week-poster-bust {
+    min-height: clamp(96px, 28vw, 132px);
   }
 
-  .qvh-ufc-week-corner-photo-wrap {
-    min-height: 72px;
-    border-radius: 8px;
-  }
-
-  .qvh-ufc-week-corner-name {
-    font-size: 0.62rem;
+  .qvh-ufc-week-poster-name {
+    font-size: clamp(0.58rem, 2.4vw, 0.72rem);
   }
 
   .qvh-ufc-week-showcase {
@@ -680,16 +774,6 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
 
   .qvh-ufc-week-headline {
     font-size: clamp(1.1rem, 5vw, 1.35rem);
-  }
-
-  .qvh-ufc-week-bout-name {
-    font-size: 0.62rem;
-  }
-
-  .qvh-ufc-week-vs-octagon {
-    width: 28px;
-    height: 28px;
-    font-size: 0.55rem;
   }
 
   .qvh-ufc-week-showcase-meta {
@@ -707,12 +791,9 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
 }
 
 @media (min-width: 768px) {
-  .qvh-ufc-week-layout {
-    grid-template-columns: minmax(96px, 18%) minmax(0, 1fr) minmax(96px, 18%);
-  }
-
-  .qvh-ufc-week-corner-photo-wrap {
-    min-height: 120px;
+  .qvh-ufc-week-fight-poster {
+    min-height: 208px;
+    max-width: 620px;
   }
 
   .qvh-ufc-week-showcase {
@@ -726,8 +807,12 @@ html[data-site-week="ufc-casablanca"] .qvh-logo-link::after {
 }
 
 @media (min-width: 1024px) {
-  .qvh-ufc-week-corner-photo-wrap {
-    min-height: 148px;
+  .qvh-ufc-week-fight-poster {
+    min-height: 228px;
+  }
+
+  .qvh-ufc-week-poster-photo {
+    max-height: 208px;
   }
 }
 

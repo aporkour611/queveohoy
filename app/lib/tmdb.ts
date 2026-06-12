@@ -1,5 +1,6 @@
 import { addDaysToDateKey, getMadridWeekDates, toMadridDateKey } from "./madrid-time";
 import { CURATED_MOVIES } from "./movies-curated";
+import { BLOCKED_SERIES_TMDB_IDS } from "./series-curated";
 import { STREAMING_PRIORITY_TMDB_IDS } from "./streaming-curated";
 import { formatSeriesEpisodeTitle } from "./series-display";
 import {
@@ -354,6 +355,7 @@ async function buildSeriesEvent(
     fetchSpainProviderNames(showId),
   ]);
   if (!detail) return null;
+  if (BLOCKED_SERIES_TMDB_IDS.has(showId)) return null;
   if (!options?.skipQualityBar && !passesQualityBar(detail, MIN_TV_VOTES)) {
     return null;
   }

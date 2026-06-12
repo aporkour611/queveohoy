@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { memo, useCallback, useState } from "react";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
+import { partidoPath } from "../lib/event-slug";
 import type { SpotlightCover } from "../lib/spotlight-art";
 import { getEventCardStamp, isChampionsFinal } from "../lib/event-card-stamp";
 import { MADRID_TZ } from "../lib/timezone";
@@ -116,6 +118,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
   const card = getSpotlightCardModel(event, MADRID_TZ);
   const stamp = getEventCardStamp(event);
   const isClFinal = isChampionsFinal(event);
+  const href = partidoPath(event);
   const requiresCrests = Boolean(card.showTeamDuel);
   const [crestsFailed, setCrestsFailed] = useState(false);
   const handleCrestFailed = useCallback(() => setCrestsFailed(true), []);
@@ -129,7 +132,7 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
     .join(" ");
 
   return (
-    <article className={rootClass}>
+    <Link href={href} className={rootClass} aria-label={`Ver ficha: ${card.headline}`}>
       {!hideCover ? (
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
@@ -231,6 +234,6 @@ export const FeaturedEventCard = memo(function FeaturedEventCard({
           </p>
         ) : null}
       </div>
-    </article>
+    </Link>
   );
 });

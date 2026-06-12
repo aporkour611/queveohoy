@@ -17,7 +17,7 @@ function flagshipTmdbPoster(
   );
 }
 
-/** Poster del evento: TMDB oficial primero; fallback editorial local. */
+/** Poster del evento: póster editorial local en TV flagship; TMDB cuando es fiable. */
 export function resolveEventPosterUrl(
   event: EventRow,
   size: "thumb" | "card" | "poster" = "poster"
@@ -26,6 +26,8 @@ export function resolveEventPosterUrl(
 
   const fromJikan = parseJikanPoster(event.source, size);
   if (fromJikan) return fromJikan;
+
+  if (flagship?.localPosterPath) return flagship.localPosterPath;
 
   const fromSource = parseTmdbPoster(event.source, size);
   if (fromSource) return fromSource;
@@ -50,8 +52,6 @@ export function resolveEventPosterUrl(
       size
     );
   }
-
-  if (flagship?.localPosterPath) return flagship.localPosterPath;
 
   if (event.sport === "series" && /mobland/i.test(`${event.title ?? ""} ${event.competition ?? ""}`)) {
     return "/posters/mobland-s2.png";

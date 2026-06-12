@@ -3,7 +3,7 @@ import type { EventRow } from "../components/types";
 import { getDestacadoImportanceTier } from "./destacados-importance";
 import { getSpotlightCardModel } from "./featured-card";
 import { buildOptimizedPreloadHref } from "./optimized-image";
-import { resolveHomeLcpPreloadEntries } from "./home-lcp";
+import { resolveHomeLcpPreloadEntries, resolveLcpPreloadEntryFromCover } from "./home-lcp";
 import { MADRID_TZ } from "./timezone";
 
 const maskSingerEvent: EventRow = {
@@ -20,16 +20,16 @@ describe("resolveHomeLcpPreloadEntries", () => {
   it("resolves mask singer editorial poster on spotlight card", () => {
     const cover = getSpotlightCardModel(maskSingerEvent, MADRID_TZ).coverImage;
 
-    expect(cover?.local).toBe(false);
-    expect(cover?.url).toContain("image.tmdb.org");
+    expect(cover?.local).toBe(true);
+    expect(cover?.url).toBe("/posters/mask-singer.png");
   });
 
-  it("preloads TMDB poster directo w154 (sin /_next/image)", () => {
+  it("preloads poster local raster para LCP (sin /_next/image)", () => {
     const cover = getSpotlightCardModel(maskSingerEvent, MADRID_TZ).coverImage!;
-    const entries = resolveHomeLcpPreloadEntries([maskSingerEvent], "2026-05-27");
+    const entry = resolveLcpPreloadEntryFromCover(cover);
 
-    expect(entries[0]?.href).toContain("image.tmdb.org/t/p/w154/");
-    expect(entries[0]?.href).not.toContain("/_next/image");
+    expect(entry?.href).toBe("/posters/mask-singer.webp");
+    expect(entry?.href).not.toContain("/_next/image");
     expect(buildOptimizedPreloadHref(cover.url)).toContain("/_next/image");
   });
 
@@ -44,16 +44,18 @@ describe("resolveHomeLcpPreloadEntries", () => {
       platform: "Telecinco",
       source: "editorial",
     };
-    const entries = resolveHomeLcpPreloadEntries(
-      [maskSingerEvent, localTv],
-      "2026-05-27"
-    );
+    const cover = getSpotlightCardModel(localTv, MADRID_TZ).coverImage!;
+    const entry = resolveLcpPreloadEntryFromCover(cover);
 
-    const cover = getSpotlightCardModel(localTv, MADRID_TZ).coverImage;
-    if (cover?.local && cover.url.startsWith("/")) {
-      expect(entries[0]?.href).toBe(cover.url);
-      expect(entries[0]?.href).not.toContain("image.tmdb.org");
-    }
+    expect(cover.local).toBe(true);
+    expect(entry?.href).toBe("/posters/gran-hermano.webp");
+    expect(entry?.href).not.toContain("image.tmdb.org");
+  });
+
+  it("elige pasapalabra local como LCP cuando está en destacados curados", () => {
+    const entries = resolveHomeLcpPreloadEntries([maskSingerEvent], "2026-05-27");
+
+    expect(entries[0]?.href).toBe("/posters/pasapalabra.webp");
   });
 
   it("clasifica Mask Singer en la categoría rest de destacados", () => {

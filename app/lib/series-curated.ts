@@ -16,6 +16,9 @@ export type CuratedSeriesEpisode = {
   priority: number;
 };
 
+/** TMDB IDs sin fecha de estreno confirmada en España — no importar del cron. */
+export const BLOCKED_SERIES_TMDB_IDS = new Set([250307]); // MobLand T2
+
 /** Series con calendario distinto al de TMDB/US — el cron no corrige la fecha sola. */
 export const CURATED_SERIES_EPISODES: CuratedSeriesEpisode[] = [
   {
@@ -45,19 +48,6 @@ export const CURATED_SERIES_EPISODES: CuratedSeriesEpisode[] = [
     competition: "Final de temporada · Nuevo episodio",
     posterPath: "/6Sdm5XwdCnspdEF8fTFx6UJrl7o.jpg",
     priority: 96,
-  },
-  {
-    tmdbId: 250307,
-    title: "MobLand",
-    patterns: [/^mobland\b/i],
-    season: 2,
-    episode: 1,
-    episodeName: "Temporada 2",
-    airDate: "2026-06-15",
-    airTime: "09:00",
-    platform: "Paramount+",
-    competition: "Estreno · Temporada 2",
-    priority: 88,
   },
 ];
 

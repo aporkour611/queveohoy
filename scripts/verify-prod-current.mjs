@@ -52,6 +52,24 @@ const { res: homeRes, text: homeHtml } = await fetchText("/")
 if (homeRes.ok) pass("HTTP 200 home")
 else fail("HTTP 200 home", String(homeRes.status))
 
+const homeHead = await fetch(`${BASE}/`, {
+  method: "HEAD",
+  cache: "no-store",
+  redirect: "follow",
+})
+const header = (name) => homeHead.headers.get(name)?.toLowerCase() ?? ""
+if (header("strict-transport-security")) pass("Header HSTS")
+else fail("Header HSTS")
+if (header("content-security-policy")) pass("Header CSP")
+else fail("Header CSP")
+const xfo = header("x-frame-options")
+if (xfo === "deny" || xfo === "sameorigin") pass("Header X-Frame-Options")
+else fail("Header X-Frame-Options", xfo || "ausente")
+if (header("x-content-type-options") === "nosniff") pass("Header X-Content-Type-Options")
+else fail("Header X-Content-Type-Options")
+if (header("referrer-policy")) pass("Header Referrer-Policy")
+else fail("Header Referrer-Policy")
+
 if (versionPattern.test(homeHtml)) pass("Footer versión producto")
 else fail("Footer versión", "Despliegue pendiente o caché antigua")
 
@@ -172,9 +190,20 @@ if (inUfcWeek) {
     pass("Hero UFC Casablanca en home")
   else fail("Hero UFC Casablanca en home")
 
-  if (homeHtml.includes("qvh-ufc-week-corner-photo-wrap"))
+  if (
+    homeHtml.includes("qvh-ufc-week-fight-poster") ||
+    homeHtml.includes("qvh-ufc-week-corner-photo-wrap")
+  )
     pass("Retratos luchadores en panel")
   else fail("Retratos luchadores en panel")
+
+  const ufcPartidoPath = "/partido/2026-06-15-ilia-topuria-vs-justin-gaethje"
+  const ufcPartido = await fetch(`${BASE}${ufcPartidoPath}`, {
+    cache: "no-store",
+    headers: { "Cache-Control": "no-cache" },
+  })
+  if (ufcPartido.ok) pass("Ficha partido UFC main event")
+  else fail("Ficha partido UFC main event", String(ufcPartido.status))
 } else {
   pass("Ventana UFC Casablanca", `fuera de ventana (${madridDate || "?"})`)
 }

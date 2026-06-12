@@ -7,8 +7,8 @@ import { join } from "node:path";
 
 /** ID TMDB (tv) por programa — España / emisión actual cuando aplica. */
 const TMDB_TV_IDS = {
-  "el-hormiguero": 45829,
-  pasapalabra: 78652,
+  "el-hormiguero": 6809,
+  pasapalabra: 25402,
   "tu-cara-me-suena": 62086,
   "la-ruleta": 117648,
   "la-revuelta": 270462,

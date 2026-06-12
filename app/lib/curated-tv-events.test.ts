@@ -47,7 +47,7 @@ describe("mergeCuratedSpanishTvEvents", () => {
     expect(masterChef?.date).toBe("2026-06-01");
     expect(masterChef?.time).toBe("22:50");
     expect(masterChef?.platform).toContain("La 1");
-    expect(resolveEventPosterUrl(masterChef!)).toContain("image.tmdb.org");
+    expect(resolveEventPosterUrl(masterChef!)).toBe("/posters/masterchef.png");
   });
 
   it("inserta Late Xou de lunes a viernes tras medianoche", () => {

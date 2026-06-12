@@ -4,8 +4,10 @@ import {
   sortDestacadosBySoonest,
 } from "./destacados-config";
 import {
+  isBlockedSeriesEvent,
   mergeCuratedSeriesEvents,
   shouldSuppressCuratedSeriesStaleEvent,
+  stripBlockedSeriesEvents,
   stripStaleCuratedSeriesEvents,
 } from "./curated-series-events";
 
@@ -65,6 +67,25 @@ describe("mergeCuratedSeriesEvents", () => {
     expect(events.some((event) => event.date === "2026-05-31")).toBe(false);
     expect(events.filter((event) => /^from\b/i.test(event.title ?? ""))).toHaveLength(1);
     expect(events.filter((event) => /^euphoria\b/i.test(event.title ?? ""))).toHaveLength(1);
+  });
+});
+
+describe("stripBlockedSeriesEvents", () => {
+  it("elimina MobLand hasta confirmar estreno en España", () => {
+    const mobland = {
+      id: 99,
+      external_id: "tmdb_tv_250307_2026-06-01_s2e1",
+      title: "MobLand — T2E1: Temporada 2",
+      date: "2026-06-01",
+      time: "09:00",
+      sport: "series",
+      competition: "Estreno · Temporada 2",
+      platform: "Paramount+",
+      source: "tmdb",
+    } as const;
+
+    expect(isBlockedSeriesEvent(mobland)).toBe(true);
+    expect(stripBlockedSeriesEvents([mobland])).toHaveLength(0);
   });
 });
 

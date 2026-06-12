@@ -16,7 +16,6 @@ export const STREAMING_PRIORITY_SHOWS: StreamingPriorityShow[] = [
   { tmdbId: 93405, title: "El juego del calamar", platform: "Netflix", priority: 90 },
   { tmdbId: 124364, title: "FROM", platform: "HBO Max", priority: 96 },
   { tmdbId: 85552, title: "Euphoria", platform: "HBO Max", priority: 96 },
-  { tmdbId: 250307, title: "MobLand", platform: "Paramount+", priority: 88 },
 ];
 
 export const STREAMING_PRIORITY_TMDB_IDS = STREAMING_PRIORITY_SHOWS.map(

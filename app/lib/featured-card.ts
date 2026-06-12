@@ -1,3 +1,4 @@
+import type { EventRow } from "../components/types";
 import {
   basketLogoFallbackUrls,
   parseBasketTeamLogos,
@@ -51,7 +52,10 @@ import {
   isRolandGarrosEvent,
   isRolandGarrosKnockout,
 } from "./roland-garros";
-import type { EventRow } from "../components/types";
+import {
+  isTopuriaGaethjeFight,
+  UFC_CASABLANCA_FIGHTER_IMAGES,
+} from "./ufc-week";
 
 export type SpotlightBadgeVariant =
   | "ppv"
@@ -167,6 +171,12 @@ export function getSpotlightCardModel(
     const matchup = parseUfcMainEventFighters(event.competition, event.title);
     const homeName = event.home_team || matchup?.n1;
     const awayName = event.away_team || matchup?.n2;
+    const editorialImages = isTopuriaGaethjeFight(event)
+      ? {
+          f1: f1 ?? UFC_CASABLANCA_FIGHTER_IMAGES.topuria,
+          f2: f2 ?? UFC_CASABLANCA_FIGHTER_IMAGES.gaethje,
+        }
+      : { f1, f2 };
     const poster = resolvePosterCover(event);
 
     return {
@@ -177,9 +187,9 @@ export function getSpotlightCardModel(
       time,
       meta: cardLine && cardLine !== ufcKindLabel(kind) ? cardLine : event.platform?.trim() || "UFC",
       platform: "UFC Fight Pass",
-      showUfcDuel: Boolean(f1 || f2 || (homeName && awayName)),
-      homeCrest: f1,
-      awayCrest: f2,
+      showUfcDuel: Boolean(editorialImages.f1 || editorialImages.f2 || (homeName && awayName)),
+      homeCrest: editorialImages.f1,
+      awayCrest: editorialImages.f2,
       homeName: homeName ?? undefined,
       awayName: awayName ?? undefined,
       coverImage: poster

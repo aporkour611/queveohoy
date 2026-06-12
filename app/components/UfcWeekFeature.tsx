@@ -14,9 +14,14 @@ type Props = {
 type PortraitProps = {
   src?: string | null;
   name: string;
+  variant?: "corner" | "poster";
 };
 
-export function UfcFighterPortrait({ src, name }: PortraitProps) {
+export function UfcFighterPortrait({
+  src,
+  name,
+  variant = "poster",
+}: PortraitProps) {
   const safe = safeRemoteImageUrl(src);
 
   if (!safe) {
@@ -27,7 +32,14 @@ export function UfcFighterPortrait({ src, name }: PortraitProps) {
         : name.slice(0, 2).toUpperCase();
 
     return (
-      <span className="qvh-ufc-week-corner-fallback" aria-hidden>
+      <span
+        className={
+          variant === "poster"
+            ? "qvh-ufc-week-poster-fallback"
+            : "qvh-ufc-week-corner-fallback"
+        }
+        aria-hidden
+      >
         {initials}
       </span>
     );
@@ -38,15 +50,15 @@ export function UfcFighterPortrait({ src, name }: PortraitProps) {
     <img
       src={safe}
       alt=""
-      className="qvh-ufc-week-corner-photo"
+      className={
+        variant === "poster"
+          ? "qvh-ufc-week-poster-photo"
+          : "qvh-ufc-week-corner-photo"
+      }
       loading="eager"
       decoding="async"
     />
   );
-}
-
-function fighterDisplayName(name: string): string {
-  return name.trim().split(/\s+/).pop() ?? name;
 }
 
 function resolveWeightClass(context: UfcWeekContext): string | null {
@@ -57,6 +69,48 @@ function resolveWeightClass(context: UfcWeekContext): string | null {
   return tail;
 }
 
+type FightPosterProps = {
+  fighter1: string;
+  fighter2: string;
+  fighter1Image?: string | null;
+  fighter2Image?: string | null;
+};
+
+function UfcWeekFightPoster({
+  fighter1,
+  fighter2,
+  fighter1Image,
+  fighter2Image,
+}: FightPosterProps) {
+  return (
+    <div className="qvh-ufc-week-fight-poster" aria-hidden>
+      <div className="qvh-ufc-week-poster-fighter qvh-ufc-week-poster-fighter-red">
+        <div className="qvh-ufc-week-corner-photo-wrap qvh-ufc-week-poster-bust">
+          <UfcFighterPortrait
+            src={fighter1Image}
+            name={fighter1}
+            variant="poster"
+          />
+        </div>
+        <p className="qvh-ufc-week-poster-name">{fighter1}</p>
+      </div>
+
+      <span className="qvh-ufc-week-vs-octagon qvh-ufc-week-poster-vs">VS</span>
+
+      <div className="qvh-ufc-week-poster-fighter qvh-ufc-week-poster-fighter-blue">
+        <div className="qvh-ufc-week-corner-photo-wrap qvh-ufc-week-poster-bust">
+          <UfcFighterPortrait
+            src={fighter2Image}
+            name={fighter2}
+            variant="poster"
+          />
+        </div>
+        <p className="qvh-ufc-week-poster-name">{fighter2}</p>
+      </div>
+    </div>
+  );
+}
+
 type CornerProps = {
   src?: string | null;
   name: string;
@@ -64,7 +118,7 @@ type CornerProps = {
 };
 
 function UfcFighterCorner({ src, name, align }: CornerProps) {
-  const shortName = fighterDisplayName(name);
+  const shortName = name.trim().split(/\s+/).pop() ?? name;
 
   return (
     <aside
@@ -73,7 +127,7 @@ function UfcFighterCorner({ src, name, align }: CornerProps) {
     >
       <div className="qvh-ufc-week-corner-photo-wrap">
         <span className="qvh-ufc-week-corner-glow" aria-hidden />
-        <UfcFighterPortrait src={src} name={name} />
+        <UfcFighterPortrait src={src} name={name} variant="corner" />
       </div>
       <p className="qvh-ufc-week-corner-name">{shortName}</p>
     </aside>
@@ -109,17 +163,11 @@ export function UfcWeekFeature({ context, children }: Props) {
       </div>
 
       <div className="qvh-ufc-week-layout">
-        <UfcFighterCorner
-          src={fighter1Image}
-          name={fighter1}
-          align="left"
-        />
-
         <div className="qvh-ufc-week-main">
           <Link
             href={partidoHref}
             className="qvh-ufc-week-showcase"
-            aria-label={`Ver ficha del combate: ${fighter1} vs ${fighter2}`}
+            aria-label={`Detalles del combate: ${fighter1} vs ${fighter2}`}
           >
             <div className="qvh-ufc-week-showcase-bg" aria-hidden>
               <span className="qvh-ufc-week-showcase-sheen" />
@@ -147,17 +195,12 @@ export function UfcWeekFeature({ context, children }: Props) {
               </div>
             </header>
 
-            <div className="qvh-ufc-week-bout">
-              <span className="qvh-ufc-week-bout-name qvh-ufc-week-bout-name-left">
-                {fighter1}
-              </span>
-              <span className="qvh-ufc-week-vs-octagon" aria-hidden>
-                VS
-              </span>
-              <span className="qvh-ufc-week-bout-name qvh-ufc-week-bout-name-right">
-                {fighter2}
-              </span>
-            </div>
+            <UfcWeekFightPoster
+              fighter1={fighter1}
+              fighter2={fighter2}
+              fighter1Image={fighter1Image}
+              fighter2Image={fighter2Image}
+            />
 
             <div className="qvh-ufc-week-showcase-meta">
               <span className="qvh-ufc-week-venue">{venueLabel}</span>
@@ -171,7 +214,7 @@ export function UfcWeekFeature({ context, children }: Props) {
             </div>
 
             <span className="qvh-ufc-week-cta">
-              Ver combate
+              Detalles del combate
               <span aria-hidden>→</span>
             </span>
           </Link>
@@ -180,12 +223,6 @@ export function UfcWeekFeature({ context, children }: Props) {
             <div className="qvh-ufc-week-program">{children}</div>
           ) : null}
         </div>
-
-        <UfcFighterCorner
-          src={fighter2Image}
-          name={fighter2}
-          align="right"
-        />
       </div>
     </article>
   );

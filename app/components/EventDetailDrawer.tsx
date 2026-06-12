@@ -43,6 +43,7 @@ export function EventDetailDrawer({ event, onClose }: Props) {
   const sport = event.sport ? sportLabel(event.sport) : null
   const onMyPlatform = eventMatchesUserPlatforms(event.platform, userPlatforms)
   const detailPath = partidoPath(event)
+  const ctaLabel = event.sport === "ufc" ? "Detalles del combate" : "Ver ficha completa"
 
   return (
     <>
@@ -117,7 +118,7 @@ export function EventDetailDrawer({ event, onClose }: Props) {
             className="fh-btn fh-btn-primary qvh-event-drawer-cta"
             onClick={onClose}
           >
-            Ver ficha completa
+            {ctaLabel}
           </Link>
         </footer>
       </aside>

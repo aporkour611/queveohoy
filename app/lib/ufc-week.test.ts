@@ -65,6 +65,13 @@ describe("resolveUfcWeekContext", () => {
     expect(kickoff).toBeLessThan(Date.parse("2026-06-15T01:00:00Z"));
   });
 
+  it("incluye retratos editoriales en fallback", () => {
+    const context = resolveUfcWeekContext([], "2026-06-10", 7);
+
+    expect(context?.fighter1Image).toContain("thesportsdb.com");
+    expect(context?.fighter2Image).toContain("thesportsdb.com");
+  });
+
   it("detecta Topuria vs Gaethje en distintos campos", () => {
     expect(
       isTopuriaGaethjeFight({

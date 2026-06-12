@@ -45,6 +45,10 @@ function resolveShowSource(
   show: SpanishTvShow,
   posterSources: Map<string, string>
 ): string {
+  if (show.localPosterPath) {
+    return encodeTmdbSource(null, show.priority);
+  }
+
   const inherited = posterSources.get(show.id);
   if (inherited) return inherited;
 
@@ -92,9 +96,11 @@ function normalizeShowEvent(
   show: SpanishTvShow,
   posterSources: Map<string, string>
 ): EventRow {
-  const source = parseTmdbPoster(event.source, "thumb")
-    ? event.source!
-    : resolveShowSource(show, posterSources);
+  const source = show.localPosterPath
+    ? resolveShowSource(show, posterSources)
+    : parseTmdbPoster(event.source, "thumb")
+      ? event.source!
+      : resolveShowSource(show, posterSources);
 
   return {
     ...event,

@@ -29,6 +29,8 @@
 *.pem
 .tools/
 docs/perf-reports/
+docs/quality-reports/
+docs/marathon-reports/
 
 # debug
 npm-debug.log*

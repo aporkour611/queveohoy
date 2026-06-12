@@ -2,6 +2,7 @@ import type { EventRow } from "../components/types";
 import { addDaysToDateKey } from "./madrid-time";
 import { formatSeriesEpisodeTitle } from "./series-display";
 import {
+  BLOCKED_SERIES_TMDB_IDS,
   CURATED_SERIES_EPISODES,
   type CuratedSeriesEpisode,
 } from "./series-curated";
@@ -106,8 +107,28 @@ export function shouldSuppressCuratedSeriesStaleEvent(event: EventRow): boolean 
   return event.date !== episode.airDate;
 }
 
+export function isBlockedSeriesEvent(event: EventRow): boolean {
+  if (event.sport !== "series") return false;
+
+  const showTitle = (event.title ?? "").split(" — ")[0]?.trim() ?? "";
+  if (/^mobland\b/i.test(showTitle)) return true;
+
+  const externalId = event.external_id ?? "";
+  for (const tmdbId of BLOCKED_SERIES_TMDB_IDS) {
+    if (externalId.includes(`tmdb_tv_${tmdbId}`)) return true;
+  }
+
+  return false;
+}
+
+export function stripBlockedSeriesEvents(events: EventRow[]): EventRow[] {
+  return events.filter((event) => !isBlockedSeriesEvent(event));
+}
+
 export function stripStaleCuratedSeriesEvents(events: EventRow[]): EventRow[] {
-  return events.filter((event) => !shouldSuppressCuratedSeriesStaleEvent(event));
+  return stripBlockedSeriesEvents(
+    events.filter((event) => !shouldSuppressCuratedSeriesStaleEvent(event))
+  );
 }
 
 /** Asegura episodios editoriales (FROM, Euphoria…) en Destacados y feed. */

@@ -28,6 +28,22 @@ export type UfcWeekContext = {
   venueLabel: string;
 };
 
+/** Retratos editoriales (TheSportsDB cutouts) para Freedom 250. */
+export const UFC_CASABLANCA_FIGHTER_IMAGES = {
+  topuria:
+    "https://r2.thesportsdb.com/images/media/player/cutout/cz7spq1706003785.png",
+  gaethje:
+    "https://r2.thesportsdb.com/images/media/player/cutout/vstc9p1690818737.png",
+} as const;
+
+const UFC_CASABLANCA_SOURCE = [
+  "ufc",
+  "kind:ppv",
+  "num:250",
+  `f1:${UFC_CASABLANCA_FIGHTER_IMAGES.topuria}`,
+  `f2:${UFC_CASABLANCA_FIGHTER_IMAGES.gaethje}`,
+].join("|");
+
 /** Ventana editorial UFC Casablanca (Freedom 250 · Topuria vs Gaethje). */
 export const UFC_CASABLANCA_FALLBACK = {
   windowStart: "2026-05-30",
@@ -42,7 +58,7 @@ export const UFC_CASABLANCA_FALLBACK = {
     home_team: "Ilia Topuria",
     away_team: "Justin Gaethje",
     external_id: "ufc_editorial_freedom_250",
-    source: "ufc|kind:ppv|num:250",
+    source: UFC_CASABLANCA_SOURCE,
     platform: "Casa Blanca · Washington · Paramount+",
   } satisfies EventRow,
 };
@@ -113,11 +129,18 @@ function resolveFighters(event: EventRow): { f1: string; f2: string; f1Img?: str
   const fighter2 =
     event.away_team?.trim() || matchup?.n2 || "Justin Gaethje";
 
+  const editorialFallback = isTopuriaGaethjeFight(event)
+    ? {
+        f1Img: UFC_CASABLANCA_FIGHTER_IMAGES.topuria,
+        f2Img: UFC_CASABLANCA_FIGHTER_IMAGES.gaethje,
+      }
+    : {};
+
   return {
     f1: fighter1,
     f2: fighter2,
-    f1Img: f1,
-    f2Img: f2,
+    f1Img: f1 ?? editorialFallback.f1Img,
+    f2Img: f2 ?? editorialFallback.f2Img,
   };
 }
 

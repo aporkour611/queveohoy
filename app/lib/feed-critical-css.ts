@@ -32,7 +32,9 @@ html{overflow-anchor:none;background:#0a0a10}
 
 .qvh-ufc-week-shell{min-height:0;max-width:100%;min-width:0;border-radius:14px}
 
-.qvh-ufc-week-layout{display:grid;grid-template-columns:minmax(56px,17%) minmax(0,1fr) minmax(56px,17%)}
+.qvh-ufc-week-layout{display:block}
+
+.qvh-ufc-week-fight-poster{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);min-height:clamp(132px,44vw,168px);max-width:100%}
 
 .qvh-ufc-week-showcase{display:flex;flex-direction:column;align-items:center;padding:10px 8px}
 
@@ -65,8 +67,6 @@ html{overflow-anchor:none;background:#0a0a10}
 .qvh-cl-week-kicker,.qvh-cl-week-headline{white-space:nowrap}
 
 .qvh-ufc-week-headline{font-size:clamp(1.1rem,5vw,1.35rem)}
-
-.qvh-ufc-week-bout-name{font-size:.62rem}
 
 }
 

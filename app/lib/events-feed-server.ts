@@ -9,7 +9,8 @@ import {
 import { FEED_DAY_COUNT, FEED_EVENT_SELECT, normalizeFeedEvents } from "./events-feed";
 import { HOME_SSR_DAY_COUNT } from "./home-feed-config";
 import { CURATED_MOVIES } from "./movies-curated";
-import { findEventBySlug, parsePartidoSlug } from "./event-slug";
+import { parsePartidoSlug } from "./event-slug";
+import { resolveEventBySlugFromPool } from "./partido-event-resolver";
 import { isSupabaseConfigured } from "./supabase-config";
 import { getMadridTodayKey } from "./seo-date";
 import { createClient } from "./supabase/server";
@@ -365,7 +366,10 @@ export async function fetchEventBySlug(
     return { event: null, error };
   }
 
-  return { event: findEventBySlug(events, slug) ?? null, error: null };
+  return {
+    event: resolveEventBySlugFromPool(events, slug, parsed.date),
+    error: null,
+  };
 }
 
 export const getEventBySlugForPage = cache(fetchEventBySlug);
