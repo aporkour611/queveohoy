@@ -326,6 +326,54 @@ export const HUB_FAQ_BY_SLUG: Record<
         "La agenda muestra los encuentros de copa con horario y canal en España.",
     },
   ],
+  bundesliga: [
+    {
+      question: "¿Dónde ver la Bundesliga en España?",
+      answer:
+        "La Bundesliga se emite en DAZN y Movistar+. Horarios en queveohoy.es/bundesliga.",
+    },
+    {
+      question: "¿Qué partidos de Bundesliga hay hoy?",
+      answer:
+        "La agenda lista los partidos de la liga alemana con hora en península (Europe/Madrid).",
+    },
+  ],
+  "serie-a": [
+    {
+      question: "¿Dónde ver la Serie A en TV?",
+      answer:
+        "La Serie A se ve en DAZN y Movistar+. Consulta queveohoy.es/serie-a.",
+    },
+    {
+      question: "¿Qué partidos de calcio hay hoy?",
+      answer:
+        "Encuentros de la Serie A con horario y canal en la agenda de queveohoy.es/serie-a.",
+    },
+  ],
+  "ligue-1": [
+    {
+      question: "¿Dónde ver la Ligue 1 en España?",
+      answer:
+        "La Ligue 1 se emite en DAZN y Movistar+. Guía en queveohoy.es/ligue-1.",
+    },
+    {
+      question: "¿Qué partidos de Ligue 1 hay hoy?",
+      answer:
+        "La agenda muestra la jornada francesa con horarios en Europe/Madrid.",
+    },
+  ],
+  "segunda-division": [
+    {
+      question: "¿Dónde ver Segunda División / Hypermotion?",
+      answer:
+        "LaLiga Hypermotion se emite en DAZN LaLiga TV Hypermotion y Movistar+. Agenda: queveohoy.es/segunda-division.",
+    },
+    {
+      question: "¿Qué partidos de Segunda hay hoy?",
+      answer:
+        "Partidos de Segunda con horario y plataforma en la agenda actualizada.",
+    },
+  ],
   series: [
     {
       question: "¿Qué series y estrenos hay hoy?",

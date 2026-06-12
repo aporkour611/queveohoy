@@ -201,6 +201,56 @@ export const SEO_HUBS: SeoHubConfig[] = [
       e.sport === "futbol" && compMatches(e, /copa del rey/i),
   },
   {
+    slug: "bundesliga",
+    title: "Bundesliga hoy en TV",
+    h1: "Bundesliga hoy en la tele",
+    lead: "Partidos de la Bundesliga alemana con horario y canal en España.",
+    description:
+      "Bundesliga hoy: horarios y canales para ver la liga alemana en TV y streaming.",
+    keywords: ["bundesliga hoy", "bundesliga hoy tv", "partidos bundesliga hoy"],
+    priority: 0.84,
+    dayScope: "week",
+    match: (e) => e.sport === "futbol" && compMatches(e, /bundesliga/i),
+  },
+  {
+    slug: "serie-a",
+    title: "Serie A hoy en TV",
+    h1: "Serie A hoy en la tele",
+    lead: "Partidos de la Serie A italiana con horario y canal en España.",
+    description:
+      "Serie A hoy: horarios y canales para ver la liga italiana en TV y streaming.",
+    keywords: ["serie a hoy", "serie a hoy tv", "calcio hoy tv"],
+    priority: 0.83,
+    dayScope: "week",
+    match: (e) => e.sport === "futbol" && compMatches(e, /serie\s*a/i),
+  },
+  {
+    slug: "ligue-1",
+    title: "Ligue 1 hoy en TV",
+    h1: "Ligue 1 hoy en la tele",
+    lead: "Partidos de la Ligue 1 francesa con horario y canal en España.",
+    description:
+      "Ligue 1 hoy: horarios y canales para ver la liga francesa en TV y streaming.",
+    keywords: ["ligue 1 hoy", "ligue 1 hoy tv", "fútbol francés hoy tv"],
+    priority: 0.82,
+    dayScope: "week",
+    match: (e) => e.sport === "futbol" && compMatches(e, /ligue\s*1/i),
+  },
+  {
+    slug: "segunda-division",
+    title: "Segunda División hoy",
+    h1: "LaLiga Hypermotion hoy en TV",
+    lead: "Partidos de Segunda División / Hypermotion con horario y canal.",
+    description:
+      "Segunda División hoy: horarios y canales de LaLiga Hypermotion en TV y streaming.",
+    keywords: ["segunda division hoy", "hypermotion hoy tv", "segunda hoy canal"],
+    priority: 0.78,
+    dayScope: "week",
+    match: (e) =>
+      e.sport === "futbol" &&
+      compMatches(e, /segunda|hypermotion|primera\s*federaci/i),
+  },
+  {
     slug: "series",
     title: "Series y estrenos hoy",
     h1: "Series y estrenos hoy en TV",

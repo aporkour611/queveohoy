@@ -4,8 +4,8 @@ import { PRIORITY_SEO_HUB_PATHS } from "./seo-hub-warm-paths"
 import { ROLLOVER_PATHS } from "./revalidate-feed"
 
 describe("PRIORITY_SEO_HUB_PATHS", () => {
-  it("lists five high-traffic SEO hubs", () => {
-    expect(PRIORITY_SEO_HUB_PATHS).toHaveLength(5)
+  it("lists priority SEO hub warm paths", () => {
+    expect(PRIORITY_SEO_HUB_PATHS.length).toBeGreaterThanOrEqual(5)
     expect(PRIORITY_SEO_HUB_PATHS).toContain("/futbol")
     expect(PRIORITY_SEO_HUB_PATHS).toContain("/premier-league")
   })

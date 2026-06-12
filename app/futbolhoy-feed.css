@@ -454,6 +454,96 @@
   border-color: #31984b;
 }
 
+.fh-match_segunda {
+  background-color: #eef2ff;
+}
+.fh-match_segunda .fh-m-comp {
+  border-color: #4338ca;
+}
+
+.fh-match_ligue1 {
+  background-color: #eef6ff;
+}
+.fh-match_ligue1 .fh-m-comp {
+  border-color: #2563eb;
+}
+
+.fh-match_eredivisie {
+  background-color: #fff4e8;
+}
+.fh-match_eredivisie .fh-m-comp {
+  border-color: #f97316;
+}
+
+.fh-match_copadelrey {
+  background-color: #fdecec;
+}
+.fh-match_copadelrey .fh-m-comp {
+  border-color: #b91c1c;
+}
+
+.fh-match {
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fh-match:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (max-width: 640px) {
+  .fh-match {
+    border-radius: 14px;
+  }
+
+  .fh-match .fh-m-chan-prominent .fh-ch-free,
+  .fh-match .fh-m-chan-prominent .fh-ch-paid {
+    min-height: 28px;
+    line-height: 28px;
+    padding-inline: 10px;
+  }
+}
+
+.qvh-ad-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.qvh-ad-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: inherit;
+  padding: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  gap: 4px;
+}
+
+.qvh-ad-placeholder-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.qvh-ad-placeholder-hint {
+  font-size: 0.68rem;
+  opacity: 0.75;
+}
+
 .fh-match_europa {
   background-color: #e5eefb;
 }

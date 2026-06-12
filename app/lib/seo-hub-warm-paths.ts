@@ -3,6 +3,8 @@ export const PRIORITY_SEO_HUB_PATHS = [
   "/futbol",
   "/champions",
   "/laliga",
+  "/bundesliga",
+  "/serie-a",
   "/formula-1",
   "/premier-league",
 ] as const

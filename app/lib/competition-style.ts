@@ -1,5 +1,6 @@
 import type { EventRow } from "../components/types";
 import { isChampionsFinal } from "./event-card-stamp";
+import { footballLeagueMatchClass } from "./football-leagues";
 import { isRolandGarrosEvent } from "./roland-garros";
 
 export function competitionMatchClass(
@@ -26,6 +27,13 @@ export function competitionMatchClass(
   if (sport && sport !== "futbol") return "fh-match_esports";
 
   const c = (competition ?? "").toLowerCase();
+  const leagueClass = footballLeagueMatchClass(competition);
+  if (leagueClass) {
+    if (leagueClass === "fh-match_championsleague" && event && isChampionsFinal(event)) {
+      return `${leagueClass} fh-match_championsleague-final`;
+    }
+    return leagueClass;
+  }
   if (c.includes("champions")) {
     if (event && isChampionsFinal(event)) {
       return "fh-match_championsleague fh-match_championsleague-final";

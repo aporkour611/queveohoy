@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "5.2.2",
+  "version": "5.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -43,6 +43,8 @@
     "marathon:perfect": "node scripts/marathon-launch.mjs --cycles=2000 --fast",
     "marathon:cwv": "node scripts/marathon-launch.mjs --cycles=2000 --fast --cwv",
     "marathon:apex": "node scripts/marathon-launch.mjs --cycles=66000 --fast --cwv",
+    "marathon:40000": "node scripts/marathon-launch.mjs --cycles=40000 --fast --cwv",
+    "product:cycle": "node scripts/product-cycle.mjs",
     "lhci": "lhci autorun --config=lighthouserc.json",
     "test:coverage": "vitest run --coverage",
     "posters:compress": "node scripts/compress-posters.mjs",

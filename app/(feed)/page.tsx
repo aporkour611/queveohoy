@@ -41,8 +41,9 @@ const SeoGuidesPromo = dynamic(
     import("../components/SeoGuidesPromo").then((mod) => mod.SeoGuidesPromo),
   { ssr: true }
 );
-import { FeedHydrationBootstrap } from "../components/FeedHydrationBootstrap";
-import { HomeWeekPrefetchHead } from "../components/HomeWeekPrefetchHead";
+import { AdSlot } from "../components/AdSlot";
+import { FeedHydrationGate } from "../components/FeedHydrationGate";
+import { HomeWeekPrefetchDeferred } from "../components/HomeWeekPrefetchDeferred";
 
 export const revalidate = 900;
 export const maxDuration = 25;
@@ -193,7 +194,7 @@ export default async function Page() {
   return (
     <>
       <HomeLcpPreload entries={lcpPreloadEntries} />
-      <HomeWeekPrefetchHead />
+      <HomeWeekPrefetchDeferred />
       <div className={`fh-body${weekPresentation.bodyClassSuffix}`}>
           <HomeNav />
           <main id="main-content" className="fh-content">
@@ -225,7 +226,8 @@ export default async function Page() {
                       dayDate={initialDay.date}
                     />
                   ) : null}
-                  <FeedHydrationBootstrap
+                  <AdSlot slot="feed-mid" className="mx-auto max-w-[950px] px-5" />
+                  <FeedHydrationGate
                     initialEvents={ssrEvents}
                     initialDestacadosEvents={weekEvents}
                     initialWeekEvents={weekViewEvents}

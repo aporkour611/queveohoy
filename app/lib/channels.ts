@@ -1,3 +1,5 @@
+import { defaultChannelsForFootballCompetition } from "./football-leagues";
+
 export type ChannelStyle = {
   label: string;
   bg: string;
@@ -86,19 +88,7 @@ export function channelStyle(name: string): ChannelStyle {
 }
 /** Canales típicos por competición (referencia tipo futbolhoy.es) */
 export function defaultChannelsForCompetition(competition?: string | null): string {
-  const c = competition?.toLowerCase() ?? "";
-  if (c.includes("champions"))
-    return "La 1, RTVE Play, M+ Liga de Campeones";
-  if (c.includes("europa")) return "Movistar+, DAZN";
-  if (c.includes("conference")) return "Movistar+, DAZN";
-  if (c.includes("primera") || c.includes("laliga") || c.includes("division"))
-    return "Movistar+, DAZN LaLiga";
-  if (c.includes("premier")) return "Sky Sports, Vamos";
-  if (c.includes("bundesliga")) return "DAZN, Movistar+";
-  if (c.includes("serie")) return "Movistar+, DAZN";
-  if (c.includes("ligue")) return "Movistar+, DAZN";
-  if (c.includes("world cup") || c.includes("mundial")) return "Movistar+, RTVE, DAZN";
-  return "DAZN, Movistar+";
+  return defaultChannelsForFootballCompetition(competition);
 }
 
 const SPORT_CHANNEL_DEFAULTS: Record<string, string> = {

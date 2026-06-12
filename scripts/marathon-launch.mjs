@@ -4,6 +4,7 @@
  *   npm run marathon:launch              # 600 ciclos (20× estándar)
  *   npm run marathon:perfect             # 2000 ciclos
  *   npm run marathon:apex                # 66000 ciclos (10× suma histórica)
+ *   npm run marathon:40000               # 40000 ciclos
  *   MARATHON_CYCLES=2000 npm run marathon:launch
  *   MARATHON_LAUNCH_FAST=1 npm run marathon:launch   # reutiliza LH cache
  */
@@ -12,6 +13,8 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const CYCLES_PER_MARATHON = 30;
+/** Ciclos mega: informe ligero + progreso cada 1000 */
+const MEGA_CYCLE_TARGET = 40_000;
 /** (600 launch + 2000 perfect + 2000 cwv + 2000 launch-cwv) × 10 */
 const APEX_CYCLE_TARGET = 66_000;
 const cyclesArg = process.argv
@@ -28,11 +31,13 @@ const MARATHON_ID =
   process.env.MARATHON_ID ??
   (TOTAL_CYCLES >= APEX_CYCLE_TARGET
     ? "apex-66000"
-    : LAUNCH_CWV && TOTAL_CYCLES >= 2000
-      ? "cwv-2000"
-      : TOTAL_CYCLES >= 2000
-        ? "perfect-2000"
-        : "launch-official");
+    : TOTAL_CYCLES >= MEGA_CYCLE_TARGET
+      ? "ultra-40000"
+      : LAUNCH_CWV && TOTAL_CYCLES >= 2000
+        ? "cwv-2000"
+        : TOTAL_CYCLES >= 2000
+          ? "perfect-2000"
+          : "launch-official");
 const OUT_DIR = join(process.cwd(), "docs", "marathon-reports");
 const QUALITY_LATEST = join(
   process.cwd(),
@@ -57,7 +62,7 @@ function readQualityGatePass() {
   }
 }
 const defaultProgressEvery =
-  TOTAL_CYCLES >= APEX_CYCLE_TARGET
+  TOTAL_CYCLES >= MEGA_CYCLE_TARGET
     ? 1000
     : TOTAL_CYCLES >= 2000
       ? 100
@@ -292,7 +297,7 @@ console.log(
 
 const executed = new Map();
 const results = [];
-const APEX_LIGHT_REPORT = TOTAL_CYCLES >= APEX_CYCLE_TARGET;
+const APEX_LIGHT_REPORT = TOTAL_CYCLES >= MEGA_CYCLE_TARGET;
 let passed = 0;
 let ran = 0;
 

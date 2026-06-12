@@ -50,6 +50,7 @@ import { notifyPartnerFeedWebhooks } from "@/app/lib/partner-webhooks";
 import { PRODUCT_VERSION } from "@/app/lib/product-version";
 import { getMadridTodayKey } from "@/app/lib/seo-date";
 import { log } from "@/app/lib/logger";
+import { FOOTBALL_DATA_CODES } from "@/app/lib/football-leagues";
 
 function getSupabase() {
   return createSupabaseAdmin();
@@ -61,7 +62,7 @@ function getWeekDates() {
 
 type CountResult = { count: number; error?: string; dateFrom?: string; dateTo?: string; errors?: string[] };
 
-const FOOTBALL_COMPETITIONS = ["PD", "CL", "PL", "BL1", "SA", "WC", "FL1", "EL", "ECL", "CDR"];
+const FOOTBALL_COMPETITIONS = FOOTBALL_DATA_CODES;
 const CRON_ROW_SELECT =
   "id, title, date, time, sport, home_team, away_team, external_id, source, platform, competition";
 const MAX_CREST_ENRICH = 20;
