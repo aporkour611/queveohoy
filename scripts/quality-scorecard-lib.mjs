@@ -276,13 +276,23 @@ export function scoreSeoInfrastructure(html) {
 }
 
 /**
- * @param {{ manifestOk: boolean; swOk: boolean; lhPwaScore?: number | null }} input
+ * @param {{ passed: number; total: number }} input
  */
-export function scorePwaReadiness({ manifestOk, swOk, lhPwaScore }) {
+export function scoreE2eQuality({ passed, total }) {
+  if (total <= 0) return null;
+  return Math.round((passed / total) * 100);
+}
+
+/**
+ * @param {{ manifestOk: boolean; swOk: boolean; swOfflineReady?: boolean; manifestComplete?: boolean; lhPwaScore?: number | null }} input
+ */
+export function scorePwaReadiness({ manifestOk, swOk, swOfflineReady, manifestComplete, lhPwaScore }) {
   const parts = [
-    manifestOk ? 40 : 0,
-    swOk ? 35 : 0,
-    lhPwaScore != null ? Math.round(lhPwaScore * 25) : 0,
+    manifestOk ? 30 : 0,
+    swOk ? 25 : 0,
+    swOfflineReady ? 25 : 0,
+    manifestComplete ? 10 : 0,
+    lhPwaScore != null ? Math.round(lhPwaScore * 10) : 10,
   ];
   return Math.min(100, parts.reduce((a, b) => a + b, 0));
 }

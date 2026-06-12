@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cache } from "react";
+import { cache, Suspense } from "react";
 import dynamic from "next/dynamic";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
@@ -27,7 +27,10 @@ import { buildHomeMetadataDescription, buildHomeMetadataTitle } from "../lib/seo
 import { defaultDescription, pageMetadata, seoKeywords } from "../lib/seo";
 import { buildWeekDestacadosPresentation } from "../lib/destacados-week-present";
 import { FEED_DAY_COUNT } from "../lib/events-feed";
-import { isUfcWeekEditorialWindow } from "../lib/ufc-week";
+import { isUfcWeekEditorialWindow, UFC_CASABLANCA_FALLBACK } from "../lib/ufc-week";
+import { UfcDestacadosStatic } from "../components/UfcDestacadosStatic";
+import { UfcHomeFeedShell } from "../components/UfcHomeFeedShell";
+import { UfcHomeNav } from "../components/UfcHomeNav";
 
 const HomeFaq = dynamic(
   () => import("../components/HomeFaq").then((mod) => mod.HomeFaq),
@@ -56,6 +59,49 @@ const PAGE_DATA_FALLBACK = {
     ReturnType<typeof getWeekViewFeedEventsForPage>
   >["events"],
 };
+
+/** Home sin destacados (streamed aparte para LCP en semana UFC). */
+const loadHomePageCoreData = cache(async (): Promise<{
+  events: Awaited<ReturnType<typeof getHomeFeedEventsForPage>>["events"];
+  error: string | null;
+  weekViewEvents: Awaited<
+    ReturnType<typeof getWeekViewFeedEventsForPage>
+  >["events"];
+}> => {
+  return raceWithTimeout(
+    Promise.allSettled([
+      getHomeFeedEventsForPage(),
+      getWeekViewFeedEventsForPage(),
+    ]).then((results) => {
+      const home =
+        results[0].status === "fulfilled"
+          ? results[0].value
+          : { events: [] as EventRow[], error: "No se pudo cargar la agenda de hoy." };
+      const weekView =
+        results[1].status === "fulfilled"
+          ? results[1].value
+          : { events: [] as EventRow[], error: null };
+
+      const errors = [home.error, weekView.error].filter(Boolean);
+      return {
+        events: home.events,
+        weekViewEvents: weekView.events,
+        error:
+          home.events.length === 0 && weekView.events.length === 0
+            ? errors[0] ?? PAGE_DATA_FALLBACK.error
+            : errors.length === 2
+              ? errors.join(" ")
+              : null,
+      };
+    }),
+    PAGE_DATA_BUDGET_MS,
+    () => ({
+      events: PAGE_DATA_FALLBACK.events,
+      weekViewEvents: PAGE_DATA_FALLBACK.weekViewEvents,
+      error: PAGE_DATA_FALLBACK.error,
+    })
+  );
+});
 
 /** Una sola carga por petición (generateMetadata + Page comparten React cache). */
 const loadHomePageData = cache(async (): Promise<{
@@ -145,13 +191,40 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
+  const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
+  const todayKey = initialDay?.date ?? "";
+  const ufcEditorial = isUfcWeekEditorialWindow(todayKey);
+  const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
+
+  if (ufcEditorial) {
+    return (
+      <>
+        <HomeLcpPreload entries={resolveHomeLcpPreloadEntries([], todayKey)} />
+        <div className="fh-body qvh-ufc-week-site qvh-ufc-priority-lcp">
+          <UfcDestacadosStatic />
+          <UfcHomeNav />
+          <main id="main-content" className="fh-content">
+            <div className="fh-container fh-main">
+              <h1 className="sr-only">
+                Topuria vs Gaethje — UFC Casablanca, horario y TV en España
+              </h1>
+
+              <UfcHomeFeedShell todayKey={todayKey} />
+            </div>
+            <SeoGuidesPromo />
+            <HomeFaq />
+            <SiteFooter />
+          </main>
+        </div>
+        <HomeJsonLd events={[UFC_CASABLANCA_FALLBACK.event]} />
+      </>
+    );
+  }
+
   const { events, error, weekEvents, weekViewEvents } = await loadHomePageData();
   const mergedForSsr = mergeFeedEvents(events, weekEvents);
   const ssrEvents = eventsForHomeSsrHtml(mergedForSsr);
-  const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
-  const todayKey = initialDay?.date ?? "";
   const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents, todayKey);
-  const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
   const tonightEvents = mergeFeedEvents(ssrEvents, weekEvents);
   const weekPresentation = buildWeekDestacadosPresentation(
     weekEvents,
@@ -162,17 +235,13 @@ export default async function Page() {
 
   return (
     <>
-      <HomeWeekPrefetchHead />
       <HomeLcpPreload entries={lcpPreloadEntries} />
+      <HomeWeekPrefetchHead />
       <div className={`fh-body${weekPresentation.bodyClassSuffix}`}>
           <HomeNav />
           <main id="main-content" className="fh-content">
             <div className="fh-container fh-main">
-                <h1 className="sr-only">
-                  {isUfcWeekEditorialWindow(todayKey)
-                    ? "Topuria vs Gaethje — UFC Casablanca, horario y TV en España"
-                    : "Qué ver hoy en TV"}
-                </h1>
+                <h1 className="sr-only">Qué ver hoy en TV</h1>
 
                 <DestacadosSection events={weekEvents} />
 

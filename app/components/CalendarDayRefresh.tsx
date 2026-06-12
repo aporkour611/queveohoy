@@ -43,8 +43,21 @@ export function CalendarDayRefresh() {
       }
     }
 
-    void syncCalendarDay()
-    scheduleMidnightReload()
+    const bootstrap = () => {
+      void syncCalendarDay()
+      scheduleMidnightReload()
+    }
+
+    const scheduleDeferred = (fn: () => void) => {
+      if (typeof window.requestIdleCallback === "function") {
+        const idleId = window.requestIdleCallback(fn, { timeout: 8000 })
+        return () => window.cancelIdleCallback(idleId)
+      }
+      const timeoutId = window.setTimeout(fn, 1500)
+      return () => window.clearTimeout(timeoutId)
+    }
+
+    const deferredCancel = scheduleDeferred(bootstrap)
 
     const poll = window.setInterval(() => {
       void syncCalendarDay()
@@ -60,6 +73,7 @@ export function CalendarDayRefresh() {
 
     return () => {
       cancelled = true
+      deferredCancel?.()
       window.clearInterval(poll)
       if (midnightTimer !== undefined) window.clearTimeout(midnightTimer)
       document.removeEventListener("visibilitychange", onVisible)

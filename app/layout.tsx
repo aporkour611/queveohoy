@@ -2,10 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import "./theme.css";
-import { CookieConsentRoot } from "./components/CookieConsentRoot";
-import { Analytics } from "./components/Analytics";
-import { CalendarDayRefresh } from "./components/CalendarDayRefresh";
-import { SpeedInsights } from "./components/SpeedInsights";
+import { CookieConsentPrompts } from "./components/CookieConsentPrompts";
+import { DeferredLayoutClients } from "./components/DeferredLayoutClients";
 import { buildSupabaseBootstrapScript } from "./lib/supabase/browser-runtime";
 import { resolveBrowserSupabaseConfig } from "./lib/supabase-config";
 import { rootMetadata, siteUrl } from "./lib/seo";
@@ -75,6 +73,11 @@ export default function RootLayout({
           href={`${siteUrl}/feed.xml`}
         />
         <link rel="manifest" href="/manifest.webmanifest" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if("serviceWorker" in navigator){var r=function(){navigator.serviceWorker.register("/sw.js",{scope:"/"})};if("requestIdleCallback"in window)requestIdleCallback(r,{timeout:6000});else window.addEventListener("load",function(){setTimeout(r,2000)})}`,
+          }}
+        />
         <link
           rel="sitemap"
           type="application/xml"
@@ -90,10 +93,9 @@ export default function RootLayout({
         <a href="#main-content" className="qvh-skip-link">
           Saltar al contenido
         </a>
-        <CookieConsentRoot>{children}</CookieConsentRoot>
-        <CalendarDayRefresh />
-        <Analytics />
-        <SpeedInsights />
+        {children}
+        <CookieConsentPrompts />
+        <DeferredLayoutClients />
       </body>
     </html>
   );

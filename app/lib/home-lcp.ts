@@ -8,6 +8,7 @@ import { FEED_DAY_COUNT } from "./events-feed";
 import {
   isUfcWeekEditorialWindow,
   resolveUfcWeekContext,
+  UFC_CASABLANCA_FIGHTER_IMAGES,
 } from "./ufc-week";
 import {
   buildSpotlightPreloadEntry,
@@ -83,11 +84,10 @@ export function resolveHomeLcpPreloadEntries(
     const ctx = resolveUfcWeekContext(events, today);
     if (ctx) {
       const entries: SpotlightPreloadEntry[] = [];
-      for (const src of [ctx.fighter1Image, ctx.fighter2Image]) {
-        const href = safeRemoteImageUrl(src);
-        if (href) entries.push({ href });
+      for (const src of [UFC_CASABLANCA_FIGHTER_IMAGES.topuria]) {
+        if (src.startsWith("/")) entries.push({ href: src });
       }
-      if (entries.length > 0) return entries.slice(0, 2);
+      if (entries.length > 0) return entries;
     }
   }
 

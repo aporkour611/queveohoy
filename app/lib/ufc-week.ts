@@ -28,12 +28,10 @@ export type UfcWeekContext = {
   venueLabel: string;
 };
 
-/** Retratos editoriales (TheSportsDB cutouts) para Freedom 250. */
+/** Retratos editoriales locales (WebP) para LCP en UFC Casablanca. */
 export const UFC_CASABLANCA_FIGHTER_IMAGES = {
-  topuria:
-    "https://r2.thesportsdb.com/images/media/player/cutout/cz7spq1706003785.png",
-  gaethje:
-    "https://r2.thesportsdb.com/images/media/player/cutout/vstc9p1690818737.png",
+  topuria: "/deportes/ufc/topuria-lcp.webp",
+  gaethje: "/deportes/ufc/gaethje.webp",
 } as const;
 
 const UFC_CASABLANCA_SOURCE = [
@@ -139,8 +137,8 @@ function resolveFighters(event: EventRow): { f1: string; f2: string; f1Img?: str
   return {
     f1: fighter1,
     f2: fighter2,
-    f1Img: f1 ?? editorialFallback.f1Img,
-    f2Img: f2 ?? editorialFallback.f2Img,
+    f1Img: editorialFallback.f1Img ?? f1,
+    f2Img: editorialFallback.f2Img ?? f2,
   };
 }
 

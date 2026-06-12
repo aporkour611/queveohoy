@@ -80,6 +80,36 @@ const nextConfig: NextConfig = {
         headers: embedSecurityHeaders,
       },
       {
+        source: "/api/home-feed",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=900, s-maxage=900, stale-while-revalidate=1800",
+          },
+        ],
+      },
+      {
+        source: "/api/v2/feed",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=900, s-maxage=900, stale-while-revalidate=1800",
+          },
+        ],
+      },
+      {
+        source: "/api/feed-meta",
+        headers: [
+          {
+            key: "Cache-Control",
+            value:
+              "public, max-age=60, s-maxage=60, stale-while-revalidate=120",
+          },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: securityHeaders,
       },

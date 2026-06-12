@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test"
 test.describe("smoke", () => {
   test("home carga el título principal", async ({ page }) => {
     await page.goto("/")
-    await expect(page).toHaveTitle(/Qué ver hoy/i)
+    await expect(page).toHaveTitle(/Qué veo hoy|UFC Casablanca/i)
     await expect(page.locator("body")).toBeVisible()
   })
 
@@ -117,8 +117,11 @@ test.describe("smoke", () => {
   })
 
   test("hub fútbol carga agenda SEO", async ({ page }) => {
-    await page.goto("/futbol")
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(/fútbol/i)
+    test.setTimeout(60_000)
+    await page.goto("/futbol", { waitUntil: "domcontentloaded", timeout: 45_000 })
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/fútbol/i, {
+      timeout: 15_000,
+    })
     await expect(page.getByRole("link", { name: /Agenda completa/i })).toBeVisible()
     await expect(
       page.getByRole("link", { name: /Ver semana completa en la agenda/i })
@@ -158,10 +161,10 @@ test.describe("smoke", () => {
     expect(Number.isNaN(Date.parse(body.generatedAt))).toBe(false)
   })
 
-  test("API health versión 4.x", async ({ request }) => {
+  test("API health versión 5.x", async ({ request }) => {
     const response = await request.get("/api/health")
     const body = await response.json()
-    expect(body.version).toMatch(/^4\./)
+    expect(body.version).toMatch(/^5\./)
     expect(body.ok).toBe(true)
   })
 

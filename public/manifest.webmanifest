@@ -10,6 +10,9 @@
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
   "lang": "es",
+  "dir": "ltr",
+  "orientation": "portrait-primary",
+  "categories": ["entertainment", "sports", "news"],
   "shortcuts": [
     {
       "name": "Agenda de hoy",

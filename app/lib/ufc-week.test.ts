@@ -68,8 +68,8 @@ describe("resolveUfcWeekContext", () => {
   it("incluye retratos editoriales en fallback", () => {
     const context = resolveUfcWeekContext([], "2026-06-10", 7);
 
-    expect(context?.fighter1Image).toContain("thesportsdb.com");
-    expect(context?.fighter2Image).toContain("thesportsdb.com");
+    expect(context?.fighter1Image).toContain("/deportes/ufc/topuria-lcp.webp");
+    expect(context?.fighter2Image).toContain("/deportes/ufc/gaethje.webp");
   });
 
   it("detecta Topuria vs Gaethje en distintos campos", () => {

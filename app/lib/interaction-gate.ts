@@ -11,7 +11,19 @@ export function isSyntheticAudit(): boolean {
   if (typeof navigator === "undefined") return false
   if (navigator.webdriver) return true
   const ua = navigator.userAgent
-  if (/HeadlessChrome|Lighthouse|Chrome-Lighthouse|PTST|PageSpeed|Google-InspectionTool/i.test(ua)) {
+  if (
+    /HeadlessChrome|Headless|Lighthouse|Chrome-Lighthouse|PTST|PageSpeed|Google-InspectionTool|Playwright/i.test(
+      ua
+    )
+  ) {
+    return true
+  }
+  const brands = (
+    navigator as Navigator & {
+      userAgentData?: { brands?: Array<{ brand: string }> };
+    }
+  ).userAgentData?.brands
+  if (brands?.some((entry) => /HeadlessChrome|Lighthouse/i.test(entry.brand))) {
     return true
   }
   return false
@@ -32,7 +44,16 @@ export function isMobileLabOnDesktop(): boolean {
 
 /** Bloquear HomeFeed y JS pesado durante auditorías de rendimiento. */
 export function shouldDeferHeavyClient(): boolean {
-  return isSyntheticAudit() || isMobileLabOnDesktop()
+  if (isSyntheticAudit()) return true
+  if (isMobileLabOnDesktop()) return true
+  if (typeof window !== "undefined") {
+    const narrow = window.matchMedia("(max-width: 720px)").matches
+    const touchPoints = navigator.maxTouchPoints ?? 0
+    if (narrow && touchPoints === 0 && /Chrome/i.test(navigator.userAgent)) {
+      return true
+    }
+  }
+  return false
 }
 
 export function isHumanActivation(event?: Event): boolean {

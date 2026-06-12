@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       status: 304,
       headers: {
         ETag: etag,
-        "Cache-Control": `public, s-maxage=${FEED_REVALIDATE_SECONDS}, stale-while-revalidate=${FEED_REVALIDATE_SECONDS * 2}`,
+        "Cache-Control": `public, max-age=${FEED_REVALIDATE_SECONDS}, s-maxage=${FEED_REVALIDATE_SECONDS}, stale-while-revalidate=${FEED_REVALIDATE_SECONDS * 2}`,
         "X-Feed-Scope": cacheScope,
       },
     });
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     {
       headers: {
         ETag: etag,
-        "Cache-Control": `public, s-maxage=${FEED_REVALIDATE_SECONDS}, stale-while-revalidate=${FEED_REVALIDATE_SECONDS * 2}`,
+        "Cache-Control": `public, max-age=${FEED_REVALIDATE_SECONDS}, s-maxage=${FEED_REVALIDATE_SECONDS}, stale-while-revalidate=${FEED_REVALIDATE_SECONDS * 2}`,
         Vary: "Accept-Encoding",
         "X-Feed-Scope": cacheScope,
       },

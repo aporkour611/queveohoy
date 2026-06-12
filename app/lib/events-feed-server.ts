@@ -15,8 +15,10 @@ import { isSupabaseConfigured } from "./supabase-config";
 import { getMadridTodayKey } from "./seo-date";
 import { createClient } from "./supabase/server";
 import {
+  buildDisplayDays,
   getEventsQueryDateRange,
   getEventsQueryDateRangeTight,
+  MADRID_TZ,
 } from "./timezone";
 import { raceWithTimeout } from "./race-with-timeout";
 
@@ -265,41 +267,80 @@ export const getWeekViewFeedEventsForPage = cache(fetchWeekViewFeedEvents);
 
 export const getFeedEventsForPage = cache(fetchFeedEvents);
 
+async function queryEventsForDate(dateKey: string): Promise<{
+  events: EventRow[];
+  error: string | null;
+}> {
+  if (!isSupabaseConfigured()) {
+    return supabaseMissingFallback();
+  }
+  try {
+    const supabase = createClient();
+    const { data, error } = await withFeedQuerySignal(
+      supabase
+        .from("events")
+        .select(FEED_EVENT_SELECT)
+        .eq("date", dateKey)
+        .order("time", { ascending: true })
+        .limit(FEED_QUERY_ROW_LIMIT)
+    );
+    if (error) {
+      return { events: [] as EventRow[], error: error.message };
+    }
+    return {
+      events: normalizeFeedEvents((data ?? []) as EventRow[]),
+      error: null,
+    };
+  } catch (err) {
+    return {
+      events: [] as EventRow[],
+      error: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
+async function loadEventsForDate(dateKey: string): Promise<{
+  events: EventRow[];
+  error: string | null;
+}> {
+  return raceWithTimeout(
+    queryEventsForDate(dateKey),
+    FEED_QUERY_TIMEOUT_MS,
+    () => FEED_TIMEOUT_FALLBACK
+  );
+}
+
+/** Clave v2: evita servir entradas cacheadas con error (legacy feed-date). */
 const getCachedEventsForDate = unstable_cache(
   async (dateKey: string) => {
-    if (!isSupabaseConfigured()) {
-      return supabaseMissingFallback();
+    const result = await loadEventsForDate(dateKey);
+    if (isUncacheableFeedResult(result)) {
+      throw new Error(result.error ?? "feed-date-empty");
     }
-    try {
-      const supabase = createClient();
-      const { data, error } = await withFeedQuerySignal(
-        supabase
-          .from("events")
-          .select(FEED_EVENT_SELECT)
-          .eq("date", dateKey)
-          .order("time", { ascending: true })
-          .limit(FEED_QUERY_ROW_LIMIT)
-      );
-      if (error) {
-        return { events: [] as EventRow[], error: error.message };
-      }
-      return {
-        events: normalizeFeedEvents((data ?? []) as EventRow[]),
-        error: null,
-      };
-    } catch (err) {
-      return {
-        events: [] as EventRow[],
-        error: err instanceof Error ? err.message : String(err),
-      };
-    }
+    return result;
   },
-  ["feed-date"],
+  ["feed-date-v2"],
   { revalidate: FEED_REVALIDATE_SECONDS, tags: ["feed"] }
 );
 
+function isDateInHomeFeedWindow(dateKey: string): boolean {
+  return buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT).some(
+    (day) => day.date === dateKey
+  );
+}
+
 /** Eventos de un solo día (API pública, partido por slug). */
 export async function fetchEventsForDate(dateKey: string) {
+  if (isDateInHomeFeedWindow(dateKey)) {
+    const home = await fetchHomeFeedEvents();
+    if (!home.error) {
+      return {
+        events: home.events.filter((event) => event.date === dateKey),
+        error: null,
+      };
+    }
+  }
+
   return readCachedFeed(
     () => getCachedEventsForDate(dateKey),
     FEED_TIMEOUT_FALLBACK

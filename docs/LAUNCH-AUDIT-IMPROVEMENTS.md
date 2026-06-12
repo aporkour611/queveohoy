@@ -1,32 +1,26 @@
-# Propuesta de mejoras — maratón lanzamiento
+# Propuesta de mejoras — maratón
 
-Generado: 2026-06-12 · **v5.0.0** en producción
+Generado: 2026-06-12T21:07:40.961Z
+Maratón: cwv-2000 · 3 / 2000 ciclos
+Versión producto: 5.2.1
 
-## Aplicado en v5.0.0
+## Aplicado (v5.1.1)
 
-- Preload LCP retratos UFC Casablanca (Topuria/Gaethje)
-- Manifest PWA: `display_override`, `scope`, `id`
-- Resolver `/partido` con eventos editoriales + curación
-- Ficha UFC con hero, metadatos y CTAs «Detalles del combate»
-- Maratón lanzamiento 600 ciclos (`npm run marathon:launch`)
-- npm audit prod-only en quality scorecard
-- verify-prod: ficha UFC + headers seguridad
+- CWV gate: LCP ≤2.5s · FID ≤100ms · CLS ≤0.1 (`npm run cwv:audit`)
+- Defer SW, CalendarDayRefresh, FilterCssIntent · layout client chunks lazy
+- Preload LCP UFC en feed layout + fetchPriority low en retrato secundario
+- Quality gate 20/20 ≥95% (LCP, CDN, PWA, E2E, deps)
+- Retratos UFC locales WebP + CSS crítico + preload Link header
+- ETag + Cache-Control en APIs feed
+- PWA offline shell + manifest completo
+- E2E prod + week=1 URL bootstrap
+- robots.txt estático · postcss override
 
-## Baseline quality (post warm-up)
+## Sostenimiento
 
-Ejecutar: `npm run keep-warm:prod && npm run quality:audit`
+- `npm run keep-warm:prod` antes de quality:audit con LH completo
+- Maratón FAST reutiliza `lighthouse-quality-audit.json`
 
-| Ranking | Meta | Notas |
-|---------|------|-------|
-| LH A11y / BP / SEO | ≥95 | ✅ 100 |
-| LH Performance | ≥95 | 🟡 ~91 — cold start penaliza |
-| LCP | ≥95 | 🟡 preload UFC + posters locales |
-| CDN/cache | ≥95 | ✅ multi-endpoint probe |
-| verify-prod | 100% | ✅ 28/28 tras fix 5.x footer |
+## Fallos en maratón
 
-## Pendiente post-lanzamiento
-
-- Cron keep-warm cada min en Vercel (obligatorio pre-audit)
-- CSP sin `unsafe-inline` (refactor scripts inline)
-- PWA installable LH si se prioriza instalación
-- E2E Playwright en CI con gate blocking
+- Ciclo 243 [audit-baseline] quality:audit: exit 1

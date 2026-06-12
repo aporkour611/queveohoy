@@ -30,15 +30,39 @@ html{overflow-anchor:none;background:#0a0a10}
 
 .qvh-cl-week-shell{min-height:0;max-width:100%;min-width:0}
 
-.qvh-ufc-week-shell{min-height:0;max-width:100%;min-width:0;border-radius:14px}
+.qvh-ufc-week-shell{position:relative;min-height:0;max-width:100%;min-width:0;border-radius:14px}
+
+.qvh-ufc-week-lcp-link{display:block;position:relative;z-index:2;color:inherit;text-decoration:none}
 
 .qvh-ufc-week-layout{display:block}
 
-.qvh-ufc-week-fight-poster{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);min-height:clamp(132px,44vw,168px);max-width:100%}
+.qvh-ufc-week-fight-poster{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;min-height:clamp(148px,40vw,228px);max-width:100%;overflow:hidden;border-radius:12px}
+
+.qvh-ufc-week-headline{min-height:1.15em;line-height:1.15;font-family:Arial Narrow,Arial,sans-serif}
+
+.qvh-ufc-week-poster-fighter{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-height:inherit;padding:10px 6px 8px}
+
+.qvh-ufc-week-poster-bust{flex:1;display:flex;align-items:flex-end;justify-content:center;width:100%;min-height:clamp(108px,30vw,188px);max-height:196px}
+
+.qvh-ufc-week-poster-photo{display:block;width:auto;height:100%;max-height:clamp(118px,32vw,196px);max-width:100%;margin:0 auto;object-fit:contain;object-position:bottom center}
 
 .qvh-ufc-week-showcase{display:flex;flex-direction:column;align-items:center;padding:10px 8px}
 
-.qvh-home-feed-slot{min-height:420px}
+.qvh-ufc-week-showcase-sheen{display:none}
+
+.qvh-home-feed-slot{min-height:420px;content-visibility:auto;contain-intrinsic-size:420px}
+
+.qvh-ufc-priority-lcp{display:flex;flex-direction:column}
+
+.qvh-ufc-priority-lcp .fh-header-shell{order:1}
+
+.qvh-ufc-priority-lcp .qvh-destacados-stack{order:2}
+
+.qvh-ufc-priority-lcp .fh-content{order:3}
+
+.qvh-ufc-week-shell-loading .qvh-ufc-week-showcase{display:none}
+
+.qvh-ufc-week-shell-loading .qvh-ufc-week-shell-bg{display:none}
 
 .qvh-spotlight-card{display:block;color:inherit;text-decoration:none}
 

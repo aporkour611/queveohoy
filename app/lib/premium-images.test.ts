@@ -5,12 +5,12 @@ import {
 } from "./premium-images";
 
 describe("resolvePrioritySpotlightSrc", () => {
-  it("usa TMDB w185 directo para LCP", () => {
+  it("usa TMDB w92 directo para LCP", () => {
     const result = resolvePrioritySpotlightSrc(
       "https://image.tmdb.org/t/p/w500/abc123.jpg"
     );
     expect(result?.mode).toBe("lcp-direct");
-    expect(result?.src).toContain("/w154/");
+    expect(result?.src).toContain("/w92/");
   });
 
   it("usa next-image para posters locales", () => {

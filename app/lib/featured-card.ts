@@ -173,8 +173,8 @@ export function getSpotlightCardModel(
     const awayName = event.away_team || matchup?.n2;
     const editorialImages = isTopuriaGaethjeFight(event)
       ? {
-          f1: f1 ?? UFC_CASABLANCA_FIGHTER_IMAGES.topuria,
-          f2: f2 ?? UFC_CASABLANCA_FIGHTER_IMAGES.gaethje,
+          f1: UFC_CASABLANCA_FIGHTER_IMAGES.topuria,
+          f2: UFC_CASABLANCA_FIGHTER_IMAGES.gaethje,
         }
       : { f1, f2 };
     const poster = resolvePosterCover(event);

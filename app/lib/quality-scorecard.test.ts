@@ -65,8 +65,14 @@ describe("quality-scorecard-lib", () => {
 
   it("puntúa PWA readiness parcial", () => {
     expect(
-      scorePwaReadiness({ manifestOk: true, swOk: true, lhPwaScore: 0.4 })
-    ).toBeGreaterThanOrEqual(85);
+      scorePwaReadiness({
+        manifestOk: true,
+        swOk: true,
+        swOfflineReady: true,
+        manifestComplete: true,
+        lhPwaScore: null,
+      })
+    ).toBeGreaterThanOrEqual(95);
   });
 
   it("penaliza vulns npm high", () => {

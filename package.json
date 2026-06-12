@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "5.0.0",
+  "version": "5.2.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -33,12 +33,16 @@
     "perf:budget": "node scripts/perf-budget.mjs",
     "perf:audit": "node scripts/perf-multi-audit.mjs",
     "quality:audit": "node scripts/quality-scorecard.mjs",
+    "cwv:audit": "node scripts/cwv-audit.mjs",
     "marathon:run": "node scripts/marathon-runner.mjs run",
     "marathon:wave": "node scripts/marathon-runner.mjs wave",
     "marathon:index": "node scripts/marathon-runner.mjs index",
     "marathon:batch": "node scripts/marathon-runner.mjs batch",
     "marathon:program": "node scripts/marathon-runner.mjs program",
     "marathon:launch": "node scripts/marathon-launch.mjs",
+    "marathon:perfect": "node scripts/marathon-launch.mjs --cycles=2000 --fast",
+    "marathon:cwv": "node scripts/marathon-launch.mjs --cycles=2000 --fast --cwv",
+    "marathon:apex": "node scripts/marathon-launch.mjs --cycles=66000 --fast --cwv",
     "lhci": "lhci autorun --config=lighthouserc.json",
     "test:coverage": "vitest run --coverage",
     "posters:compress": "node scripts/compress-posters.mjs",
@@ -92,5 +96,8 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.7"
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
   }
 }

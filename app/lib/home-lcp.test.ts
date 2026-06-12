@@ -58,12 +58,11 @@ describe("resolveHomeLcpPreloadEntries", () => {
     expect(entries[0]?.href).toBe("/posters/pasapalabra.webp");
   });
 
-  it("precarga retratos UFC en ventana Casablanca", () => {
+  it("precarga retrato LCP UFC en ventana Casablanca", () => {
     const entries = resolveHomeLcpPreloadEntries([], "2026-06-10");
 
-    expect(entries.length).toBe(2);
-    expect(entries[0]?.href).toContain("thesportsdb.com");
-    expect(entries[1]?.href).toContain("thesportsdb.com");
+    expect(entries.length).toBe(1);
+    expect(entries[0]?.href).toContain("/deportes/ufc/topuria-lcp.webp");
   });
 
   it("clasifica Mask Singer en la categoría rest de destacados", () => {

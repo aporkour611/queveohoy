@@ -38,7 +38,34 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, s-maxage=60, stale-while-revalidate=120"
+          "value": "public, max-age=60, s-maxage=60, stale-while-revalidate=120"
+        }
+      ]
+    },
+    {
+      "source": "/api/home-feed",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=900, s-maxage=900, stale-while-revalidate=1800"
+        }
+      ]
+    },
+    {
+      "source": "/api/v2/feed",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=900, s-maxage=900, stale-while-revalidate=1800"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "</deportes/ufc/topuria-lcp.webp>; rel=preload; as=image; fetchpriority=high"
         }
       ]
     }

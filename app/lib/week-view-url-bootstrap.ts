@@ -1,0 +1,2 @@
+/** Limpia `?week=1` antes del interaction-gate (Playwright, deep links móvil). */
+export const WEEK_VIEW_URL_BOOTSTRAP_SCRIPT = `(function(){try{var k="qvh-home-feed-week-intent";var q=window.location.search;if(!/(?:^|[?&])week=1(?:&|$)/.test(q))return;sessionStorage.setItem(k,"1");var p=new URLSearchParams(q);p.delete("week");var r=p.toString();var n=window.location.pathname+(r?"?"+r:"")+window.location.hash;window.history.replaceState(null,"",n)}catch(e){}})();`

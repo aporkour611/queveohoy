@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { UfcWeekContext } from "../lib/ufc-week";
@@ -15,12 +14,14 @@ type PortraitProps = {
   src?: string | null;
   name: string;
   variant?: "corner" | "poster";
+  priority?: boolean;
 };
 
 export function UfcFighterPortrait({
   src,
   name,
   variant = "poster",
+  priority = false,
 }: PortraitProps) {
   const safe = safeRemoteImageUrl(src);
 
@@ -55,8 +56,11 @@ export function UfcFighterPortrait({
           ? "qvh-ufc-week-poster-photo"
           : "qvh-ufc-week-corner-photo"
       }
-      loading="eager"
-      decoding="async"
+      width={variant === "poster" ? 140 : 96}
+      height={variant === "poster" ? 196 : 120}
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "low"}
+      decoding={priority ? "sync" : "async"}
     />
   );
 }
@@ -90,6 +94,7 @@ function UfcWeekFightPoster({
             src={fighter1Image}
             name={fighter1}
             variant="poster"
+            priority
           />
         </div>
         <p className="qvh-ufc-week-poster-name">{fighter1}</p>
@@ -156,6 +161,19 @@ export function UfcWeekFeature({ context, children }: Props) {
 
   return (
     <article className="qvh-ufc-week-shell" aria-label="Semana de UFC Casablanca">
+      <Link
+        href={partidoHref}
+        className="qvh-ufc-week-lcp-link"
+        aria-label={`Detalles del combate: ${fighter1} vs ${fighter2}`}
+      >
+        <UfcWeekFightPoster
+          fighter1={fighter1}
+          fighter2={fighter2}
+          fighter1Image={fighter1Image}
+          fighter2Image={fighter2Image}
+        />
+      </Link>
+
       <div className="qvh-ufc-week-shell-bg" aria-hidden>
         <span className="qvh-ufc-week-shell-spotlight" />
         <span className="qvh-ufc-week-shell-mesh" />
@@ -176,12 +194,15 @@ export function UfcWeekFeature({ context, children }: Props) {
             <header className="qvh-ufc-week-showcase-head">
               <div className="qvh-ufc-week-brand">
                 <span className="qvh-ufc-week-brand-logo" aria-hidden>
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src="/competition-logos/ufc.svg"
                     alt=""
                     width={22}
                     height={22}
                     className="qvh-ufc-week-logo"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </span>
                 <p className="qvh-ufc-week-kicker">{kicker}</p>
@@ -194,13 +215,6 @@ export function UfcWeekFeature({ context, children }: Props) {
                 ) : null}
               </div>
             </header>
-
-            <UfcWeekFightPoster
-              fighter1={fighter1}
-              fighter2={fighter2}
-              fighter1Image={fighter1Image}
-              fighter2Image={fighter2Image}
-            />
 
             <div className="qvh-ufc-week-showcase-meta">
               <span className="qvh-ufc-week-venue">{venueLabel}</span>

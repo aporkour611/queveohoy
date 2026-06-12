@@ -1,3 +1,35 @@
+const CACHE = "qvh-shell-v1";
+const SHELL = ["/", "/manifest.webmanifest", "/icons/app-icon-192.png"];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(CACHE)
+      .then((cache) => cache.addAll(SHELL))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
+
+  event.respondWith(
+    fetch(event.request).catch(async () => {
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
+      if (event.request.mode === "navigate") {
+        const fallback = await caches.match("/");
+        if (fallback) return fallback;
+      }
+      throw new Error("offline");
+    })
+  );
+});
+
 self.addEventListener("push", (event) => {
   let payload = {
     title: "Qué veo hoy",

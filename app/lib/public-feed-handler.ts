@@ -83,7 +83,7 @@ export async function handlePublicFeedGet(
   const categoriesApplied =
     categories.length > 0 ? categories : undefined
 
-  const cacheControl = `public, s-maxage=${FEED_REVALIDATE_SECONDS}, stale-while-revalidate=${FEED_REVALIDATE_SECONDS * 2}`
+  const cacheControl = `public, max-age=${FEED_REVALIDATE_SECONDS}, s-maxage=${FEED_REVALIDATE_SECONDS}, stale-while-revalidate=${FEED_REVALIDATE_SECONDS * 2}`
 
   if (version === "2") {
     const body = buildPublicApiV2FeedResponse(
@@ -106,7 +106,7 @@ export async function handlePublicFeedGet(
         headers: {
           ...publicApiCorsHeaders(),
           ETag: body.etag,
-          "Cache-Control": `public, s-maxage=${FEED_REVALIDATE_SECONDS}`,
+          "Cache-Control": `public, max-age=${FEED_REVALIDATE_SECONDS}, s-maxage=${FEED_REVALIDATE_SECONDS}`,
         },
       })
     }

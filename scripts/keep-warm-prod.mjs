@@ -11,6 +11,7 @@ const CRON_SECRET = process.env.CRON_SECRET?.trim()
 const PATHS = [
   "/api/health?warm=1&origins=0",
   "/api/feed-meta",
+  "/api/home-feed",
   "/api/v1/feed/week",
   "/api/health",
   "/api/v2/feed",
@@ -44,7 +45,12 @@ async function ping(path) {
       signal: AbortSignal.timeout(path === "/" ? 120_000 : 60_000),
     })
     const ms = Date.now() - started
-    const ok = res.ok || res.status === 304
+    const ok =
+      res.ok ||
+      res.status === 304 ||
+      (path.startsWith("/api/health?warm=1") &&
+        res.status === 401 &&
+        !CRON_SECRET)
     console.log(`${ok ? "OK" : "FAIL"} ${path} → ${res.status} (${ms}ms)`)
     if (
       (path === "/api/warm" || path.startsWith("/api/health?warm=1")) &&
