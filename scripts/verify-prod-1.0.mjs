@@ -22,7 +22,7 @@ if (homeRes.ok) pass("HTTP 200 home");
 else fail("HTTP 200 home", String(homeRes.status));
 
 const footerVersion =
-  /[1-4]\.\d+\.\d/.test(homeHtml)
+  /[1-9]\.\d+\.\d/.test(homeHtml)
 
 if (footerVersion || homeHtml.includes("1.0.0"))
   pass("Footer versión producto")
