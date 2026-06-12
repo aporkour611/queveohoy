@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cache, Suspense } from "react";
+import { cache } from "react";
 import dynamic from "next/dynamic";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
@@ -59,49 +59,6 @@ const PAGE_DATA_FALLBACK = {
     ReturnType<typeof getWeekViewFeedEventsForPage>
   >["events"],
 };
-
-/** Home sin destacados (streamed aparte para LCP en semana UFC). */
-const loadHomePageCoreData = cache(async (): Promise<{
-  events: Awaited<ReturnType<typeof getHomeFeedEventsForPage>>["events"];
-  error: string | null;
-  weekViewEvents: Awaited<
-    ReturnType<typeof getWeekViewFeedEventsForPage>
-  >["events"];
-}> => {
-  return raceWithTimeout(
-    Promise.allSettled([
-      getHomeFeedEventsForPage(),
-      getWeekViewFeedEventsForPage(),
-    ]).then((results) => {
-      const home =
-        results[0].status === "fulfilled"
-          ? results[0].value
-          : { events: [] as EventRow[], error: "No se pudo cargar la agenda de hoy." };
-      const weekView =
-        results[1].status === "fulfilled"
-          ? results[1].value
-          : { events: [] as EventRow[], error: null };
-
-      const errors = [home.error, weekView.error].filter(Boolean);
-      return {
-        events: home.events,
-        weekViewEvents: weekView.events,
-        error:
-          home.events.length === 0 && weekView.events.length === 0
-            ? errors[0] ?? PAGE_DATA_FALLBACK.error
-            : errors.length === 2
-              ? errors.join(" ")
-              : null,
-      };
-    }),
-    PAGE_DATA_BUDGET_MS,
-    () => ({
-      events: PAGE_DATA_FALLBACK.events,
-      weekViewEvents: PAGE_DATA_FALLBACK.weekViewEvents,
-      error: PAGE_DATA_FALLBACK.error,
-    })
-  );
-});
 
 /** Una sola carga por petición (generateMetadata + Page comparten React cache). */
 const loadHomePageData = cache(async (): Promise<{

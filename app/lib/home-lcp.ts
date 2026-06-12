@@ -15,7 +15,6 @@ import {
   type SpotlightPreloadEntry,
 } from "./optimized-image";
 import type { SpotlightCover } from "./spotlight-art";
-import { safeRemoteImageUrl } from "./remote-image";
 
 function lcpCoverScore(cover: SpotlightCover | undefined): number {
   if (!cover?.url) return -1;

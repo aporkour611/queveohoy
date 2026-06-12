@@ -24,11 +24,11 @@ const InstallAppPrompt = dynamic(
 
 /** Prompts diferidos — sin envolver el árbol SSR (menor hidratación / FID). */
 export function CookieConsentPrompts() {
-  if (shouldDeferHeavyClient()) return null;
-
+  const deferHeavy = shouldDeferHeavyClient();
   const [promptsReady, setPromptsReady] = useState(false);
 
   useEffect(() => {
+    if (deferHeavy) return;
     const schedule = () => setPromptsReady(true);
     if (typeof window.requestIdleCallback === "function") {
       const idleId = window.requestIdleCallback(schedule, { timeout: 45_000 });
@@ -36,9 +36,9 @@ export function CookieConsentPrompts() {
     }
     const fallback = window.setTimeout(schedule, 45_000);
     return () => window.clearTimeout(fallback);
-  }, []);
+  }, [deferHeavy]);
 
-  if (!promptsReady) return null;
+  if (deferHeavy || !promptsReady) return null;
 
   return (
     <>
