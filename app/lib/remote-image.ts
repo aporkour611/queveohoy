@@ -15,6 +15,9 @@ export function normalizeRemoteImageUrl(url?: string | null): string | null {
   if (!url?.trim()) return null;
 
   let normalized = url.trim().replace(/^http:\/\//i, "https://");
+  if (normalized.startsWith("//")) {
+    normalized = `https:${normalized}`;
+  }
 
   normalized = normalized.replace(
     /^https:\/\/cdn-api\.pandascore\.co\//i,

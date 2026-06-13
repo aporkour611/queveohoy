@@ -51,6 +51,14 @@ export default function RootLayout({
     >
       <head>
         <link rel="preconnect" href={siteUrl} />
+        <link rel="dns-prefetch" href={`${siteUrl}/api/feed-meta`} />
+        <link
+          rel="preload"
+          href="/api/feed-meta"
+          as="fetch"
+          crossOrigin="anonymous"
+          fetchPriority="low"
+        />
         <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
         <script

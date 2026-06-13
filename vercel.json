@@ -73,6 +73,12 @@
   "redirects": [
     {
       "source": "/:path*",
+      "has": [{ "type": "header", "key": "x-forwarded-proto", "value": "http" }],
+      "destination": "https://queveohoy.es/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
       "has": [{ "type": "host", "value": "www.queveohoy.es" }],
       "destination": "https://queveohoy.es/:path*",
       "permanent": true
@@ -108,12 +114,8 @@
       "schedule": "0 23 * * *"
     },
     {
-      "path": "/api/health?warm=1&origins=0",
-      "schedule": "*/5 * * * *"
-    },
-    {
       "path": "/api/warm",
-      "schedule": "*/15 * * * *"
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/cron?phase=core",

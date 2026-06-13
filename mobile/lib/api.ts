@@ -27,6 +27,31 @@ export const API_BASE = ensureHttpsOrigin(
 
 export const SITE_URL = API_BASE
 
+const FETCH_TIMEOUT_MS = 20_000
+
+export async function warmMobileApi(): Promise<void> {
+  const paths = ["/api/feed-meta", "/api/health"]
+  await Promise.allSettled(
+    paths.map((path) =>
+      fetch(`${API_BASE}${path}`, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(12_000),
+      })
+    )
+  )
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const res = await fetch(url, {
+    headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  })
+  if (!res.ok) {
+    throw new Error(`Feed HTTP ${res.status}`)
+  }
+  return res.json() as Promise<T>
+}
+
 function madridTodayKey(): string {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Madrid",
@@ -44,18 +69,11 @@ export async function fetchFeedByDate(
   limit = 50
 ): Promise<FeedResponse> {
   const url = `${API_BASE}/api/v1/feed?date=${encodeURIComponent(date)}&limit=${limit}`
-  const res = await fetch(url, {
-    headers: { Accept: "application/json" },
-  })
-
-  if (!res.ok) {
-    throw new Error(`Feed HTTP ${res.status}`)
-  }
-
-  return res.json() as Promise<FeedResponse>
+  return fetchJson<FeedResponse>(url)
 }
 
 export async function fetchTodayFeed(limit = 50): Promise<FeedResponse> {
+  await warmMobileApi()
   return fetchFeedByDate(madridTodayKey(), limit)
 }
 

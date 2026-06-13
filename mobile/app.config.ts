@@ -28,12 +28,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "es.queveohoy.app",
+    infoPlist: {
+      NSAppTransportSecurity: {
+        NSAllowsArbitraryLoads: false,
+      },
+    },
   },
   android: {
     adaptiveIcon: {
       backgroundColor: "#0a0a0a",
     },
     package: "es.queveohoy.app",
+    usesCleartextTraffic: false,
     intentFilters: [
       {
         action: "VIEW",

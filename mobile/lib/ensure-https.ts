@@ -17,12 +17,17 @@ export function ensureHttpsOrigin(raw: string | undefined, fallback: string): st
 }
 
 export function isLikelyTlsError(message: string): boolean {
-  return /ssl|tls|certificate|cert|secure|cleartext|trust/i.test(message)
+  return /ssl|tls|certificate|cert invalid|cleartext|trust anchor|handshake|ATS policy|secure connection to/i.test(
+    message
+  )
 }
 
 export function formatMobileNetworkError(message: string): string {
   if (isLikelyTlsError(message)) {
-    return "Conexión no segura. No abras la app en el navegador del móvil (http). Usa Expo Go o entra en https://queveohoy.es"
+    return "No se pudo establecer conexión segura con queveohoy.es. Comprueba la fecha del móvil y prueba otra red (Wi‑Fi o datos)."
+  }
+  if (/timeout|timed out|aborted|network request failed/i.test(message)) {
+    return "El servidor tardó en responder. Pulsa Reintentar — suele ser cold start tras inactividad."
   }
   return message
 }

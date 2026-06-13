@@ -7,9 +7,8 @@
 const SITE = (process.env.SITE_URL ?? "https://queveohoy.es").replace(/\/$/, "")
 const CRON_SECRET = process.env.CRON_SECRET?.trim()
 
-/** Solo cachés (ligero). El warm completo lo hace /api/warm cada 15 min en Vercel. */
+/** APIs ligeras + warm completo de páginas (KEEP_WARM_FULL=0 para omitir HTML). */
 const PATHS = [
-  "/api/health?warm=1&origins=0",
   "/api/feed-meta",
   "/api/home-feed",
   "/api/v1/feed/week",
@@ -19,14 +18,20 @@ const PATHS = [
 
 const FULL_WARM_PATHS = [
   "/api/warm",
+  "/api/feed-meta",
+  "/",
   "/explorar",
   "/futbol",
   "/champions",
   "/laliga",
+  "/serie-a",
+  "/ligue-1",
+  "/segunda-division",
   "/formula-1",
   "/premier-league",
-  "/",
 ]
+
+const fullWarm = process.env.KEEP_WARM_FULL !== "0"
 
 async function ping(path) {
   const url = `${SITE}${path}`
@@ -66,8 +71,6 @@ async function ping(path) {
     return false
   }
 }
-
-const fullWarm = process.env.KEEP_WARM_FULL === "1"
 
 let failed = 0
 for (const path of PATHS) {

@@ -169,6 +169,12 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
+        has: [{ type: "header", key: "x-forwarded-proto", value: "http" }],
+        destination: `${siteUrl}/:path*`,
+        permanent: true,
+      },
+      {
+        source: "/:path*",
         has: [{ type: "host", value: `www.${apexHost}` }],
         destination: `${siteUrl}/:path*`,
         permanent: true,

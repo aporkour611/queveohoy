@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "5.4.0",
+  "version": "5.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -45,6 +45,9 @@
     "marathon:apex": "node scripts/marathon-launch.mjs --cycles=66000 --fast --cwv",
     "marathon:40000": "node scripts/marathon-launch.mjs --cycles=40000 --fast --cwv",
     "marathon:100k": "node scripts/marathon-100k.mjs",
+    "marathon:1000": "node scripts/marathon-ultra-1000.mjs",
+    "audit:cold-start": "node scripts/cold-start-audit.mjs",
+    "audit:mobile-security": "node scripts/mobile-security-audit.mjs",
     "discovery:seo": "node scripts/discovery-seo-audit.mjs",
     "discovery:design": "node scripts/discovery-design-audit.mjs",
     "product:cycle": "node scripts/product-cycle.mjs",
