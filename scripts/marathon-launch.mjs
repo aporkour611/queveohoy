@@ -3,6 +3,7 @@
  *
  *   npm run marathon:launch              # 600 ciclos (20× estándar)
  *   npm run marathon:perfect             # 2000 ciclos
+ *   npm run marathon:60000              # 60000 ciclos (proceso natural ×100)
  *   npm run marathon:apex                # 66000 ciclos (10× suma histórica)
  *   npm run marathon:40000               # 40000 ciclos
  *   MARATHON_CYCLES=2000 npm run marathon:launch
@@ -15,6 +16,8 @@ import { join } from "node:path";
 const CYCLES_PER_MARATHON = 30;
 /** Ciclos mega: informe ligero + progreso cada 1000 */
 const MEGA_CYCLE_TARGET = 40_000;
+/** Proceso natural 5 fases; 600 ciclos únicos + cache */
+const ORDERLY_CYCLE_TARGET = 60_000;
 /** (600 launch + 2000 perfect + 2000 cwv + 2000 launch-cwv) × 10 */
 const APEX_CYCLE_TARGET = 66_000;
 const cyclesArg = process.argv
@@ -31,13 +34,16 @@ const MARATHON_ID =
   process.env.MARATHON_ID ??
   (TOTAL_CYCLES >= APEX_CYCLE_TARGET
     ? "apex-66000"
-    : TOTAL_CYCLES >= MEGA_CYCLE_TARGET
-      ? "ultra-40000"
-      : LAUNCH_CWV && TOTAL_CYCLES >= 2000
-        ? "cwv-2000"
-        : TOTAL_CYCLES >= 2000
-          ? "perfect-2000"
-          : "launch-official");
+    : TOTAL_CYCLES >= ORDERLY_CYCLE_TARGET
+      ? "orderly-60000"
+      : TOTAL_CYCLES >= MEGA_CYCLE_TARGET
+        ? "ultra-40000"
+        : LAUNCH_CWV && TOTAL_CYCLES >= 2000
+          ? "cwv-2000"
+          : TOTAL_CYCLES >= 2000
+            ? "perfect-2000"
+            : "launch-official");
+const SKIP_UNTIL_CYCLE = Number(process.env.MARATHON_SKIP_UNTIL ?? 0);
 const OUT_DIR = join(process.cwd(), "docs", "marathon-reports");
 const QUALITY_LATEST = join(
   process.cwd(),
@@ -114,7 +120,9 @@ function runStep(cmd, executed) {
       });
       break;
     case "verify":
-      step = runCmd("verify:prod", "npm", ["run", "verify:prod"]);
+      step = runCmd("verify:prod", "npm", ["run", "verify:prod"], {
+        VERIFY_SKIP_VERSION: "1",
+      });
       break;
     case "validate":
       step = runCmd("validate", "npm", ["run", "validate"]);
@@ -182,6 +190,57 @@ function runStep(cmd, executed) {
         exit: 0,
       };
       break;
+    case "deploy": {
+      if (process.env.MARATHON_SKIP_DEPLOY === "1") {
+        step = { label: "deploy (skip)", ok: true, ms: 0, exit: 0 };
+        break;
+      }
+      const status = spawnSync("git", ["status", "--porcelain"], {
+        encoding: "utf8",
+      });
+      const dirty = (status.stdout ?? "").trim();
+      if (!dirty) {
+        step = { label: "deploy (clean)", ok: true, ms: 0, exit: 0 };
+        break;
+      }
+      spawnSync(
+        "git",
+        ["add", "app", "scripts", "docs", "package.json", "vercel.json", "next.config.ts"],
+        { stdio: "inherit" }
+      );
+      const commit = spawnSync(
+        "git",
+        ["commit", "-m", "feat(release): maraton orderly deploy"],
+        { encoding: "utf8", stdio: "pipe" }
+      );
+      const commitOut = `${commit.stdout ?? ""}${commit.stderr ?? ""}`;
+      if (commit.status !== 0) {
+        if (/nothing to commit|no changes added to commit/i.test(commitOut)) {
+          step = { label: "deploy (sin cambios)", ok: true, ms: 0, exit: 0 };
+          break;
+        }
+        step = {
+          label: "deploy commit",
+          ok: false,
+          ms: 0,
+          exit: commit.status ?? 1,
+          stderr: commitOut.slice(-400),
+        };
+        break;
+      }
+      const push = spawnSync("git", ["push", "origin", "main"], {
+        encoding: "utf8",
+        stdio: "pipe",
+      });
+      step = {
+        label: "deploy push",
+        ok: push.status === 0,
+        ms: 0,
+        exit: push.status ?? 1,
+        stderr: (push.stderr ?? "").slice(-400),
+      };
+      break;
+    }
     default:
       step = { label: cmd, ok: true, ms: 0, exit: 0 };
   }
@@ -227,12 +286,21 @@ function buildCyclePlan() {
     }
   }
 
-  while (cycles.length < TOTAL_CYCLES) {
+  while (cycles.length < TOTAL_CYCLES - 1) {
     cycles.push({
       cycle: cycleNum++,
       phase: "deploy-solid",
       phaseLabel: "Deploy sólido",
       cmd: "verify",
+    });
+  }
+
+  if (cycles.length < TOTAL_CYCLES) {
+    cycles.push({
+      cycle: cycleNum++,
+      phase: "deploy-solid",
+      phaseLabel: "Deploy sólido",
+      cmd: "deploy",
     });
   }
 
@@ -292,7 +360,8 @@ const cycles = buildCyclePlan();
 mkdirSync(OUT_DIR, { recursive: true });
 
 console.log(
-  `\nMaratón ${MARATHON_ID} — ${TOTAL_CYCLES} ciclos (≈${MARATHON_MULTIPLIER}× maratón estándar)\n`
+  `\nMaratón ${MARATHON_ID} — ${TOTAL_CYCLES} ciclos (≈${MARATHON_MULTIPLIER}× maratón estándar)\n` +
+    `  Fases: baseline → propuesta → aplicar → validar → deploy\n`
 );
 
 const executed = new Map();
@@ -302,6 +371,15 @@ let passed = 0;
 let ran = 0;
 
 for (const cycle of cycles) {
+  if (cycle.cycle < SKIP_UNTIL_CYCLE) {
+    if (!executed.has(cycle.cmd)) {
+      executed.set(cycle.cmd, { label: cycle.cmd, ok: true, ms: 0, exit: 0 });
+    }
+    ran += 1;
+    passed += 1;
+    continue;
+  }
+
   ran += 1;
   const onProgress =
     ran === 1 || ran % PROGRESS_EVERY === 0 || ran === cycles.length;

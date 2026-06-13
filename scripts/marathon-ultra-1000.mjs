@@ -141,13 +141,18 @@ function runStep(cmd, executed, phase) {
         ["commit", "-m", "feat(release): v5.5.0 cold start y seguridad movil"],
         { encoding: "utf8", stdio: "pipe" }
       );
+      const commitOut = `${commit.stdout ?? ""}${commit.stderr ?? ""}`;
       if (commit.status !== 0) {
+        if (/nothing to commit|no changes added to commit/i.test(commitOut)) {
+          step = { label: "deploy (sin cambios release)", ok: true, ms: 0, exit: 0 };
+          break;
+        }
         step = {
           label: "deploy commit",
           ok: false,
           ms: 0,
           exit: commit.status ?? 1,
-          stderr: (commit.stderr ?? "").slice(-400),
+          stderr: commitOut.slice(-400),
         };
         break;
       }

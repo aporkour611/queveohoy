@@ -44,6 +44,7 @@
     "marathon:cwv": "node scripts/marathon-launch.mjs --cycles=2000 --fast --cwv",
     "marathon:apex": "node scripts/marathon-launch.mjs --cycles=66000 --fast --cwv",
     "marathon:40000": "node scripts/marathon-launch.mjs --cycles=40000 --fast --cwv",
+    "marathon:60000": "node scripts/marathon-launch.mjs --cycles=60000 --fast --cwv",
     "marathon:100k": "node scripts/marathon-100k.mjs",
     "marathon:1000": "node scripts/marathon-ultra-1000.mjs",
     "audit:cold-start": "node scripts/cold-start-audit.mjs",

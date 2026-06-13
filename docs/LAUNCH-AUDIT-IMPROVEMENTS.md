@@ -1,8 +1,8 @@
 # Propuesta de mejoras — maratón
 
-Generado: 2026-06-12T22:41:32.127Z
-Maratón: apex-66000 · 97 / 66000 ciclos
-Versión producto: 5.2.2
+Generado: 2026-06-12T23:13:46.232Z
+Maratón: ultra-40000 · 71 / 40000 ciclos
+Versión producto: 5.3.0
 
 ## Aplicado (v5.1.1)
 
