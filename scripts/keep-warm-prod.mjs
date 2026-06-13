@@ -17,8 +17,6 @@ const PATHS = [
 ]
 
 const FULL_WARM_PATHS = [
-  "/api/warm",
-  "/api/feed-meta",
   "/",
   "/explorar",
   "/futbol",
@@ -31,7 +29,7 @@ const FULL_WARM_PATHS = [
   "/premier-league",
 ]
 
-const fullWarm = process.env.KEEP_WARM_FULL !== "0"
+const fullWarm = process.env.KEEP_WARM_FULL === "1"
 
 async function ping(path) {
   const url = `${SITE}${path}`
@@ -47,7 +45,9 @@ async function ping(path) {
   try {
     const res = await fetch(url, {
       headers,
-      signal: AbortSignal.timeout(path === "/" ? 120_000 : 60_000),
+      signal: AbortSignal.timeout(
+        path === "/" ? 120_000 : path.startsWith("/api/") ? 90_000 : 90_000
+      ),
     })
     const ms = Date.now() - started
     const ok =
