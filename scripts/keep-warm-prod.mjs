@@ -78,8 +78,15 @@ for (const path of PATHS) {
 }
 
 if (fullWarm) {
+  let hubFailed = 0
   for (const path of FULL_WARM_PATHS) {
-    if (!(await ping(path))) failed += 1
+    if (!(await ping(path))) hubFailed += 1
+  }
+  if (hubFailed > 0) {
+    console.warn(`\n${hubFailed} rutas HTML lentas (cold ISR — cron /api/warm las calienta)`)
+    if (process.env.KEEP_WARM_STRICT === "1") {
+      failed += hubFailed
+    }
   }
 }
 
