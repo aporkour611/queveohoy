@@ -1,0 +1,33 @@
+{
+  "cycles": 1,
+  "startedAt": "2026-06-13T11:39:23.244Z",
+  "results": [
+    {
+      "cycle": 1,
+      "phases": [
+        {
+          "id": "validate",
+          "ok": true,
+          "steps": [
+            {
+              "name": "test",
+              "ok": true,
+              "ms": 10556,
+              "exit": 0,
+              "stderr": ""
+            },
+            {
+              "name": "lint",
+              "ok": true,
+              "ms": 13000,
+              "exit": 0,
+              "stderr": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-06-13T11:39:46.803Z",
+  "completed": true
+}

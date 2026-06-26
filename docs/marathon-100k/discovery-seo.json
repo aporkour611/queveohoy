@@ -1,11 +1,11 @@
 {
   "base": "https://queveohoy.es",
-  "at": "2026-06-12T23:28:47.331Z",
+  "at": "2026-06-13T11:10:46.706Z",
   "pages": [
     {
       "path": "/",
       "status": 200,
-      "ms": 45595,
+      "ms": 399,
       "ok": true,
       "seo": {
         "path": "/",
@@ -24,21 +24,21 @@
     {
       "path": "/robots.txt",
       "status": 200,
-      "ms": 68,
+      "ms": 321,
       "ok": true,
       "seo": null
     },
     {
       "path": "/sitemap.xml",
       "status": 200,
-      "ms": 781,
+      "ms": 549,
       "ok": true,
       "seo": null
     },
     {
       "path": "/partidos-hoy",
       "status": 200,
-      "ms": 7372,
+      "ms": 9124,
       "ok": true,
       "seo": {
         "path": "/partidos-hoy",
@@ -57,9 +57,9 @@
     {
       "path": "/futbol",
       "status": 0,
-      "ms": 303362,
+      "ms": 45013,
       "ok": false,
-      "error": "fetch failed",
+      "error": "This operation was aborted",
       "seo": {
         "path": "/futbol",
         "checks": {
@@ -77,7 +77,7 @@
     {
       "path": "/champions",
       "status": 200,
-      "ms": 8942,
+      "ms": 11132,
       "ok": true,
       "seo": {
         "path": "/champions",
@@ -96,7 +96,7 @@
     {
       "path": "/laliga",
       "status": 200,
-      "ms": 6977,
+      "ms": 7172,
       "ok": true,
       "seo": {
         "path": "/laliga",
@@ -115,7 +115,7 @@
     {
       "path": "/premier-league",
       "status": 200,
-      "ms": 7379,
+      "ms": 10526,
       "ok": true,
       "seo": {
         "path": "/premier-league",
@@ -133,28 +133,27 @@
     },
     {
       "path": "/formula-1",
-      "status": 0,
-      "ms": 303254,
-      "ok": false,
-      "error": "fetch failed",
+      "status": 200,
+      "ms": 11620,
+      "ok": true,
       "seo": {
         "path": "/formula-1",
         "checks": {
-          "hasJsonLd": false,
-          "hasCanonical": false,
-          "hasDescription": false,
-          "hasOgTitle": false,
-          "hasLang": false,
-          "hasH1": false,
-          "jsonLdAtEnd": false
+          "hasJsonLd": true,
+          "hasCanonical": true,
+          "hasDescription": true,
+          "hasOgTitle": true,
+          "hasLang": true,
+          "hasH1": true,
+          "jsonLdAtEnd": true
         },
-        "score": 0
+        "score": 100
       }
     },
     {
       "path": "/motogp",
       "status": 200,
-      "ms": 8094,
+      "ms": 9695,
       "ok": true,
       "seo": {
         "path": "/motogp",
@@ -173,7 +172,7 @@
     {
       "path": "/ufc",
       "status": 200,
-      "ms": 9339,
+      "ms": 12286,
       "ok": true,
       "seo": {
         "path": "/ufc",
@@ -195,11 +194,6 @@
       "priority": "P0",
       "area": "seo",
       "action": "Añadir JSON-LD en /futbol"
-    },
-    {
-      "priority": "P0",
-      "area": "seo",
-      "action": "Añadir JSON-LD en /formula-1"
     }
   ],
   "hubCount": 19

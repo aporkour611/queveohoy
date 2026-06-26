@@ -1,8 +1,8 @@
 # Propuesta de mejoras — maratón
 
-Generado: 2026-06-12T23:13:46.232Z
-Maratón: ultra-40000 · 71 / 40000 ciclos
-Versión producto: 5.3.0
+Generado: 2026-06-13T10:48:09.435Z
+Maratón: orderly-60000 · 91 / 60000 ciclos
+Versión producto: 5.5.0
 
 ## Aplicado (v5.1.1)
 

@@ -1,15 +1,10 @@
 {
-  "synthesizedAt": "2026-06-12T23:40:21.141Z",
+  "synthesizedAt": "2026-06-26T16:48:50.885Z",
   "discoveryRecommendations": [
     {
       "priority": "P0",
       "area": "seo",
       "action": "Añadir JSON-LD en /futbol"
-    },
-    {
-      "priority": "P0",
-      "area": "seo",
-      "action": "Añadir JSON-LD en /formula-1"
     },
     {
       "priority": "P2",

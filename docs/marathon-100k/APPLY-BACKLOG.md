@@ -1,11 +1,10 @@
 # Maratón 100k — backlog de aplicación
 
-Generado: 2026-06-12T23:40:21.141Z
+Generado: 2026-06-26T16:48:50.885Z
 
 ## Descubrimiento
 
 - **[P0]** (seo) Añadir JSON-LD en /futbol
-- **[P0]** (seo) Añadir JSON-LD en /formula-1
 - **[P2]** (monetization) Activar AdSlot con NEXT_PUBLIC_ADS_PREVIEW en staging
 - **[P1]** (design) Tarjetas fh-match: sombra, radius 12px, touch targets móvil (ya en CSS local si pendiente deploy)
 - **[P1]** (design) Filtros por liga (LaLiga, Champions) además de deporte

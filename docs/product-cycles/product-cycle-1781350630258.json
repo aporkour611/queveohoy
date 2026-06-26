@@ -1,0 +1,40 @@
+{
+  "cycles": 1,
+  "startedAt": "2026-06-13T11:29:04.152Z",
+  "results": [
+    {
+      "cycle": 1,
+      "phases": [
+        {
+          "id": "audit",
+          "ok": false,
+          "steps": [
+            {
+              "name": "keep-warm:prod",
+              "ok": true,
+              "ms": 228541,
+              "exit": 0,
+              "stderr": "FAIL /futbol (90008ms): The operation was aborted due to timeout\nFAIL /segunda-division (90016ms): The operation was aborted due to timeout\n\n2 rutas HTML lentas (cold ISR — cron /api/warm las calienta)\n"
+            },
+            {
+              "name": "quality:audit",
+              "ok": true,
+              "ms": 198236,
+              "exit": 0,
+              "stderr": "(node:23264) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.\n(Use `node --trace-deprecation ...` to show where the warning was created)\n"
+            },
+            {
+              "name": "verify:prod",
+              "ok": false,
+              "ms": 59325,
+              "exit": 1,
+              "stderr": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-06-13T11:37:10.258Z",
+  "completed": false
+}
