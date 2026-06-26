@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { isCronAuthorized } from "../../../lib/admin-auth";
 import { runPushCron } from "../../../lib/push-cron";
 
-export const maxDuration = 60;
+export const maxDuration = 10;
 
 export async function GET(request: Request) {
   if (!isCronAuthorized(request)) {

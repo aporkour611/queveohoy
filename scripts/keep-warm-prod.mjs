@@ -2,7 +2,7 @@
 /**
  * Precalienta producción (Vercel + Supabase + ISR).
  * Uso: npm run keep-warm:prod
- * GitHub Actions: keep-warm.yml (cada 15 min, respaldo a crons Vercel).
+ * GitHub Actions: keep-warm.yml cada 5 min (plan Hobby sin crons Vercel).
  */
 const SITE = (process.env.SITE_URL ?? "https://queveohoy.es").replace(/\/$/, "")
 const CRON_SECRET = process.env.CRON_SECRET?.trim()

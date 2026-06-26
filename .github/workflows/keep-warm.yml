@@ -2,8 +2,8 @@ name: Keep warm (prod)
 
 on:
   schedule:
-    # Respaldo al cron Vercel (cachés cada 5 min, origen cada 15 min)
-    - cron: "*/15 * * * *"
+    # Hobby: sin crons Vercel frecuentes — GHA cada 5 min
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 concurrency:

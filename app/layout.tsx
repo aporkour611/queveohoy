@@ -11,8 +11,8 @@ import { THEME_STORAGE_KEY } from "./lib/theme";
 import { resolveSiteWeekTheme } from "./lib/ufc-week";
 import { getMadridTodayKey } from "./lib/seo-date";
 
-/** Funciones cerca de Supabase / usuarios en España (menos latencia). */
-export const preferredRegion = ["cdg1", "fra1"];
+/** Funciones en región EU (Hobby: sin pinning en vercel.json). */
+export const preferredRegion = ["fra1", "cdg1"];
 
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",

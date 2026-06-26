@@ -11,7 +11,7 @@ import { rolloverDayContent } from "@/app/lib/revalidate-feed"
 import { isTrustedWarmRequest } from "@/app/lib/warm-auth"
 
 export const dynamic = "force-dynamic"
-export const maxDuration = 120
+export const maxDuration = 10
 
 /** Rollover diario 00:00 Europe/Madrid: purga, ingesta, invalida caché y calienta. */
 export async function GET(request: Request) {

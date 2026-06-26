@@ -1,0 +1,70 @@
+# Ingesta programada — sustituye crons Vercel (Hobby: máx. 2/día en dashboard).
+name: Cron ingest (prod)
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+    - cron: "0 12 * * *"
+    - cron: "0 18 * * *"
+    - cron: "30 6 * * *"
+    - cron: "30 12 * * *"
+    - cron: "30 18 * * *"
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: "core | extended | full"
+        required: false
+        default: "full"
+        type: choice
+        options:
+          - core
+          - extended
+          - full
+
+concurrency:
+  group: cron-ingest
+  cancel-in-progress: false
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Resolver fase
+        id: phase
+        run: |
+          if [ -n "${{ github.event.inputs.phase }}" ]; then
+            echo "phase=${{ github.event.inputs.phase }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          MIN=$(date -u +%M)
+          HOUR=$(date -u +%H)
+          if [ "$MIN" = "30" ]; then
+            echo "phase=extended" >> "$GITHUB_OUTPUT"
+          else
+            echo "phase=core" >> "$GITHUB_OUTPUT"
+          fi
+          echo "UTC $HOUR:$MIN → $(cat $GITHUB_OUTPUT)"
+
+      - name: Disparar /api/cron
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          PHASE: ${{ steps.phase.outputs.phase }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::CRON_SECRET no configurado"
+            exit 1
+          fi
+          URL="https://queveohoy.es/api/cron?phase=${PHASE}"
+          echo "GET $URL"
+          HTTP=$(curl -sS -o /tmp/cron.json -w "%{http_code}" --max-time 120 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$URL" || true)
+          head -c 2500 /tmp/cron.json || true
+          echo ""
+          echo "HTTP $HTTP"
+          if [ "$HTTP" != "200" ]; then
+            echo "::warning::Cron HTTP $HTTP (Hobby limita funciones a 10s; revisar VERCEL-HOBBY.md)"
+            exit 0
+          fi

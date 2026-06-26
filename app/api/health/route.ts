@@ -15,7 +15,7 @@ import { isSupabaseConfigured } from "@/app/lib/supabase-config"
 import { isTrustedWarmRequest } from "@/app/lib/warm-auth"
 
 export const dynamic = "force-dynamic"
-export const maxDuration = 60
+export const maxDuration = 10
 
 /** Integraciones solo con Bearer CRON_SECRET (nunca query params públicos). */
 function isDetailedHealthRequest(request: Request): boolean {

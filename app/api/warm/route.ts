@@ -4,11 +4,12 @@ import { runKeepWarmCycle } from "@/app/lib/keep-warm"
 import { isTrustedWarmRequest } from "@/app/lib/warm-auth"
 
 export const dynamic = "force-dynamic"
-export const maxDuration = 60
+/** Hobby Vercel: máx. 10s; warm ligero vía keep-warm-prod (GHA cada 5 min). */
+export const maxDuration = 10
 
 /**
  * Mantiene calientes Vercel (funciones + ISR) y Supabase (consultas periódicas).
- * Cron Vercel: cada minuto. GitHub Actions: cada 5 min (respaldo).
+ * Cron Vercel: desactivado en Hobby — ver .github/workflows/cron-schedule.yml
  */
 export async function GET(request: Request) {
   if (!isTrustedWarmRequest(request)) {
@@ -16,7 +17,8 @@ export async function GET(request: Request) {
     if (!rate.ok) return rateLimitResponse(rate.retryAfterSec)
   }
 
-  const warmOrigins = new URL(request.url).searchParams.get("origins") !== "0"
+  const warmOrigins =
+    new URL(request.url).searchParams.get("origins") === "1"
   const result = await runKeepWarmCycle({ warmOrigins })
 
   return NextResponse.json(
