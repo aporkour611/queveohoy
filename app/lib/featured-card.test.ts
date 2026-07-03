@@ -53,7 +53,7 @@ describe("getSpotlightCardModel TV posters", () => {
     const card = getSpotlightCardModel(event, MADRID_TZ);
 
     expect(card.coverImage?.local).toBe(true);
-    expect(card.coverImage?.url).toBe("/posters/el-hormiguero.png");
+    expect(card.coverImage?.url).toBe("/posters/el-hormiguero.webp");
     expect(card.channelList).toEqual(["Antena 3", "ATRESPLAYER TV"]);
   });
 });

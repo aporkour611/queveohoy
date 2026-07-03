@@ -5,6 +5,9 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const BASE = process.env.DISCOVERY_URL ?? "https://queveohoy.es";
+const HOME_WARM_MAX_MS = Number(process.env.COLD_HOME_WARM_MAX_MS ?? 1_000);
+const HOME_COLD_MAX_MS = Number(process.env.COLD_HOME_COLD_MAX_MS ?? 1_500);
+const API_SLOW_MAX_MS = Number(process.env.COLD_API_SLOW_MAX_MS ?? 2_500);
 const OUT = join(process.cwd(), "docs", "marathon-reports");
 
 const PATHS = [
@@ -52,16 +55,41 @@ async function main() {
     cold.push(await probe(`${path}${path.includes("?") ? "&" : "?"}cb=${Date.now()}`, true));
   }
 
-  const slow = [...warm, ...cold].filter((p) => p.ms > 3000 || !p.ok);
+  const slow = [...warm, ...cold].filter((p) => {
+    if (p.path === "/") return false;
+    return p.ms > API_SLOW_MAX_MS || !p.ok;
+  });
+  const homeWarm = warm.find((p) => p.path === "/");
+  const homeCold = cold.find((p) => p.path === "/");
+  const homeGateFail =
+    !homeWarm?.ok ||
+    !homeCold?.ok ||
+    (homeWarm?.ms ?? 9_999) > HOME_WARM_MAX_MS ||
+    (homeCold?.ms ?? 9_999) > HOME_COLD_MAX_MS;
+
   const payload = {
     base: BASE,
     at: new Date().toISOString(),
+    gates: {
+      homeWarmMaxMs: HOME_WARM_MAX_MS,
+      homeColdMaxMs: HOME_COLD_MAX_MS,
+      apiSlowMaxMs: API_SLOW_MAX_MS,
+      pass: !homeGateFail && slow.length === 0,
+    },
     warm,
     cold,
     slow,
+    homeWarmMs: homeWarm?.ms ?? null,
+    homeColdMs: homeCold?.ms ?? null,
     recommendations: [],
   };
 
+  if (homeGateFail) {
+    payload.recommendations.push({
+      priority: "P0",
+      action: `Home TTFB warm≤${HOME_WARM_MAX_MS}ms cold≤${HOME_COLD_MAX_MS}ms — subir keep-warm y cache ISR`,
+    });
+  }
   if (slow.some((p) => p.path === "/")) {
     payload.recommendations.push({
       priority: "P0",
@@ -78,7 +106,10 @@ async function main() {
   const out = join(OUT, "cold-start-audit-latest.json");
   writeFileSync(out, `${JSON.stringify(payload, null, 2)}\n`);
   const maxMs = Math.max(...warm.map((p) => p.ms), 0);
-  console.log(`Cold start audit → max warm ${maxMs}ms · ${slow.length} lentos`);
+  console.log(
+    `Cold start audit → home warm ${homeWarm?.ms ?? "?"}ms cold ${homeCold?.ms ?? "?"}ms · max warm ${maxMs}ms · gate ${payload.gates.pass ? "PASS" : "FAIL"}`
+  );
+  if (!payload.gates.pass) process.exitCode = 1;
 }
 
 main().catch((err) => {

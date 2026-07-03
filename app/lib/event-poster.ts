@@ -5,6 +5,11 @@ import { matchesSpanishTvFlagship } from "./spanish-tv-curated";
 import { parseJikanPoster } from "./jikan-client";
 import { encodeTmdbSource } from "./tmdb";
 import { parseTmdbPoster } from "./tmdb-client";
+import { preferLocalWebpUrl } from "./prefer-local-webp";
+
+function localPosterPath(path: string): string {
+  return preferLocalWebpUrl(path);
+}
 
 function flagshipTmdbPoster(
   flagship: NonNullable<ReturnType<typeof matchesSpanishTvFlagship>>,
@@ -27,7 +32,7 @@ export function resolveEventPosterUrl(
   const fromJikan = parseJikanPoster(event.source, size);
   if (fromJikan) return fromJikan;
 
-  if (flagship?.localPosterPath) return flagship.localPosterPath;
+  if (flagship?.localPosterPath) return localPosterPath(flagship.localPosterPath);
 
   const fromSource = parseTmdbPoster(event.source, size);
   if (fromSource) return fromSource;
@@ -54,7 +59,7 @@ export function resolveEventPosterUrl(
   }
 
   if (event.sport === "series" && /mobland/i.test(`${event.title ?? ""} ${event.competition ?? ""}`)) {
-    return "/posters/mobland-s2.png";
+    return localPosterPath("/posters/mobland-s2.png");
   }
 
   return null;

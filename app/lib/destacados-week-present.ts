@@ -4,6 +4,7 @@ import {
   getSpotlightCardModel,
   spotlightHasCompleteTeamCover,
 } from "./featured-card";
+import { destacadoHasQualityVisual } from "./poster-quality";
 import { MADRID_TZ } from "./timezone";
 import { resolvePrimaryWeekHeroContext, type WeekHeroContext } from "./week-hero";
 
@@ -24,6 +25,7 @@ export function buildWeekDestacadosPresentation(
 
   const weekFeatured = pickWeekDestacados(weekEvents, { todayKey }).filter(
     (event) => {
+      if (!destacadoHasQualityVisual(event)) return false;
       if (hero?.type === "ufc" && event.id === hero.context.mainEvent.id) {
         return false;
       }

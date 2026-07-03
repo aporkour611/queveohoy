@@ -46,6 +46,7 @@
     "marathon:40000": "node scripts/marathon-launch.mjs --cycles=40000 --fast --cwv",
     "marathon:60000": "node scripts/marathon-launch.mjs --cycles=60000 --fast --cwv",
     "marathon:180000": "node scripts/marathon-orderly-180k.mjs",
+    "marathon:supreme": "node scripts/marathon-supreme.mjs",
     "marathon:100k": "node scripts/marathon-100k.mjs",
     "marathon:1000": "node scripts/marathon-ultra-1000.mjs",
     "audit:cold-start": "node scripts/cold-start-audit.mjs",

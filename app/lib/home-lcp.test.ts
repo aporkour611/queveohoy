@@ -21,7 +21,7 @@ describe("resolveHomeLcpPreloadEntries", () => {
     const cover = getSpotlightCardModel(maskSingerEvent, MADRID_TZ).coverImage;
 
     expect(cover?.local).toBe(true);
-    expect(cover?.url).toBe("/posters/mask-singer.png");
+    expect(cover?.url).toBe("/posters/mask-singer.webp");
   });
 
   it("preloads poster local raster para LCP (sin /_next/image)", () => {

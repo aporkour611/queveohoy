@@ -81,8 +81,8 @@ export type FeedHydrationOptions = {
  * PSI (incl. mobile emulado en desktop) no registra listeners ni ejecuta HomeFeed.
  */
 export function subscribeFeedHydration({
-  desktopIdleMs = 10_000,
-  touchIdleMs = 12_000,
+  desktopIdleMs = 4_000,
+  touchIdleMs = 2_500,
   onActivate,
 }: FeedHydrationOptions): () => void {
   if (typeof window === "undefined" || shouldDeferHeavyClient()) {

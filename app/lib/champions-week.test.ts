@@ -22,7 +22,7 @@ describe("resolveEventPosterUrl TV", () => {
 
     const poster = resolveEventPosterUrl(event, "poster");
 
-    expect(poster).toBe("/posters/pasapalabra.png");
+    expect(poster).toBe("/posters/pasapalabra.webp");
   });
 });
 

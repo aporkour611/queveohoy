@@ -62,6 +62,10 @@
       "source": "/",
       "headers": [
         {
+          "key": "Cache-Control",
+          "value": "public, max-age=60, s-maxage=900, stale-while-revalidate=3600"
+        },
+        {
           "key": "Link",
           "value": "</deportes/ufc/topuria-lcp.webp>; rel=preload; as=image; fetchpriority=high"
         }

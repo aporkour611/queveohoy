@@ -16,15 +16,17 @@ export function FeedHydrationBootstrap(props: Props) {
   );
 
   useEffect(() => {
+    const hasSsrContent = (props.initialEventCount ?? 0) > 0;
     return subscribeFeedHydration({
-      desktopIdleMs: 10_000,
+      desktopIdleMs: hasSsrContent ? 1_200 : 4_000,
+      touchIdleMs: hasSsrContent ? 600 : 2_500,
       onActivate: () => {
         void import("./FeedClientRootsInner").then((mod) => {
           setRoots(() => mod.FeedClientRootsInner);
         });
       },
     });
-  }, []);
+  }, [props.initialEventCount]);
 
   if (!Roots) return null;
 
