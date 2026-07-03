@@ -119,12 +119,14 @@ async function main() {
 
   const slow = cold.filter((p) => {
     const base = p.path.split("?")[0];
-    if (base === "/") return false;
-    const max =
-      OPTIONAL_PATHS.includes(base) || HUB_PATHS.includes(base)
-        ? OPTIONAL_SLOW_MAX_MS
-        : API_SLOW_MAX_MS;
-    return p.ms > max || !p.ok;
+    if (!PATHS.includes(base) || base === "/") return false;
+    return p.ms > API_SLOW_MAX_MS || !p.ok;
+  });
+
+  const optionalSlow = cold.filter((p) => {
+    const base = p.path.split("?")[0];
+    if (!OPTIONAL_PATHS.includes(base)) return false;
+    return p.ms > OPTIONAL_SLOW_MAX_MS || !p.ok;
   });
 
   const homeWarm = warm.find((p) => p.path === "/");
@@ -186,6 +188,7 @@ async function main() {
     warm,
     cold,
     slow,
+    optionalSlow,
     hubFails,
     hubHeavySlow,
     homeWarmMs: homeWarm?.ms ?? null,
