@@ -31,7 +31,7 @@ export function HomeWeekPrefetchDeferred() {
       return () => window.cancelIdleCallback(id)
     }
 
-    const timer = window.setTimeout(inject, 4000)
+    const timer = window.setTimeout(inject, 12_000)
     return () => window.clearTimeout(timer)
   }, [])
 

@@ -13,9 +13,10 @@ describe("resolvePrioritySpotlightSrc", () => {
     expect(result?.src).toContain("/w92/");
   });
 
-  it("usa next-image para posters locales", () => {
+  it("usa img directo para posters locales raster", () => {
     const result = resolvePrioritySpotlightSrc("/flagship/roland-garros.png");
-    expect(result?.mode).toBe("next-image");
+    expect(result?.mode).toBe("lcp-direct");
+    expect(result?.src).toBe("/flagship/roland-garros.png");
   });
 
   it("expone blur placeholder ligero", () => {

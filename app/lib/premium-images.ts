@@ -1,4 +1,5 @@
 import { buildLcpPosterUrl, isTmdbPosterUrl } from "./lcp-poster";
+import { preferLocalWebpUrl } from "./prefer-local-webp";
 import { safeRemoteImageUrl } from "./remote-image";
 import {
   SPOTLIGHT_IMAGE_HEIGHT,
@@ -27,6 +28,10 @@ export function resolvePrioritySpotlightSrc(url: string): {
   }
 
   if (safe.startsWith("/")) {
+    const raster = preferLocalWebpUrl(safe);
+    if (/\.(webp|png|jpe?g|avif)$/i.test(raster)) {
+      return { mode: "lcp-direct", src: raster };
+    }
     return { mode: "next-image", src: safe };
   }
 

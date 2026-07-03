@@ -1,6 +1,6 @@
 {
   "name": "queveohoy",
-  "version": "5.6.0",
+  "version": "6.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -48,6 +48,8 @@
     "marathon:180000": "node scripts/marathon-orderly-180k.mjs",
     "marathon:supreme": "node scripts/marathon-supreme.mjs",
     "marathon:supreme:strict": "node scripts/marathon-supreme-strict.mjs",
+    "marathon:pro-launch": "node scripts/marathon-pro-launch.mjs",
+    "exam:pro": "node scripts/pro-deep-exam.mjs",
     "marathon:100k": "node scripts/marathon-100k.mjs",
     "marathon:1000": "node scripts/marathon-ultra-1000.mjs",
     "audit:cold-start": "node scripts/cold-start-audit.mjs",

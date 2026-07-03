@@ -37,11 +37,9 @@ async function warmup() {
   const paths = [
     "/api/health",
     "/api/warm",
-    "/api/v2/feed",
     "/api/home-feed",
     "/api/feed-meta",
-    "/deportes/ufc/topuria-lcp.webp",
-    "/deportes/ufc/gaethje.webp",
+    "/",
     "/",
     "/",
   ];

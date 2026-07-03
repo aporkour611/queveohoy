@@ -77,9 +77,9 @@ async function main() {
     );
     checks.push(
       check(
-        "Versión footer ≥5.7",
-        /5\.7\.\d+/.test(html) || /5\.[89]\.\d+/.test(html),
-        "footer sin 5.7+"
+        "Versión footer ≥6.0 PRO",
+        /6\.\d+\.\d+/.test(html),
+        "footer sin 6.0+"
       )
     );
 

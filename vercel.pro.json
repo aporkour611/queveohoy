@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "$comment": "Plantilla Vercel Pro — renombrar a vercel.json al activar plan Pro",
+  "git": { "deploymentEnabled": true },
+  "regions": ["cdg1"],
+  "fluid": true,
+  "crons": [
+    { "path": "/api/warm", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron?phase=core", "schedule": "0 6,12,18 * * *" },
+    { "path": "/api/cron?phase=extended", "schedule": "30 6,12,18 * * *" },
+    { "path": "/api/push/cron", "schedule": "0 8,20 * * *" },
+    { "path": "/api/midnight-rollover", "schedule": "5 0 * * *" }
+  ],
+  "functions": {
+    "app/api/cron/route.ts": { "maxDuration": 300, "memory": 3009 },
+    "app/api/warm/route.ts": { "maxDuration": 60, "memory": 3009 },
+    "app/api/push/cron/route.ts": { "maxDuration": 60 },
+    "app/(feed)/page.tsx": { "maxDuration": 25, "memory": 1024 }
+  }
+}
