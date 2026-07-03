@@ -66,6 +66,7 @@ const nextConfig: NextConfig = {
       "@vercel/speed-insights",
       "@supabase/supabase-js",
       "@supabase/ssr",
+      "date-fns",
     ],
     /**
      * Critters en build: mejora FCP pero duplica mucho el tiempo de deploy en Vercel/CI.
