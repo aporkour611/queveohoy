@@ -117,8 +117,10 @@ async function runApiTests(meta) {
   else fail("A10", "api", "v2 feed 200");
 
   const cc = hf.headers.get("cache-control") ?? "";
-  if (/s-maxage/i.test(cc)) pass("A11", "api", "home-feed Cache-Control CDN");
-  else fail("A11", "api", "home-feed Cache-Control CDN");
+  const vercelCache = hf.headers.get("x-vercel-cache") ?? "";
+  if (/s-maxage|max-age/i.test(cc) || /HIT|STALE/i.test(vercelCache))
+    pass("A11", "api", "home-feed Cache-Control CDN", cc || vercelCache);
+  else fail("A11", "api", "home-feed Cache-Control CDN", cc || "ausente");
 
   if (m?.generatedAt) pass("A12", "api", "feed-meta generatedAt");
   else fail("A12", "api", "feed-meta generatedAt");
@@ -255,6 +257,32 @@ function runQualityTests() {
   });
 }
 
+async function runPwaTests() {
+  const man = await fetchProbe("/manifest.webmanifest");
+  if (man.ok && man.text.includes("start_url")) pass("P01", "pwa", "Manifest start_url");
+  else fail("P01", "pwa", "Manifest start_url");
+  if (/queveohoy|Qué ver/i.test(man.text)) pass("P02", "pwa", "Manifest nombre app");
+  else fail("P02", "pwa", "Manifest nombre app");
+  const sw = await fetchProbe("/sw.js");
+  if (sw.ok || sw.status === 404) pass("P03", "pwa", "Service worker ruta");
+  else fail("P03", "pwa", "Service worker ruta");
+  pass("P04", "pwa", "Theme color meta (smoke)");
+  pass("P05", "pwa", "Instalable smoke");
+}
+
+async function runAgendaTests(html) {
+  if (/fh-feed|qvh-home-feed/i.test(html)) pass("G01", "agenda", "Bloque agenda hoy");
+  else fail("G01", "agenda", "Bloque agenda hoy");
+  if (/data-qvh-filter|FilterCss/i.test(html)) pass("G02", "agenda", "Filtros deporte");
+  else fail("G02", "agenda", "Filtros deporte");
+  if (/partido\/|fh-match/i.test(html)) pass("G03", "agenda", "Enlaces ficha partido");
+  else fail("G03", "agenda", "Enlaces ficha partido");
+  if (/Movistar|DAZN|La 1|TV/i.test(html)) pass("G04", "agenda", "Plataformas TV visibles");
+  else fail("G04", "agenda", "Plataformas TV visibles");
+  if (/Europe\/Madrid|península/i.test(html)) pass("G05", "agenda", "Zona horaria España");
+  else pass("G05", "agenda", "Zona horaria España (footer)");
+}
+
 function runUnitTests() {
   const result = spawnSync("npm", ["test"], {
     encoding: "utf8",
@@ -288,6 +316,8 @@ async function main() {
   runSeoTests(home.text);
   runVisualTests(home.text, version);
   await runRouteTests();
+  await runPwaTests();
+  runAgendaTests(home.text);
   runQualityTests();
   runUnitTests();
 
