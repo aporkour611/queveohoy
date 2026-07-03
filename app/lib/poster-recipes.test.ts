@@ -154,7 +154,7 @@ describe("getSpotlightCardModel flagship posters", () => {
 
     const card = getSpotlightCardModel(event, MADRID_TZ);
 
-    expect(card.coverImage?.url).toBe("/deportes/baloncesto-nba.png");
+    expect(card.coverImage?.url).toBeUndefined();
     expect(card.visualClass).toBe("qvh-spotlight-visual-basket-nba");
     expect(card.showTeamDuel).toBe(true);
     expect(card.homeCrest).toContain("lal.png");

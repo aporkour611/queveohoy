@@ -56,6 +56,7 @@ import {
   isTopuriaGaethjeFight,
   UFC_CASABLANCA_FIGHTER_IMAGES,
 } from "./ufc-week";
+import { isGenericSportPlaceholderUrl } from "./poster-quality";
 
 export type SpotlightBadgeVariant =
   | "ppv"
@@ -96,7 +97,8 @@ export type SpotlightCardModel = {
 
 export function spotlightHasCompleteTeamCover(card: SpotlightCardModel): boolean {
   if (!card.showTeamDuel) return true;
-  return Boolean(card.homeCrest && card.awayCrest && card.coverImage);
+  if (card.homeCrest && card.awayCrest) return true;
+  return Boolean(card.coverImage?.url && !isGenericSportPlaceholderUrl(card.coverImage.url));
 }
 
 function sportPosterCover(
@@ -113,7 +115,7 @@ function applyFlagshipOrSportCover(
   fallbackVisual: string
 ): { coverImage?: SpotlightCover; visualClass: string } {
   const cover = resolvePosterCover(event);
-  if (cover) {
+  if (cover && !isGenericSportPlaceholderUrl(cover.url)) {
     return {
       coverImage: sportPosterCover(
         cover.url,
@@ -315,9 +317,7 @@ export function getSpotlightCardModel(
       platform: event.platform?.trim() || channels || "TV",
       channelList: channelList.length ? channelList : undefined,
       coverImage: styled.coverImage ??
-        (poster
-          ? remoteSpotlightCover(poster, "poster")
-          : sportPosterCover("/deportes/ciclismo.png", "qvh-spotlight-visual-ciclismo")),
+        (poster ? remoteSpotlightCover(poster, "poster") : undefined),
       visualClass: styled.visualClass,
     };
   }
@@ -471,11 +471,7 @@ export function getSpotlightCardModel(
         : isChampions
           ? "qvh-spotlight-visual-champions"
           : styled.visualClass,
-      coverImage:
-        styled.coverImage ??
-        (!ids
-          ? sportPosterCover("/deportes/futbol.png", "qvh-spotlight-visual-futbol")
-          : undefined),
+      coverImage: styled.coverImage ?? undefined,
       homeCrest: ids ? teamCrestUrl(ids.homeId) : undefined,
       awayCrest: ids ? teamCrestUrl(ids.awayId) : undefined,
       homeName,
@@ -495,10 +491,7 @@ export function getSpotlightCardModel(
     meta: channels || event.competition?.trim() || sportLabel(sport),
     platform: event.platform?.trim() || channels || "TV",
     channelList: channelList.length ? channelList : undefined,
-    coverImage:
-      styled.coverImage ??
-      mediaFallbackCover(sport) ??
-      sportPosterCover("/deportes/futbol.png", "qvh-spotlight-visual-default"),
+    coverImage: styled.coverImage ?? mediaFallbackCover(sport) ?? undefined,
     visualClass: styled.visualClass,
   };
 }

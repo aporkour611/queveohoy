@@ -1,7 +1,7 @@
 /* ── Destacados (spotlight cards) ── */
 .qvh-destacados-stack {
-  margin: 0 0 16px;
-  padding: 0 0 4px;
+  margin: 0 0 12px;
+  padding: 0 0 2px;
   border-bottom: 1px solid var(--qvh-border);
 }
 
@@ -14,7 +14,7 @@
 
 .qvh-destacados {
   margin: 0;
-  padding: 0 0 14px;
+  padding: 0 0 10px;
   border-bottom: none;
 }
 

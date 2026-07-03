@@ -1,4 +1,5 @@
 import { safeRemoteImageUrl } from "./remote-image";
+import { preferLocalWebpUrl } from "./prefer-local-webp";
 
 const TMDB_HOST = "image.tmdb.org";
 
@@ -10,7 +11,7 @@ export function buildLcpPosterUrl(src?: string | null): string | null {
   const safe = safeRemoteImageUrl(src);
   if (!safe) return null;
 
-  if (safe.startsWith("/")) return safe;
+  if (safe.startsWith("/")) return preferLocalWebpUrl(safe);
 
   try {
     const url = new URL(safe);
