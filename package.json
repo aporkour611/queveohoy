@@ -52,6 +52,7 @@
     "exam:pro": "node scripts/pro-deep-exam.mjs",
     "test:pro-100": "node scripts/pro-100-tests.mjs",
     "marathon:ultra-pro": "node scripts/marathon-ultra-pro.mjs",
+    "marathon:ultra-100k": "node scripts/marathon-ultra-100k.mjs",
     "marathon:100k": "node scripts/marathon-100k.mjs",
     "marathon:1000": "node scripts/marathon-ultra-1000.mjs",
     "audit:cold-start": "node scripts/cold-start-audit.mjs",
