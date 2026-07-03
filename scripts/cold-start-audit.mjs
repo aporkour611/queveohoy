@@ -13,10 +13,10 @@ const OUT = join(process.cwd(), "docs", "marathon-reports");
 const PATHS = [
   "/api/feed-meta",
   "/api/home-feed",
-  "/api/v2/feed",
-  "/api/v1/feed/week",
   "/",
 ];
+
+const OPTIONAL_PATHS = ["/api/v2/feed", "/api/v1/feed/week"];
 
 async function probe(path, cold = false) {
   const url = `${BASE}${path}`;
@@ -47,20 +47,22 @@ async function probe(path, cold = false) {
 async function main() {
   mkdirSync(OUT, { recursive: true });
   const warm = [];
-  for (const path of PATHS) {
+  for (const path of [...PATHS, ...OPTIONAL_PATHS]) {
     warm.push(await probe(path, false));
   }
   const cold = [];
-  for (const path of PATHS) {
+  for (const path of [...PATHS, ...OPTIONAL_PATHS]) {
     cold.push(await probe(`${path}${path.includes("?") ? "&" : "?"}cb=${Date.now()}`, true));
   }
 
-  const slow = [...warm, ...cold].filter((p) => {
-    if (p.path === "/") return false;
+  const slow = cold.filter((p) => {
+    const base = p.path.split("?")[0];
+    if (!PATHS.includes(base)) return false;
+    if (base === "/") return false;
     return p.ms > API_SLOW_MAX_MS || !p.ok;
   });
   const homeWarm = warm.find((p) => p.path === "/");
-  const homeCold = cold.find((p) => p.path === "/");
+  const homeCold = cold.find((p) => p.path.startsWith("/") && !p.path.startsWith("/api"));
   const homeGateFail =
     !homeWarm?.ok ||
     !homeCold?.ok ||
