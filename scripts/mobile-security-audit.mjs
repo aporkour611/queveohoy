@@ -76,6 +76,9 @@ async function main() {
     manifestOk,
     passed: checks.filter((c) => c.ok).length,
     total: checks.length,
+    gates: {
+      pass: checks.every((c) => c.ok),
+    },
   };
 
   const out = join(OUT, "mobile-security-audit-latest.json");
