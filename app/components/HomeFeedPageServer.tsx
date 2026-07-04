@@ -13,7 +13,6 @@ import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { HomeJsonLd } from "./HomeJsonLd";
 import { HomeLcpPreload } from "./HomeLcpPreload";
-import { HomeNav } from "./HomeNav";
 import { HomeNavStatic } from "./HomeNavStatic";
 import { SiteFooter } from "./SiteFooter";
 import { eventsForHomeSsrHtml } from "../lib/featured";
@@ -31,7 +30,6 @@ import { isUfcWeekEditorialWindow, UFC_CASABLANCA_FALLBACK } from "../lib/ufc-we
 import { UfcDestacadosStatic } from "./UfcDestacadosStatic";
 import { UfcHomeFeedShell } from "./UfcHomeFeedShell";
 import { UfcHomeNav } from "./UfcHomeNav";
-import { HomePageClientShell } from "./HomePageClientShell";
 
 const HomeFaq = dynamic(
   () => import("./HomeFaq").then((mod) => mod.HomeFaq),
@@ -136,7 +134,6 @@ export async function HomeFeedPageServer({ audit = false }: Props) {
   const todayKey = initialDay?.date ?? "";
   const ufcEditorial = isUfcWeekEditorialWindow(todayKey);
   const shellDays = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT);
-  const Nav = audit ? HomeNavStatic : HomeNav;
 
   if (ufcEditorial) {
     return (
@@ -181,11 +178,39 @@ export async function HomeFeedPageServer({ audit = false }: Props) {
   );
   const destacadosEnhancer = resolveDestacadosEnhancerProps(weekEvents, todayKey);
 
+  const Nav = audit ? (
+    <HomeNavStatic />
+  ) : (
+    await import("./HomeNav").then((mod) => <mod.HomeNav />)
+  );
+
+  const clientShell = audit
+    ? null
+    : await import("./HomePageClientShell").then((mod) => (
+        <mod.HomePageClientShell
+          adSlot={{
+            slot: "feed-mid",
+            className: "mx-auto max-w-[950px] px-5",
+          }}
+          hydration={{
+            initialEvents: ssrEvents,
+            initialDestacadosEvents: weekEvents,
+            initialWeekEvents: [],
+            initialError: error,
+            serverDayHeaderDate: initialDay?.date ?? null,
+            initialEventCount: ssrEvents.length,
+            tonightEvents,
+            todayKey,
+            destacadosEnhancer,
+          }}
+        />
+      ));
+
   return (
     <>
       <HomeLcpPreload entries={lcpPreloadEntries} />
       <div className={`fh-body${weekPresentation.bodyClassSuffix}`}>
-        <Nav />
+        {Nav}
         <main id="main-content" className="fh-content">
           <div className="fh-container fh-main">
             <h1 className="sr-only">Qué ver hoy en TV</h1>
@@ -214,25 +239,7 @@ export async function HomeFeedPageServer({ audit = false }: Props) {
                   dayDate={initialDay.date}
                 />
               ) : null}
-              {!audit ? (
-                <HomePageClientShell
-                  adSlot={{
-                    slot: "feed-mid",
-                    className: "mx-auto max-w-[950px] px-5",
-                  }}
-                  hydration={{
-                    initialEvents: ssrEvents,
-                    initialDestacadosEvents: weekEvents,
-                    initialWeekEvents: [],
-                    initialError: error,
-                    serverDayHeaderDate: initialDay?.date ?? null,
-                    initialEventCount: ssrEvents.length,
-                    tonightEvents,
-                    todayKey,
-                    destacadosEnhancer,
-                  }}
-                />
-              ) : null}
+              {clientShell}
             </div>
           </div>
           <SeoGuidesPromo />
