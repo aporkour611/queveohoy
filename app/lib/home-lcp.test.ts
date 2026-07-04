@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest";
 import type { EventRow } from "../components/types";
 import { getDestacadoImportanceTier } from "./destacados-importance";
+import { buildWeekDestacadosPresentation } from "./destacados-week-present";
 import { getSpotlightCardModel } from "./featured-card";
-import { buildOptimizedPreloadHref } from "./optimized-image";
-import { resolveHomeLcpPreloadEntries, resolveLcpPreloadEntryFromCover } from "./home-lcp";
+import { FEED_DAY_COUNT } from "./events-feed";
+import {
+  resolveHomeLcpPreloadEntries,
+  resolveLcpPreloadEntryFromCard,
+  resolveLcpPreloadEntryFromCover,
+  resolveLcpPriorityIndex,
+} from "./home-lcp";
+import { LCP_TMDB_POSTER_WIDTH, resolveLcpCoverImgSrc } from "./lcp-poster";
 import { MADRID_TZ } from "./timezone";
 
 const maskSingerEvent: EventRow = {
@@ -14,6 +21,31 @@ const maskSingerEvent: EventRow = {
   time: "23:00",
   competition: "Concurso · Mask Singer",
   platform: "Antena 3 · ATRESPLAYER TV",
+};
+
+const esportsValorantEvent: EventRow = {
+  id: 101,
+  title: "Team A vs Team B",
+  sport: "valorant",
+  date: "2026-05-27",
+  time: "18:00",
+  home_team: "Alpha",
+  away_team: "Beta",
+  competition: "VCT",
+  platform: "Twitch",
+  source:
+    "pandascore-logos:https://cdn.pandascore.co/images/team/image/1/a.png::https://cdn.pandascore.co/images/team/image/2/b.png",
+};
+
+const elDramaEvent: EventRow = {
+  id: 102,
+  title: "El drama",
+  sport: "cine",
+  date: "2026-05-29",
+  time: "22:00",
+  competition: "Cine",
+  platform: "Cines",
+  external_id: "tmdb_movie_1325734",
 };
 
 describe("resolveHomeLcpPreloadEntries", () => {
@@ -30,7 +62,7 @@ describe("resolveHomeLcpPreloadEntries", () => {
 
     expect(entry?.href).toBe("/posters/mask-singer.webp");
     expect(entry?.href).not.toContain("/_next/image");
-    expect(buildOptimizedPreloadHref(cover.url)).toContain("/_next/image");
+    expect(resolveLcpCoverImgSrc(cover.url, cover.local)).toBe(entry?.href);
   });
 
   it("prefiere poster local mismo origen sobre TMDB para LCP", () => {
@@ -75,5 +107,41 @@ describe("resolveHomeLcpPreloadEntries", () => {
 
     expect(entries.length).toBeGreaterThanOrEqual(1);
     expect(entries[0]?.href.length).toBeGreaterThan(0);
+  });
+
+  it("prefiere poster TMDB sobre esports duel para LCP y preload", () => {
+    const events = [esportsValorantEvent, elDramaEvent];
+
+    expect(resolveLcpPriorityIndex(events)).toBe(1);
+
+    const dramaCard = getSpotlightCardModel(elDramaEvent, MADRID_TZ);
+    const entry = resolveLcpPreloadEntryFromCard(dramaCard);
+    const imgSrc = resolveLcpCoverImgSrc(
+      dramaCard.coverImage!.url,
+      dramaCard.coverImage!.local
+    );
+
+    expect(entry?.href).toContain("image.tmdb.org");
+    expect(entry?.href).toContain(`/${LCP_TMDB_POSTER_WIDTH}/`);
+    expect(entry?.href).toBe(imgSrc);
+  });
+
+  it("preload href coincide con img LCP del candidato elegido", () => {
+    const todayKey = "2026-05-27";
+    const events = [esportsValorantEvent, elDramaEvent];
+    const { weekFeatured } = buildWeekDestacadosPresentation(
+      events,
+      todayKey,
+      FEED_DAY_COUNT
+    );
+    const featured = weekFeatured.slice(0, 3);
+    const winner = featured[resolveLcpPriorityIndex(featured)];
+    const expected = resolveLcpPreloadEntryFromCard(
+      getSpotlightCardModel(winner, MADRID_TZ)
+    )?.href;
+    const entries = resolveHomeLcpPreloadEntries(events, todayKey);
+
+    expect(entries[0]?.href).toBe(expected);
+    expect(entries[0]?.href).not.toContain("/_next/image");
   });
 });

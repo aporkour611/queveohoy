@@ -1,8 +1,9 @@
 import type { EventRow } from "../components/types";
-import { DESTACADOS_VISIBLE_SLOTS, pickWeekDestacados } from "./destacados-config";
+import { DESTACADOS_VISIBLE_SLOTS } from "./destacados-config";
+import { buildWeekDestacadosPresentation } from "./destacados-week-present";
 import { getSpotlightCardModel } from "./featured-card";
 import { resolveLcpLocalRasterUrl } from "./lcp-local-poster";
-import { buildLcpPosterUrl, isTmdbPosterUrl } from "./lcp-poster";
+import { isTmdbPosterUrl, resolveLcpCoverImgSrc } from "./lcp-poster";
 import { buildDisplayDays, MADRID_TZ } from "./timezone";
 import { FEED_DAY_COUNT } from "./events-feed";
 import {
@@ -10,27 +11,40 @@ import {
   resolveUfcWeekContext,
   UFC_CASABLANCA_FIGHTER_IMAGES,
 } from "./ufc-week";
-import {
-  buildSpotlightPreloadEntry,
-  type SpotlightPreloadEntry,
-} from "./optimized-image";
+import type { SpotlightPreloadEntry } from "./optimized-image";
 import type { SpotlightCover } from "./spotlight-art";
+import { safeRemoteImageUrl } from "./remote-image";
 
-function lcpCoverScore(
-  cover: SpotlightCover | undefined,
-  card: ReturnType<typeof getSpotlightCardModel>
-): number {
-  if (!cover?.url) return -1;
+type SpotlightCardModel = ReturnType<typeof getSpotlightCardModel>;
+
+function hasTeamDuelVisual(card: SpotlightCardModel): boolean {
+  return Boolean(card.showTeamDuel && card.homeCrest && card.awayCrest);
+}
+
+/** Portada realmente pintada (no escudos ni duelos que la sustituyen). */
+function resolveVisibleLcpCover(card: SpotlightCardModel): SpotlightCover | null {
+  if (!card.coverImage) return null;
+  if (
+    hasTeamDuelVisual(card) ||
+    card.showUfcDuel ||
+    card.showRolandGarrosDuel ||
+    card.showTennisDuel
+  ) {
+    return null;
+  }
+  return card.coverImage;
+}
+
+function lcpCoverScore(cover: SpotlightCover): number {
+  if (!cover.url) return -1;
 
   const isSmallDuelIcon =
-    card.showTeamDuel &&
-    cover.local &&
-    /\/esports\/|\/crests\/|_logo\./i.test(cover.url);
+    cover.local && /\/esports\/|\/crests\/|_logo\./i.test(cover.url);
 
   if (isSmallDuelIcon) return 2;
 
-  if (card.showTeamDuel && !cover.local && !isTmdbPosterUrl(cover.url)) {
-    return 3
+  if (!cover.local && !isTmdbPosterUrl(cover.url)) {
+    return 3;
   }
 
   if (cover.local) {
@@ -47,28 +61,52 @@ function lcpCoverScore(
   return 5;
 }
 
-/** Preload alineado con el <img> LCP (local mismo origen > TMDB directo > next/image). */
+function lcpCardScore(card: SpotlightCardModel): number {
+  const visibleCover = resolveVisibleLcpCover(card);
+  if (visibleCover) return lcpCoverScore(visibleCover);
+
+  if (card.showUfcDuel) {
+    return safeRemoteImageUrl(card.homeCrest) ? 10 : -1;
+  }
+
+  if (hasTeamDuelVisual(card)) return 2;
+
+  return -1;
+}
+
+/** Preload alineado con el <img> LCP (local mismo origen > TMDB directo > remoto). */
 export function resolveLcpPreloadEntryFromCover(
   cover: SpotlightCover
 ): SpotlightPreloadEntry | null {
   if (!cover.url) return null;
 
-  if (cover.local && cover.url.startsWith("/")) {
-    return { href: resolveLcpLocalRasterUrl(cover.url) };
+  const href = resolveLcpCoverImgSrc(cover.url, cover.local);
+  return href ? { href } : null;
+}
+
+/** Preload del visual LCP real de la tarjeta (portada, escudo o luchador). */
+export function resolveLcpPreloadEntryFromCard(
+  card: SpotlightCardModel
+): SpotlightPreloadEntry | null {
+  const visibleCover = resolveVisibleLcpCover(card);
+  if (visibleCover) return resolveLcpPreloadEntryFromCover(visibleCover);
+
+  if (card.showUfcDuel) {
+    const f1 = safeRemoteImageUrl(card.homeCrest);
+    return f1 ? { href: f1 } : null;
   }
 
-  const lcpUrl = buildLcpPosterUrl(cover.url);
-  if (lcpUrl?.includes("image.tmdb.org")) {
-    return { href: lcpUrl };
+  if (hasTeamDuelVisual(card)) {
+    const crest = safeRemoteImageUrl(card.homeCrest);
+    return crest ? { href: crest } : null;
   }
 
-  return buildSpotlightPreloadEntry(cover.url);
+  return null;
 }
 
 function resolveCoverPreloadEntry(event: EventRow): SpotlightPreloadEntry | null {
-  const cover = getSpotlightCardModel(event, MADRID_TZ).coverImage;
-  if (!cover) return null;
-  return resolveLcpPreloadEntryFromCover(cover);
+  const card = getSpotlightCardModel(event, MADRID_TZ);
+  return resolveLcpPreloadEntryFromCard(card);
 }
 
 /** Índice de la tarjeta visible más probable como LCP (un solo eager+high). */
@@ -79,7 +117,7 @@ export function resolveLcpPriorityIndex(events: EventRow[]): number {
 
   featured.forEach((event, index) => {
     const card = getSpotlightCardModel(event, MADRID_TZ);
-    const score = lcpCoverScore(card.coverImage, card);
+    const score = lcpCardScore(card);
     if (score > bestScore) {
       bestScore = score;
       bestIndex = index;
@@ -108,10 +146,12 @@ export function resolveHomeLcpPreloadEntries(
     }
   }
 
-  const featured = pickWeekDestacados(events, { todayKey: today }).slice(
-    0,
-    DESTACADOS_VISIBLE_SLOTS
+  const { weekFeatured } = buildWeekDestacadosPresentation(
+    events,
+    today,
+    FEED_DAY_COUNT
   );
+  const featured = weekFeatured.slice(0, DESTACADOS_VISIBLE_SLOTS);
 
   const lcpIndex = resolveLcpPriorityIndex(featured);
   const event = featured[lcpIndex];

@@ -5,8 +5,7 @@ import { getSpotlightCardModel } from "../lib/featured-card";
 import { getEventCardStamp, isChampionsFinal } from "../lib/event-card-stamp";
 import { partidoPath } from "../lib/event-slug";
 import { MADRID_TZ } from "../lib/timezone";
-import { resolveLcpLocalRasterUrl } from "../lib/lcp-local-poster";
-import { buildLcpPosterUrl } from "../lib/lcp-poster";
+import { resolveLcpCoverImgSrc } from "../lib/lcp-poster";
 import {
   buildSpotlightImageProps,
   SPOTLIGHT_IMAGE_HEIGHT,
@@ -42,9 +41,7 @@ function StaticSpotlightCover({
   const imgStyle = spotlightCoverImageStyle(objectPosition);
 
   if (priority) {
-    const lcpSrc = local
-      ? resolveLcpLocalRasterUrl(url)
-      : buildLcpPosterUrl(url) ?? safeRemoteImageUrl(url);
+    const lcpSrc = resolveLcpCoverImgSrc(url, local);
     if (lcpSrc) {
       return (
         <div className={layoutClass} aria-hidden>
@@ -123,13 +120,25 @@ function StaticSpotlightCover({
   );
 }
 
-function StaticTeamCrest({ src }: { src?: string | null }) {
+function StaticTeamCrest({
+  src,
+  priority = false,
+}: {
+  src?: string | null;
+  priority?: boolean;
+}) {
   const safe = safeRemoteImageUrl(src);
   if (!safe) return null;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={safe} alt="" className="qvh-spotlight-crest fh-team-crest-img" loading="lazy" />
+    <img
+      src={safe}
+      alt=""
+      className="qvh-spotlight-crest fh-team-crest-img"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
+    />
   );
 }
 
@@ -306,12 +315,12 @@ export function FeaturedEventCardStatic({
         ) : showTeamDuel ? (
           <div className="qvh-spotlight-duel" aria-hidden>
             <div className="qvh-spotlight-duel-team">
-              <StaticTeamCrest src={card.homeCrest} />
+              <StaticTeamCrest src={card.homeCrest} priority={priority} />
               <span className="qvh-spotlight-duel-name">{card.homeName}</span>
             </div>
             <span className="qvh-spotlight-duel-vs">vs</span>
             <div className="qvh-spotlight-duel-team">
-              <StaticTeamCrest src={card.awayCrest} />
+              <StaticTeamCrest src={card.awayCrest} priority={priority} />
               <span className="qvh-spotlight-duel-name">{card.awayName}</span>
             </div>
           </div>
