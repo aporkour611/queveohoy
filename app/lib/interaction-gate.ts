@@ -12,17 +12,15 @@ export function hasEarlyDeferFlag(): boolean {
   return document.documentElement.dataset.qvhDefer === "1"
 }
 
+import { isSyntheticAuditUserAgent } from "./synthetic-audit"
+
 /** Lighthouse / Playwright / headless explícito. */
 export function isSyntheticAudit(): boolean {
   if (hasEarlyDeferFlag()) return true
   if (typeof navigator === "undefined") return false
   if (navigator.webdriver) return true
   const ua = navigator.userAgent
-  if (
-    /HeadlessChrome|Headless|Lighthouse|Chrome-Lighthouse|PTST|PageSpeed|Google-InspectionTool|Playwright|Speed Insights|Structured-Data-TestingTool/i.test(
-      ua
-    )
-  ) {
+  if (isSyntheticAuditUserAgent(ua)) {
     return true
   }
   const brands = (

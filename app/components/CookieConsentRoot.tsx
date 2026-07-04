@@ -1,13 +1,13 @@
 "use client";
 
-import { CookieConsentPrompts } from "./CookieConsentPrompts";
+import { LayoutClientShell } from "./LayoutClientShell";
 
-/** @deprecated Usar `{children}` + `<CookieConsentPrompts />` */
+/** @deprecated Usar `{children}` + `<LayoutClientShell />` */
 export function CookieConsentRoot({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
-      <CookieConsentPrompts />
+      <LayoutClientShell />
     </>
   );
 }

@@ -7,7 +7,6 @@
  */
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { randomBytes } from "node:crypto";
 import {

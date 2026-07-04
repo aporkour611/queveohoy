@@ -1,18 +1,16 @@
-import { HomeLogoLinkServer } from "./HomeLogoLinkServer";
-import { HomeNavActions } from "./HomeNavActions";
-import { NavbarHeightSync } from "./NavbarHeightSync";
+import { shouldDeferHeavyServer } from "../lib/defer-heavy-server"
+import { HomeLogoLinkServer } from "./HomeLogoLinkServer"
+import { HomeNavClient } from "./HomeNavClient"
+import { HomeNavStatic } from "./HomeNavStatic"
 
-export function HomeNav() {
+export async function HomeNav() {
+  if (await shouldDeferHeavyServer()) {
+    return <HomeNavStatic />
+  }
+
   return (
     <header className="fh-header-shell fh-header-volumetric">
-      <NavbarHeightSync />
-      <div className="fh-header-depth" aria-hidden />
-      <nav className="fh-navbar fh-navbar-elevated fh-navbar-volumetric" aria-label="Navegación principal">
-        <div className="fh-navbar-inner">
-          <HomeLogoLinkServer />
-          <HomeNavActions />
-        </div>
-      </nav>
+      <HomeNavClient logo={<HomeLogoLinkServer />} />
     </header>
-  );
+  )
 }

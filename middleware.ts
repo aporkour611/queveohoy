@@ -1,13 +1,29 @@
 import { createServerClient } from "@supabase/ssr"
-import { NextResponse, type NextRequest } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 import { edgePublicApiRateLimit } from "@/app/lib/edge-rate-limit"
+import { isSyntheticAuditUserAgent } from "@/app/lib/synthetic-audit"
 import {
   resolveSupabasePublishableKey,
   resolveSupabaseUrl,
 } from "@/app/lib/supabase-config"
 
+function withDeferHeader(request: NextRequest): Headers {
+  const ua = request.headers.get("user-agent") ?? ""
+  if (!isSyntheticAuditUserAgent(ua)) {
+    return request.headers
+  }
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set("x-qvh-defer", "1")
+  return requestHeaders
+}
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+  const requestHeaders = withDeferHeader(request)
+  const hasDeferHeader = requestHeaders !== request.headers
+  const nextRequest = hasDeferHeader
+    ? new NextRequest(request.url, { headers: requestHeaders })
+    : request
 
   if (pathname.startsWith("/api/")) {
     const rate = await edgePublicApiRateLimit(request)
@@ -23,10 +39,20 @@ export async function middleware(request: NextRequest) {
         }
       )
     }
+    if (hasDeferHeader) {
+      return NextResponse.next({ request: { headers: requestHeaders } })
+    }
     return NextResponse.next()
   }
 
-  let supabaseResponse = NextResponse.next({ request })
+  if (!pathname.startsWith("/cuenta/") && !pathname.startsWith("/auth/")) {
+    if (hasDeferHeader) {
+      return NextResponse.next({ request: { headers: requestHeaders } })
+    }
+    return NextResponse.next()
+  }
+
+  let supabaseResponse = NextResponse.next({ request: nextRequest })
 
   const supabase = createServerClient(
     resolveSupabaseUrl(),
@@ -34,13 +60,13 @@ export async function middleware(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll()
+          return nextRequest.cookies.getAll()
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => {
-            request.cookies.set(name, value)
+            nextRequest.cookies.set(name, value)
           })
-          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse = NextResponse.next({ request: nextRequest })
           cookiesToSet.forEach(({ name, value, options }) => {
             supabaseResponse.cookies.set(name, value, options)
           })
@@ -55,5 +81,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/:path*", "/cuenta/:path*", "/auth/:path*"],
+  matcher: [
+    "/api/:path*",
+    "/cuenta/:path*",
+    "/auth/:path*",
+    "/((?!_next/static|_next/image|favicon.ico|icons/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|xml|txt|js|css|woff2?)$).*)",
+  ],
 }

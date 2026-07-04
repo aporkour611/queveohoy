@@ -2,8 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import "./theme.css";
-import { CookieConsentPrompts } from "./components/CookieConsentPrompts";
-import { DeferredLayoutClients } from "./components/DeferredLayoutClients";
+import { LayoutClientShell } from "./components/LayoutClientShell";
 import { buildSupabaseBootstrapScript } from "./lib/supabase/browser-runtime";
 import { resolveBrowserSupabaseConfig } from "./lib/supabase-config";
 import { rootMetadata, siteUrl } from "./lib/seo";
@@ -98,8 +97,7 @@ export default function RootLayout({
           Saltar al contenido
         </a>
         {children}
-        <CookieConsentPrompts />
-        <DeferredLayoutClients />
+        <LayoutClientShell />
       </body>
     </html>
   );
