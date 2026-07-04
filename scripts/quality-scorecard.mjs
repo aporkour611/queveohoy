@@ -6,9 +6,10 @@
  *   QUALITY_SKIP_LH=1 npm run quality:audit   # reutiliza lighthouse-audit-warm.json
  */
 import { spawnSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { randomBytes } from "node:crypto";
 import {
   TARGET_SCORE,
   scoreCls,
@@ -97,10 +98,32 @@ function readLhReport(path) {
   return null;
 }
 
+function safeRemoveDir(dir) {
+  if (!dir) return;
+  try {
+    rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
+  } catch {
+    /* Windows EPERM on chrome-launcher temp cleanup */
+  }
+}
+
+const LH_TMP_BASE = join(process.cwd(), ".lighthouse-tmp");
+
+function createLhTempDir() {
+  const suffix = randomBytes(8).toString("hex");
+  mkdirSync(LH_TMP_BASE, { recursive: true });
+  const dir = join(LH_TMP_BASE, `run-${suffix}`);
+  mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+function sleepMs(ms) {
+  spawnSync(process.execPath, ["-e", `setTimeout(()=>{},${ms})`], { stdio: "ignore" });
+}
+
 function runLighthouse() {
   const outPath = join(process.cwd(), "lighthouse-quality-audit.json");
-  const lhTmp = join(tmpdir(), "queveohoy-lighthouse");
-  mkdirSync(lhTmp, { recursive: true });
+  const lighthouseCli = join(process.cwd(), "node_modules", "lighthouse", "cli", "index.js");
   const reports = [];
 
   for (let attempt = 1; attempt <= 12; attempt++) {
@@ -110,28 +133,38 @@ function runLighthouse() {
       });
     }
 
-    spawnSync(
-      npx,
-      [
-        "lighthouse",
-        BASE,
-        "--quiet",
-        "--chrome-flags=--headless=new",
-        "--form-factor=mobile",
-        "--output=json",
-        `--output-path=${outPath}`,
-        "--max-wait-for-load=90000",
-      ],
-      {
-        stdio: "inherit",
-        shell: process.platform === "win32",
-        cwd: lhTmp,
-        env: { ...process.env, TEMP: lhTmp, TMP: lhTmp },
-      }
-    );
+    const lhTmp = createLhTempDir();
+    const chromeFlags = `--headless=new --user-data-dir=${lhTmp}`;
+    try {
+      const result = spawnSync(
+        process.execPath,
+        [
+          lighthouseCli,
+          BASE,
+          "--quiet",
+          `--chrome-flags=${chromeFlags}`,
+          "--form-factor=mobile",
+          "--output=json",
+          `--output-path=${outPath}`,
+          "--max-wait-for-load=90000",
+        ],
+        {
+          stdio: "pipe",
+          encoding: "utf8",
+        }
+      );
 
-    const report = readLhReport(outPath);
-    if (report) reports.push(report);
+      const report = readLhReport(outPath);
+      if (report) {
+        reports.push(report);
+      } else if (result.status !== 0) {
+        const errText = [result.stderr, result.stdout].filter(Boolean).join("\n").trim();
+        if (errText) console.warn(errText.slice(0, 500));
+      }
+    } finally {
+      sleepMs(1500);
+      safeRemoveDir(lhTmp);
+    }
   }
 
   if (reports.length === 0) {
