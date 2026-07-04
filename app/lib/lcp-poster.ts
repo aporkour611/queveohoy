@@ -1,4 +1,3 @@
-import { resolveLcpLocalRasterUrl } from "./lcp-local-poster";
 import { safeRemoteImageUrl } from "./remote-image";
 import { preferLocalWebpUrl } from "./prefer-local-webp";
 
@@ -30,7 +29,7 @@ export function buildLcpPosterUrl(src?: string | null): string | null {
 /** Misma URL que `<img>` LCP en `FeaturedEventCardStatic` (priority). */
 export function resolveLcpCoverImgSrc(url: string, local: boolean): string | null {
   if (local && url.startsWith("/")) {
-    return resolveLcpLocalRasterUrl(url);
+    return preferLocalWebpUrl(url);
   }
   return buildLcpPosterUrl(url) ?? safeRemoteImageUrl(url);
 }

@@ -80,7 +80,10 @@ export function resolveLcpPreloadEntryFromCover(
 ): SpotlightPreloadEntry | null {
   if (!cover.url) return null;
 
-  const href = resolveLcpCoverImgSrc(cover.url, cover.local);
+  const href =
+    cover.local && cover.url.startsWith("/")
+      ? resolveLcpLocalRasterUrl(cover.url)
+      : resolveLcpCoverImgSrc(cover.url, cover.local);
   return href ? { href } : null;
 }
 
