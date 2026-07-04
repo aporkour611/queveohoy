@@ -1,5 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
 import type { ChampionsWeekContext } from "../lib/champions-week";
 import { partidoPath } from "../lib/event-slug";
 import { safeRemoteImageUrl } from "../lib/remote-image";
@@ -56,19 +54,22 @@ export function ChampionsWeekHero({ context }: Props) {
         <span className="qvh-cl-week-hero-glow" />
       </div>
 
-      <Link
+      <a
         href={partidoHref}
         className="qvh-cl-week-hero-link"
         aria-label={`Ver ficha: ${homeTeam} vs ${awayTeam}`}
       >
         <div className="qvh-cl-week-hero-inner">
           <div className="qvh-cl-week-emblem" aria-hidden>
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/champions/ucl-trophy.svg"
               alt=""
               width={28}
               height={37}
               className="qvh-cl-week-trophy"
+              loading="lazy"
+              decoding="async"
             />
           </div>
 
@@ -104,7 +105,7 @@ export function ChampionsWeekHero({ context }: Props) {
             </div>
           </div>
         </div>
-      </Link>
+      </a>
     </section>
   );
 }

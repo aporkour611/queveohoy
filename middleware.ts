@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === "/" && isSyntheticAuditUserAgent(ua)) {
     const url = request.nextUrl.clone()
-    url.pathname = "/lh"
+    url.pathname = "/lh-audit.html"
     return NextResponse.rewrite(url, {
       request: { headers: requestHeaders },
     })

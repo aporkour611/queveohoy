@@ -1,4 +1,3 @@
-import Link from "next/link"
 import type { EventRow } from "./types"
 import { pickPersonalizedTonightEvents } from "../lib/personalized-tonight"
 import { FeaturedEventCardStatic } from "./FeaturedEventCardStatic"
@@ -34,9 +33,9 @@ export function TonightForYouSectionStatic({ events, todayKey }: Props) {
             para personalizar.
           </p>
         </div>
-        <Link href="/cuenta" className="qvh-tonight-cta">
+        <a href="/cuenta" className="qvh-tonight-cta">
           Mis plataformas
-        </Link>
+        </a>
       </div>
       <ul className="qvh-tonight-grid">
         {tonightEvents.map((event) => (

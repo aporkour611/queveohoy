@@ -1,7 +1,6 @@
 "use client";
 
 import "./futbolhoy-shell.css";
-import Link from "next/link";
 
 export default function Error({
   reset,
@@ -21,9 +20,9 @@ export default function Error({
           <button type="button" className="fh-btn fh-btn-primary" onClick={reset}>
             Reintentar
           </button>
-          <Link href="/" className="fh-btn">
+          <a href="/" className="fh-btn">
             Ir al inicio
-          </Link>
+          </a>
         </div>
       </div>
     </main>

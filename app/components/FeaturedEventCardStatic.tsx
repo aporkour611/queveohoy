@@ -1,5 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { getEventCardStamp, isChampionsFinal } from "../lib/event-card-stamp";
@@ -7,7 +5,6 @@ import { partidoPath } from "../lib/event-slug";
 import { MADRID_TZ } from "../lib/timezone";
 import { resolveLcpCoverImgSrc } from "../lib/lcp-poster";
 import {
-  buildSpotlightImageProps,
   SPOTLIGHT_IMAGE_HEIGHT,
   SPOTLIGHT_IMAGE_WIDTH,
   spotlightCoverImageStyle,
@@ -85,32 +82,15 @@ function StaticSpotlightCover({
     }
   }
 
-  const built = buildSpotlightImageProps(url, priority);
-
-  if (built) {
-    return (
-      <div className={layoutClass} aria-hidden>
-        <Image
-          {...built.props}
-          alt=""
-          className={imgClass}
-          style={imgStyle}
-          fetchPriority={priority ? "high" : "auto"}
-          loading={priority ? "eager" : "lazy"}
-          priority={priority}
-        />
-      </div>
-    );
-  }
-
-  const safeSrc = safeRemoteImageUrl(url);
-  if (!safeSrc) return null;
+  const lcpSrc = resolveLcpCoverImgSrc(url, local) ?? safeRemoteImageUrl(url);
+  if (!lcpSrc) return null;
+  const isRemote = lcpSrc.startsWith("http");
 
   return (
     <div className={layoutClass} aria-hidden>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={safeSrc}
+        src={lcpSrc}
         alt=""
         className={imgClass}
         style={imgStyle}
@@ -118,7 +98,8 @@ function StaticSpotlightCover({
         height={SPOTLIGHT_IMAGE_HEIGHT}
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
-        decoding="async"
+        decoding={priority ? "sync" : "async"}
+        crossOrigin={isRemote ? "anonymous" : undefined}
       />
     </div>
   );
@@ -285,7 +266,7 @@ export function FeaturedEventCardStatic({
     .join(" ");
 
   return (
-    <Link href={href} className={rootClass}>
+    <a href={href} className={rootClass}>
       {showVisual ? (
       <div
         className={`qvh-spotlight-visual ${card.visualClass ?? ""}${
@@ -353,6 +334,6 @@ export function FeaturedEventCardStatic({
           <p className="qvh-spotlight-platform">{card.platform}</p>
         ) : null}
       </div>
-    </Link>
+    </a>
   );
 }

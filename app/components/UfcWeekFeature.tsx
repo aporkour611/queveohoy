@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import type { UfcWeekContext } from "../lib/ufc-week";
 import { partidoPath } from "../lib/event-slug";
@@ -161,7 +160,7 @@ export function UfcWeekFeature({ context, children }: Props) {
 
   return (
     <article className="qvh-ufc-week-shell" aria-label="Semana de UFC Casablanca">
-      <Link
+      <a
         href={partidoHref}
         className="qvh-ufc-week-lcp-link"
         aria-label={`Detalles del combate: ${fighter1} vs ${fighter2}`}
@@ -172,7 +171,7 @@ export function UfcWeekFeature({ context, children }: Props) {
           fighter1Image={fighter1Image}
           fighter2Image={fighter2Image}
         />
-      </Link>
+      </a>
 
       <div className="qvh-ufc-week-shell-bg" aria-hidden>
         <span className="qvh-ufc-week-shell-spotlight" />
@@ -182,7 +181,7 @@ export function UfcWeekFeature({ context, children }: Props) {
 
       <div className="qvh-ufc-week-layout">
         <div className="qvh-ufc-week-main">
-          <Link
+          <a
             href={partidoHref}
             className="qvh-ufc-week-showcase"
             aria-label={`Detalles del combate: ${fighter1} vs ${fighter2}`}
@@ -231,7 +230,7 @@ export function UfcWeekFeature({ context, children }: Props) {
               Detalles del combate
               <span aria-hidden>→</span>
             </span>
-          </Link>
+          </a>
 
           {children ? (
             <div className="qvh-ufc-week-program">{children}</div>

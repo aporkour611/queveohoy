@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { HomeLogoLinkServer } from "./HomeLogoLinkServer";
 
 /** Nav 100 % SSR en semana UFC — sin client boundaries (mejor FID en lab). */
@@ -13,9 +12,9 @@ export function UfcHomeNav() {
         <div className="fh-navbar-inner">
           <HomeLogoLinkServer />
           <div className="fh-nav-links">
-            <Link href="/explorar" className="fh-nav-explorar-link">
+            <a href="/explorar" className="fh-nav-explorar-link">
               Explorar
-            </Link>
+            </a>
             <span className="fh-nav-action-placeholder" aria-hidden />
             <span className="fh-nav-action-placeholder" aria-hidden />
             <span className="fh-nav-action-placeholder" aria-hidden />

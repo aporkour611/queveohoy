@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { FEATURED_SEO_GUIDE_SLUGS, SEO_GUIDES } from "../lib/seo-guides";
 
 export function SeoGuidesPromo() {
@@ -21,20 +20,19 @@ export function SeoGuidesPromo() {
         <ul className="qvh-guides-promo-grid">
           {featured.map((guide) => (
             <li key={guide.slug}>
-              <Link
+              <a
                 href={`/guia/${guide.slug}`}
                 className="qvh-guides-promo-link"
-                prefetch
               >
                 {guide.title}
-              </Link>
+              </a>
             </li>
           ))}
         </ul>
         <p className="qvh-guides-promo-more">
-          <Link href="/guia" prefetch>
+          <a href="/guia">
             Ver todas las guías →
-          </Link>
+          </a>
         </p>
       </div>
     </aside>

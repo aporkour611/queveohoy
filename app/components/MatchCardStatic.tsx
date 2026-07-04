@@ -1,11 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { getSpotlightCardModel } from "../lib/featured-card";
 import { partidoPath } from "../lib/event-slug";
-import {
-  buildSpotlightImageProps,
-  spotlightCoverImageStyle,
-} from "../lib/optimized-image"
+import { resolveLcpCoverImgSrc } from "../lib/lcp-poster";
+import { spotlightCoverImageStyle } from "../lib/optimized-image";
 import { MADRID_TZ } from "../lib/timezone";
 import type { EventRow } from "./types";
 import {
@@ -43,28 +39,13 @@ function StaticCover({
 
   const imgClass = "qvh-spotlight-cover-img";
   const style = spotlightCoverImageStyle(objectPosition);
-  const built = buildSpotlightImageProps(url, false);
-
-  if (built) {
-    return (
-      <Image
-        {...built.props}
-        alt=""
-        className={imgClass}
-        style={style}
-        loading="lazy"
-        fetchPriority="low"
-      />
-    );
-  }
-
-  const safeSrc = safeRemoteImageUrl(url);
-  if (!safeSrc) return null;
+  const lcpSrc = resolveLcpCoverImgSrc(url, local) ?? safeRemoteImageUrl(url);
+  if (!lcpSrc) return null;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={safeSrc}
+      src={lcpSrc}
       alt=""
       className={imgClass}
       style={style}
@@ -108,7 +89,7 @@ export function MatchCardStatic({ event, omitCover = false }: Props) {
   const matchExtra = showRolandGarrosDuel ? " fh-match_rolandgarros" : "";
 
   return (
-    <Link
+    <a
       href={href}
       className={`fh-match fh-match-media-spotlight${matchExtra}`}
     >
@@ -172,6 +153,6 @@ export function MatchCardStatic({ event, omitCover = false }: Props) {
           <p className="fh-media-spotlight-meta">{card.channelList.join(" · ")}</p>
         ) : null}
       </div>
-    </Link>
+    </a>
   );
 }

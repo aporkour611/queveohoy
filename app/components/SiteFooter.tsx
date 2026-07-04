@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { LogoMark } from "./LogoMark";
 import { SEO_FOOTER_HUB_SLUGS, SEO_HUB_NAV_LINKS } from "../lib/seo-hub-nav";
 import { SEO_GUIDES } from "../lib/seo-guides";
@@ -25,13 +24,13 @@ export function SiteFooter() {
       <div className="qvh-site-footer-inner">
         <div className="qvh-site-footer-top qvh-site-footer-top-wide">
           <div className="qvh-site-footer-brand-block">
-            <Link
+            <a
               href="/"
               className="qvh-logo-link qvh-logo-link--full qvh-site-footer-logo"
               aria-label="Qué veo hoy — Inicio"
             >
               <LogoMark className="qvh-logo-svg qvh-logo-svg--full" />
-            </Link>
+            </a>
             <p className="qvh-site-footer-tagline">
               La agenda de España para saber qué ver hoy en TV, streaming y deportes.
             </p>
@@ -42,9 +41,9 @@ export function SiteFooter() {
             <ul className="qvh-site-footer-nav-list">
               {SEO_FOOTER_HUB_SLUGS.map((slug) => (
                 <li key={slug}>
-                  <Link href={slug === "partidos-hoy" ? "/partidos-hoy" : `/${slug}`} prefetch>
+                  <a href={slug === "partidos-hoy" ? "/partidos-hoy" : `/${slug}`}>
                     {hubTitleBySlug[slug] ?? slug}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -54,39 +53,39 @@ export function SiteFooter() {
             <p className="qvh-site-footer-nav-kicker">Guías y proyecto</p>
             <ul className="qvh-site-footer-nav-list">
               <li>
-                <Link href="/guia" prefetch>
+                <a href="/guia">
                   Todas las guías
-                </Link>
+                </a>
               </li>
               {FOOTER_GUIDE_SLUGS.map((slug) => {
                 const guide = SEO_GUIDES.find((g) => g.slug === slug);
                 if (!guide) return null;
                 return (
                   <li key={slug}>
-                    <Link href={`/guia/${slug}`}>{guide.title}</Link>
+                    <a href={`/guia/${slug}`}>{guide.title}</a>
                   </li>
                 );
               })}
               <li>
-                <Link href="/sobre">Sobre nosotros</Link>
+                <a href="/sobre">Sobre nosotros</a>
               </li>
               <li>
-                <Link href="/novedades" prefetch>
+                <a href="/novedades">
                   Novedades
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/contacto">Contacto</Link>
+                <a href="/contacto">Contacto</a>
               </li>
               <li>
-                <Link href="/explorar" prefetch>
+                <a href="/explorar">
                   Explorar categorías
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/desarrolladores" prefetch>
+                <a href="/desarrolladores">
                   API y widget
-                </Link>
+                </a>
               </li>
             </ul>
           </nav>
@@ -95,13 +94,13 @@ export function SiteFooter() {
             <p className="qvh-site-footer-nav-kicker">Legal</p>
             <ul className="qvh-site-footer-nav-list">
               <li>
-                <Link href="/privacidad">Política de privacidad</Link>
+                <a href="/privacidad">Política de privacidad</a>
               </li>
               <li>
-                <Link href="/cookies">Política de cookies</Link>
+                <a href="/cookies">Política de cookies</a>
               </li>
               <li>
-                <Link href="/aviso-legal">Aviso legal</Link>
+                <a href="/aviso-legal">Aviso legal</a>
               </li>
             </ul>
           </nav>
