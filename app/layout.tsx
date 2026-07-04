@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import "./theme.css";
-import { LayoutClientShell } from "./components/LayoutClientShell";
 import { buildSupabaseBootstrapScript } from "./lib/supabase/browser-runtime";
 import { resolveBrowserSupabaseConfig } from "./lib/supabase-config";
 import { rootMetadata, siteUrl } from "./lib/seo";
@@ -50,6 +49,11 @@ export default function RootLayout({
     >
       <head>
         <link rel="preconnect" href={siteUrl} />
+        <link
+          rel="preconnect"
+          href="https://image.tmdb.org"
+          crossOrigin="anonymous"
+        />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
         <script
           dangerouslySetInnerHTML={{
@@ -97,7 +101,6 @@ export default function RootLayout({
           Saltar al contenido
         </a>
         {children}
-        <LayoutClientShell />
       </body>
     </html>
   );

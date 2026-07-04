@@ -42,6 +42,7 @@ function StaticSpotlightCover({
 
   if (priority) {
     const lcpSrc = resolveLcpCoverImgSrc(url, local);
+    const isRemoteLcp = Boolean(lcpSrc?.startsWith("http"));
     if (lcpSrc) {
       return (
         <div className={layoutClass} aria-hidden>
@@ -56,12 +57,14 @@ function StaticSpotlightCover({
             decoding="sync"
             width={SPOTLIGHT_IMAGE_WIDTH}
             height={SPOTLIGHT_IMAGE_HEIGHT}
+            crossOrigin={isRemoteLcp ? "anonymous" : undefined}
           />
         </div>
       );
     }
     const safeSrc = safeRemoteImageUrl(url);
     if (safeSrc) {
+      const isRemote = safeSrc.startsWith("http");
       return (
         <div className={layoutClass} aria-hidden>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -75,6 +78,7 @@ function StaticSpotlightCover({
             loading="eager"
             fetchPriority="high"
             decoding="sync"
+            crossOrigin={isRemote ? "anonymous" : undefined}
           />
         </div>
       );

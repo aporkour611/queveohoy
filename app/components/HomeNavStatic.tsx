@@ -13,7 +13,7 @@ export function HomeNavStatic() {
         <div className="fh-navbar-inner">
           <HomeLogoLinkServer />
           <div className="fh-nav-links">
-            <Link href="/explorar" className="fh-nav-explorar-link">
+            <Link href="/explorar" prefetch={false} className="fh-nav-explorar-link">
               Explorar
             </Link>
             <span className="fh-nav-action-placeholder" aria-hidden />

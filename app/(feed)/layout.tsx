@@ -1,6 +1,9 @@
 import "../feed-bundle.css"
 import { FeedCriticalStyle } from "../components/FeedCriticalStyle"
+import { LayoutClientShell } from "../components/LayoutClientShell"
+import { HomeLcpPreload } from "../components/HomeLcpPreload"
 import { WeekViewUrlBootstrap } from "../components/WeekViewUrlBootstrap"
+import { resolveHomeLcpPreloadEntries } from "../lib/home-lcp"
 import { getMadridTodayKey } from "../lib/seo-date"
 import {
   isUfcWeekEditorialWindow,
@@ -12,7 +15,11 @@ export default function FeedLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const ufcEditorial = isUfcWeekEditorialWindow(getMadridTodayKey())
+  const todayKey = getMadridTodayKey()
+  const ufcEditorial = isUfcWeekEditorialWindow(todayKey)
+  const lcpEntries = ufcEditorial
+    ? []
+    : resolveHomeLcpPreloadEntries([], todayKey)
 
   return (
     <>
@@ -23,10 +30,13 @@ export default function FeedLayout({
           href={UFC_CASABLANCA_FIGHTER_IMAGES.topuria}
           fetchPriority="high"
         />
-      ) : null}
+      ) : (
+        <HomeLcpPreload entries={lcpEntries} />
+      )}
       <WeekViewUrlBootstrap />
       <FeedCriticalStyle />
       {children}
+      <LayoutClientShell />
     </>
   )
 }

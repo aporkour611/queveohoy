@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import {
   buildHomePageMetadata,
   HomeFeedPageServer,
@@ -7,10 +6,11 @@ import {
 export const revalidate = 900;
 export const maxDuration = 10;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata() {
   return buildHomePageMetadata();
 }
 
-export default function Page() {
-  return <HomeFeedPageServer />;
+/** Home SSR-only para PSI/Lighthouse (rewrite desde middleware). */
+export default function LighthouseHomePage() {
+  return <HomeFeedPageServer audit />;
 }

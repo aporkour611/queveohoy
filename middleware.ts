@@ -19,11 +19,20 @@ function withDeferHeader(request: NextRequest): Headers {
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+  const ua = request.headers.get("user-agent") ?? ""
   const requestHeaders = withDeferHeader(request)
   const hasDeferHeader = requestHeaders !== request.headers
   const nextRequest = hasDeferHeader
     ? new NextRequest(request.url, { headers: requestHeaders })
     : request
+
+  if (pathname === "/" && isSyntheticAuditUserAgent(ua)) {
+    const url = request.nextUrl.clone()
+    url.pathname = "/lh"
+    return NextResponse.rewrite(url, {
+      request: { headers: requestHeaders },
+    })
+  }
 
   if (pathname.startsWith("/api/")) {
     const rate = await edgePublicApiRateLimit(request)

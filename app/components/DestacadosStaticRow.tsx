@@ -23,6 +23,13 @@ export function DestacadosStaticRow({
 
   const visible = items.slice(0, DESTACADOS_VISIBLE_SLOTS);
   const lcpIndex = resolveLcpPriorityIndex(visible);
+  const ordered =
+    lcpIndex === 0
+      ? visible
+      : [
+          visible[lcpIndex],
+          ...visible.filter((_, index) => index !== lcpIndex),
+        ];
 
   return (
     <section
@@ -40,11 +47,11 @@ export function DestacadosStaticRow({
       </div>
 
       <div className="qvh-destacados-page-static">
-        {visible.map((event, index) => (
+        {ordered.map((event, index) => (
           <FeaturedEventCardStatic
             key={event.id}
             event={event}
-            priority={index === lcpIndex}
+            priority={index === 0}
           />
         ))}
       </div>
