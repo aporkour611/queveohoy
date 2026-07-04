@@ -1,44 +1,45 @@
-"use client";
+"use client"
 
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-import { shouldDeferHeavyClient } from "@/app/lib/interaction-gate";
+import { useEffect, useState, type ComponentType } from "react"
+import { shouldDeferHeavyClient } from "@/app/lib/interaction-gate"
 
-const CookieConsentBanner = dynamic(
-  () =>
-    import("./CookieConsentBanner").then((mod) => mod.CookieConsentBanner),
-  { ssr: false }
-);
+type PromptBundle = {
+  CookieConsentBanner: ComponentType
+  PushNotificationPrompt: ComponentType
+  InstallAppPrompt: ComponentType
+}
 
-const PushNotificationPrompt = dynamic(
-  () =>
-    import("./PushNotifications").then((mod) => mod.PushNotificationPrompt),
-  { ssr: false }
-);
-
-const InstallAppPrompt = dynamic(
-  () =>
-    import("./InstallAppPrompt").then((mod) => mod.InstallAppPrompt),
-  { ssr: false }
-);
-
-/** Prompts diferidos — sin envolver el árbol SSR (menor hidratación / FID). */
+/** Prompts diferidos — import() en idle, sin preload next/dynamic. */
 export function CookieConsentPrompts() {
-  const deferHeavy = shouldDeferHeavyClient();
-  const [promptsReady, setPromptsReady] = useState(false);
+  const deferHeavy = shouldDeferHeavyClient()
+  const [prompts, setPrompts] = useState<PromptBundle | null>(null)
 
   useEffect(() => {
-    if (deferHeavy) return;
-    const schedule = () => setPromptsReady(true);
-    if (typeof window.requestIdleCallback === "function") {
-      const idleId = window.requestIdleCallback(schedule, { timeout: 45_000 });
-      return () => window.cancelIdleCallback(idleId);
+    if (deferHeavy) return
+    const schedule = () => {
+      void Promise.all([
+        import("./CookieConsentBanner"),
+        import("./PushNotifications"),
+        import("./InstallAppPrompt"),
+      ]).then(([banner, push, install]) => {
+        setPrompts({
+          CookieConsentBanner: banner.CookieConsentBanner,
+          PushNotificationPrompt: push.PushNotificationPrompt,
+          InstallAppPrompt: install.InstallAppPrompt,
+        })
+      })
     }
-    const fallback = window.setTimeout(schedule, 45_000);
-    return () => window.clearTimeout(fallback);
-  }, [deferHeavy]);
+    if (typeof window.requestIdleCallback === "function") {
+      const idleId = window.requestIdleCallback(schedule, { timeout: 45_000 })
+      return () => window.cancelIdleCallback(idleId)
+    }
+    const fallback = window.setTimeout(schedule, 45_000)
+    return () => window.clearTimeout(fallback)
+  }, [deferHeavy])
 
-  if (deferHeavy || !promptsReady) return null;
+  if (deferHeavy || !prompts) return null
+
+  const { CookieConsentBanner, PushNotificationPrompt, InstallAppPrompt } = prompts
 
   return (
     <>
@@ -46,5 +47,5 @@ export function CookieConsentPrompts() {
       <PushNotificationPrompt />
       <InstallAppPrompt />
     </>
-  );
+  )
 }

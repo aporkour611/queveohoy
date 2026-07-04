@@ -40,7 +40,7 @@ const SeoGuidesPromo = dynamic(
     import("../components/SeoGuidesPromo").then((mod) => mod.SeoGuidesPromo),
   { ssr: true }
 );
-import { AdSlot } from "../components/AdSlot";
+import { AdSlotMount } from "../components/AdSlotMount";
 import { HomeFeedClientMount } from "../components/HomeFeedClientMount";
 
 export const revalidate = 900;
@@ -212,7 +212,7 @@ export default async function Page() {
                       dayDate={initialDay.date}
                     />
                   ) : null}
-                  <AdSlot slot="feed-mid" className="mx-auto max-w-[950px] px-5" />
+                  <AdSlotMount slot="feed-mid" className="mx-auto max-w-[950px] px-5" />
                   <HomeFeedClientMount
                     hydration={{
                       initialEvents: ssrEvents,

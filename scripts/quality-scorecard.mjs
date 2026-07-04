@@ -125,6 +125,7 @@ function runLighthouse() {
       {
         stdio: "inherit",
         shell: process.platform === "win32",
+        cwd: lhTmp,
         env: { ...process.env, TEMP: lhTmp, TMP: lhTmp },
       }
     );

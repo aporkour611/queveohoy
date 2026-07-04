@@ -1,21 +1,14 @@
-"use client";
+"use client"
 
-import dynamic from "next/dynamic";
-import { shouldDeferHeavyClient } from "@/app/lib/interaction-gate";
-import type { ComponentProps } from "react";
-import type { FeedHydrationBootstrap } from "./FeedHydrationBootstrap";
+import { shouldDeferHeavyClient } from "@/app/lib/interaction-gate"
+import type { ComponentProps } from "react"
+import { FeedHydrationBootstrap } from "./FeedHydrationBootstrap"
 
-const Bootstrap = dynamic(
-  () =>
-    import("./FeedHydrationBootstrap").then((mod) => mod.FeedHydrationBootstrap),
-  { ssr: false }
-);
+type Props = ComponentProps<typeof FeedHydrationBootstrap>
 
-type Props = ComponentProps<typeof FeedHydrationBootstrap>;
-
-/** PSI/Lighthouse: sin hidratar feed; usuarios reales cargan tras idle. */
+/** PSI/Lighthouse: sin next/dynamic (evita preload); bootstrap es ~2 KB. */
 export function FeedHydrationGate(props: Props) {
-  if (typeof window === "undefined") return null;
-  if (shouldDeferHeavyClient()) return null;
-  return <Bootstrap {...props} />;
+  if (typeof window === "undefined") return null
+  if (shouldDeferHeavyClient()) return null
+  return <FeedHydrationBootstrap {...props} />
 }

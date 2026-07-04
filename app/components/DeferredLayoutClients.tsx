@@ -1,59 +1,63 @@
 "use client"
 
-import dynamic from "next/dynamic"
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ComponentType } from "react"
 import { shouldDeferHeavyClient } from "@/app/lib/interaction-gate"
 
-const CalendarDayRefresh = dynamic(
-  () =>
-    import("./CalendarDayRefresh").then((mod) => mod.CalendarDayRefresh),
-  { ssr: false }
-)
-
-const Analytics = dynamic(
-  () => import("./Analytics").then((mod) => mod.Analytics),
-  { ssr: false }
-)
-
-const SpeedInsights = dynamic(
-  () => import("./SpeedInsights").then((mod) => mod.SpeedInsights),
-  { ssr: false }
-)
-
-/** Carga diferida de telemetría y utilidades no críticas (menor TBT en carga). */
+/** Carga diferida sin next/dynamic (evita preload en `<head>`). */
 export function DeferredLayoutClients() {
   const deferHeavy = shouldDeferHeavyClient()
-  const [calendarReady, setCalendarReady] = useState(false)
-  const [telemetryReady, setTelemetryReady] = useState(false)
+  const [CalendarDayRefresh, setCalendarDayRefresh] =
+    useState<ComponentType | null>(null)
+  const [telemetry, setTelemetry] = useState<{
+    Analytics: ComponentType
+    SpeedInsights: ComponentType
+  } | null>(null)
 
   useEffect(() => {
     if (deferHeavy) return
-    const schedule = () => setCalendarReady(true)
+    const scheduleCalendar = () => {
+      void import("./CalendarDayRefresh").then((mod) => {
+        setCalendarDayRefresh(() => mod.CalendarDayRefresh)
+      })
+    }
     if (typeof window.requestIdleCallback === "function") {
-      const id = window.requestIdleCallback(schedule, { timeout: 12_000 })
+      const id = window.requestIdleCallback(scheduleCalendar, { timeout: 12_000 })
       return () => window.cancelIdleCallback(id)
     }
-    const timer = window.setTimeout(schedule, 12_000)
+    const timer = window.setTimeout(scheduleCalendar, 12_000)
     return () => window.clearTimeout(timer)
   }, [deferHeavy])
 
   useEffect(() => {
     if (deferHeavy) return
-    const schedule = () => setTelemetryReady(true)
+    const scheduleTelemetry = () => {
+      void Promise.all([
+        import("./Analytics"),
+        import("./SpeedInsights"),
+      ]).then(([analytics, insights]) => {
+        setTelemetry({
+          Analytics: analytics.Analytics,
+          SpeedInsights: insights.SpeedInsights,
+        })
+      })
+    }
     if (typeof window.requestIdleCallback === "function") {
-      const id = window.requestIdleCallback(schedule, { timeout: 15_000 })
+      const id = window.requestIdleCallback(scheduleTelemetry, { timeout: 15_000 })
       return () => window.cancelIdleCallback(id)
     }
-    const timer = window.setTimeout(schedule, 15_000)
+    const timer = window.setTimeout(scheduleTelemetry, 15_000)
     return () => window.clearTimeout(timer)
   }, [deferHeavy])
 
   if (deferHeavy) return null
 
+  const Analytics = telemetry?.Analytics
+  const SpeedInsights = telemetry?.SpeedInsights
+
   return (
     <>
-      {calendarReady ? <CalendarDayRefresh /> : null}
-      {telemetryReady ? (
+      {CalendarDayRefresh ? <CalendarDayRefresh /> : null}
+      {Analytics && SpeedInsights ? (
         <>
           <Analytics />
           <SpeedInsights />
