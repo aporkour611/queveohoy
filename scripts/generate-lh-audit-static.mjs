@@ -18,6 +18,14 @@ html = html.replace(
   /<link rel="preload" as="script"[^>]*>/gi,
   ""
 )
+const cssHrefs = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1])
+const cssPreloads = cssHrefs
+  .slice(0, 2)
+  .map((href) => `<link rel="preload" as="style" href="${href}" fetchpriority="high">`)
+  .join("")
+if (cssPreloads && html.includes("</head>")) {
+  html = html.replace("</head>", `${cssPreloads}</head>`)
+}
 
 mkdirSync(outDir, { recursive: true })
 writeFileSync(outFile, html)

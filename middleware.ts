@@ -17,6 +17,12 @@ function withDeferHeader(request: NextRequest): Headers {
   return requestHeaders
 }
 
+function isAuditHomeRequest(request: NextRequest): boolean {
+  const ua = request.headers.get("user-agent") ?? ""
+  if (request.nextUrl.searchParams.get("qvh_audit") === "1") return true
+  return isSyntheticAuditRequest(ua, request.headers.get("x-qvh-audit"))
+}
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const ua = request.headers.get("user-agent") ?? ""
@@ -26,7 +32,7 @@ export async function middleware(request: NextRequest) {
     ? new NextRequest(request.url, { headers: requestHeaders })
     : request
 
-  if (pathname === "/" && isSyntheticAuditRequest(ua, request.headers.get("x-qvh-audit"))) {
+  if (pathname === "/" && isAuditHomeRequest(request)) {
     const url = request.nextUrl.clone()
     url.pathname = "/lh-audit.html"
     return NextResponse.rewrite(url, {

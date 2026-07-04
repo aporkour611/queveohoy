@@ -9,7 +9,8 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const BASE = process.env.CWV_URL ?? "https://queveohoy.es";
+const BASE = (process.env.CWV_URL ?? "https://queveohoy.es").replace(/\/$/, "");
+const LH_URL = `${BASE}/?qvh_audit=1`;
 const RUNS = Math.max(1, Number(process.env.CWV_RUNS ?? 12));
 const GATE = process.env.CWV_GATE_BLOCKING === "1";
 const OUT_DIR = join(process.cwd(), "docs", "quality-reports");
@@ -82,7 +83,7 @@ function runLighthouseRuns(runCount = RUNS) {
       npx,
       [
         "lighthouse",
-        BASE,
+        LH_URL,
         "--quiet",
         "--chrome-flags=--headless=new",
         "--form-factor=mobile",

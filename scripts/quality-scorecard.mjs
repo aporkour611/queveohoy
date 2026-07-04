@@ -26,6 +26,8 @@ const BASE = (process.env.QUALITY_URL ?? process.env.PERF_URL ?? "https://queveo
   /\/$/,
   ""
 );
+/** Lighthouse mobile UA no dispara rewrite; query + header fuerzan lh-audit.html */
+const LH_URL = `${BASE}/?qvh_audit=1`;
 const OUT_DIR = process.env.QUALITY_OUT_DIR ?? "docs/quality-reports";
 const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
 const skipLh = process.env.QUALITY_SKIP_LH === "1";
@@ -40,8 +42,7 @@ async function warmup() {
     "/api/warm",
     "/api/home-feed",
     "/api/feed-meta",
-    "/",
-    "/",
+    "/?qvh_audit=1",
     "/",
   ];
   for (const path of paths) {
@@ -146,7 +147,7 @@ function runLighthouse() {
         process.execPath,
         [
           lighthouseCli,
-          BASE,
+          LH_URL,
           "--quiet",
           `--chrome-flags=${chromeFlags}`,
           "--form-factor=mobile",
