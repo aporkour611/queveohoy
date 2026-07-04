@@ -41,7 +41,6 @@ const SeoGuidesPromo = dynamic(
   { ssr: true }
 );
 import { HomePageClientShell } from "../components/HomePageClientShell";
-import { shouldDeferHeavyServer } from "../lib/defer-heavy-server";
 
 export const revalidate = 900;
 export const maxDuration = 10;
@@ -161,7 +160,6 @@ export default async function Page() {
     );
   }
 
-  const deferHeavy = await shouldDeferHeavyServer();
   const { events, error, weekEvents } = await loadHomePageData();
   const mergedForSsr = mergeFeedEvents(events, weekEvents);
   const ssrEvents = eventsForHomeSsrHtml(mergedForSsr);
@@ -213,25 +211,23 @@ export default async function Page() {
                       dayDate={initialDay.date}
                     />
                   ) : null}
-                  {deferHeavy ? null : (
-                    <HomePageClientShell
-                      adSlot={{
-                        slot: "feed-mid",
-                        className: "mx-auto max-w-[950px] px-5",
-                      }}
-                      hydration={{
-                        initialEvents: ssrEvents,
-                        initialDestacadosEvents: weekEvents,
-                        initialWeekEvents: [],
-                        initialError: error,
-                        serverDayHeaderDate: initialDay?.date ?? null,
-                        initialEventCount: ssrEvents.length,
-                        tonightEvents,
-                        todayKey,
-                        destacadosEnhancer,
-                      }}
-                    />
-                  )}
+                  <HomePageClientShell
+                    adSlot={{
+                      slot: "feed-mid",
+                      className: "mx-auto max-w-[950px] px-5",
+                    }}
+                    hydration={{
+                      initialEvents: ssrEvents,
+                      initialDestacadosEvents: weekEvents,
+                      initialWeekEvents: [],
+                      initialError: error,
+                      serverDayHeaderDate: initialDay?.date ?? null,
+                      initialEventCount: ssrEvents.length,
+                      tonightEvents,
+                      todayKey,
+                      destacadosEnhancer,
+                    }}
+                  />
                 </div>
             </div>
             <SeoGuidesPromo />

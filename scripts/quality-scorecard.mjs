@@ -150,6 +150,12 @@ function runLighthouse() {
         {
           stdio: "pipe",
           encoding: "utf8",
+          env: {
+            ...process.env,
+            TMP: LH_TMP_BASE,
+            TEMP: LH_TMP_BASE,
+            TMPDIR: LH_TMP_BASE,
+          },
         }
       );
 
