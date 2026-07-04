@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
 import { FeedControlsShell } from "../components/FeedControlsShell";
-import { FilterCssIntentBridge } from "../components/FilterCssIntentBridge";
 import { HomeFeedDayHeader } from "../components/HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "../components/HomeFeedDayStatic";
 import { TonightForYouSectionStatic } from "../components/TonightForYouSectionStatic";
@@ -42,8 +41,7 @@ const SeoGuidesPromo = dynamic(
   { ssr: true }
 );
 import { AdSlot } from "../components/AdSlot";
-import { FeedHydrationGate } from "../components/FeedHydrationGate";
-import { HomeWeekPrefetchDeferred } from "../components/HomeWeekPrefetchDeferred";
+import { HomeFeedClientMount } from "../components/HomeFeedClientMount";
 
 export const revalidate = 900;
 export const maxDuration = 10;
@@ -184,7 +182,6 @@ export default async function Page() {
   return (
     <>
       <HomeLcpPreload entries={lcpPreloadEntries} />
-      <HomeWeekPrefetchDeferred />
       <div className={`fh-body${weekPresentation.bodyClassSuffix}`}>
           <HomeNav />
           <main id="main-content" className="fh-content">
@@ -202,7 +199,6 @@ export default async function Page() {
                     </p>
                   ) : null}
                   <FeedControlsShell days={shellDays} />
-                  <FilterCssIntentBridge />
                   {initialDay ? (
                     <HomeFeedDayHeader
                       date={initialDay.date}
@@ -217,16 +213,18 @@ export default async function Page() {
                     />
                   ) : null}
                   <AdSlot slot="feed-mid" className="mx-auto max-w-[950px] px-5" />
-                  <FeedHydrationGate
-                    initialEvents={ssrEvents}
-                    initialDestacadosEvents={weekEvents}
-                    initialWeekEvents={[]}
-                    initialError={error}
-                    serverDayHeaderDate={initialDay?.date ?? null}
-                    initialEventCount={ssrEvents.length}
-                    tonightEvents={tonightEvents}
-                    todayKey={todayKey}
-                    destacadosEnhancer={destacadosEnhancer}
+                  <HomeFeedClientMount
+                    hydration={{
+                      initialEvents: ssrEvents,
+                      initialDestacadosEvents: weekEvents,
+                      initialWeekEvents: [],
+                      initialError: error,
+                      serverDayHeaderDate: initialDay?.date ?? null,
+                      initialEventCount: ssrEvents.length,
+                      tonightEvents,
+                      todayKey,
+                      destacadosEnhancer,
+                    }}
                   />
                 </div>
             </div>

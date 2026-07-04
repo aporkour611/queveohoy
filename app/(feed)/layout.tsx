@@ -1,6 +1,5 @@
 import "../feed-bundle.css"
 import { FeedCriticalStyle } from "../components/FeedCriticalStyle"
-import { FeedDeferredStyles } from "../components/FeedDeferredStyles"
 import { WeekViewUrlBootstrap } from "../components/WeekViewUrlBootstrap"
 import { getMadridTodayKey } from "../lib/seo-date"
 import {
@@ -27,7 +26,6 @@ export default function FeedLayout({
       ) : null}
       <WeekViewUrlBootstrap />
       <FeedCriticalStyle />
-      <FeedDeferredStyles />
       {children}
     </>
   )

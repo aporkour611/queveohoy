@@ -7,6 +7,7 @@
  */
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   TARGET_SCORE,
@@ -98,7 +99,7 @@ function readLhReport(path) {
 
 function runLighthouse() {
   const outPath = join(process.cwd(), "lighthouse-quality-audit.json");
-  const lhTmp = join(process.cwd(), ".lighthouse-tmp");
+  const lhTmp = join(tmpdir(), "queveohoy-lighthouse");
   mkdirSync(lhTmp, { recursive: true });
   const reports = [];
 
