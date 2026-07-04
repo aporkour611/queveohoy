@@ -24,6 +24,7 @@ const SpeedInsights = dynamic(
 export function DeferredLayoutClients() {
   const deferHeavy = shouldDeferHeavyClient()
   const [calendarReady, setCalendarReady] = useState(false)
+  const [telemetryReady, setTelemetryReady] = useState(false)
 
   useEffect(() => {
     if (deferHeavy) return
@@ -36,10 +37,6 @@ export function DeferredLayoutClients() {
     return () => window.clearTimeout(timer)
   }, [deferHeavy])
 
-  if (deferHeavy) return null
-
-  const [telemetryReady, setTelemetryReady] = useState(false)
-
   useEffect(() => {
     if (deferHeavy) return
     const schedule = () => setTelemetryReady(true)
@@ -50,6 +47,8 @@ export function DeferredLayoutClients() {
     const timer = window.setTimeout(schedule, 15_000)
     return () => window.clearTimeout(timer)
   }, [deferHeavy])
+
+  if (deferHeavy) return null
 
   return (
     <>

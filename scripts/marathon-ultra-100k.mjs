@@ -18,12 +18,34 @@ const PROGRESS_EVERY = Number(process.env.MARATHON_PROGRESS_EVERY ?? 2_500);
 const START_CYCLE = Number(process.env.MARATHON_START_CYCLE ?? 1);
 const LAUNCH_FAST = process.env.MARATHON_FAST !== "0";
 const TESTS_JSON = join(OUT_DIR, "PRO-100-TESTS-latest.json");
+const EXECUTED_FILE = join(OUT_DIR, `${MARATHON_ID}-executed.json`);
 const QUALITY_LATEST = join(
   process.cwd(),
   "docs",
   "quality-reports",
   "quality-scorecard-latest.json"
 );
+
+function stepCacheKey(phase, cmd) {
+  if (cmd === "warm-full") return "global:warm-full";
+  return `${phase}:${cmd}`;
+}
+
+function loadExecuted() {
+  try {
+    const raw = JSON.parse(readFileSync(EXECUTED_FILE, "utf8"));
+    return new Map(Object.entries(raw));
+  } catch {
+    return new Map();
+  }
+}
+
+function saveExecuted(executed) {
+  writeFileSync(
+    EXECUTED_FILE,
+    `${JSON.stringify(Object.fromEntries(executed), null, 2)}\n`
+  );
+}
 
 const DISCOVERY_ROTATION = [
   { phase: "baseline", cmd: "warm" },
@@ -114,12 +136,12 @@ function runCmd(label, command, args, env = {}) {
 }
 
 function runStep(cmd, executed, phase, cycle) {
-  const key = `${phase}:${cmd}`;
+  const key = stepCacheKey(phase, cmd);
   if (executed.has(key)) {
     return { ...executed.get(key), cached: true };
   }
 
-  const deepLh = cycle % 10_000 === 0;
+  const deepLh = cycle % 10_000 === 0 || cycle === START_CYCLE;
   let step;
 
   switch (cmd) {
@@ -129,6 +151,7 @@ function runStep(cmd, executed, phase, cycle) {
     case "warm-full":
       step = runCmd("warm-full", "npm", ["run", "keep-warm:prod"], {
         KEEP_WARM_FULL: "1",
+        KEEP_WARM_STRICT: "0",
       });
       break;
     case "cold-strict":
@@ -247,7 +270,8 @@ function pickRotation(cycle) {
   return APPLY_ROTATION[(cycle - DISCOVERY_HALF - 1) % APPLY_ROTATION.length];
 }
 
-function writeProgress(cycle, step, gates) {
+function writeProgress(cycle, step, gates, executed) {
+  saveExecuted(executed);
   writeFileSync(
     join(OUT_DIR, `${MARATHON_ID}-progress.json`),
     `${JSON.stringify(
@@ -273,7 +297,7 @@ function formatGates(g) {
 
 function main() {
   mkdirSync(OUT_DIR, { recursive: true });
-  const executed = new Map();
+  const executed = loadExecuted();
 
   console.log(
     `\n[${MARATHON_ID}] ULTRA 100k · ${TOTAL} ciclos · fast=${LAUNCH_FAST}\n`
@@ -300,7 +324,7 @@ function main() {
       cycle === TOTAL ||
       rotation.cmd.startsWith("pro-100")
     ) {
-      writeProgress(cycle, step, gates);
+      writeProgress(cycle, step, gates, executed);
       console.log(
         `[${MARATHON_ID}] ${cycle}/${TOTAL} · ${rotation.phase}/${rotation.cmd} · ${formatGates(gates)}${step.cached ? " (cache)" : ""}`
       );
