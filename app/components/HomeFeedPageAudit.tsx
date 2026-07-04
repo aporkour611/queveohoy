@@ -1,60 +1,32 @@
 import { preload } from "react-dom";
-import dynamic from "next/dynamic";
-import type { EventRow } from "./types";
 import { DestacadosSection } from "./DestacadosSection";
 import { FeedControlsShell } from "./FeedControlsShell";
+import { HomeFaq } from "./HomeFaq";
 import { HomeFeedDayHeader } from "./HomeFeedDayHeader";
 import { HomeFeedDayStatic } from "./HomeFeedDayStatic";
-import { TonightForYouSectionStatic } from "./TonightForYouSectionStatic";
-import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
-import { mergeFeedEvents } from "../lib/merge-feed-events";
-import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { HomeJsonLd } from "./HomeJsonLd";
 import { HomeLcpPreload } from "./HomeLcpPreload";
-import { HomeNav } from "./HomeNav";
+import { HomeNavStatic } from "./HomeNavStatic";
+import { SeoGuidesPromo } from "./SeoGuidesPromo";
 import { SiteFooter } from "./SiteFooter";
+import { TonightForYouSectionStatic } from "./TonightForYouSectionStatic";
+import { UfcDestacadosStatic } from "./UfcDestacadosStatic";
+import { UfcHomeNav } from "./UfcHomeNav";
 import { eventsForHomeSsrHtml } from "../lib/featured";
+import { FEED_DAY_COUNT } from "../lib/events-feed";
+import { HOME_SSR_DAY_COUNT } from "../lib/home-feed-config";
 import { resolveHomeLcpPreloadEntries } from "../lib/home-lcp";
 import { loadHomePageData } from "../lib/home-page-data";
+import { mergeFeedEvents } from "../lib/merge-feed-events";
 import { buildWeekDestacadosPresentation } from "../lib/destacados-week-present";
-import { FEED_DAY_COUNT } from "../lib/events-feed";
+import { buildDisplayDays, MADRID_TZ } from "../lib/timezone";
 import { isUfcWeekEditorialWindow, UFC_CASABLANCA_FALLBACK } from "../lib/ufc-week";
-import { UfcDestacadosStatic } from "./UfcDestacadosStatic";
-import { UfcHomeFeedShell } from "./UfcHomeFeedShell";
-import { UfcHomeNav } from "./UfcHomeNav";
-import { HomePageClientShell } from "./HomePageClientShell";
 
-const HomeFaq = dynamic(
-  () => import("./HomeFaq").then((mod) => mod.HomeFaq),
-  { ssr: true }
-);
-const SeoGuidesPromo = dynamic(
-  () => import("./SeoGuidesPromo").then((mod) => mod.SeoGuidesPromo),
-  { ssr: true }
-);
-
-function resolveDestacadosEnhancerProps(
-  weekEvents: EventRow[],
-  todayKey: string
-) {
-  const presentation = buildWeekDestacadosPresentation(
-    weekEvents,
-    todayKey,
-    FEED_DAY_COUNT
-  );
-
-  if (presentation.weekFeatured.length === 0) return null;
-
-  return {
-    title: "Esta semana",
-    subtitle: presentation.subtitle,
-    items: presentation.weekFeatured,
-    ariaLabel: "Destacados de la semana",
-    className: `qvh-destacados-week qvh-destacados-week-first${presentation.destacadosClassSuffix}`,
-  };
-}
-
-export async function HomeFeedPageServer() {
+/**
+ * Home 100 % SSR para PSI/Lighthouse — módulo aislado sin grafo cliente.
+ * No importar HomeNav, HomePageClientShell, next/dynamic ni FeedHydrationGate.
+ */
+export async function HomeFeedPageAudit() {
   const initialDay = buildDisplayDays(MADRID_TZ, HOME_SSR_DAY_COUNT)[0];
   const todayKey = initialDay?.date ?? "";
   const ufcEditorial = isUfcWeekEditorialWindow(todayKey);
@@ -72,8 +44,6 @@ export async function HomeFeedPageServer() {
               <h1 className="sr-only">
                 Topuria vs Gaethje — UFC Casablanca, horario y TV en España
               </h1>
-
-              <UfcHomeFeedShell todayKey={todayKey} />
             </div>
             <SeoGuidesPromo />
             <HomeFaq />
@@ -85,7 +55,7 @@ export async function HomeFeedPageServer() {
     );
   }
 
-  const { events, error, weekEvents } = await loadHomePageData();
+  const { events, weekEvents } = await loadHomePageData();
   const mergedForSsr = mergeFeedEvents(events, weekEvents);
   const ssrEvents = eventsForHomeSsrHtml(mergedForSsr);
   const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents, todayKey);
@@ -101,13 +71,12 @@ export async function HomeFeedPageServer() {
     todayKey,
     FEED_DAY_COUNT
   );
-  const destacadosEnhancer = resolveDestacadosEnhancerProps(weekEvents, todayKey);
 
   return (
     <>
       <HomeLcpPreload entries={lcpPreloadEntries} />
       <div className={`fh-body${weekPresentation.bodyClassSuffix}`}>
-        <HomeNav />
+        <HomeNavStatic />
         <main id="main-content" className="fh-content">
           <div className="fh-container fh-main">
             <h1 className="sr-only">Qué ver hoy en TV</h1>
@@ -136,23 +105,6 @@ export async function HomeFeedPageServer() {
                   dayDate={initialDay.date}
                 />
               ) : null}
-              <HomePageClientShell
-                adSlot={{
-                  slot: "feed-mid",
-                  className: "mx-auto max-w-[950px] px-5",
-                }}
-                hydration={{
-                  initialEvents: ssrEvents,
-                  initialDestacadosEvents: weekEvents,
-                  initialWeekEvents: [],
-                  initialError: error,
-                  serverDayHeaderDate: initialDay?.date ?? null,
-                  initialEventCount: ssrEvents.length,
-                  tonightEvents,
-                  todayKey,
-                  destacadosEnhancer,
-                }}
-              />
             </div>
           </div>
           <SeoGuidesPromo />

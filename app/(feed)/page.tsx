@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import {
-  buildHomePageMetadata,
-  HomeFeedPageServer,
-} from "../components/HomeFeedPageServer";
+import { buildHomePageMetadata } from "../lib/home-page-data";
+import { HomeFeedPageServer } from "../components/HomeFeedPageServer";
 
 export const revalidate = 900;
 export const maxDuration = 10;
