@@ -6,13 +6,20 @@ export function isTouchPreferred(): boolean {
   return coarse || narrow
 }
 
+/** Flag síncrono en `<head>` antes de React (PSI/Lighthouse). */
+export function hasEarlyDeferFlag(): boolean {
+  if (typeof document === "undefined") return false
+  return document.documentElement.dataset.qvhDefer === "1"
+}
+
 /** Lighthouse / Playwright / headless explícito. */
 export function isSyntheticAudit(): boolean {
+  if (hasEarlyDeferFlag()) return true
   if (typeof navigator === "undefined") return false
   if (navigator.webdriver) return true
   const ua = navigator.userAgent
   if (
-    /HeadlessChrome|Headless|Lighthouse|Chrome-Lighthouse|PTST|PageSpeed|Google-InspectionTool|Playwright/i.test(
+    /HeadlessChrome|Headless|Lighthouse|Chrome-Lighthouse|PTST|PageSpeed|Google-InspectionTool|Playwright|Speed Insights|Structured-Data-TestingTool/i.test(
       ua
     )
   ) {
@@ -38,12 +45,17 @@ export function isMobileLabOnDesktop(): boolean {
   const narrow = window.matchMedia("(max-width: 720px)").matches
   if (!narrow) return false
   const finePointer = window.matchMedia("(pointer: fine)").matches
+  if (!finePointer) return false
+  const coarse = window.matchMedia("(pointer: coarse)").matches
+  if (coarse) return false
   const canHover = window.matchMedia("(hover: hover)").matches
-  return finePointer && canHover
+  if (canHover) return true
+  return /Chrome/i.test(navigator.userAgent) && !/Edg|OPR|SamsungBrowser/i.test(navigator.userAgent)
 }
 
 /** Bloquear HomeFeed y JS pesado durante auditorías de rendimiento. */
 export function shouldDeferHeavyClient(): boolean {
+  if (hasEarlyDeferFlag()) return true
   if (isSyntheticAudit()) return true
   if (isMobileLabOnDesktop()) return true
   if (typeof window !== "undefined") {

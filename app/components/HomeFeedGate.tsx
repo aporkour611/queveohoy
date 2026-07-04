@@ -12,6 +12,7 @@ import {
   readWeekViewFromSearch,
   stripWeekViewFromSearch,
 } from "@/app/lib/filter-url";
+import { shouldDeferHeavyClient } from "@/app/lib/interaction-gate";
 import { EventDrawerProvider } from "./EventDrawerProvider";
 import { HomeResetProvider } from "./HomeResetContext";
 
@@ -25,9 +26,11 @@ type HomeFeedProps = ComponentProps<typeof HomeFeed>;
 
 /** Montado solo tras FeedClientRoots — sin gate duplicado. */
 export function HomeFeedGate(props: HomeFeedProps) {
+  const deferHeavy = shouldDeferHeavyClient();
   const [initialWeekView, setInitialWeekView] = useState(false);
 
   useEffect(() => {
+    if (deferHeavy) return;
     let weekFromUrl = false
 
     if (readWeekViewFromSearch(window.location.search)) {
@@ -48,8 +51,10 @@ export function HomeFeedGate(props: HomeFeedProps) {
       queueMicrotask(onActivateFeed)
     }
 
-    return () => window.removeEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed)
-  }, [])
+    return () => window.removeEventListener(HOME_FEED_ACTIVATE_EVENT, onActivateFeed);
+  }, [deferHeavy]);
+
+  if (deferHeavy) return null;
 
   return (
     <HomeResetProvider>

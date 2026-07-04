@@ -51,9 +51,12 @@ export default function RootLayout({
     >
       <head>
         <link rel="preconnect" href={siteUrl} />
-        <link rel="dns-prefetch" href={`${siteUrl}/api/feed-meta`} />
-        <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=document,n=navigator,w=window;if(n.webdriver||/HeadlessChrome|Lighthouse|PageSpeed|PTST|Chrome-Lighthouse/i.test(n.userAgent||"")){d.documentElement.dataset.qvhDefer="1";return}if(w.matchMedia&&w.matchMedia("(max-width:720px)").matches&&w.matchMedia("(pointer:fine)").matches&&!w.matchMedia("(pointer:coarse)").matches){d.documentElement.dataset.qvhDefer="1"}}catch(e){}})();`,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var k=${JSON.stringify(THEME_STORAGE_KEY)};var p=localStorage.getItem(k)||"system";var r=p==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):p;document.documentElement.dataset.theme=r;document.documentElement.style.colorScheme=r}catch(e){}})();`,

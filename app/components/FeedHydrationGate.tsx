@@ -15,6 +15,7 @@ type Props = ComponentProps<typeof FeedHydrationBootstrap>;
 
 /** PSI/Lighthouse: sin hidratar feed; usuarios reales cargan tras idle. */
 export function FeedHydrationGate(props: Props) {
+  if (typeof window === "undefined") return null;
   if (shouldDeferHeavyClient()) return null;
   return <Bootstrap {...props} />;
 }

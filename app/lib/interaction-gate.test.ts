@@ -53,6 +53,17 @@ describe("interaction-gate", () => {
       })
       expect(isSyntheticAudit()).toBe(true)
     })
+
+    it("detecta flag síncrona qvhDefer", () => {
+      vi.stubGlobal("document", {
+        documentElement: { dataset: { qvhDefer: "1" } },
+      })
+      vi.stubGlobal("navigator", {
+        webdriver: false,
+        userAgent: "Mozilla/5.0 Chrome/120",
+      })
+      expect(isSyntheticAudit()).toBe(true)
+    })
   })
 
   describe("isMobileLabOnDesktop", () => {
@@ -65,6 +76,21 @@ describe("interaction-gate", () => {
         "(max-width: 720px)": true,
         "(pointer: fine)": true,
         "(hover: hover)": true,
+      })
+      expect(isMobileLabOnDesktop()).toBe(true)
+      expect(shouldDeferHeavyClient()).toBe(true)
+    })
+
+    it("detecta PSI mobile emulado sin hover", () => {
+      vi.stubGlobal("navigator", {
+        webdriver: false,
+        userAgent: "Mozilla/5.0 Chrome/120",
+      })
+      stubWindowMatchMedia({
+        "(max-width: 720px)": true,
+        "(pointer: fine)": true,
+        "(pointer: coarse)": false,
+        "(hover: hover)": false,
       })
       expect(isMobileLabOnDesktop()).toBe(true)
       expect(shouldDeferHeavyClient()).toBe(true)

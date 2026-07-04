@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { cache } from "react";
+import { preload } from "react-dom";
 import dynamic from "next/dynamic";
 import type { EventRow } from "../components/types";
 import { DestacadosSection } from "../components/DestacadosSection";
@@ -166,6 +167,12 @@ export default async function Page() {
   const mergedForSsr = mergeFeedEvents(events, weekEvents);
   const ssrEvents = eventsForHomeSsrHtml(mergedForSsr);
   const lcpPreloadEntries = resolveHomeLcpPreloadEntries(weekEvents, todayKey);
+  for (const entry of lcpPreloadEntries) {
+    preload(entry.href, {
+      as: "image",
+      fetchPriority: "high",
+    });
+  }
   const tonightEvents = mergeFeedEvents(ssrEvents, weekEvents);
   const weekPresentation = buildWeekDestacadosPresentation(
     weekEvents,
