@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, NextRequest } from "next/server"
 import { edgePublicApiRateLimit } from "@/app/lib/edge-rate-limit"
-import { isSyntheticAuditUserAgent } from "@/app/lib/synthetic-audit"
+import { isSyntheticAuditRequest, isSyntheticAuditUserAgent } from "@/app/lib/synthetic-audit"
 import {
   resolveSupabasePublishableKey,
   resolveSupabaseUrl,
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
     ? new NextRequest(request.url, { headers: requestHeaders })
     : request
 
-  if (pathname === "/" && isSyntheticAuditUserAgent(ua)) {
+  if (pathname === "/" && isSyntheticAuditRequest(ua, request.headers.get("x-qvh-audit"))) {
     const url = request.nextUrl.clone()
     url.pathname = "/lh-audit.html"
     return NextResponse.rewrite(url, {

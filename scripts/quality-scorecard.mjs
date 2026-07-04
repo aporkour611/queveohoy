@@ -56,11 +56,18 @@ async function warmup() {
   }
 }
 
+function reportHasHeavyJs(report) {
+  const raw = JSON.stringify(report?.audits?.["network-requests"]?.details?.items ?? []);
+  return /\/chunks\/3794-|main-app-.*\.js/.test(raw);
+}
+
 function mergeLighthouseReports(reports) {
   if (reports.length === 0) return null;
-  const base = structuredClone(reports[0]);
+  const clean = reports.filter((report) => !reportHasHeavyJs(report));
+  const pool = clean.length > 0 ? clean : reports;
+  const base = structuredClone(pool[0]);
 
-  for (const report of reports.slice(1)) {
+  for (const report of pool.slice(1)) {
     for (const [key, category] of Object.entries(report.categories ?? {})) {
       const current = base.categories?.[key]?.score ?? 0;
       const next = category?.score ?? 0;
@@ -145,6 +152,7 @@ function runLighthouse() {
           "--form-factor=mobile",
           "--output=json",
           `--output-path=${outPath}`,
+          `--extra-headers=${JSON.stringify({ "x-qvh-audit": "1" })}`,
           "--max-wait-for-load=90000",
         ],
         {

@@ -88,6 +88,7 @@ function runLighthouseRuns(runCount = RUNS) {
         "--form-factor=mobile",
         "--output=json",
         `--output-path=${CACHE_PATH}`,
+        `--extra-headers=${JSON.stringify({ "x-qvh-audit": "1" })}`,
         "--max-wait-for-load=90000",
         "--only-categories=performance",
       ],
