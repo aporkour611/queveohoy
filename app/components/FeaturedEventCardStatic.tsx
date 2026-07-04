@@ -63,6 +63,25 @@ function StaticSpotlightCover({
         </div>
       );
     }
+    const safeSrc = safeRemoteImageUrl(url);
+    if (safeSrc) {
+      return (
+        <div className={layoutClass} aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={safeSrc}
+            alt=""
+            className={imgClass}
+            style={imgStyle}
+            width={SPOTLIGHT_IMAGE_WIDTH}
+            height={SPOTLIGHT_IMAGE_HEIGHT}
+            loading="eager"
+            fetchPriority="high"
+            decoding="sync"
+          />
+        </div>
+      );
+    }
   }
 
   const built = buildSpotlightImageProps(url, priority);

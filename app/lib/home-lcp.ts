@@ -16,17 +16,35 @@ import {
 } from "./optimized-image";
 import type { SpotlightCover } from "./spotlight-art";
 
-function lcpCoverScore(cover: SpotlightCover | undefined): number {
+function lcpCoverScore(
+  cover: SpotlightCover | undefined,
+  card: ReturnType<typeof getSpotlightCardModel>
+): number {
   if (!cover?.url) return -1;
+
+  const isSmallDuelIcon =
+    card.showTeamDuel &&
+    cover.local &&
+    /\/esports\/|\/crests\/|_logo\./i.test(cover.url);
+
+  if (isSmallDuelIcon) return 2;
+
+  if (card.showTeamDuel && !cover.local && !isTmdbPosterUrl(cover.url)) {
+    return 3
+  }
 
   if (cover.local) {
     const raster = resolveLcpLocalRasterUrl(cover.url);
     const isRaster = /\.(png|jpe?g|webp|avif)$/i.test(raster);
-    return isRaster ? (raster.endsWith(".webp") ? 12 : 10) : 4;
+    if (isRaster) {
+      if (raster.includes("/posters/")) return 25;
+      return raster.endsWith(".webp") ? 20 : 18;
+    }
+    return 4;
   }
 
-  if (isTmdbPosterUrl(cover.url)) return 3;
-  return 1;
+  if (isTmdbPosterUrl(cover.url)) return 15;
+  return 5;
 }
 
 /** Preload alineado con el <img> LCP (local mismo origen > TMDB directo > next/image). */
@@ -60,8 +78,8 @@ export function resolveLcpPriorityIndex(events: EventRow[]): number {
   let bestScore = -1;
 
   featured.forEach((event, index) => {
-    const cover = getSpotlightCardModel(event, MADRID_TZ).coverImage;
-    const score = lcpCoverScore(cover);
+    const card = getSpotlightCardModel(event, MADRID_TZ);
+    const score = lcpCoverScore(card.coverImage, card);
     if (score > bestScore) {
       bestScore = score;
       bestIndex = index;
