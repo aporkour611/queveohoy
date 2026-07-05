@@ -573,17 +573,7 @@
   }
 }
 
-/* ── Buscar en página (tipo Ctrl+F) ── */
-::highlight(qvh-page-find-all) {
-  background: rgba(255, 213, 0, 0.42);
-  color: inherit;
-}
-
-::highlight(qvh-page-find-active) {
-  background: rgba(255, 140, 0, 0.82);
-  color: inherit;
-}
-
+/* ── Buscar en página (tipo Ctrl+F) — highlights en page-find-highlight.css ── */
 .qvh-page-find-rail {
   flex: 0 0 200px;
   width: 200px;

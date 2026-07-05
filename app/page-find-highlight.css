@@ -1,0 +1,10 @@
+/* Custom Highlight API — importado solo en PageFindBar (evita warning Turbopack en globals). */
+::highlight(qvh-page-find-all) {
+  background: rgba(255, 213, 0, 0.42);
+  color: inherit;
+}
+
+::highlight(qvh-page-find-active) {
+  background: rgba(255, 140, 0, 0.82);
+  color: inherit;
+}

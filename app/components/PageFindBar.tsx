@@ -1,5 +1,6 @@
 "use client";
 
+import "../page-find-highlight.css";
 import {
   useCallback,
   useEffect,
