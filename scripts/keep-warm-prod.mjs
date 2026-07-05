@@ -4,8 +4,20 @@
  * Uso: npm run keep-warm:prod
  * GitHub Actions: keep-warm.yml cada 5 min (plan Hobby sin crons Vercel).
  */
+import { isProdBlockedStatus, probeProdHealth } from "./lib/prod-probe-guard.mjs"
+
 const SITE = (process.env.SITE_URL ?? "https://queveohoy.es").replace(/\/$/, "")
 const CRON_SECRET = process.env.CRON_SECRET?.trim()
+
+const health = await probeProdHealth(SITE)
+if (health.deferred) {
+  console.warn(`Keep-warm omitido: prod en backoff hasta ${health.nextProbeAfter ?? "?"}`)
+  process.exit(0)
+}
+if (isProdBlockedStatus(health.status)) {
+  console.warn(`Keep-warm omitido: prod HTTP ${health.status} (rate-limit)`)
+  process.exit(0)
+}
 
 /** APIs ligeras + warm completo de páginas (KEEP_WARM_FULL=0 para omitir HTML). */
 const PATHS = [

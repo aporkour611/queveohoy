@@ -27,6 +27,7 @@ import {
   parseUfcMainEventFighters,
   ufcKindLabel,
 } from "./thesportsdb-ufc-client";
+import { parseLeaguePoster } from "./thesportsdb-leagues";
 import {
   esportsLogoFallbackUrls,
   isEsportsSport,
@@ -47,7 +48,12 @@ import {
 } from "./poster-recipes";
 import { eventDisplayTitle } from "./event-display";
 import { isChampionsFinal } from "./event-card-stamp";
-import { parseLeaguePoster } from "./thesportsdb-leagues";
+import {
+  resolveBasketCrestUrls,
+  resolveEsportsCrestUrls,
+  resolveFootballCrestUrls,
+  lookupPinnedLocalUrl,
+} from "./pinned-images";
 import {
   isRolandGarrosEvent,
   isRolandGarrosKnockout,
@@ -340,13 +346,17 @@ export function getSpotlightCardModel(
       coverImage: hasDuel ? localSpotlightCover(gameArt.url, "poster") : undefined,
       visualClass: gameArt.visualClass,
       channelList: channelList.length ? channelList : undefined,
-      homeCrest: logos?.homeUrl ?? undefined,
-      awayCrest: logos?.awayUrl ?? undefined,
+      homeCrest: logos?.homeUrl
+        ? (lookupPinnedLocalUrl(logos.homeUrl) ?? logos.homeUrl)
+        : undefined,
+      awayCrest: logos?.awayUrl
+        ? (lookupPinnedLocalUrl(logos.awayUrl) ?? logos.awayUrl)
+        : undefined,
       homeCrestList: logos?.homeUrl
-        ? esportsLogoFallbackUrls(logos.homeUrl)
+        ? resolveEsportsCrestUrls(logos.homeUrl, esportsLogoFallbackUrls(logos.homeUrl))
         : undefined,
       awayCrestList: logos?.awayUrl
-        ? esportsLogoFallbackUrls(logos.awayUrl)
+        ? resolveEsportsCrestUrls(logos.awayUrl, esportsLogoFallbackUrls(logos.awayUrl))
         : undefined,
       homeName,
       awayName,
@@ -432,10 +442,10 @@ export function getSpotlightCardModel(
       homeCrest: logos?.homeUrl ?? undefined,
       awayCrest: logos?.awayUrl ?? undefined,
       homeCrestList: logos?.homeAbbr
-        ? basketLogoFallbackUrls(logos.homeAbbr)
+        ? resolveBasketCrestUrls(logos.homeAbbr, basketLogoFallbackUrls(logos.homeAbbr))
         : undefined,
       awayCrestList: logos?.awayAbbr
-        ? basketLogoFallbackUrls(logos.awayAbbr)
+        ? resolveBasketCrestUrls(logos.awayAbbr, basketLogoFallbackUrls(logos.awayAbbr))
         : undefined,
       homeName,
       awayName,
@@ -474,6 +484,8 @@ export function getSpotlightCardModel(
       coverImage: styled.coverImage ?? undefined,
       homeCrest: ids ? teamCrestUrl(ids.homeId) : undefined,
       awayCrest: ids ? teamCrestUrl(ids.awayId) : undefined,
+      homeCrestList: ids ? resolveFootballCrestUrls(ids.homeId) : undefined,
+      awayCrestList: ids ? resolveFootballCrestUrls(ids.awayId) : undefined,
       homeName,
       awayName,
       showTeamDuel: Boolean(ids),

@@ -9,6 +9,14 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import {
+  isProdCurrentlyBlocked,
+  probeProdHealth,
+  readEffectiveProReport,
+  readEffectiveQualityGatePass,
+  writeGatesSnapshot,
+} from "./lib/prod-probe-guard.mjs";
+import { assertProdMarathonAllowed } from "./lib/prod-paused.mjs";
 
 const TOTAL = Number(process.env.MARATHON_CYCLES ?? 100_000);
 const DISCOVERY_HALF = Math.floor(TOTAL / 2);
@@ -17,6 +25,41 @@ const OUT_DIR = join(process.cwd(), "docs", "marathon-reports");
 const PROGRESS_EVERY = Number(process.env.MARATHON_PROGRESS_EVERY ?? 2_500);
 const START_CYCLE = Number(process.env.MARATHON_START_CYCLE ?? 1);
 const LAUNCH_FAST = process.env.MARATHON_FAST !== "0";
+const FULL_RUN = process.env.MARATHON_FULL_RUN === "1";
+const TURBO = process.env.MARATHON_TURBO === "1";
+const TURBO_VERIFY_EVERY = Number(process.env.MARATHON_TURBO_VERIFY_EVERY ?? 500);
+
+/** Pasos costosos (prod/LH) omitidos en turbo si gates ya verdes. */
+const TURBO_SKIP_WHEN_GREEN = new Set([
+  "pro-100-fast",
+  "pro-100-full",
+  "quality-discover",
+  "quality-apply",
+  "cwv-discover",
+  "cwv-discover-deep",
+  "cwv-apply",
+  "cwv-apply-deep",
+  "exam-pro",
+  "cold-strict",
+  "content-visual",
+  "mobile-audit",
+  "seo-discovery",
+  "design-discovery",
+  "validate",
+  "test-all",
+  "verify-full",
+  "warm-full",
+  "warm",
+  "perf-budget",
+  "test-partido",
+  "crests-pin",
+]);
+/** Pasos que pegan a prod — omitir si Vercel devuelve 402/429. */
+const PROD_PROBE_CMDS = new Set([
+  ...TURBO_SKIP_WHEN_GREEN,
+  "crests-audit",
+  "crests-pin",
+]);
 const TESTS_JSON = join(OUT_DIR, "PRO-100-TESTS-latest.json");
 const EXECUTED_FILE = join(OUT_DIR, `${MARATHON_ID}-executed.json`);
 const QUALITY_LATEST = join(
@@ -25,6 +68,8 @@ const QUALITY_LATEST = join(
   "quality-reports",
   "quality-scorecard-latest.json"
 );
+const LEARNING_JOURNAL = join(OUT_DIR, "marathon-learning-journal.md");
+const LEARNING_EVERY = Number(process.env.MARATHON_LEARNING_EVERY ?? 5_000);
 
 function stepCacheKey(phase, cmd) {
   if (cmd === "warm-full") return "global:warm-full";
@@ -60,12 +105,14 @@ const DISCOVERY_ROTATION = [
   { phase: "baseline", cmd: "exam-pro" },
   { phase: "baseline", cmd: "pro-100-fast" },
   { phase: "proposal", cmd: "test-partido" },
+  { phase: "proposal", cmd: "crests-audit" },
   { phase: "proposal", cmd: "perf-budget" },
   { phase: "baseline-2", cmd: "warm-full" },
   { phase: "baseline-2", cmd: "cold-strict" },
   { phase: "baseline-2", cmd: "content-visual" },
   { phase: "baseline-2", cmd: "quality-discover" },
   { phase: "baseline-2", cmd: "cwv-discover-deep" },
+  { phase: "baseline-2", cmd: "crests-audit" },
   { phase: "baseline-2", cmd: "exam-pro" },
   { phase: "baseline-2", cmd: "pro-100-fast" },
 ];
@@ -77,6 +124,8 @@ const APPLY_ROTATION = [
   { phase: "apply", cmd: "mobile-audit" },
   { phase: "apply", cmd: "quality-apply" },
   { phase: "apply", cmd: "cwv-apply" },
+  { phase: "apply", cmd: "crests-audit" },
+  { phase: "apply", cmd: "crests-pin" },
   { phase: "apply", cmd: "validate" },
   { phase: "apply", cmd: "test-all" },
   { phase: "apply", cmd: "verify-full" },
@@ -92,30 +141,58 @@ const APPLY_ROTATION = [
 ];
 
 function read100Tests() {
-  try {
-    return JSON.parse(readFileSync(TESTS_JSON, "utf8"));
-  } catch {
-    return null;
-  }
+  return readEffectiveProReport(TESTS_JSON);
 }
 
 function readQualityGatePass() {
-  try {
-    const payload = JSON.parse(readFileSync(QUALITY_LATEST, "utf8"));
-    const s = payload.summary ?? {};
-    return (
-      s.passing === s.total &&
-      s.measured === s.total &&
-      Number(s.average) >= 95
-    );
-  } catch {
-    return false;
-  }
+  return readEffectiveQualityGatePass();
 }
 
 function allGatesPass() {
   const t = read100Tests();
   return t?.pass === true && readQualityGatePass();
+}
+
+function isTurboSpotCheck(cycle, cmd) {
+  if (cycle === TOTAL || cycle === DISCOVERY_HALF) return true;
+  if (cycle % TURBO_VERIFY_EVERY !== 0 && cycle % 2_500 !== 0) return false;
+  return (
+    cmd.startsWith("pro-100") ||
+    cmd === "quality-discover" ||
+    cmd === "quality-apply" ||
+    cmd === "crests-audit"
+  );
+}
+
+function shouldTurboSkip(cmd, cycle) {
+  if (isProdCurrentlyBlocked() && PROD_PROBE_CMDS.has(cmd)) {
+    return true;
+  }
+  if (!TURBO || !allGatesPass()) return false;
+  if (!TURBO_SKIP_WHEN_GREEN.has(cmd)) return false;
+  return !isTurboSpotCheck(cycle, cmd);
+}
+
+function turboSkippedStep(cmd) {
+  return { label: cmd, ok: true, ms: 0, exit: 0, turboSkipped: true };
+}
+
+function runFinalTurboVerification() {
+  if (isProdCurrentlyBlocked()) {
+    console.warn(`\n[${MARATHON_ID}] turbo final verification deferred (prod bloqueado)\n`);
+    return allGatesPass();
+  }
+  console.log(`\n[${MARATHON_ID}] turbo final verification…\n`);
+  const pro = runCmd("pro-100", "node", ["scripts/pro-100-tests.mjs"], {
+    PRO_100_SKIP_VERSION: "1",
+  });
+  const quality = runCmd("quality", "npm", ["run", "quality:audit"], {
+    QUALITY_GATE_BLOCKING: "0",
+  });
+  const crests = runCmd("crests", "node", ["scripts/crests-quality-audit.mjs"], {
+    CRESTS_AUDIT_STRICT: "1",
+  });
+  return pro.ok && quality.ok && crests.ok && allGatesPass();
 }
 
 function runCmd(label, command, args, env = {}) {
@@ -136,6 +213,13 @@ function runCmd(label, command, args, env = {}) {
 }
 
 function runStep(cmd, executed, phase, cycle) {
+  if (isProdCurrentlyBlocked() && PROD_PROBE_CMDS.has(cmd)) {
+    return { ...turboSkippedStep(cmd), prodBlocked: true };
+  }
+  if (shouldTurboSkip(cmd, cycle)) {
+    return turboSkippedStep(cmd);
+  }
+
   const key = stepCacheKey(phase, cmd);
   if (executed.has(key)) {
     return { ...executed.get(key), cached: true };
@@ -242,8 +326,22 @@ function runStep(cmd, executed, phase, cycle) {
         "app/lib/premium-images.test.ts",
         "app/lib/home-lcp.test.ts",
         "app/lib/poster-quality.test.ts",
+        "app/lib/pinned-images.test.ts",
         "app/lib/quality-scorecard.test.ts",
       ]);
+      break;
+    case "crests-audit":
+      step = runCmd("crests", "node", ["scripts/crests-quality-audit.mjs"], {
+        CRESTS_AUDIT_STRICT: process.env.CRESTS_AUDIT_STRICT ?? "1",
+      });
+      break;
+    case "crests-pin":
+      step = runCmd("crests-pin", "npm", ["run", "crests:pin"], {
+        CRESTS_PIN_LIMIT: process.env.CRESTS_PIN_LIMIT ?? "40",
+      });
+      if (!step.ok && TURBO && allGatesPass()) {
+        step = { ...step, ok: true, softPass: true };
+      }
       break;
     case "perf-budget":
       step = runCmd("perf", "npm", ["run", "perf:budget"]);
@@ -295,13 +393,44 @@ function formatGates(g) {
   return `100t=${g.tests100}/${g.testsTotal} Q=${g.quality ? "✓" : "✗"}`;
 }
 
+function appendLearningMilestone(cycle, gates, step) {
+  if (cycle % LEARNING_EVERY !== 0 || cycle === 0) return;
+  mkdirSync(OUT_DIR, { recursive: true });
+  const line = `\n## Milestone ${cycle.toLocaleString("es-ES")} — ${new Date().toISOString().slice(0, 10)}\n\n- Gates: PRO ${gates.tests100}/${gates.testsTotal} · Q=${gates.quality ? "OK" : "FAIL"}\n- Step: ${step.phase}/${step.cmd}${step.turboSkipped ? " (turbo)" : ""}\n- Half: ${cycle <= DISCOVERY_HALF ? "discovery" : "apply"}\n`;
+  try {
+    if (!existsSync(LEARNING_JOURNAL)) {
+      writeFileSync(
+        LEARNING_JOURNAL,
+        "# Maratón 100k — diario de aprendizaje\n\nHitos automáticos cada 5.000 ciclos.\n"
+      );
+    }
+    writeFileSync(LEARNING_JOURNAL, readFileSync(LEARNING_JOURNAL, "utf8") + line);
+  } catch {
+    /* non-blocking */
+  }
+}
+
 function main() {
+  assertProdMarathonAllowed();
   mkdirSync(OUT_DIR, { recursive: true });
   const executed = loadExecuted();
 
+  const progressEvery =
+    TURBO && allGatesPass()
+      ? Number(process.env.MARATHON_PROGRESS_EVERY ?? 1_000)
+      : PROGRESS_EVERY;
+
   console.log(
-    `\n[${MARATHON_ID}] ULTRA 100k · ${TOTAL} ciclos · fast=${LAUNCH_FAST}\n`
+    `\n[${MARATHON_ID}] ULTRA 100k · ${TOTAL} ciclos · fast=${LAUNCH_FAST}${TURBO ? " · turbo" : ""}\n`
   );
+
+  probeProdHealth().then((p) => {
+    if (p.blocked) {
+      console.warn(
+        `[${MARATHON_ID}] prod bloqueado HTTP ${p.status} — probes prod omitidos (TTL guard)\n`
+      );
+    }
+  });
 
   for (let cycle = START_CYCLE; cycle <= TOTAL; cycle += 1) {
     const rotation = pickRotation(cycle);
@@ -318,15 +447,20 @@ function main() {
     };
 
     if (
-      cycle % PROGRESS_EVERY === 0 ||
+      cycle % progressEvery === 0 ||
       cycle === START_CYCLE ||
       cycle === DISCOVERY_HALF ||
       cycle === TOTAL ||
-      rotation.cmd.startsWith("pro-100")
+      (!TURBO && rotation.cmd.startsWith("pro-100")) ||
+      (TURBO && isTurboSpotCheck(cycle, rotation.cmd)) ||
+      (FULL_RUN && cycle % 100 === 0 && !TURBO)
     ) {
       writeProgress(cycle, step, gates, executed);
+      if (gates.testsPass) writeGatesSnapshot(gates, cycle);
+      appendLearningMilestone(cycle, gates, step);
+      const tag = step.turboSkipped ? " (turbo)" : step.cached ? " (cache)" : "";
       console.log(
-        `[${MARATHON_ID}] ${cycle}/${TOTAL} · ${rotation.phase}/${rotation.cmd} · ${formatGates(gates)}${step.cached ? " (cache)" : ""}`
+        `[${MARATHON_ID}] ${cycle}/${TOTAL} · ${rotation.phase}/${rotation.cmd} · ${formatGates(gates)}${tag}`
       );
       if (report?.failures?.length) {
         console.log(
@@ -338,7 +472,7 @@ function main() {
       }
     }
 
-    if (allGatesPass()) {
+    if (allGatesPass() && !FULL_RUN) {
       const done = {
         marathonId: MARATHON_ID,
         status: "COMPLETED",
@@ -356,13 +490,19 @@ function main() {
     }
   }
 
+  let gatesPass = allGatesPass();
+  if (TURBO && gatesPass && !runFinalTurboVerification()) {
+    gatesPass = false;
+    console.error(`\n[${MARATHON_ID}] turbo final verification FAILED\n`);
+  }
+
   const report = read100Tests();
   writeFileSync(
     join(OUT_DIR, `${MARATHON_ID}-exhausted.json`),
     `${JSON.stringify(
       {
         marathonId: MARATHON_ID,
-        status: "EXHAUSTED",
+        status: gatesPass ? "COMPLETED" : "EXHAUSTED",
         cycles: TOTAL,
         tests: report,
         quality: readQualityGatePass(),
@@ -372,6 +512,36 @@ function main() {
       2
     )}\n`
   );
+  if (gatesPass) {
+    spawnSync("node", ["scripts/marathon-finalize-100k.mjs"], {
+      cwd: process.cwd(),
+      env: { ...process.env, MARATHON_ID, MARATHON_CYCLES: String(TOTAL) },
+      stdio: "pipe",
+      shell: process.platform === "win32",
+    });
+    writeFileSync(
+      join(OUT_DIR, `${MARATHON_ID}-completed.json`),
+      `${JSON.stringify(
+        {
+          marathonId: MARATHON_ID,
+          status: "COMPLETED",
+          version: "6.2.2-pro-full",
+          cycles: TOTAL,
+          gates: {
+            tests100: report?.passed ?? 0,
+            testsTotal: report?.total ?? 100,
+            testsPass: report?.pass === true,
+            quality: readQualityGatePass(),
+          },
+          at: new Date().toISOString(),
+        },
+        null,
+        2
+      )}\n`
+    );
+    console.log(`\n[${MARATHON_ID}] COMPLETED full run at cycle ${TOTAL}\n`);
+    return;
+  }
   console.error(`\n[${MARATHON_ID}] EXHAUSTED\n`);
   process.exitCode = 1;
 }

@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it, vi } from "vitest";
 import type { EventRow } from "../components/types";
 import { getDestacadoImportanceTier } from "./destacados-importance";
-import { buildWeekDestacadosPresentation } from "./destacados-week-present";
+import * as destacadosWeekPresent from "./destacados-week-present";
 import { getSpotlightCardModel } from "./featured-card";
 import { FEED_DAY_COUNT } from "./events-feed";
 import {
@@ -19,8 +19,8 @@ const maskSingerEvent: EventRow = {
   sport: "tv",
   date: "2026-05-27",
   time: "23:00",
-  competition: "Concurso · Mask Singer",
-  platform: "Antena 3 · ATRESPLAYER TV",
+  competition: "Concurso Â· Mask Singer",
+  platform: "Antena 3 Â· ATRESPLAYER TV",
 };
 
 const esportsValorantEvent: EventRow = {
@@ -84,7 +84,7 @@ describe("resolveHomeLcpPreloadEntries", () => {
     expect(entry?.href).not.toContain("image.tmdb.org");
   });
 
-  it("elige pasapalabra local como LCP cuando está en destacados curados", () => {
+  it("elige pasapalabra local como LCP cuando estÃ¡ en destacados curados", () => {
     const entries = resolveHomeLcpPreloadEntries([maskSingerEvent], "2026-05-27");
 
     expect(entries[0]?.href).toBe("/posters/pasapalabra.webp");
@@ -97,7 +97,7 @@ describe("resolveHomeLcpPreloadEntries", () => {
     expect(entries[0]?.href).toContain("/deportes/ufc/topuria-lcp.webp");
   });
 
-  it("clasifica Mask Singer en la categoría rest de destacados", () => {
+  it("clasifica Mask Singer en la categorÃ­a rest de destacados", () => {
     expect(getDestacadoImportanceTier(maskSingerEvent)).toBe("rest");
   });
 
@@ -129,12 +129,19 @@ describe("resolveHomeLcpPreloadEntries", () => {
   it("preload href coincide con img LCP del candidato elegido", () => {
     const todayKey = "2026-05-27";
     const events = [esportsValorantEvent, elDramaEvent];
-    const { weekFeatured } = buildWeekDestacadosPresentation(
-      events,
-      todayKey,
-      FEED_DAY_COUNT
-    );
-    const featured = weekFeatured.slice(0, 3);
+    const presentation: destacadosWeekPresent.WeekDestacadosPresentation = {
+      hero: null,
+      weekFeatured: events,
+      subtitle: "",
+      destacadosClassSuffix: "",
+      bodyClassSuffix: "",
+    };
+    vi.spyOn(
+      destacadosWeekPresent,
+      "buildWeekDestacadosPresentation"
+    ).mockReturnValue(presentation);
+
+    const featured = presentation.weekFeatured.slice(0, 3);
     const winner = featured[resolveLcpPriorityIndex(featured)];
     const expected = resolveLcpPreloadEntryFromCard(
       getSpotlightCardModel(winner, MADRID_TZ)
@@ -143,5 +150,6 @@ describe("resolveHomeLcpPreloadEntries", () => {
 
     expect(entries[0]?.href).toBe(expected);
     expect(entries[0]?.href).not.toContain("/_next/image");
+    vi.restoreAllMocks();
   });
 });

@@ -29,8 +29,13 @@ function teamIdFromName(name?: string | null): string | null {
   return null;
 }
 
+import { lookupPinnedByKey, footballTeamRegistryKey } from "./pinned-images";
+
 export function teamCrestUrl(teamId: string) {
-  return `https://crests.football-data.org/${teamId}.png`;
+  return (
+    lookupPinnedByKey(footballTeamRegistryKey(teamId)) ??
+    `https://crests.football-data.org/${teamId}.png`
+  );
 }
 
 export function teamInitials(name?: string | null) {

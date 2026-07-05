@@ -1,0 +1,55 @@
+---
+description: Registro de escudos/portadas fijadas localmente (sin huecos en duelos de equipo)
+globs: app/lib/pinned-images*,app/lib/esports.ts,app/lib/football.ts,app/lib/basketball.ts,app/lib/featured-card.ts,app/lib/event-enrich.ts,app/lib/cron/run-cron.ts,public/crests/**,scripts/pin-remote-crests.mjs
+alwaysApply: false
+---
+
+# Escudos fijados — pinned-images
+
+Evitar equipos sin imagen (esports, fútbol, NBA) sin penalizar cold start.
+
+## Arquitectura
+
+| Pieza | Rol |
+|-------|-----|
+| `app/lib/pinned-images.json` | Registro `byKey` + `byRemote` → ruta local `/crests/...` |
+| `app/lib/pinned-images.ts` | Lookup en runtime (cliente + servidor, sin `fs`) |
+| `app/lib/pinned-images-persist.ts` | Solo servidor/cron: probe HEAD, descarga, escribe `public/crests/` |
+| `public/crests/{esports,football,basket}/` | Assets mismo origen (rápidos, sin CDN externo en repeat) |
+
+## Flujo
+
+1. **Cron / enrich** — `resolveAndPinEsportsLogo(id, candidates)` prueba todas las URLs PandaScore y guarda la primera válida; en Vercel (FS read-only) al menos persiste URL remota buena en `source`.
+2. **Build local / CI** — `npm run crests:pin` descarga escudos pendientes y actualiza JSON (commitear ambos).
+3. **UI** — `TeamCrest` recibe `resolveEsportsCrestUrls` / `resolveFootballCrestUrls`: **local fijado primero**, luego remoto + fallbacks.
+
+## Claves de registro
+
+- `esports:team:{pandascoreId}`
+- `football:team:{football-data id}`
+- `basket:nba:{ABBR}`
+
+## Reglas
+
+- No importar `pinned-images-persist` en componentes cliente.
+- No bloquear cold start: lookup O(1) en JSON embebido; sin fetch en SSR de home.
+- Al añadir deporte con escudos remotos: clave estable + candidatos + entrada en cron enrich.
+- Tras `crests:pin`, commitear `pinned-images.json` y archivos en `public/crests/`.
+
+## Comandos
+
+```bash
+npm run crests:pin          # fija escudos de eventos e-sports en BD/API
+npm run crests:audit        # auditoría escudos (maratón / CI)
+npm run posters:compress    # opcional webp en /posters (no crests aún)
+```
+
+## Maratón ultra-pro-100k (prioridad)
+
+- **`crests-audit`** en rotación discovery/apply — no se omite en turbo (rápido).
+- **`crests-pin`** solo apply — omitido en turbo salvo spot-check; soft-pass si gates verdes.
+- **PRO 100** incluye categoría **`crests` C01–C05** en cada `pro-100-fast` (spot-check turbo).
+- **`content-visual`** exige duelos con `fh-team-crest-img` con `src`.
+- **`test-partido`** incluye `pinned-images.test.ts`.
+- Verificación final turbo: PRO + quality + **crests-audit**.
+- **No detener el maratón** al añadir reglas; el supervisor solo relanza si el proceso muere.

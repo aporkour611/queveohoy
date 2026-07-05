@@ -7,6 +7,7 @@ import {
 } from "./esports";
 import { eventHasTeamCrests } from "./event-crests";
 import { isImportantEvent } from "./featured";
+import { resolveAndPinEsportsLogo } from "./pinned-images-persist";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -46,8 +47,8 @@ async function enrichEsportsEvent(e: EventRow): Promise<EventRow | null> {
   const awayOp = match.opponents?.[1]?.opponent;
   const homeCandidates = pandascoreTeamLogoCandidates(homeOp);
   const awayCandidates = pandascoreTeamLogoCandidates(awayOp);
-  const homeLogo = homeCandidates[0] ?? pandascoreTeamLogo(homeOp);
-  const awayLogo = awayCandidates[0] ?? pandascoreTeamLogo(awayOp);
+  const homeLogo = await resolveAndPinEsportsLogo(homeOp?.id, homeCandidates);
+  const awayLogo = await resolveAndPinEsportsLogo(awayOp?.id, awayCandidates);
 
   if (!homeLogo || !awayLogo) return null;
 

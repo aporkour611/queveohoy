@@ -1,0 +1,889 @@
+{
+  "version": 1,
+  "byKey": {
+    "esports:team:128976": {
+      "local": "/crests/esports/128976.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128976/900px_e_dward_gaming_2017_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:53.130Z"
+    },
+    "esports:team:128577": {
+      "local": "/crests/esports/128577.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128577/600px_bbl_esports_2022_full_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:53.413Z"
+    },
+    "esports:team:138481": {
+      "local": "/crests/esports/138481.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138481/110px_university_war_logo_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:54.692Z"
+    },
+    "esports:team:128968": {
+      "local": "/crests/esports/128968.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128968/9z_team_2024_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:54.887Z"
+    },
+    "esports:team:130973": {
+      "local": "/crests/esports/130973.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/130973/600px_enterprise_esports_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:55.077Z"
+    },
+    "esports:team:138449": {
+      "local": "/crests/esports/138449.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138449/reborn_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:55.291Z"
+    },
+    "esports:team:132691": {
+      "local": "/crests/esports/132691.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/132691/600px_dplus_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:55.462Z"
+    },
+    "esports:team:138143": {
+      "local": "/crests/esports/138143.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138143/614px_arete_2026_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:55.674Z"
+    },
+    "esports:team:137113": {
+      "local": "/crests/esports/137113.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137113/167px_onside_gaming_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:55.850Z"
+    },
+    "esports:team:132068": {
+      "local": "/crests/esports/132068.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/132068/fennel_2021_may_full.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:56.983Z"
+    },
+    "esports:team:137079": {
+      "local": "/crests/esports/137079.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137079/190px_sasanqua_logo_light_mode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:57.205Z"
+    },
+    "esports:team:131490": {
+      "local": "/crests/esports/131490.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/131490/d_x_vzo3a_v_400x400_removebg_preview.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:57.455Z"
+    },
+    "esports:team:138752": {
+      "local": "/crests/esports/138752.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138752/yft_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:57.803Z"
+    },
+    "esports:team:132233": {
+      "local": "/crests/esports/132233.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/132233/m80_esports_2024_full_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:58.172Z"
+    },
+    "esports:team:131482": {
+      "local": "/crests/esports/131482.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/131482/190px_nightblood_gaming_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:58.349Z"
+    },
+    "esports:team:134454": {
+      "local": "/crests/esports/134454.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/134454/600px_jd_gaming_2021_full_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:58.782Z"
+    },
+    "esports:team:133288": {
+      "local": "/crests/esports/133288.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/133288/600px_ty_loo_2016_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:59.089Z"
+    },
+    "esports:team:128540": {
+      "local": "/crests/esports/128540.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128540/900px_fpx_logo_2021.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:59.489Z"
+    },
+    "esports:team:133380": {
+      "local": "/crests/esports/133380.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/133380/trace_esports_2023_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:03:59.947Z"
+    },
+    "esports:team:135470": {
+      "local": "/crests/esports/135470.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/135470/800px_xlg_china_2024_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:00.139Z"
+    },
+    "esports:team:128538": {
+      "local": "/crests/esports/128538.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128538/900px_g2_esports_2019.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:00.328Z"
+    },
+    "football:team:762": {
+      "local": "/crests/football/762.png",
+      "remote": "https://crests.football-data.org/762.png",
+      "kind": "football-team",
+      "pinnedAt": "2026-07-04T21:04:01.885Z"
+    },
+    "esports:team:133115": {
+      "local": "/crests/esports/133115.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/133115/621px_gentle_mates_2024_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:03.335Z"
+    },
+    "esports:team:132692": {
+      "local": "/crests/esports/132692.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/132692/nongshim_red_forcelogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:03.541Z"
+    },
+    "esports:team:138480": {
+      "local": "/crests/esports/138480.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138480/89px_streamer_arene_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:03.959Z"
+    },
+    "esports:team:137939": {
+      "local": "/crests/esports/137939.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137939/519px_lyon_2025_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:04.209Z"
+    },
+    "esports:team:138880": {
+      "local": "/crests/esports/138880.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138880/533px_team_aunkere_bbsb5_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:04.527Z"
+    },
+    "esports:team:138881": {
+      "local": "/crests/esports/138881.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138881/533px_team_shoke_bbsb5_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:04.740Z"
+    },
+    "esports:team:136730": {
+      "local": "/crests/esports/136730.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/136730/zeu5_esportslogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:06.959Z"
+    },
+    "esports:team:1636": {
+      "local": "/crests/esports/1636.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/1636/fuego-ada0g8rs.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:05.180Z"
+    },
+    "esports:team:137190": {
+      "local": "/crests/esports/137190.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137190/ezgif_1d8373f39e622b2c.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:09.097Z"
+    },
+    "esports:team:138888": {
+      "local": "/crests/esports/138888.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138888/ezgif_6803533fe5f1492c.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:10.162Z"
+    },
+    "esports:team:138176": {
+      "local": "/crests/esports/138176.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138176/polar_squad_esports_full_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:06.736Z"
+    },
+    "esports:team:138890": {
+      "local": "/crests/esports/138890.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138890/ezgif_3fc0c30f293c9b41.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:07.865Z"
+    },
+    "esports:team:138174": {
+      "local": "/crests/esports/138174.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138174/ncg_esports_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:07.359Z"
+    },
+    "esports:team:136729": {
+      "local": "/crests/esports/136729.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/136729/sdm_tigreslogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:07.611Z"
+    },
+    "esports:team:136076": {
+      "local": "/crests/esports/136076.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/136076/900px_lyon_2024_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:08.194Z"
+    },
+    "esports:team:138172": {
+      "local": "/crests/esports/138172.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138172/ezgif_10c2e38e0527dcd7.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:08.872Z"
+    },
+    "esports:team:134780": {
+      "local": "/crests/esports/134780.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/134780/800px_malvinas_gaming_2022_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:09.922Z"
+    },
+    "esports:team:136724": {
+      "local": "/crests/esports/136724.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/136724/seven_darklogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-04T21:04:09.686Z"
+    },
+    "esports:team:134026": {
+      "local": "/crests/esports/134026.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/134026/520px_sa_d_esports_blue_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:45.256Z"
+    },
+    "esports:team:131255": {
+      "local": "/crests/esports/131255.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/131255/405px_shopify_rebellion_black_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:45.487Z"
+    },
+    "esports:team:137823": {
+      "local": "/crests/esports/137823.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137823/almo_playerslogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:10.364Z"
+    },
+    "esports:team:128776": {
+      "local": "/crests/esports/128776.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128776/gamespace_mediterranean_college_esportslogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:47.163Z"
+    },
+    "esports:team:126215": {
+      "local": "/crests/esports/126215.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/126215/we_love_gaminglogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:10.838Z"
+    },
+    "esports:team:138852": {
+      "local": "/crests/esports/138852.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138852/ezgif_531fde929d85cb08.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:10.033Z"
+    },
+    "esports:team:137064": {
+      "local": "/crests/esports/137064.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137064/ezgif_58f816b45a39a4fc.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:11.569Z"
+    },
+    "esports:team:135653": {
+      "local": "/crests/esports/135653.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/135653/rossmann_centaurslogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:51.040Z"
+    },
+    "esports:team:137945": {
+      "local": "/crests/esports/137945.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137945/ezgif_82457a6b2740471e.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:13.541Z"
+    },
+    "esports:team:126832": {
+      "local": "/crests/esports/126832.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/126832/ezgif_5c9b92b2ec54b782.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:51.727Z"
+    },
+    "esports:team:128333": {
+      "local": "/crests/esports/128333.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128333/ezgif_556a0743e57dc81f.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:51.902Z"
+    },
+    "esports:team:132014": {
+      "local": "/crests/esports/132014.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/132014/ezgif_5e43e49cb8f1f5a8.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:09.138Z"
+    },
+    "esports:team:137906": {
+      "local": "/crests/esports/137906.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137906/600px_nrg_2024_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:49.653Z"
+    },
+    "esports:team:137910": {
+      "local": "/crests/esports/137910.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137910/800px_evil_geniuses_2024_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:49.846Z"
+    },
+    "esports:team:138835": {
+      "local": "/crests/esports/138835.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138835/509px_leo_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:50.066Z"
+    },
+    "esports:team:138678": {
+      "local": "/crests/esports/138678.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138678/get_team_logos.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:50.375Z"
+    },
+    "esports:team:128471": {
+      "local": "/crests/esports/128471.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128471/nrg_2020.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:50.585Z"
+    },
+    "esports:team:130922": {
+      "local": "/crests/esports/130922.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/130922/600px_karmine_corp_lightmode_full.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:50.786Z"
+    },
+    "esports:team:125905": {
+      "local": "/crests/esports/125905.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/125905/berlin_international_gaminglogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:11.338Z"
+    },
+    "esports:team:130010": {
+      "local": "/crests/esports/130010.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/130010/ezgif_54bcb357e1dc62a2.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:11.829Z"
+    },
+    "esports:team:133759": {
+      "local": "/crests/esports/133759.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/133759/ezgif_5ff58e0c59b743d8.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:09.348Z"
+    },
+    "esports:team:136073": {
+      "local": "/crests/esports/136073.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/136073/1200px_secret_whales_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:52.331Z"
+    },
+    "esports:team:126059": {
+      "local": "/crests/esports/126059.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/126059/top_esportslogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:52.555Z"
+    },
+    "esports:team:2883": {
+      "local": "/crests/esports/2883.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/2883/hanwha-life-esports-1s04vbu0.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:52.773Z"
+    },
+    "esports:team:88": {
+      "local": "/crests/esports/88.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/88/g2-esports.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:53.000Z"
+    },
+    "esports:team:129277": {
+      "local": "/crests/esports/129277.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/129277/148px_fennel_2021_may_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:53.203Z"
+    },
+    "esports:team:130600": {
+      "local": "/crests/esports/130600.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/130600/crestgaming_1673436595367.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:53.420Z"
+    },
+    "esports:team:134334": {
+      "local": "/crests/esports/134334.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/134334/190px_riddle_2021_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:53.643Z"
+    },
+    "esports:team:129959": {
+      "local": "/crests/esports/129959.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/129959/igzist_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:53.835Z"
+    },
+    "esports:team:137937": {
+      "local": "/crests/esports/137937.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137937/600px_kru_spark_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:54.071Z"
+    },
+    "esports:team:138619": {
+      "local": "/crests/esports/138619.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138619/186px_bestia_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:54.278Z"
+    },
+    "esports:team:130794": {
+      "local": "/crests/esports/130794.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/130794/baks_esports_2025_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:57.318Z"
+    },
+    "esports:team:136786": {
+      "local": "/crests/esports/136786.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/136786/171px_lph_gaming_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:15:58.405Z"
+    },
+    "esports:team:126061": {
+      "local": "/crests/esports/126061.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/126061/t_oscq04.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:00.217Z"
+    },
+    "esports:team:126688": {
+      "local": "/crests/esports/126688.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/126688/220px_furia_uppercutlogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:00.501Z"
+    },
+    "esports:team:1566": {
+      "local": "/crests/esports/1566.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/1566/qw_yi_qu_j.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:00.680Z"
+    },
+    "esports:team:136066": {
+      "local": "/crests/esports/136066.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/136066/lyon__25282024_american_team_2529logo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:00.940Z"
+    },
+    "esports:team:129076": {
+      "local": "/crests/esports/129076.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/129076/573px_sharper_esport_2021_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:01.151Z"
+    },
+    "esports:team:138894": {
+      "local": "/crests/esports/138894.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138894/612px_faze_up_next_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:02.134Z"
+    },
+    "esports:team:138280": {
+      "local": "/crests/esports/138280.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138280/vasteras_esport_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:02.365Z"
+    },
+    "esports:team:129660": {
+      "local": "/crests/esports/129660.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/129660/global_esports_2020_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:02.586Z"
+    },
+    "esports:team:138883": {
+      "local": "/crests/esports/138883.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138883/613px_ag.al_esports_international_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:02.842Z"
+    },
+    "esports:team:138884": {
+      "local": "/crests/esports/138884.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138884/600px_mibr_los_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:03.112Z"
+    },
+    "esports:team:128622": {
+      "local": "/crests/esports/128622.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128622/600px_team_heretics_2020_infobox.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:03.313Z"
+    },
+    "esports:team:130897": {
+      "local": "/crests/esports/130897.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/130897/190px_fuego_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:03.555Z"
+    },
+    "esports:team:137065": {
+      "local": "/crests/esports/137065.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137065/190px_contra_2024_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:03.763Z"
+    },
+    "esports:team:136690": {
+      "local": "/crests/esports/136690.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/136690/458px_la_masia_brazilian_team_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:04.015Z"
+    },
+    "esports:team:132540": {
+      "local": "/crests/esports/132540.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/132540/600px_red_canids_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:04.238Z"
+    },
+    "esports:team:128258": {
+      "local": "/crests/esports/128258.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128258/800px_entropy_gaming_2020_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:12.692Z"
+    },
+    "esports:team:137075": {
+      "local": "/crests/esports/137075.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137075/148px_misa_esports_2023_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:04.645Z"
+    },
+    "esports:team:132795": {
+      "local": "/crests/esports/132795.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/132795/800px_infurity_gaming_2025_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:04.820Z"
+    },
+    "esports:team:135580": {
+      "local": "/crests/esports/135580.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/135580/244px_game_hunters_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:05.829Z"
+    },
+    "esports:team:127214": {
+      "local": "/crests/esports/127214.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/127214/red_feet_2019.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:06.060Z"
+    },
+    "esports:team:131189": {
+      "local": "/crests/esports/131189.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/131189/105px_eyeballers_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:06.268Z"
+    },
+    "esports:team:3212": {
+      "local": "/crests/esports/3212.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/3212/285px_fa_ze_esports_october_2025_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:06.453Z"
+    },
+    "esports:team:129381": {
+      "local": "/crests/esports/129381.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/129381/b8_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:06.654Z"
+    },
+    "esports:team:3249": {
+      "local": "/crests/esports/3249.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/3249/600px_big_2020_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:06.850Z"
+    },
+    "esports:team:3250": {
+      "local": "/crests/esports/3250.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/3250/600px_mibr_2018.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:07.022Z"
+    },
+    "esports:team:126709": {
+      "local": "/crests/esports/126709.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/126709/9z_team_2024_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:07.249Z"
+    },
+    "esports:team:131064": {
+      "local": "/crests/esports/131064.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/131064/maze_gaminglogo_square.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:09.599Z"
+    },
+    "esports:team:138170": {
+      "local": "/crests/esports/138170.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138170/ezgif_8d063d0a78978452.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:09.801Z"
+    },
+    "esports:team:130122": {
+      "local": "/crests/esports/130122.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/130122/440px_zerolag_esports_2021_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:10.606Z"
+    },
+    "esports:team:132017": {
+      "local": "/crests/esports/132017.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/132017/ezgif_56232a30e4689004.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:13.770Z"
+    },
+    "esports:team:138891": {
+      "local": "/crests/esports/138891.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138891/ezgif_3c7175f92ee5a214.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:12.056Z"
+    },
+    "esports:team:138101": {
+      "local": "/crests/esports/138101.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138101/192px_inner_circle_esports_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:12.282Z"
+    },
+    "esports:team:128887": {
+      "local": "/crests/esports/128887.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/128887/honved_budapest_old_logo_70_adbfc97_d_seeklogo.com.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:12.507Z"
+    },
+    "esports:team:135978": {
+      "local": "/crests/esports/135978.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/135978/190px_eternal_premium_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:12.907Z"
+    },
+    "esports:team:138026": {
+      "local": "/crests/esports/138026.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138026/263px_atreides_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:13.158Z"
+    },
+    "esports:team:129405": {
+      "local": "/crests/esports/129405.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/129405/49.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:16:13.349Z"
+    },
+    "esports:team:138889": {
+      "local": "/crests/esports/138889.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138889/ezgif_63b7c42fd14d7e37.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:33.629Z"
+    },
+    "esports:team:129409": {
+      "local": "/crests/esports/129409.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/129409/190px_team_phantasma_teamcard.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:33.941Z"
+    },
+    "esports:team:138403": {
+      "local": "/crests/esports/138403.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138403/spartans_eu_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:34.331Z"
+    },
+    "esports:team:138853": {
+      "local": "/crests/esports/138853.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138853/ezgif_868bc1cd08695395.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:34.558Z"
+    },
+    "esports:team:137098": {
+      "local": "/crests/esports/137098.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/137098/600px_teamsolid_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:34.756Z"
+    },
+    "esports:team:134470": {
+      "local": "/crests/esports/134470.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/134470/600px_2_game_esports_2024_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:34.946Z"
+    },
+    "esports:team:133279": {
+      "local": "/crests/esports/133279.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/133279/168px_dragon_ranger_gaming_logo_without_text_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:35.346Z"
+    },
+    "esports:team:133379": {
+      "local": "/crests/esports/133379.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/133379/600px_bilibili_gaming_2021_full_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:35.736Z"
+    },
+    "esports:team:138303": {
+      "local": "/crests/esports/138303.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138303/620px_alpha_dominion_nation_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:35.969Z"
+    },
+    "esports:team:138618": {
+      "local": "/crests/esports/138618.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138618/638px_vitality_academy_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:36.318Z"
+    },
+    "esports:team:134335": {
+      "local": "/crests/esports/134335.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/134335/600px_wolves_esports_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:36.777Z"
+    },
+    "esports:team:133825": {
+      "local": "/crests/esports/133825.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/133825/190px_tec_esports_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:37.199Z"
+    },
+    "esports:team:127497": {
+      "local": "/crests/esports/127497.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/127497/e_suba_2021_lightmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:37.568Z"
+    },
+    "esports:team:138820": {
+      "local": "/crests/esports/138820.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138820/467px_esport_academy_copenhagen_rising_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:37.812Z"
+    },
+    "esports:team:138281": {
+      "local": "/crests/esports/138281.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138281/687px_passion_ua_academy_2025_darkmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:38.165Z"
+    },
+    "esports:team:138602": {
+      "local": "/crests/esports/138602.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138602/600px_inner_circle_2025_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:38.579Z"
+    },
+    "esports:team:138419": {
+      "local": "/crests/esports/138419.png",
+      "remote": "https://cdn.pandascore.co/images/team/image/138419/750px_pure_allmode.png",
+      "kind": "esports-team",
+      "pinnedAt": "2026-07-05T12:24:38.996Z"
+    }
+  },
+  "byRemote": {
+    "https://cdn.pandascore.co/images/team/image/128976/900px_e_dward_gaming_2017_lightmode.png": "/crests/esports/128976.png",
+    "https://cdn.pandascore.co/images/team/image/128577/600px_bbl_esports_2022_full_lightmode.png": "/crests/esports/128577.png",
+    "https://cdn.pandascore.co/images/team/image/138481/110px_university_war_logo_allmode.png": "/crests/esports/138481.png",
+    "https://cdn.pandascore.co/images/team/image/128968/9z_team_2024_lightmode.png": "/crests/esports/128968.png",
+    "https://cdn.pandascore.co/images/team/image/130973/600px_enterprise_esports_allmode.png": "/crests/esports/130973.png",
+    "https://cdn.pandascore.co/images/team/image/138449/reborn_lightmode.png": "/crests/esports/138449.png",
+    "https://cdn.pandascore.co/images/team/image/132691/600px_dplus_lightmode.png": "/crests/esports/132691.png",
+    "https://cdn.pandascore.co/images/team/image/138143/614px_arete_2026_lightmode.png": "/crests/esports/138143.png",
+    "https://cdn.pandascore.co/images/team/image/137113/167px_onside_gaming_lightmode.png": "/crests/esports/137113.png",
+    "https://cdn.pandascore.co/images/team/image/132068/fennel_2021_may_full.png": "/crests/esports/132068.png",
+    "https://cdn.pandascore.co/images/team/image/137079/190px_sasanqua_logo_light_mode.png": "/crests/esports/137079.png",
+    "https://cdn.pandascore.co/images/team/image/131490/d_x_vzo3a_v_400x400_removebg_preview.png": "/crests/esports/131490.png",
+    "https://cdn.pandascore.co/images/team/image/138752/yft_lightmode.png": "/crests/esports/138752.png",
+    "https://cdn.pandascore.co/images/team/image/132233/m80_esports_2024_full_lightmode.png": "/crests/esports/132233.png",
+    "https://cdn.pandascore.co/images/team/image/131482/190px_nightblood_gaming_lightmode.png": "/crests/esports/131482.png",
+    "https://cdn.pandascore.co/images/team/image/134454/600px_jd_gaming_2021_full_allmode.png": "/crests/esports/134454.png",
+    "https://cdn.pandascore.co/images/team/image/133288/600px_ty_loo_2016_allmode.png": "/crests/esports/133288.png",
+    "https://cdn.pandascore.co/images/team/image/128540/900px_fpx_logo_2021.png": "/crests/esports/128540.png",
+    "https://cdn.pandascore.co/images/team/image/133380/trace_esports_2023_allmode.png": "/crests/esports/133380.png",
+    "https://cdn.pandascore.co/images/team/image/135470/800px_xlg_china_2024_allmode.png": "/crests/esports/135470.png",
+    "https://cdn.pandascore.co/images/team/image/128538/900px_g2_esports_2019.png": "/crests/esports/128538.png",
+    "https://crests.football-data.org/762.png": "/crests/football/762.png",
+    "https://cdn.pandascore.co/images/team/image/133115/621px_gentle_mates_2024_lightmode.png": "/crests/esports/133115.png",
+    "https://cdn.pandascore.co/images/team/image/132692/nongshim_red_forcelogo_square.png": "/crests/esports/132692.png",
+    "https://cdn.pandascore.co/images/team/image/138480/89px_streamer_arene_allmode.png": "/crests/esports/138480.png",
+    "https://cdn.pandascore.co/images/team/image/137939/519px_lyon_2025_allmode.png": "/crests/esports/137939.png",
+    "https://cdn.pandascore.co/images/team/image/138880/533px_team_aunkere_bbsb5_allmode.png": "/crests/esports/138880.png",
+    "https://cdn.pandascore.co/images/team/image/138881/533px_team_shoke_bbsb5_allmode.png": "/crests/esports/138881.png",
+    "https://cdn.pandascore.co/images/team/image/136730/zeu5_esportslogo_square.png": "/crests/esports/136730.png",
+    "https://cdn.pandascore.co/images/team/image/1636/fuego-ada0g8rs.png": "/crests/esports/1636.png",
+    "https://cdn.pandascore.co/images/team/image/137190/ezgif_1d8373f39e622b2c.png": "/crests/esports/137190.png",
+    "https://cdn.pandascore.co/images/team/image/138888/ezgif_6803533fe5f1492c.png": "/crests/esports/138888.png",
+    "https://cdn.pandascore.co/images/team/image/138176/polar_squad_esports_full_lightmode.png": "/crests/esports/138176.png",
+    "https://cdn.pandascore.co/images/team/image/138890/ezgif_3fc0c30f293c9b41.png": "/crests/esports/138890.png",
+    "https://cdn.pandascore.co/images/team/image/138174/ncg_esports_lightmode.png": "/crests/esports/138174.png",
+    "https://cdn.pandascore.co/images/team/image/136729/sdm_tigreslogo_square.png": "/crests/esports/136729.png",
+    "https://cdn.pandascore.co/images/team/image/136076/900px_lyon_2024_lightmode.png": "/crests/esports/136076.png",
+    "https://cdn.pandascore.co/images/team/image/138172/ezgif_10c2e38e0527dcd7.png": "/crests/esports/138172.png",
+    "https://cdn.pandascore.co/images/team/image/134780/800px_malvinas_gaming_2022_lightmode.png": "/crests/esports/134780.png",
+    "https://cdn.pandascore.co/images/team/image/136724/seven_darklogo_square.png": "/crests/esports/136724.png",
+    "https://cdn.pandascore.co/images/team/image/134026/520px_sa_d_esports_blue_allmode.png": "/crests/esports/134026.png",
+    "https://cdn.pandascore.co/images/team/image/131255/405px_shopify_rebellion_black_lightmode.png": "/crests/esports/131255.png",
+    "https://cdn.pandascore.co/images/team/image/137823/almo_playerslogo_square.png": "/crests/esports/137823.png",
+    "https://cdn.pandascore.co/images/team/image/128776/gamespace_mediterranean_college_esportslogo_square.png": "/crests/esports/128776.png",
+    "https://cdn.pandascore.co/images/team/image/126215/we_love_gaminglogo_square.png": "/crests/esports/126215.png",
+    "https://cdn.pandascore.co/images/team/image/138852/ezgif_531fde929d85cb08.png": "/crests/esports/138852.png",
+    "https://cdn.pandascore.co/images/team/image/137064/ezgif_58f816b45a39a4fc.png": "/crests/esports/137064.png",
+    "https://cdn.pandascore.co/images/team/image/135653/rossmann_centaurslogo_square.png": "/crests/esports/135653.png",
+    "https://cdn.pandascore.co/images/team/image/137945/ezgif_82457a6b2740471e.png": "/crests/esports/137945.png",
+    "https://cdn.pandascore.co/images/team/image/126832/ezgif_5c9b92b2ec54b782.png": "/crests/esports/126832.png",
+    "https://cdn.pandascore.co/images/team/image/128333/ezgif_556a0743e57dc81f.png": "/crests/esports/128333.png",
+    "https://cdn.pandascore.co/images/team/image/132014/ezgif_5e43e49cb8f1f5a8.png": "/crests/esports/132014.png",
+    "https://cdn.pandascore.co/images/team/image/137906/600px_nrg_2024_allmode.png": "/crests/esports/137906.png",
+    "https://cdn.pandascore.co/images/team/image/137910/800px_evil_geniuses_2024_lightmode.png": "/crests/esports/137910.png",
+    "https://cdn.pandascore.co/images/team/image/138835/509px_leo_lightmode.png": "/crests/esports/138835.png",
+    "https://cdn.pandascore.co/images/team/image/138678/get_team_logos.png": "/crests/esports/138678.png",
+    "https://cdn.pandascore.co/images/team/image/128471/nrg_2020.png": "/crests/esports/128471.png",
+    "https://cdn.pandascore.co/images/team/image/130922/600px_karmine_corp_lightmode_full.png": "/crests/esports/130922.png",
+    "https://cdn.pandascore.co/images/team/image/125905/berlin_international_gaminglogo_square.png": "/crests/esports/125905.png",
+    "https://cdn.pandascore.co/images/team/image/130010/ezgif_54bcb357e1dc62a2.png": "/crests/esports/130010.png",
+    "https://cdn.pandascore.co/images/team/image/133759/ezgif_5ff58e0c59b743d8.png": "/crests/esports/133759.png",
+    "https://cdn.pandascore.co/images/team/image/136073/1200px_secret_whales_lightmode.png": "/crests/esports/136073.png",
+    "https://cdn.pandascore.co/images/team/image/126059/top_esportslogo_square.png": "/crests/esports/126059.png",
+    "https://cdn.pandascore.co/images/team/image/2883/hanwha-life-esports-1s04vbu0.png": "/crests/esports/2883.png",
+    "https://cdn.pandascore.co/images/team/image/88/g2-esports.png": "/crests/esports/88.png",
+    "https://cdn.pandascore.co/images/team/image/129277/148px_fennel_2021_may_lightmode.png": "/crests/esports/129277.png",
+    "https://cdn.pandascore.co/images/team/image/130600/crestgaming_1673436595367.png": "/crests/esports/130600.png",
+    "https://cdn.pandascore.co/images/team/image/134334/190px_riddle_2021_allmode.png": "/crests/esports/134334.png",
+    "https://cdn.pandascore.co/images/team/image/129959/igzist_lightmode.png": "/crests/esports/129959.png",
+    "https://cdn.pandascore.co/images/team/image/137937/600px_kru_spark_allmode.png": "/crests/esports/137937.png",
+    "https://cdn.pandascore.co/images/team/image/138619/186px_bestia_lightmode.png": "/crests/esports/138619.png",
+    "https://cdn.pandascore.co/images/team/image/130794/baks_esports_2025_lightmode.png": "/crests/esports/130794.png",
+    "https://cdn.pandascore.co/images/team/image/136786/171px_lph_gaming_allmode.png": "/crests/esports/136786.png",
+    "https://cdn.pandascore.co/images/team/image/126061/t_oscq04.png": "/crests/esports/126061.png",
+    "https://cdn.pandascore.co/images/team/image/126688/220px_furia_uppercutlogo_square.png": "/crests/esports/126688.png",
+    "https://cdn.pandascore.co/images/team/image/1566/qw_yi_qu_j.png": "/crests/esports/1566.png",
+    "https://cdn.pandascore.co/images/team/image/136066/lyon__25282024_american_team_2529logo_square.png": "/crests/esports/136066.png",
+    "https://cdn.pandascore.co/images/team/image/129076/573px_sharper_esport_2021_allmode.png": "/crests/esports/129076.png",
+    "https://cdn.pandascore.co/images/team/image/138894/612px_faze_up_next_allmode.png": "/crests/esports/138894.png",
+    "https://cdn.pandascore.co/images/team/image/138280/vasteras_esport_allmode.png": "/crests/esports/138280.png",
+    "https://cdn.pandascore.co/images/team/image/129660/global_esports_2020_allmode.png": "/crests/esports/129660.png",
+    "https://cdn.pandascore.co/images/team/image/138883/613px_ag.al_esports_international_allmode.png": "/crests/esports/138883.png",
+    "https://cdn.pandascore.co/images/team/image/138884/600px_mibr_los_allmode.png": "/crests/esports/138884.png",
+    "https://cdn.pandascore.co/images/team/image/128622/600px_team_heretics_2020_infobox.png": "/crests/esports/128622.png",
+    "https://cdn.pandascore.co/images/team/image/130897/190px_fuego_allmode.png": "/crests/esports/130897.png",
+    "https://cdn.pandascore.co/images/team/image/137065/190px_contra_2024_lightmode.png": "/crests/esports/137065.png",
+    "https://cdn.pandascore.co/images/team/image/136690/458px_la_masia_brazilian_team_allmode.png": "/crests/esports/136690.png",
+    "https://cdn.pandascore.co/images/team/image/132540/600px_red_canids_allmode.png": "/crests/esports/132540.png",
+    "https://cdn.pandascore.co/images/team/image/128258/800px_entropy_gaming_2020_lightmode.png": "/crests/esports/128258.png",
+    "https://cdn.pandascore.co/images/team/image/137075/148px_misa_esports_2023_allmode.png": "/crests/esports/137075.png",
+    "https://cdn.pandascore.co/images/team/image/132795/800px_infurity_gaming_2025_lightmode.png": "/crests/esports/132795.png",
+    "https://cdn.pandascore.co/images/team/image/135580/244px_game_hunters_allmode.png": "/crests/esports/135580.png",
+    "https://cdn.pandascore.co/images/team/image/127214/red_feet_2019.png": "/crests/esports/127214.png",
+    "https://cdn.pandascore.co/images/team/image/131189/105px_eyeballers_allmode.png": "/crests/esports/131189.png",
+    "https://cdn.pandascore.co/images/team/image/3212/285px_fa_ze_esports_october_2025_lightmode.png": "/crests/esports/3212.png",
+    "https://cdn.pandascore.co/images/team/image/129381/b8_lightmode.png": "/crests/esports/129381.png",
+    "https://cdn.pandascore.co/images/team/image/3249/600px_big_2020_lightmode.png": "/crests/esports/3249.png",
+    "https://cdn.pandascore.co/images/team/image/3250/600px_mibr_2018.png": "/crests/esports/3250.png",
+    "https://cdn.pandascore.co/images/team/image/126709/9z_team_2024_lightmode.png": "/crests/esports/126709.png",
+    "https://cdn.pandascore.co/images/team/image/131064/maze_gaminglogo_square.png": "/crests/esports/131064.png",
+    "https://cdn.pandascore.co/images/team/image/138170/ezgif_8d063d0a78978452.png": "/crests/esports/138170.png",
+    "https://cdn.pandascore.co/images/team/image/130122/440px_zerolag_esports_2021_lightmode.png": "/crests/esports/130122.png",
+    "https://cdn.pandascore.co/images/team/image/132017/ezgif_56232a30e4689004.png": "/crests/esports/132017.png",
+    "https://cdn.pandascore.co/images/team/image/138891/ezgif_3c7175f92ee5a214.png": "/crests/esports/138891.png",
+    "https://cdn.pandascore.co/images/team/image/138101/192px_inner_circle_esports_lightmode.png": "/crests/esports/138101.png",
+    "https://cdn.pandascore.co/images/team/image/128887/honved_budapest_old_logo_70_adbfc97_d_seeklogo.com.png": "/crests/esports/128887.png",
+    "https://cdn.pandascore.co/images/team/image/135978/190px_eternal_premium_lightmode.png": "/crests/esports/135978.png",
+    "https://cdn.pandascore.co/images/team/image/138026/263px_atreides_allmode.png": "/crests/esports/138026.png",
+    "https://cdn.pandascore.co/images/team/image/129405/49.png": "/crests/esports/129405.png",
+    "https://cdn.pandascore.co/images/team/image/138889/ezgif_63b7c42fd14d7e37.png": "/crests/esports/138889.png",
+    "https://cdn.pandascore.co/images/team/image/129409/190px_team_phantasma_teamcard.png": "/crests/esports/129409.png",
+    "https://cdn.pandascore.co/images/team/image/138403/spartans_eu_allmode.png": "/crests/esports/138403.png",
+    "https://cdn.pandascore.co/images/team/image/138853/ezgif_868bc1cd08695395.png": "/crests/esports/138853.png",
+    "https://cdn.pandascore.co/images/team/image/137098/600px_teamsolid_lightmode.png": "/crests/esports/137098.png",
+    "https://cdn.pandascore.co/images/team/image/134470/600px_2_game_esports_2024_allmode.png": "/crests/esports/134470.png",
+    "https://cdn.pandascore.co/images/team/image/133279/168px_dragon_ranger_gaming_logo_without_text_allmode.png": "/crests/esports/133279.png",
+    "https://cdn.pandascore.co/images/team/image/133379/600px_bilibili_gaming_2021_full_allmode.png": "/crests/esports/133379.png",
+    "https://cdn.pandascore.co/images/team/image/138303/620px_alpha_dominion_nation_allmode.png": "/crests/esports/138303.png",
+    "https://cdn.pandascore.co/images/team/image/138618/638px_vitality_academy_lightmode.png": "/crests/esports/138618.png",
+    "https://cdn.pandascore.co/images/team/image/134335/600px_wolves_esports_allmode.png": "/crests/esports/134335.png",
+    "https://cdn.pandascore.co/images/team/image/133825/190px_tec_esports_allmode.png": "/crests/esports/133825.png",
+    "https://cdn.pandascore.co/images/team/image/127497/e_suba_2021_lightmode.png": "/crests/esports/127497.png",
+    "https://cdn.pandascore.co/images/team/image/138820/467px_esport_academy_copenhagen_rising_allmode.png": "/crests/esports/138820.png",
+    "https://cdn.pandascore.co/images/team/image/138281/687px_passion_ua_academy_2025_darkmode.png": "/crests/esports/138281.png",
+    "https://cdn.pandascore.co/images/team/image/138602/600px_inner_circle_2025_allmode.png": "/crests/esports/138602.png",
+    "https://cdn.pandascore.co/images/team/image/138419/750px_pure_allmode.png": "/crests/esports/138419.png"
+  }
+}

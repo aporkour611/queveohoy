@@ -20,8 +20,9 @@ import {
   PANDASCORE_MAX_PAGES,
   PANDASCORE_PER_PAGE,
 } from "@/app/lib/esports-cron";
-import { encodeEsportsSource, pandascoreTeamLogo } from "@/app/lib/esports";
+import { encodeEsportsSource, pandascoreTeamLogoCandidates } from "@/app/lib/esports";
 import { fetchJsonWithTimeout } from "@/app/lib/fetch-json";
+import { resolveAndPinEsportsLogo } from "@/app/lib/pinned-images-persist";
 import { fetchJikanAnimeEventsForWeek } from "@/app/lib/jikan-anime";
 import { fetchTmdbEventsForWeek } from "@/app/lib/tmdb";
 import { fetchRealityCronEvents } from "@/app/lib/tmdb-reality";
@@ -370,8 +371,12 @@ type ErgastRace = {
   Qualifying?: { date: string; time?: string };
 };
 
-type PandaScoreOpponent = Parameters<typeof pandascoreTeamLogo>[0] & {
+type PandaScoreOpponent = {
   name?: string;
+  image_url?: string | null;
+  id?: number;
+  slug?: string | null;
+  acronym?: string | null;
 };
 
 type PandaScoreMatch = {
@@ -433,8 +438,16 @@ async function fetchEsports(): Promise<CountResult> {
           continue;
         }
 
-        const homeLogo = pandascoreTeamLogo(match.opponents?.[0]?.opponent);
-        const awayLogo = pandascoreTeamLogo(match.opponents?.[1]?.opponent);
+        const homeOp = match.opponents?.[0]?.opponent;
+        const awayOp = match.opponents?.[1]?.opponent;
+        const homeLogo = await resolveAndPinEsportsLogo(
+          homeOp?.id,
+          pandascoreTeamLogoCandidates(homeOp)
+        );
+        const awayLogo = await resolveAndPinEsportsLogo(
+          awayOp?.id,
+          pandascoreTeamLogoCandidates(awayOp)
+        );
 
         events.push({
           external_id: `esports_${match.id}`,

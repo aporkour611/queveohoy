@@ -3,6 +3,7 @@
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { countCrestImgsWithSrc } from "./lib/crest-ssr-html.mjs";
 
 const BASE = process.env.DISCOVERY_URL ?? "https://queveohoy.es";
 const OUT = join(process.cwd(), "docs", "marathon-reports");
@@ -89,6 +90,16 @@ async function main() {
         "Tarjetas spotlight con cover",
         inlineSpotlight >= 1,
         `covers=${inlineSpotlight}`
+      )
+    );
+
+    const duel = /fh-media-spotlight-duel/i.test(html);
+    const crestSrc = countCrestImgsWithSrc(html);
+    checks.push(
+      check(
+        "Duelos equipo con escudo cargado",
+        !duel || crestSrc >= 2,
+        duel ? `${crestSrc} imgs` : "sin duelo"
       )
     );
   }

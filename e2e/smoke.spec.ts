@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test"
 test.describe("smoke", () => {
   test("home carga el título principal", async ({ page }) => {
     await page.goto("/")
-    await expect(page).toHaveTitle(/Qué veo hoy|UFC Casablanca/i)
+    await expect(page).toHaveTitle(/Qué ver hoy|Qué veo hoy|UFC Casablanca/i)
     await expect(page.locator("body")).toBeVisible()
   })
 
@@ -106,14 +106,19 @@ test.describe("smoke", () => {
     expect(response.status()).toBe(200)
   })
 
-  test("API feed-meta responde JSON", async ({ request }) => {
+  test("API feed-meta contrato completo", async ({ request }) => {
     const response = await request.get("/api/feed-meta")
     expect(response.ok()).toBeTruthy()
     const body = await response.json()
     expect(body.generatedAt).toBeTruthy()
+    expect(Number.isNaN(Date.parse(body.generatedAt))).toBe(false)
     expect(typeof body.eventCount).toBe("number")
     expect(typeof body.todayCount).toBe("number")
     expect(typeof body.weekCount).toBe("number")
+    expect(typeof body.date).toBe("string")
+    expect(typeof body.revalidateSeconds).toBe("number")
+    expect(body.revalidateSeconds).toBeGreaterThan(0)
+    expect(body.timezone).toBe("Europe/Madrid")
   })
 
   test("hub fútbol carga agenda SEO", async ({ page }) => {
@@ -145,35 +150,11 @@ test.describe("smoke", () => {
     expect(body.error).toBeTruthy()
   })
 
-  test("API feed-meta incluye todayCount", async ({ request }) => {
-    const response = await request.get("/api/feed-meta")
-    expect(response.ok()).toBeTruthy()
-    const body = await response.json()
-    expect(typeof body.todayCount).toBe("number")
-    expect(typeof body.date).toBe("string")
-  })
-
-  test("API feed-meta incluye generatedAt ISO", async ({ request }) => {
-    const response = await request.get("/api/feed-meta")
-    expect(response.ok()).toBeTruthy()
-    const body = await response.json()
-    expect(body.generatedAt).toBeTruthy()
-    expect(Number.isNaN(Date.parse(body.generatedAt))).toBe(false)
-  })
-
-  test("API health versión 5.x", async ({ request }) => {
+  test("API health versión producto", async ({ request }) => {
     const response = await request.get("/api/health")
     const body = await response.json()
-    expect(body.version).toMatch(/^5\./)
+    expect(body.version).toMatch(/^\d+\.\d+\.\d+$/)
     expect(body.ok).toBe(true)
-  })
-
-  test("API feed-meta incluye revalidateSeconds", async ({ request }) => {
-    const response = await request.get("/api/feed-meta")
-    expect(response.ok()).toBeTruthy()
-    const body = await response.json()
-    expect(typeof body.revalidateSeconds).toBe("number")
-    expect(body.revalidateSeconds).toBeGreaterThan(0)
   })
 
   test("deep link week=1 preserva filtros", async ({ page }) => {
@@ -181,13 +162,6 @@ test.describe("smoke", () => {
     await page.waitForFunction(() => !window.location.search.includes("week=1"))
     expect(page.url()).toContain("filtros=futbol")
     expect(page.url()).not.toContain("week=1")
-  })
-
-  test("API feed-meta incluye timezone Madrid", async ({ request }) => {
-    const response = await request.get("/api/feed-meta")
-    expect(response.ok()).toBeTruthy()
-    const body = await response.json()
-    expect(body.timezone).toBe("Europe/Madrid")
   })
 
   test("deep link week=1 limpia la URL", async ({ page }) => {
