@@ -33,6 +33,10 @@ export const PROBE_INTERVAL_BLOCKED_MS = Number(
 );
 const PROBE_BACKOFF_MIN_MS = PROBE_INTERVAL_BLOCKED_MS;
 const PROBE_BACKOFF_MAX_MS = Number(process.env.PROBE_BACKOFF_MAX_MS ?? 60 * 60_000);
+/** Vercel DEPLOYMENT_DISABLED — no reintentar en horas. */
+const DEPLOYMENT_DISABLED_BACKOFF_MS = Number(
+  process.env.DEPLOYMENT_DISABLED_BACKOFF_MS ?? 24 * 60 * 60_000
+);
 
 export function isProdBlockedStatus(status) {
   return BLOCK_STATUSES.has(status);
@@ -74,16 +78,21 @@ export async function probeProdHealth(
       headers: PROD_PROBE_HEADERS,
       signal: AbortSignal.timeout(20_000),
     });
-    const blocked = isProdBlockedStatus(res.status);
+    const bodyText = await res.text().catch(() => "");
+    const deploymentDisabled = isDeploymentDisabledBody(bodyText);
+    const blocked = isProdBlockedStatus(res.status) || deploymentDisabled;
     const payload = {
       base: site,
       status: res.status,
       blocked,
+      deploymentDisabled,
       ms: Date.now() - started,
       at: new Date().toISOString(),
     };
     if (blocked) {
-      const blockBackoffMs = computeBlockBackoffMs(prev?.base === site ? prev : null);
+      const blockBackoffMs = deploymentDisabled
+        ? DEPLOYMENT_DISABLED_BACKOFF_MS
+        : computeBlockBackoffMs(prev?.base === site ? prev : null);
       payload.blockBackoffMs = blockBackoffMs;
       payload.nextProbeAfter = new Date(Date.now() + blockBackoffMs).toISOString();
     } else {

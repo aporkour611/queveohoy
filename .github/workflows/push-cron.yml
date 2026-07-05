@@ -2,7 +2,8 @@ name: Push notifications cron
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    # Hobby: push ligero cada 30 min (~48 req/día)
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 concurrency:

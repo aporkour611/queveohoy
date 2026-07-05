@@ -27,6 +27,7 @@
     "verify:prod:4.21": "node scripts/verify-prod-4.21.mjs",
     "release:prod": "node scripts/release-prod.mjs",
     "keep-warm:prod": "node scripts/keep-warm-prod.mjs",
+    "keep-warm:prod:full": "node scripts/keep-warm-prod-full.mjs",
     "apple:client-secret": "node scripts/generate-apple-client-secret.mjs",
     "check:integrations": "node scripts/check-integrations.mjs",
     "vercel:import-file": "node scripts/generate-vercel-import.mjs",

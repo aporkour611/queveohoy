@@ -1,19 +1,17 @@
-# Reactivar queveohoy.es en Vercel
+# Reactivar queveohoy.es en Vercel (Hobby — sin Pro)
 
-**Estado:** `DEPLOYMENT_DISABLED` — plan Hobby pausado por límite de uso.
+**Estado:** `DEPLOYMENT_DISABLED` — plan **Hobby** pausado por límite de uso (*fair use*).
 
-## Lo que ya está hecho en código (listo para deploy)
+**No necesitas Pro.** El sitio está diseñado para Hobby; el bloqueo fue por tráfico automatizado excesivo (maratón + keep-warm cada 3 min con HTML). Ver [HOBBY-FAIR-USE.md](./HOBBY-FAIR-USE.md).
 
-- **6.2.3** — escudos e-sports fijados en `public/crests/` + `pinned-images.json`
-- Maratón **bloqueado** mientras exista `docs/PROD_VERCEL_PAUSED` o `docs/marathon-reports/PROD-PAUSED.flag`
-- Guards anti-hammering en probes
+## Lo que ya está hecho en código
 
-## Resultado deploy 2026-07-05
+- **6.2.4** — keep-warm Hobby-safe (APIs 15 min, HTML 4×/día)
+- **6.2.3** — escudos e-sports en `public/crests/`
+- `docs/PROD_VERCEL_PAUSED` — GHA no martilla prod mientras pausado
+- Maratón bloqueado; backoff 24 h si `DEPLOYMENT_DISABLED`
 
-- **git push** `667effa` → main (6.2.3 crests) ✓
-- **vercel deploy --prod** ✗ `Your Team exceeded our fair use limits and has been blocked`
-- **GitHub Actions deploy** fallará igual hasta unpause
-
+## Pedir unpause (gratis, Hobby)
 
 1. [vercel.com/help](https://vercel.com/help) → **Billing / Usage**
 2. Asunto: *Request unpause Hobby account — queveohoy*
@@ -25,13 +23,16 @@ Hello Vercel Support,
 My Hobby team (alvaro-s-projects20) project "queveohoy" shows 
 "This deployment is temporarily paused" / DEPLOYMENT_DISABLED.
 
-I identified the cause: automated load tests from my local machine 
-generated excessive edge traffic. I have:
-- Stopped all marathon/probe processes
-- Added backoff guards so this won't repeat
-- Prepared a deploy with pinned static assets to reduce origin transfer
+Cause: excessive automated traffic from local load tests and 
+GitHub Actions keep-warm every 3 minutes with full HTML warm.
 
-Please manually unpause my account so I can deploy the fix.
+I have fixed this in code (v6.2.4):
+- Stopped all marathon/probe processes against production
+- Keep-warm reduced to APIs every 15 min + HTML 4x/day only
+- PROD_VERCEL_PAUSED flag blocks GHA until I manually re-enable
+- Pinned static crests to reduce bandwidth
+
+Please unpause my Hobby account. I am NOT upgrading to Pro.
 
 Project: queveohoy
 Domain: queveohoy.es
@@ -40,29 +41,23 @@ Team: alvaro-s-projects20
 Thank you.
 ```
 
-4. Alternativa inmediata: **Upgrade to Pro** en Billing → el deploy se reactiva al instante.
-
 ## Cuando te desbloqueen
 
 ```bash
-# Quitar pausa (ambos si existen)
 del docs\PROD_VERCEL_PAUSED
 del docs\marathon-reports\PROD-PAUSED.flag
 
-# Commit + push para reactivar GHA keep-warm y deploy
 git add -u docs/PROD_VERCEL_PAUSED
-git commit -m "chore: reactivar prod tras unpause Vercel"
+git commit -m "chore: reactivar prod tras unpause Vercel Hobby"
 git push origin main
 
-# Verificar
 curl -s -o /dev/null -w "%{http_code}" https://queveohoy.es/api/health
-
-# Deploy (GitHub Actions o local)
-npx vercel deploy --prod
 ```
+
+El deploy en GitHub Actions aplicará 6.2.3+6.2.4 automáticamente.
 
 ## Mientras prod está pausado
 
-- `docs/PROD_VERCEL_PAUSED` en el repo → GHA **no** hace keep-warm, cron ni deploy a Vercel
-- Maratón local bloqueado (`npm run marathon:*` respeta la misma política)
-- CI **sí** corre tests y build en validate
+- GHA: validate/tests sí; keep-warm, cron, deploy **no**
+- Maratón local bloqueado
+- Desarrollo local (`npm run dev`) sin cambios

@@ -6,7 +6,7 @@ Versión lista para lanzamiento público. Optimizada para cold start en Vercel H
 
 | Área | Estado |
 |------|--------|
-| Cold start home | TTFB ~50–130 ms (ISR + keep-warm GHA 3 min) |
+| Cold start home | TTFB ~50–130 ms (ISR + keep-warm GHA 15 min APIs, HTML 4×/día) |
 | Hidración móvil | 600 ms con SSR (antes 12 s) |
 | Portadas | WebP editorial, sin placeholders `/deportes/*.png` en destacados |
 | Seguridad | HSTS, CSP, HTTPS redirect, sin mixed content |

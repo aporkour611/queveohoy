@@ -1,19 +1,19 @@
-name: Keep warm APIs (prod)
+name: Keep warm full ISR (prod)
 
 on:
   schedule:
-    # Hobby fair-use: solo APIs ligeras cada 15 min (~480 req/día)
-    - cron: "*/15 * * * *"
+    # Hobby: hubs HTML 4×/día, alineado con cron de ingesta
+    - cron: "5 0,6,12,18 * * *"
   workflow_dispatch:
 
 concurrency:
-  group: keep-warm
+  group: keep-warm-full
   cancel-in-progress: true
 
 jobs:
-  warm:
+  warm-full:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
 
@@ -22,7 +22,7 @@ jobs:
         run: |
           if [ -f docs/PROD_VERCEL_PAUSED ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
-            echo "::notice::Keep-warm omitido — docs/PROD_VERCEL_PAUSED"
+            echo "::notice::Keep-warm full omitido — docs/PROD_VERCEL_PAUSED"
           fi
 
       - uses: actions/setup-node@v5
@@ -30,10 +30,11 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Precalentar APIs (sin HTML)
+      - name: Precalentar APIs + hubs HTML
         if: steps.paused.outputs.skip != 'true'
         env:
           SITE_URL: https://queveohoy.es
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
-          KEEP_WARM_FULL: "0"
+          KEEP_WARM_FULL: "1"
+          KEEP_WARM_STRICT: "0"
         run: node scripts/keep-warm-prod.mjs
