@@ -15,11 +15,21 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Skip if Vercel paused
+        id: paused
+        run: |
+          if [ -f docs/PROD_VERCEL_PAUSED ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "::notice::Push cron omitido — docs/PROD_VERCEL_PAUSED"
+          fi
+
       - uses: actions/setup-node@v5
+        if: steps.paused.outputs.skip != 'true'
         with:
           node-version: "22"
 
       - name: Disparar /api/push/cron
+        if: steps.paused.outputs.skip != 'true'
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |

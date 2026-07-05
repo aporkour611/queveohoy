@@ -482,8 +482,12 @@ export function getSpotlightCardModel(
           ? "qvh-spotlight-visual-champions"
           : styled.visualClass,
       coverImage: styled.coverImage ?? undefined,
-      homeCrest: ids ? teamCrestUrl(ids.homeId) : undefined,
-      awayCrest: ids ? teamCrestUrl(ids.awayId) : undefined,
+      homeCrest: ids
+        ? (resolveFootballCrestUrls(ids.homeId)[0] ?? teamCrestUrl(ids.homeId))
+        : undefined,
+      awayCrest: ids
+        ? (resolveFootballCrestUrls(ids.awayId)[0] ?? teamCrestUrl(ids.awayId))
+        : undefined,
       homeCrestList: ids ? resolveFootballCrestUrls(ids.homeId) : undefined,
       awayCrestList: ids ? resolveFootballCrestUrls(ids.awayId) : undefined,
       homeName,

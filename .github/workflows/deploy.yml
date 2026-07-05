@@ -81,24 +81,37 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Skip deploy if Vercel paused
+        id: paused
+        run: |
+          if [ -f docs/PROD_VERCEL_PAUSED ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "::notice::Deploy omitido — docs/PROD_VERCEL_PAUSED (ver docs/VERCEL-UNPAUSE.md)"
+          fi
+
       - uses: actions/setup-node@v5
+        if: steps.paused.outputs.skip != 'true'
         with:
           node-version: "22"
           cache: npm
 
       - name: Install dependencies
+        if: steps.paused.outputs.skip != 'true'
         run: npm ci
 
       - name: Install Vercel CLI
+        if: steps.paused.outputs.skip != 'true'
         run: npm install -g vercel@latest
 
       - name: Pull Vercel environment
+        if: steps.paused.outputs.skip != 'true'
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
 
       - name: Verify Supabase env for build
+        if: steps.paused.outputs.skip != 'true'
         run: |
           set -euo pipefail
           env_file=".vercel/.env.production.local"
@@ -122,12 +135,14 @@ jobs:
           fi
 
       - name: Build (una sola vez)
+        if: steps.paused.outputs.skip != 'true'
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
 
       - name: Deploy prebuilt
+        if: steps.paused.outputs.skip != 'true'
         id: deploy
         env:
           VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
@@ -153,6 +168,7 @@ jobs:
           fi
 
       - name: Smoke test producción
+        if: steps.paused.outputs.skip != 'true'
         env:
           VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
@@ -224,9 +240,11 @@ jobs:
           fi
 
       - uses: browser-actions/setup-chrome@v1
+        if: steps.paused.outputs.skip != 'true'
 
       # PERF_GATE_BLOCKING=1 en GitHub vars → falla deploy si LCP >3s (v2.7+)
       - name: PSI presupuesto LCP en producción
+        if: steps.paused.outputs.skip != 'true'
         continue-on-error: true
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
@@ -252,6 +270,7 @@ jobs:
           fi
 
       - name: Deployment summary
+        if: steps.paused.outputs.skip != 'true'
         run: |
           set -euo pipefail
           health=$(curl -sf "https://queveohoy.es/api/health" || echo '{}')

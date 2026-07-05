@@ -11,8 +11,14 @@ import {
   PROBE_INTERVAL_OK_MS,
   probeProdHealth,
 } from "./lib/prod-probe-guard.mjs";
+import { isVercelPausedInRepo } from "./lib/prod-vercel-paused.mjs";
 
 const SITE = (process.env.DISCOVERY_URL ?? "https://queveohoy.es").replace(/\/$/, "");
+
+if (isVercelPausedInRepo()) {
+  console.warn("[unblock-watch] docs/PROD_VERCEL_PAUSED — no sondear prod hasta unpause");
+  process.exit(0);
+}
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

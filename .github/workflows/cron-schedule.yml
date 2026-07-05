@@ -30,7 +30,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - uses: actions/checkout@v5
+
+      - name: Skip if Vercel paused
+        id: paused
+        run: |
+          if [ -f docs/PROD_VERCEL_PAUSED ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "::notice::Cron omitido — docs/PROD_VERCEL_PAUSED"
+          fi
+
       - name: Resolver fase
+        if: steps.paused.outputs.skip != 'true'
         id: phase
         run: |
           if [ -n "${{ github.event.inputs.phase }}" ]; then
@@ -47,6 +58,7 @@ jobs:
           echo "UTC $HOUR:$MIN → $(cat $GITHUB_OUTPUT)"
 
       - name: Disparar /api/cron
+        if: steps.paused.outputs.skip != 'true'
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           PHASE: ${{ steps.phase.outputs.phase }}

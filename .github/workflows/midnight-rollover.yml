@@ -43,18 +43,27 @@ jobs:
       - uses: actions/checkout@v5
         if: steps.gate.outputs.run == 'true'
 
-      - uses: actions/setup-node@v5
+      - name: Skip if Vercel paused
+        id: paused
         if: steps.gate.outputs.run == 'true'
+        run: |
+          if [ -f docs/PROD_VERCEL_PAUSED ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "::notice::Midnight rollover omitido — docs/PROD_VERCEL_PAUSED"
+          fi
+
+      - uses: actions/setup-node@v5
+        if: steps.gate.outputs.run == 'true' && steps.paused.outputs.skip != 'true'
         with:
           node-version: "22"
           cache: npm
 
       - name: Instalar dependencias
-        if: steps.gate.outputs.run == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.paused.outputs.skip != 'true'
         run: npm ci
 
       - name: Cron producción (purga ayer + ingestar semana)
-        if: steps.gate.outputs.run == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.paused.outputs.skip != 'true'
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           SITE_URL: https://queveohoy.es
@@ -68,7 +77,7 @@ jobs:
           echo "$RES" | grep -q '"ok":true'
 
       - name: Sync TMDB + portadas editoriales
-        if: steps.gate.outputs.run == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.paused.outputs.skip != 'true'
         env:
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         run: |
@@ -81,13 +90,13 @@ jobs:
           npm run posters
 
       - name: Test + checklist release
-        if: steps.gate.outputs.run == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.paused.outputs.skip != 'true'
         run: |
           npm test
           npm run verify:release
 
       - name: Commit portadas si cambiaron
-        if: steps.gate.outputs.run == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.paused.outputs.skip != 'true'
         id: commit
         run: |
           set -euo pipefail
@@ -104,7 +113,7 @@ jobs:
           fi
 
       - name: Deploy producción (solo si no hubo push)
-        if: steps.gate.outputs.run == 'true' && steps.commit.outputs.changed != 'true'
+        if: steps.gate.outputs.run == 'true' && steps.paused.outputs.skip != 'true' && steps.commit.outputs.changed != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run deploy.yml --ref main

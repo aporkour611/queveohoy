@@ -5,9 +5,12 @@
  * GitHub Actions: keep-warm.yml cada 5 min (plan Hobby sin crons Vercel).
  */
 import { isProdBlockedStatus, probeProdHealth } from "./lib/prod-probe-guard.mjs"
+import { assertNotVercelPaused } from "./lib/prod-vercel-paused.mjs"
 
 const SITE = (process.env.SITE_URL ?? "https://queveohoy.es").replace(/\/$/, "")
 const CRON_SECRET = process.env.CRON_SECRET?.trim()
+
+assertNotVercelPaused("keep-warm")
 
 const health = await probeProdHealth(SITE)
 if (health.deferred) {

@@ -5,7 +5,7 @@
 ## Lo que ya está hecho en código (listo para deploy)
 
 - **6.2.3** — escudos e-sports fijados en `public/crests/` + `pinned-images.json`
-- Maratón **bloqueado** mientras exista `docs/marathon-reports/PROD-PAUSED.flag`
+- Maratón **bloqueado** mientras exista `docs/PROD_VERCEL_PAUSED` o `docs/marathon-reports/PROD-PAUSED.flag`
 - Guards anti-hammering en probes
 
 ## Resultado deploy 2026-07-05
@@ -45,13 +45,24 @@ Thank you.
 ## Cuando te desbloqueen
 
 ```bash
-# Quitar pausa local
+# Quitar pausa (ambos si existen)
+del docs\PROD_VERCEL_PAUSED
 del docs\marathon-reports\PROD-PAUSED.flag
+
+# Commit + push para reactivar GHA keep-warm y deploy
+git add -u docs/PROD_VERCEL_PAUSED
+git commit -m "chore: reactivar prod tras unpause Vercel"
+git push origin main
 
 # Verificar
 curl -s -o /dev/null -w "%{http_code}" https://queveohoy.es/api/health
 
 # Deploy (GitHub Actions o local)
-git push origin main
-# o: npx vercel deploy --prod
+npx vercel deploy --prod
 ```
+
+## Mientras prod está pausado
+
+- `docs/PROD_VERCEL_PAUSED` en el repo → GHA **no** hace keep-warm, cron ni deploy a Vercel
+- Maratón local bloqueado (`npm run marathon:*` respeta la misma política)
+- CI **sí** corre tests y build en validate

@@ -5,6 +5,7 @@ import {
   lookupPinnedByKey,
   resolveCrestUrlList,
   resolveEsportsCrestUrls,
+  resolveFootballCrestUrls,
 } from "./pinned-images";
 
 describe("pinned-images", () => {
@@ -41,5 +42,10 @@ describe("pinned-images", () => {
     const list = resolveEsportsCrestUrls(remote, [remote]);
     expect(list[0]).toMatch(/^\/crests\/esports\//);
     expect(lookupPinnedByKey("esports:team:130922")).toMatch(/^\/crests\/esports\//);
+  });
+
+  it("resolveFootballCrestUrls prioriza crest local fijado (762)", () => {
+    const list = resolveFootballCrestUrls("762");
+    expect(list[0]).toMatch(/^\/crests\/football\/762\./);
   });
 });
