@@ -30,6 +30,7 @@
     "keep-warm:prod:full": "node scripts/keep-warm-prod-full.mjs",
     "apple:client-secret": "node scripts/generate-apple-client-secret.mjs",
     "check:integrations": "node scripts/check-integrations.mjs",
+    "prod:status": "node scripts/check-prod-status.mjs",
     "vercel:import-file": "node scripts/generate-vercel-import.mjs",
     "perf:budget": "node scripts/perf-budget.mjs",
     "perf:audit": "node scripts/perf-multi-audit.mjs",
