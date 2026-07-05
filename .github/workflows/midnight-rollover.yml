@@ -40,7 +40,7 @@ jobs:
             echo "run=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: steps.gate.outputs.run == 'true'
 
       - name: Skip if Vercel paused
