@@ -46,7 +46,28 @@ Thank you.
 
 ---
 
-## Paso 2 — Cuando te desbloqueen
+## Si vuelve el 402 tras el unpause
+
+A veces el edge tarda unos minutos, o un **deploy simultáneo** (CLI + GitHub Actions) vuelve a disparar el límite.
+
+1. **No lances** `vercel deploy --prod` a mano si GHA ya está desplegando.
+2. Comprueba: `npm run prod:status` cada 2–3 min (hasta 200 estable).
+3. Si sigue 402 tras 30 min, **responde al mismo ticket** de Vercel:
+
+```
+The site returned HTTP 200 briefly, then HTTP 402 DEPLOYMENT_DISABLED again.
+I stopped all manual deploys and re-enabled PROD_VERCEL_PAUSED in GitHub 
+to avoid automated traffic. Please confirm the team unblock is active on edge 
+for queveohoy.es.
+
+Thank you.
+```
+
+4. Solo cuando `prod:status` → **200 estable 24 h**, borra `docs/PROD_VERCEL_PAUSED` y deja que **solo GitHub Actions** haga un deploy (un push, sin CLI en paralelo).
+
+---
+
+## Paso 2 — Cuando HTTP 200 sea estable
 
 En tu PC, en la carpeta del proyecto:
 
