@@ -1,5 +1,6 @@
 import type { SpanishTvShow } from "./spanish-tv-curated";
 import { fetchJsonWithTimeout } from "./fetch-json";
+import { EXTERNAL_FETCH_REVALIDATE_SEC } from "./external-fetch-cache";
 
 const RTVE_API = "https://api.rtve.es/api";
 
@@ -56,7 +57,7 @@ export async function resolveRtveProgramId(
   for (let page = 1; page <= 12; page += 1) {
     const result = await fetchJsonWithTimeout<RtveProgramPage>(
       `${RTVE_API}/programas.json?size=200&page=${page}`,
-      { next: { revalidate: 0 } },
+      { next: { revalidate: EXTERNAL_FETCH_REVALIDATE_SEC } },
       12_000
     );
 

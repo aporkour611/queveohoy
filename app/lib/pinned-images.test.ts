@@ -6,6 +6,7 @@ import {
   resolveCrestUrlList,
   resolveEsportsCrestUrls,
   resolveFootballCrestUrls,
+  pickCrestDisplayUrl,
 } from "./pinned-images";
 
 describe("pinned-images", () => {
@@ -47,5 +48,13 @@ describe("pinned-images", () => {
   it("resolveFootballCrestUrls prioriza crest local fijado (762)", () => {
     const list = resolveFootballCrestUrls("762");
     expect(list[0]).toMatch(/^\/crests\/football\/762\./);
+  });
+
+  it("pickCrestDisplayUrl prioriza lista sobre campo único", () => {
+    expect(
+      pickCrestDisplayUrl(["/crests/esports/1.png", "https://cdn.example/x.png"], "https://fallback")
+    ).toBe("/crests/esports/1.png");
+    expect(pickCrestDisplayUrl([], "/local.png")).toBe("/local.png");
+    expect(pickCrestDisplayUrl(undefined, undefined)).toBeUndefined();
   });
 });

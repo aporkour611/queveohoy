@@ -14,6 +14,7 @@ import {
   encodeTmdbSource,
   parseTmdbBuzzScore,
 } from "./tmdb-client";
+import { EXTERNAL_FETCH_REVALIDATE_SEC } from "./external-fetch-cache";
 
 export {
   isSeasonPremiereEvent,
@@ -169,7 +170,7 @@ async function tmdbGet<T>(
   });
 
   const res = await fetch(`${TMDB_BASE}${path}?${qs}`, {
-    next: { revalidate: 0 },
+    next: { revalidate: EXTERNAL_FETCH_REVALIDATE_SEC },
   });
 
   if (!res.ok) {

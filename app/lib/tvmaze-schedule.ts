@@ -7,6 +7,7 @@ import {
   type SpanishTvShow,
 } from "./spanish-tv-curated";
 import { fetchJsonWithTimeout } from "./fetch-json";
+import { EXTERNAL_FETCH_REVALIDATE_SEC } from "./external-fetch-cache";
 
 const TVMAZE_BASE = "https://api.tvmaze.com";
 
@@ -97,7 +98,7 @@ async function fetchScheduleDay(
 ): Promise<TvmazeScheduleEpisode[]> {
   const result = await fetchJsonWithTimeout<TvmazeScheduleEpisode[]>(
     `${TVMAZE_BASE}/schedule?country=ES&date=${dateKey}`,
-    { next: { revalidate: 0 } },
+    { next: { revalidate: EXTERNAL_FETCH_REVALIDATE_SEC } },
     15_000
   );
   if (!result.ok || !Array.isArray(result.data)) return [];
@@ -135,7 +136,7 @@ export async function fetchTvmazeByShowEvents(
     try {
       const result = await fetchJsonWithTimeout<TvmazeEpisodeListItem[]>(
         `${TVMAZE_BASE}/shows/${showId}/episodes`,
-        { next: { revalidate: 0 } },
+        { next: { revalidate: EXTERNAL_FETCH_REVALIDATE_SEC } },
         15_000
       );
 

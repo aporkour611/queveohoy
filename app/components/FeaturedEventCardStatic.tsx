@@ -1,5 +1,6 @@
 import type { EventRow } from "./types";
 import { getSpotlightCardModel } from "../lib/featured-card";
+import { pickCrestDisplayUrl } from "../lib/pinned-images";
 import { getEventCardStamp, isChampionsFinal } from "../lib/event-card-stamp";
 import { partidoPath } from "../lib/event-slug";
 import { MADRID_TZ } from "../lib/timezone";
@@ -252,8 +253,10 @@ export function FeaturedEventCardStatic({
   const stamp = getEventCardStamp(event);
   const isClFinal = isChampionsFinal(event);
   const href = partidoPath(event);
+  const homeCrestSrc = pickCrestDisplayUrl(card.homeCrestList, card.homeCrest);
+  const awayCrestSrc = pickCrestDisplayUrl(card.awayCrestList, card.awayCrest);
   const showTeamDuel =
-    card.showTeamDuel && Boolean(card.homeCrest && card.awayCrest);
+    card.showTeamDuel && Boolean(homeCrestSrc && awayCrestSrc);
   const showVisual = Boolean(
     card.coverImage || card.showUfcDuel || card.showRolandGarrosDuel || showTeamDuel
   );
@@ -300,12 +303,12 @@ export function FeaturedEventCardStatic({
         ) : showTeamDuel ? (
           <div className="qvh-spotlight-duel" aria-hidden>
             <div className="qvh-spotlight-duel-team">
-              <StaticTeamCrest src={card.homeCrest} priority={priority} />
+              <StaticTeamCrest src={homeCrestSrc} priority={priority} />
               <span className="qvh-spotlight-duel-name">{card.homeName}</span>
             </div>
             <span className="qvh-spotlight-duel-vs">vs</span>
             <div className="qvh-spotlight-duel-team">
-              <StaticTeamCrest src={card.awayCrest} priority={priority} />
+              <StaticTeamCrest src={awayCrestSrc} priority={priority} />
               <span className="qvh-spotlight-duel-name">{card.awayName}</span>
             </div>
           </div>

@@ -3,6 +3,7 @@ import type { SpanishTvShow } from "./spanish-tv-curated";
 import { SPANISH_TV_FLAGSHIP } from "./spanish-tv-curated";
 import { isoWeekdayFromDateKey } from "./curated-tv-events";
 import { encodeTmdbSource, getTmdbApiKey, tmdbBuzzScore } from "./tmdb";
+import { EXTERNAL_FETCH_REVALIDATE_SEC } from "./external-fetch-cache";
 import { isExcludedUsTvTitle } from "./spain-latam-media";
 import {
   extractSpainProviderNames,
@@ -102,7 +103,7 @@ async function tmdbGet<T>(
   });
 
   const res = await fetch(`${TMDB_BASE}${path}?${qs}`, {
-    next: { revalidate: 0 },
+    next: { revalidate: EXTERNAL_FETCH_REVALIDATE_SEC },
   });
   if (!res.ok) return null;
   return res.json() as Promise<T>;

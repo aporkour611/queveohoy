@@ -7,6 +7,7 @@ import {
 } from "./spanish-tv-curated";
 import { isRtveLinearShow, resolveRtveProgramId } from "./rtve-program-lookup";
 import { fetchJsonWithTimeout } from "./fetch-json";
+import { EXTERNAL_FETCH_REVALIDATE_SEC } from "./external-fetch-cache";
 
 const RTVE_API = "https://api.rtve.es/api";
 
@@ -89,7 +90,7 @@ async function fetchProgramVideos(
 ): Promise<RtveVideoItem[]> {
   const result = await fetchJsonWithTimeout<RtveVideoPage>(
     `${RTVE_API}/programas/${programId}/videos.json?size=20`,
-    { next: { revalidate: 0 } },
+    { next: { revalidate: EXTERNAL_FETCH_REVALIDATE_SEC } },
     12_000
   );
   if (!result.ok || !result.data?.page?.items) return [];
@@ -99,7 +100,7 @@ async function fetchProgramVideos(
 async function fetchTrendingProgramIds(): Promise<number[]> {
   const result = await fetchJsonWithTimeout<RtveProgramPage>(
     `${RTVE_API}/programas/mas-vistos.json?size=30`,
-    { next: { revalidate: 0 } },
+    { next: { revalidate: EXTERNAL_FETCH_REVALIDATE_SEC } },
     12_000
   );
   if (!result.ok || !result.data?.page?.items) return [];

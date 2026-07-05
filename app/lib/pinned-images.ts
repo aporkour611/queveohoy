@@ -119,3 +119,14 @@ export function resolveFootballCrestUrls(teamId: string): string[] {
 export function resolveBasketCrestUrls(abbr: string, fallbackUrls: string[]): string[] {
   return resolveCrestUrlList(basketTeamRegistryKey(abbr), fallbackUrls[0], fallbackUrls);
 }
+
+/** Primera URL de escudo para SSR (lista fijada > campo único). */
+export function pickCrestDisplayUrl(
+  list?: string[] | null,
+  single?: string | null
+): string | undefined {
+  for (const url of list ?? []) {
+    if (url?.trim()) return url;
+  }
+  return single?.trim() ? single : undefined;
+}

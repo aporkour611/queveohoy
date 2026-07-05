@@ -2,6 +2,7 @@ import type { EventRow } from "../components/types";
 import { resolveChannelsForEvent } from "./channels";
 import { isChampionsFinal } from "./event-card-stamp";
 import { parseFootballTeamIds, teamCrestUrl } from "./football";
+import { resolveFootballCrestUrls } from "./pinned-images";
 import { addDaysToDateKey, eventDisplayTime } from "./madrid-time";
 import { formatDisplayDateLabel, MADRID_TZ } from "./timezone";
 
@@ -111,8 +112,12 @@ function buildChampionsWeekContext(finalEvent: EventRow): ChampionsWeekContext {
     stageLabel: championsStageLabel(finalEvent),
     homeTeam,
     awayTeam,
-    homeCrest: teamIds ? teamCrestUrl(teamIds.homeId) : undefined,
-    awayCrest: teamIds ? teamCrestUrl(teamIds.awayId) : undefined,
+    homeCrest: teamIds
+      ? (resolveFootballCrestUrls(teamIds.homeId)[0] ?? teamCrestUrl(teamIds.homeId))
+      : undefined,
+    awayCrest: teamIds
+      ? (resolveFootballCrestUrls(teamIds.awayId)[0] ?? teamCrestUrl(teamIds.awayId))
+      : undefined,
     dateLabel: finalEvent.date
       ? formatDisplayDateLabel(finalEvent.date, MADRID_TZ)
       : "",

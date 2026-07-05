@@ -4,7 +4,12 @@ import { memo, startTransition, useCallback, useMemo, useState, type ReactNode }
 import { TeamCrest } from "./TeamCrest";
 import { parseEsportsTeamLogos, esportsLogoFallbackUrls, isEsportsSport } from "../lib/esports";
 import { parseBasketTeamLogos, basketLogoFallbackUrls } from "../lib/basketball";
-import { parseFootballTeamIds, shortTeamName, teamCrestUrl } from "../lib/football";
+import { parseFootballTeamIds, shortTeamName } from "../lib/football";
+import {
+  resolveBasketCrestUrls,
+  resolveEsportsCrestUrls,
+  resolveFootballCrestUrls,
+} from "../lib/pinned-images";
 import { buildEventDetails } from "../lib/event-details";
 import { matchCardEntertainmentVisualClass } from "../lib/entertainment-art";
 import {
@@ -298,29 +303,35 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         )
       : null;
 
-  const homeCrest =
-    esportsLogos?.homeUrl ??
-    basketLogos?.homeUrl ??
-    (footballIds ? teamCrestUrl(footballIds.homeId) : null);
-  const awayCrest =
-    esportsLogos?.awayUrl ??
-    basketLogos?.awayUrl ??
-    (footballIds ? teamCrestUrl(footballIds.awayId) : null);
-
   const homeCrestUrls = esportsLogos?.homeUrl
-    ? esportsLogoFallbackUrls(esportsLogos.homeUrl)
+    ? resolveEsportsCrestUrls(
+        esportsLogos.homeUrl,
+        esportsLogoFallbackUrls(esportsLogos.homeUrl)
+      )
     : basketLogos?.homeAbbr
-      ? basketLogoFallbackUrls(basketLogos.homeAbbr)
-      : homeCrest
-        ? [homeCrest]
+      ? resolveBasketCrestUrls(
+          basketLogos.homeAbbr,
+          basketLogoFallbackUrls(basketLogos.homeAbbr)
+        )
+      : footballIds
+        ? resolveFootballCrestUrls(footballIds.homeId)
         : [];
   const awayCrestUrls = esportsLogos?.awayUrl
-    ? esportsLogoFallbackUrls(esportsLogos.awayUrl)
+    ? resolveEsportsCrestUrls(
+        esportsLogos.awayUrl,
+        esportsLogoFallbackUrls(esportsLogos.awayUrl)
+      )
     : basketLogos?.awayAbbr
-      ? basketLogoFallbackUrls(basketLogos.awayAbbr)
-      : awayCrest
-        ? [awayCrest]
+      ? resolveBasketCrestUrls(
+          basketLogos.awayAbbr,
+          basketLogoFallbackUrls(basketLogos.awayAbbr)
+        )
+      : footballIds
+        ? resolveFootballCrestUrls(footballIds.awayId)
         : [];
+
+  const homeCrest = homeCrestUrls[0] ?? null;
+  const awayCrest = awayCrestUrls[0] ?? null;
 
   const teams = eventVersusTeams(event);
   const home = teams ? shortTeamName(teams.home) : "";
@@ -614,10 +625,10 @@ export const MatchCard = memo(function MatchCard({ event }: Props) {
         showTeamDuel={Boolean(ids || (home && away && event.sport === "futbol"))}
         showTennisDuel={event.sport === "tenis" && Boolean(card.showTennisDuel)}
         showRolandGarrosDuel={event.sport === "tenis" && Boolean(card.showRolandGarrosDuel)}
-        homeCrest={ids ? teamCrestUrl(ids.homeId) : undefined}
-        awayCrest={ids ? teamCrestUrl(ids.awayId) : undefined}
-        homeCrestUrls={homeCrestUrls}
-        awayCrestUrls={awayCrestUrls}
+        homeCrest={card.homeCrest}
+        awayCrest={card.awayCrest}
+        homeCrestUrls={card.homeCrestList ?? homeCrestUrls}
+        awayCrestUrls={card.awayCrestList ?? awayCrestUrls}
         homeName={home || event.home_team}
         awayName={away || event.away_team}
         stampKind={stamp}

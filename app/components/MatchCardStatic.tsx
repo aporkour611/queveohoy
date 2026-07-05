@@ -1,4 +1,5 @@
 import { getSpotlightCardModel } from "../lib/featured-card";
+import { pickCrestDisplayUrl } from "../lib/pinned-images";
 import { partidoPath } from "../lib/event-slug";
 import { resolveLcpCoverImgSrc } from "../lib/lcp-poster";
 import { spotlightCoverImageStyle } from "../lib/optimized-image";
@@ -73,9 +74,11 @@ export function MatchCardStatic({ event, omitCover = false }: Props) {
     "qvh-spotlight-visual-",
     "fh-media-spotlight-visual-"
   );
+  const homeCrestSrc = pickCrestDisplayUrl(card.homeCrestList, card.homeCrest);
+  const awayCrestSrc = pickCrestDisplayUrl(card.awayCrestList, card.awayCrest);
   const showTeamDuel =
     card.showTeamDuel &&
-    Boolean(card.homeCrest && card.awayCrest);
+    Boolean(homeCrestSrc && awayCrestSrc);
   const showRolandGarrosDuel =
     card.showRolandGarrosDuel && card.homeName && card.awayName;
   const showUfcDuel =
@@ -124,12 +127,12 @@ export function MatchCardStatic({ event, omitCover = false }: Props) {
         ) : showTeamDuel ? (
           <div className="fh-media-spotlight-duel" aria-hidden>
             <div className="fh-media-spotlight-duel-team">
-              <StaticCrest src={card.homeCrest} />
+              <StaticCrest src={homeCrestSrc} />
               <span className="fh-media-spotlight-duel-name">{card.homeName}</span>
             </div>
             <span className="fh-media-spotlight-duel-vs">vs</span>
             <div className="fh-media-spotlight-duel-team">
-              <StaticCrest src={card.awayCrest} />
+              <StaticCrest src={awayCrestSrc} />
               <span className="fh-media-spotlight-duel-name">{card.awayName}</span>
             </div>
           </div>
