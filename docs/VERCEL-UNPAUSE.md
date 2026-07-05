@@ -8,7 +8,12 @@
 - Maratón **bloqueado** mientras exista `docs/marathon-reports/PROD-PAUSED.flag`
 - Guards anti-hammering en probes
 
-## Paso que solo Vercel puede hacer (manual, 2 min)
+## Resultado deploy 2026-07-05
+
+- **git push** `667effa` → main (6.2.3 crests) ✓
+- **vercel deploy --prod** ✗ `Your Team exceeded our fair use limits and has been blocked`
+- **GitHub Actions deploy** fallará igual hasta unpause
+
 
 1. [vercel.com/help](https://vercel.com/help) → **Billing / Usage**
 2. Asunto: *Request unpause Hobby account — queveohoy*
